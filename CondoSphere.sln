@@ -3,11 +3,17 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.11.35327.3
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CondoSphere.shared", "CondoSphere.shared\CondoSphere.shared.csproj", "{0E6BF8FA-9C45-4820-B08E-BC9BB2E2CBC1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CondoSphere.Core", "CondoSphere.Core\CondoSphere.Core.csproj", "{0E6BF8FA-9C45-4820-B08E-BC9BB2E2CBC1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CondoSphere.API", "CondoSphere.API\CondoSphere.API.csproj", "{3CD67153-1978-4AFB-A62C-CE4D630BE31B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CondoSphere.Web", "CondoSphere.Web\CondoSphere.Web.csproj", "{1E1FC90D-B1C1-4A4A-B8AE-F8FA723036EA}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libraries", "Libraries", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CondoSphere.Application", "CondoSphere.Application\CondoSphere.Application.csproj", "{38537366-246F-4DB5-B861-3C250F99E8C7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CondoSphere.Infrastructure", "CondoSphere.Infrastructure\CondoSphere.Infrastructure.csproj", "{B0F6B621-C045-46CD-833D-C61526C966F1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,9 +33,22 @@ Global
 		{1E1FC90D-B1C1-4A4A-B8AE-F8FA723036EA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1E1FC90D-B1C1-4A4A-B8AE-F8FA723036EA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1E1FC90D-B1C1-4A4A-B8AE-F8FA723036EA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{38537366-246F-4DB5-B861-3C250F99E8C7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{38537366-246F-4DB5-B861-3C250F99E8C7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{38537366-246F-4DB5-B861-3C250F99E8C7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{38537366-246F-4DB5-B861-3C250F99E8C7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B0F6B621-C045-46CD-833D-C61526C966F1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B0F6B621-C045-46CD-833D-C61526C966F1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B0F6B621-C045-46CD-833D-C61526C966F1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B0F6B621-C045-46CD-833D-C61526C966F1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{0E6BF8FA-9C45-4820-B08E-BC9BB2E2CBC1} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{38537366-246F-4DB5-B861-3C250F99E8C7} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{B0F6B621-C045-46CD-833D-C61526C966F1} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {BE22F21F-8DE9-4AA4-A0ED-E27078E7E116}

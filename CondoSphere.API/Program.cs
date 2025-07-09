@@ -1,4 +1,7 @@
 
+using CondoSphere.Infrastructure.Data;
+using Microsoft.EntityFrameworkCore;
+
 namespace CondoSphere.API
 {
     public class Program
@@ -9,7 +12,14 @@ namespace CondoSphere.API
 
             // Add services to the container.
 
+            var userManagementConnectionString = builder.Configuration.GetConnectionString("UserManagementConnection");
+
+            builder.Services.AddDbContext<UserManagementDbContext>(options =>options.UseSqlServer(userManagementConnectionString));
             builder.Services.AddControllers();
+
+
+
+
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
