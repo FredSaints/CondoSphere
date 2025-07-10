@@ -1,6 +1,15 @@
-@CondoSphere.API_HostAddress = http://localhost:5263
+@CondoSphere.API_HostAddress = https://localhost:7177
 
-GET {{CondoSphere.API_HostAddress}}/weatherforecast/
-Accept: application/json
+### REGISTER A NEW COMPANY AND ADMIN ###
 
-###
+POST {{CondoSphere.API_HostAddress}}/api/accounts/register-admin
+Content-Type: application/json
+
+{
+  "companyName": "My New Test Company",
+  "firstName": "Test",
+  "lastName": "Admin",
+  "email": "test.admin@mynewcompany.com",
+  "password": "123456",
+  "confirmPassword": "123456!"
+}

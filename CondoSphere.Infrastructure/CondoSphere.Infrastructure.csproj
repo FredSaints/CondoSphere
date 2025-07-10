@@ -20,4 +20,8 @@
     <ProjectReference Include="..\CondoSphere.Core\CondoSphere.Core.csproj" />
   </ItemGroup>
 
+	<ItemGroup>
+		<FrameworkReference Include="Microsoft.AspNetCore.App" />
+	</ItemGroup>
+
 </Project>

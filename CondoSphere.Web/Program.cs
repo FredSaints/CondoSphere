@@ -1,36 +1,59 @@
-namespace CondoSphere.Web
-{
-    public class Program
+using CondoSphere.Web.Services;
+
+var builder = WebApplication.CreateBuilder(args);
+
+// --- Add services to the container. ---
+
+// 1. Configure standard MVC services.
+builder.Services.AddControllersWithViews();
+
+// 2. Configure Authentication services using the "Cookies" scheme.
+builder.Services.AddAuthentication("Cookies")
+    .AddCookie("Cookies", options =>
     {
-        public static void Main(string[] args)
-        {
-            var builder = WebApplication.CreateBuilder(args);
+        // The name of the cookie that will store our authentication session.
+        options.Cookie.Name = "CondoSphere.AuthCookie";
+        // If an unauthenticated user tries to access a protected page, redirect them to the Login page.
+        options.LoginPath = "/Account/Login";
+        // If a logged-in user tries to access a resource they don't have permission for.
+        options.AccessDeniedPath = "/Account/AccessDenied";
+    });
 
-            // Add services to the container.
-            builder.Services.AddControllersWithViews();
+// 3. Configure Authorization services. This can be expanded with policies later.
+builder.Services.AddAuthorization();
 
-            var app = builder.Build();
+// 4. Configure our typed HttpClient for communicating with the API.
+builder.Services.AddHttpClient<ApiClient>(client =>
+{
+    // Set the base URL for all API calls made by this client.
+    // This value comes from our appsettings.Development.json file.
+    client.BaseAddress = new Uri(builder.Configuration["ApiSettings:BaseUrl"]);
+});
 
-            // Configure the HTTP request pipeline.
-            if (!app.Environment.IsDevelopment())
-            {
-                app.UseExceptionHandler("/Home/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-                app.UseHsts();
-            }
+var app = builder.Build();
 
-            app.UseHttpsRedirection();
-            app.UseStaticFiles();
+// --- Configure the HTTP request pipeline. ---
 
-            app.UseRouting();
-
-            app.UseAuthorization();
-
-            app.MapControllerRoute(
-                name: "default",
-                pattern: "{controller=Home}/{action=Index}/{id?}");
-
-            app.Run();
-        }
-    }
+if (!app.Environment.IsDevelopment())
+{
+    app.UseExceptionHandler("/Home/Error");
+    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+    app.UseHsts();
 }
+
+app.UseHttpsRedirection();
+app.UseStaticFiles();
+
+app.UseRouting();
+
+// The correct order for authentication middleware in the pipeline:
+// 1. UseAuthentication: Identifies who the user is by reading the cookie.
+// 2. UseAuthorization: Checks if the identified user has permission to access the requested resource.
+app.UseAuthentication();
+app.UseAuthorization();
+
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Home}/{action=Index}/{id?}");
+
+app.Run();
