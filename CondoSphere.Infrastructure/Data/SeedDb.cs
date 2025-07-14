@@ -1,5 +1,5 @@
-﻿using CondoSphere.Core.Entities.Users;
-using CondoSphere.Core.Enums;
+﻿using CondoSphere.Core;
+using CondoSphere.Core.Entities.Users;
 using Microsoft.AspNetCore.Identity;
 
 namespace CondoSphere.Infrastructure.Data
@@ -28,14 +28,15 @@ namespace CondoSphere.Infrastructure.Data
 
         private async Task CheckRolesAsync()
         {
-            // Check if a specific role already exists. If not, create all of them.
-            if (!await _roleManager.RoleExistsAsync(SystemRole.CompanyAdmin.ToString()))
+            // Use the constant for the check
+            if (!await _roleManager.RoleExistsAsync(RoleConstants.CompanyAdmin))
             {
-                await _roleManager.CreateAsync(new IdentityRole<int>(SystemRole.CompanyAdmin.ToString()));
-                await _roleManager.CreateAsync(new IdentityRole<int>(SystemRole.CondoManager.ToString()));
-                await _roleManager.CreateAsync(new IdentityRole<int>(SystemRole.CondoResident.ToString()));
-                await _roleManager.CreateAsync(new IdentityRole<int>(SystemRole.Employee.ToString()));
-                await _roleManager.CreateAsync(new IdentityRole<int>(SystemRole.PlatformSuperAdmin.ToString()));
+                // Use the constants for creation
+                await _roleManager.CreateAsync(new IdentityRole<int>(RoleConstants.CompanyAdmin));
+                await _roleManager.CreateAsync(new IdentityRole<int>(RoleConstants.CondoManager));
+                await _roleManager.CreateAsync(new IdentityRole<int>(RoleConstants.CondoResident));
+                await _roleManager.CreateAsync(new IdentityRole<int>(RoleConstants.Employee));
+                await _roleManager.CreateAsync(new IdentityRole<int>(RoleConstants.PlatformSuperAdmin));
             }
         }
     }

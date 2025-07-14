@@ -1,21 +1,117 @@
-﻿using CondoSphere.Core.Enums;
+﻿using CondoSphere.Application.Interfaces;
+using CondoSphere.Application.Services.Condominium;
+using CondoSphere.Core;
+using CondoSphere.Core.DTOs.Condominiums;
+using CondoSphere.Core.Enums;
+using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CondoSphere.API.Controllers
 {
     [ApiController]
-    [Route("api/condominiums/{condominiumId}/[controller]")]
+    [Route("api/condominiums/{condominiumId}/units")]
+    [Authorize] // All actions in this controller require an authenticated user.
     public class UnitsController : ControllerBase
     {
-        // This endpoint can only be accessed by a user who is a CondoManager AND
-        // satisfies the "IsCondoManagerPolicy", which checks if they manage this specific condominiumId.
-        [HttpGet]
-        [Authorize(Roles = nameof(SystemRole.CondoManager), Policy = "IsCondoManagerPolicy")]
-        public IActionResult GetUnitsForCondominium(int condominiumId)
+        private readonly IUnitService _unitService;
+        private readonly IValidator<CreateUpdateUnitDto> _validator;
+        private readonly ICurrentUserService _currentUserService;
+
+        public UnitsController(
+            IUnitService unitService,
+            IValidator<CreateUpdateUnitDto> validator,
+            ICurrentUserService currentUserService)
         {
-            // If the code reaches here, the user is authorized.
-            return Ok($"Successfully accessed units for condominium {condominiumId}.");
+            _unitService = unitService;
+            _validator = validator;
+            _currentUserService = currentUserService;
+        }
+
+        [HttpGet]
+        [Authorize(Policy = "IsCondoManagerPolicy")] // Checks if user is CompanyAdmin OR assigned manager.
+        public async Task<IActionResult> GetUnitsForCondominium(int condominiumId)
+        {
+            var units = await _unitService.GetUnitsForCondominiumAsync(condominiumId);
+            return Ok(units);
+        }
+
+        [HttpGet("{unitId}")]
+        [Authorize(Policy = "IsCondoManagerPolicy")]
+        public async Task<IActionResult> GetUnitById(int condominiumId, int unitId)
+        {
+            var unit = await _unitService.GetUnitByIdAsync(unitId);
+            if (unit == null || unit.CondominiumId != condominiumId)
+            {
+                return NotFound();
+            }
+
+            return Ok(unit);
+        }
+
+        [HttpPost]
+        [Authorize(Roles = RoleConstants.CondoManager, Policy = "IsCondoManagerPolicy")] // Must be a manager AND be assigned to this condo.
+        public async Task<IActionResult> CreateUnit(int condominiumId, [FromBody] CreateUpdateUnitDto unitDto)
+        {
+            var validationResult = await _validator.ValidateAsync(unitDto);
+            if (!validationResult.IsValid)
+            {
+                return BadRequest(validationResult.Errors);
+            }
+
+            var companyId = _currentUserService.CompanyId;
+            if (!companyId.HasValue)
+            {
+                return Forbid(); // Should not be possible if auth has passed, but is a good safeguard.
+            }
+
+            var newUnit = await _unitService.CreateUnitAsync(unitDto, condominiumId, companyId.Value);
+
+            return CreatedAtAction(nameof(GetUnitById), new { condominiumId, unitId = newUnit.Id }, newUnit);
+        }
+
+        [HttpPut("{unitId}")]
+        [Authorize(Roles = RoleConstants.CondoManager, Policy = "IsCondoManagerPolicy")]
+        public async Task<IActionResult> UpdateUnit(int condominiumId, int unitId, [FromBody] CreateUpdateUnitDto unitDto)
+        {
+            var validationResult = await _validator.ValidateAsync(unitDto);
+            if (!validationResult.IsValid)
+            {
+                return BadRequest(validationResult.Errors);
+            }
+
+            var existingUnit = await _unitService.GetUnitByIdAsync(unitId);
+            if (existingUnit == null || existingUnit.CondominiumId != condominiumId)
+            {
+                return NotFound();
+            }
+
+            var success = await _unitService.UpdateUnitAsync(unitId, unitDto);
+            if (!success)
+            {
+                return NotFound(); // Or another appropriate error
+            }
+
+            return NoContent();
+        }
+
+        [HttpDelete("{unitId}")]
+        [Authorize(Roles = RoleConstants.CondoManager, Policy = "IsCondoManagerPolicy")]
+        public async Task<IActionResult> DeleteUnit(int condominiumId, int unitId)
+        {
+            var existingUnit = await _unitService.GetUnitByIdAsync(unitId);
+            if (existingUnit == null || existingUnit.CondominiumId != condominiumId)
+            {
+                return NotFound();
+            }
+
+            var success = await _unitService.DeleteUnitAsync(unitId);
+            if (!success)
+            {
+                return NotFound();
+            }
+
+            return NoContent();
         }
     }
 }

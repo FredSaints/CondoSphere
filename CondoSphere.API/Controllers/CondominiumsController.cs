@@ -1,11 +1,11 @@
 ﻿using CondoSphere.Application.Interfaces;
 using CondoSphere.Application.Services.Condominium;
+using CondoSphere.Core;
+using CondoSphere.Core.DTOs.Account;
 using CondoSphere.Core.DTOs.Condominiums;
-using CondoSphere.Core.Enums;
+using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
-using FluentValidation;
 
 namespace CondoSphere.API.Controllers
 {
@@ -29,7 +29,7 @@ namespace CondoSphere.API.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = nameof(SystemRole.CompanyAdmin))]
+        [Authorize(Roles = RoleConstants.CompanyAdmin)]
         public async Task<IActionResult> GetAll([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 20)
         {
             var companyId = _currentUserService.CompanyId;
@@ -43,7 +43,7 @@ namespace CondoSphere.API.Controllers
         }
 
         [HttpGet("{id}")]
-        [Authorize(Roles = nameof(SystemRole.CompanyAdmin))]
+        [Authorize(Roles = RoleConstants.CompanyAdmin)]
         public async Task<IActionResult> GetById(int id)
         {
             var companyId = _currentUserService.CompanyId;
@@ -61,7 +61,7 @@ namespace CondoSphere.API.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = nameof(SystemRole.CompanyAdmin))]
+        [Authorize(Roles = RoleConstants.CompanyAdmin)]
         public async Task<IActionResult> Create([FromBody] CreateUpdateCondominiumDto condominiumDto)
         {
             var validationResult = await _validator.ValidateAsync(condominiumDto);
@@ -83,7 +83,7 @@ namespace CondoSphere.API.Controllers
         }
 
         [HttpPut("{id}")]
-        [Authorize(Roles = nameof(SystemRole.CompanyAdmin))]
+        [Authorize(Roles = RoleConstants.CompanyAdmin)]
         public async Task<IActionResult> Update(int id, [FromBody] CreateUpdateCondominiumDto condominiumDto)
         {
             var validationResult = await _validator.ValidateAsync(condominiumDto);
@@ -108,7 +108,7 @@ namespace CondoSphere.API.Controllers
         }
 
         [HttpDelete("{id}")]
-        [Authorize(Roles = nameof(SystemRole.CompanyAdmin))]
+        [Authorize(Roles = RoleConstants.CompanyAdmin)]
         public async Task<IActionResult> Delete(int id)
         {
             var companyId = _currentUserService.CompanyId;
@@ -126,14 +126,32 @@ namespace CondoSphere.API.Controllers
             return NoContent();
         }
 
-        [HttpPatch("{condominiumId}/assign-manager/{managerId}")]
-        [Authorize(Roles = nameof(SystemRole.CompanyAdmin))]
-        public async Task<IActionResult> AssignManager(int condominiumId, int managerId)
+        //[HttpPatch("{condominiumId}/assign-manager/{managerId}")]
+        //[Authorize(Roles = RoleConstants.CompanyAdmin)]
+        //public async Task<IActionResult> AssignManager(int condominiumId, int managerId)
+        //{
+        //    var companyId = _currentUserService.CompanyId;
+        //    if (companyId == null) return Unauthorized();
+
+        //    var success = await _condominiumService.AssignManagerAsync(condominiumId, managerId, companyId.Value);
+
+        //    if (!success)
+        //    {
+        //        return BadRequest("Failed to assign manager. Verify condominium and manager IDs are valid for your company.");
+        //    }
+
+        //    return NoContent();
+        //}
+
+        [HttpPatch("{condominiumId}/assign-manager")]
+        [Authorize(Roles = RoleConstants.CompanyAdmin)]
+        public async Task<IActionResult> AssignManager(int condominiumId, [FromBody] AssignManagerDto dto)
         {
             var companyId = _currentUserService.CompanyId;
             if (companyId == null) return Unauthorized();
 
-            var success = await _condominiumService.AssignManagerAsync(condominiumId, managerId, companyId.Value);
+            // We use the manager ID from the request body (dto.ManagerId)
+            var success = await _condominiumService.AssignManagerAsync(condominiumId, dto.ManagerId, companyId.Value);
 
             if (!success)
             {

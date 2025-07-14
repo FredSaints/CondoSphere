@@ -1,11 +1,12 @@
 ﻿using CondoSphere.Application.Authorization;
+using CondoSphere.Core;
 using CondoSphere.Infrastructure.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Routing;
 
 namespace CondoSphere.Infrastructure.Authorization
 {
@@ -24,6 +25,13 @@ namespace CondoSphere.Infrastructure.Authorization
             AuthorizationHandlerContext context,
             IsCondoManagerRequirement requirement)
         {
+            // First, check for the override role. A CompanyAdmin can manage everything.
+            if (context.User.IsInRole(RoleConstants.CompanyAdmin))
+            {
+                context.Succeed(requirement);
+                return;
+            }
+
             var httpContext = _httpContextAccessor.HttpContext;
             if (httpContext == null)
             {
@@ -31,7 +39,6 @@ namespace CondoSphere.Infrastructure.Authorization
                 return;
             }
 
-            // Get the current user's ID from their token claims.
             var userIdClaim = context.User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (!int.TryParse(userIdClaim, out var userId))
             {
@@ -39,11 +46,9 @@ namespace CondoSphere.Infrastructure.Authorization
                 return;
             }
 
-            // Get the ID of the condominium from the URL route data (e.g., from /api/condominiums/{condominiumId}/units).
             var condominiumIdRouteValue = httpContext.GetRouteValue("condominiumId")?.ToString();
             if (!int.TryParse(condominiumIdRouteValue, out var condominiumId))
             {
-                // Fallback for routes that use "id" instead of "condominiumId"
                 condominiumIdRouteValue = httpContext.GetRouteValue("id")?.ToString();
                 if (!int.TryParse(condominiumIdRouteValue, out condominiumId))
                 {
@@ -53,17 +58,18 @@ namespace CondoSphere.Infrastructure.Authorization
             }
 
             // Check the database to see if this user is the manager of this condominium.
+            // We do NOT use IgnoreQueryFilters() here. This is intentional.
+            // We want this authorization check to respect any global filters, such as a
+            // potential future soft-delete "IsActive" flag on condominiums.
             bool isManagerOfCondo = await _condoContext.Condominiums
                 .AnyAsync(c => c.Id == condominiumId && c.ManagerId == userId);
 
             if (isManagerOfCondo)
             {
-                // If they are the manager, the requirement is met.
                 context.Succeed(requirement);
             }
             else
             {
-                // Otherwise, they fail authorization.
                 context.Fail();
             }
         }

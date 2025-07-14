@@ -31,7 +31,8 @@ namespace CondoSphere.Infrastructure.Data
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
-
+            builder.Entity<User>().HasQueryFilter(u => u.IsActive);
+            builder.Entity<Company>().HasQueryFilter(c => c.IsActive);
         }
     }
 }

@@ -40,11 +40,9 @@ namespace CondoSphere.Infrastructure.Repositories
             _context.Condominiums.Remove(condominium);
         }
 
-        public async Task<bool> SaveChangesAsync()
+        public async Task<int> SaveChangesAsync()
         {
-            // SaveChangesAsync returns the number of rows affected.
-            // We return true if at least one row was changed.
-            return await _context.SaveChangesAsync() > 0;
+            return await _context.SaveChangesAsync();
         }
 
         public void Update(Condominium condominium)

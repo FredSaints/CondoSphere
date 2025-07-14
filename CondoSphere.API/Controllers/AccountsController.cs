@@ -1,7 +1,7 @@
 ﻿using CondoSphere.Application.Interfaces;
 using CondoSphere.Application.Services.User;
+using CondoSphere.Core;
 using CondoSphere.Core.DTOs.Account;
-using CondoSphere.Core.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -24,6 +24,21 @@ namespace CondoSphere.API.Controllers
             _userService = userService;
             _currentUserService = currentUserService;
             _userManager = userManager;
+        }
+
+        [HttpGet("company-users")]
+        [Authorize(Roles = RoleConstants.CompanyAdmin)]
+        public async Task<IActionResult> GetCompanyUsers()
+        {
+            var companyId = _currentUserService.CompanyId;
+            if (companyId == null)
+            {
+                return Unauthorized("Company information is missing from the token.");
+            }
+
+            var users = await _userService.GetCompanyUsersWithRolesAsync(companyId.Value);
+
+            return Ok(users);
         }
 
         [HttpPost("register-admin")]
@@ -68,7 +83,7 @@ namespace CondoSphere.API.Controllers
         }
 
         [HttpPost("register-manager")]
-        [Authorize(Roles = nameof(SystemRole.CompanyAdmin))]
+        [Authorize(Roles = RoleConstants.CompanyAdmin)]
         public async Task<IActionResult> RegisterManager([FromBody] RegisterManagerDto registerDto)
         {
             if (!ModelState.IsValid)
@@ -112,13 +127,12 @@ namespace CondoSphere.API.Controllers
                 return NotFound("User not found.");
             }
 
-            // Note: The token from the URL needs to be decoded.
-            var decodedToken = System.Web.HttpUtility.UrlDecode(token);
+            var decodedToken = System.Net.WebUtility.UrlDecode(token);
             var result = await _userManager.ConfirmEmailAsync(user, decodedToken);
 
             if (result.Succeeded)
             {
-                return Ok("<h1>Email confirmed successfully!</h1><p>You can now log in.</p>");
+                return Content("<h1>Email confirmed successfully!</h1><p>You can now log in.</p>", "text/html");
             }
 
             return BadRequest("Email could not be confirmed. The link may have expired.");

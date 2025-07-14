@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using CondoSphere.Application.Interfaces;
+using CondoSphere.Core;
 using CondoSphere.Core.DTOs.Condominiums;
 using Microsoft.AspNetCore.Identity;
 using CoreCondominium = CondoSphere.Core.Entities.Condominiums.Condominium;
@@ -57,7 +58,7 @@ namespace CondoSphere.Application.Services.Condominium
             _mapper.Map(condominiumDto, condominium);
 
             _condominiumRepository.Update(condominium);
-            return await _condominiumRepository.SaveChangesAsync();
+            return await _condominiumRepository.SaveChangesAsync() > 0;
         }
 
         public async Task<bool> DeleteCondominiumAsync(int id, int companyId)
@@ -69,7 +70,7 @@ namespace CondoSphere.Application.Services.Condominium
             }
 
             _condominiumRepository.Remove(condominium);
-            return await _condominiumRepository.SaveChangesAsync();
+            return await _condominiumRepository.SaveChangesAsync() > 0;
         }
 
         public async Task<bool> AssignManagerAsync(int condominiumId, int managerId, int companyId)
@@ -81,11 +82,11 @@ namespace CondoSphere.Application.Services.Condominium
             if (manager == null || manager.CompanyId != companyId) return false;
 
             var roles = await _userManager.GetRolesAsync(manager);
-            if (!roles.Contains(nameof(Core.Enums.SystemRole.CondoManager))) return false;
+            if (!roles.Contains(RoleConstants.CondoManager)) return false;
 
             condominium.ManagerId = managerId;
             _condominiumRepository.Update(condominium);
-            return await _condominiumRepository.SaveChangesAsync();
+            return await _condominiumRepository.SaveChangesAsync() > 0;
         }
     }
 }

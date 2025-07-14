@@ -1,0 +1,66 @@
+﻿@model CondoSphere.Web.Models.ManagementDashboardViewModel
+
+@{
+    ViewData["Title"] = "Management Dashboard";
+}
+
+<h1>@ViewData["Title"]</h1>
+<hr />
+
+<div class="row">
+    <div class="col-md-6">
+        <h2>Users</h2>
+        <p>Manage the users within your company.</p>
+        <p>
+            <a class="btn btn-primary" asp-action="RegisterManager">Register New Manager</a>
+        </p>
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var user in Model.Users)
+                {
+                    <tr>
+                        <td>@user.FirstName @user.LastName</td>
+                        <td>@user.Email</td>
+                        <td>@user.Role</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <div class="col-md-6">
+        <h2>Condominiums</h2>
+        <p>Manage the condominiums for your company.</p>
+        @* We can add a "Create Condominium" button here later *@
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Address</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var condo in Model.Condominiums)
+                {
+                    <tr>
+                        <td>@condo.Name</td>
+                        <td>@condo.Address</td>
+                        <td>
+                            @* We will add an "Assign Manager" button here later *@
+                            <a href="#">Assign Manager</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

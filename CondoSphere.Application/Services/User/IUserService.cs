@@ -11,5 +11,6 @@ namespace CondoSphere.Application.Services.User
         Task<IdentityResult> RegisterCompanyAdminAsync(RegisterDto registerDto);
         Task<UserDto?> LoginAsync(LoginDto loginDto);
         Task<IdentityResult> RegisterManagerAsync(RegisterManagerDto registerDto, int companyId);
+        Task<IEnumerable<UserListDto>> GetCompanyUsersWithRolesAsync(int companyId);
     }
 }

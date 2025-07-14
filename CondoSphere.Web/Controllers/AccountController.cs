@@ -31,11 +31,11 @@ namespace CondoSphere.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginDto model, string? returnUrl = null)
         {
-            // 0. Form validation ───────────────────────────────────────────
             if (!ModelState.IsValid)
+            {
                 return View(model);
+            }
 
-            // 1. Ask the API to authenticate and return a JWT ──────────────
             var userDto = await _apiClient.LoginAsync(model);
 
             if (userDto == null || string.IsNullOrWhiteSpace(userDto.Token))
@@ -44,9 +44,7 @@ namespace CondoSphere.Web.Controllers
                 return View(model);
             }
 
-            // 2. Validate the JWT **and** map the "name" claim correctly ───
             var handler = new JwtSecurityTokenHandler();
-
             var principal = handler.ValidateToken(
                 userDto.Token,
                 new TokenValidationParameters
@@ -58,26 +56,30 @@ namespace CondoSphere.Web.Controllers
                     ClockSkew = TimeSpan.Zero,
                     ValidIssuer = _configuration["Jwt:Issuer"],
                     ValidAudience = _configuration["Jwt:Audience"],
-
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]))
                 },
                 out _);
 
-            // 3. Create the auth cookie ────────────────────────────────────
+            // Create a new claims identity to add our custom access_token claim
+            var claimsIdentity = (ClaimsIdentity)principal.Identity;
+            claimsIdentity.AddClaim(new Claim("access_token", userDto.Token));
+
             var authProperties = new AuthenticationProperties
             {
-                IsPersistent = true,
+                IsPersistent = true, // Make the cookie persistent
                 ExpiresUtc = DateTimeOffset.UtcNow.AddDays(7)
             };
 
+            // Use the new identity with the added claim to sign in
             await HttpContext.SignInAsync(
                 CookieAuthenticationDefaults.AuthenticationScheme,
-                principal,
+                new ClaimsPrincipal(claimsIdentity),
                 authProperties);
 
-            // 4. Redirect ─────────────────────────────────────────────────
             if (!string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
+            {
                 return Redirect(returnUrl);
+            }
 
             return RedirectToAction("Index", "Home");
         }

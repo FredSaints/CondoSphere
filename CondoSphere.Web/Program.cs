@@ -6,8 +6,12 @@ var builder = WebApplication.CreateBuilder(args);
 
 // 1. Configure standard MVC services.
 builder.Services.AddControllersWithViews();
+builder.Services.AddHttpContextAccessor(); // Required for the handler to access the current HttpContext
 
-// 2. Configure Authentication services using the "Cookies" scheme.
+// 2. Register the handler. It's transient because handlers can have state.
+builder.Services.AddTransient<JwtForwardingDelegatingHandler>();
+
+// 3. Configure Authentication services using the "Cookies" scheme.
 builder.Services.AddAuthentication("Cookies")
     .AddCookie("Cookies", options =>
     {
@@ -19,16 +23,17 @@ builder.Services.AddAuthentication("Cookies")
         options.AccessDeniedPath = "/Account/AccessDenied";
     });
 
-// 3. Configure Authorization services. This can be expanded with policies later.
+// 4. Configure Authorization services. This can be expanded with policies later.
 builder.Services.AddAuthorization();
 
-// 4. Configure our typed HttpClient for communicating with the API.
+// 5. Configure our typed HttpClient for communicating with the API.
 builder.Services.AddHttpClient<ApiClient>(client =>
 {
     // Set the base URL for all API calls made by this client.
-    // This value comes from our appsettings.Development.json file.
+    // This value comes from our appsettings file (e.g., appsettings.Development.json).
     client.BaseAddress = new Uri(builder.Configuration["ApiSettings:BaseUrl"]);
-});
+})
+.AddHttpMessageHandler<JwtForwardingDelegatingHandler>(); // Attach the handler to the HttpClient pipeline
 
 var app = builder.Build();
 
@@ -37,7 +42,6 @@ var app = builder.Build();
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 

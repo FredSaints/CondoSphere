@@ -12,7 +12,6 @@ namespace CondoSphere.Application.Interfaces
         void Remove(Condominium condominium);
         Task<Condominium?> GetByIdAsync(int id, int companyId);
         Task<IEnumerable<Condominium>> GetAllAsync(int companyId, int pageNumber, int pageSize);
-
-        Task<bool> SaveChangesAsync();
+        Task<int> SaveChangesAsync();
     }
 }
