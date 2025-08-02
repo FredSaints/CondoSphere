@@ -13,5 +13,6 @@ namespace CondoSphere.Application.Interfaces
         Task<Condominium?> GetByIdAsync(int id, int companyId);
         Task<IEnumerable<Condominium>> GetAllAsync(int companyId, int pageNumber, int pageSize);
         Task<int> SaveChangesAsync();
+        Task<IEnumerable<Condominium>> GetByManagerIdAsync(int managerId);
     }
 }

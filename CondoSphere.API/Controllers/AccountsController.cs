@@ -27,7 +27,7 @@ namespace CondoSphere.API.Controllers
         }
 
         [HttpGet("company-users")]
-        [Authorize(Roles = RoleConstants.CompanyAdmin)]
+        [Authorize(Roles = $"{RoleConstants.CompanyAdmin},{RoleConstants.CondoManager}")]
         public async Task<IActionResult> GetCompanyUsers()
         {
             var companyId = _currentUserService.CompanyId;
@@ -136,6 +136,55 @@ namespace CondoSphere.API.Controllers
             }
 
             return BadRequest("Email could not be confirmed. The link may have expired.");
+        }
+
+        [HttpPost("set-password")]
+        [AllowAnonymous]
+        public async Task<IActionResult> SetPassword([FromBody] SetPasswordDto setPasswordDto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var user = await _userManager.FindByIdAsync(setPasswordDto.UserId);
+            if (user == null)
+            {
+                // Do not reveal that the user does not exist.
+                // Return a generic success message to prevent user enumeration attacks.
+                return Ok(new { Message = "If a matching account was found, a password has been set." });
+            }
+
+            var result = await _userManager.ResetPasswordAsync(user, setPasswordDto.Token, setPasswordDto.Password);
+
+            if (result.Succeeded)
+            {
+                // This is the crucial step: we now confirm their email because they have proven ownership
+                // by successfully using the token that was sent there.
+                if (!user.EmailConfirmed)
+                {
+                    user.EmailConfirmed = true;
+                    await _userManager.UpdateAsync(user);
+                }
+                return Ok(new { Message = "Your password has been set successfully. You can now log in." });
+            }
+
+            // If token is invalid, passwords don't match criteria, etc.
+            return BadRequest(result.Errors);
+        }
+
+        [HttpGet("managers")]
+        [Authorize(Roles = RoleConstants.CompanyAdmin)]
+        public async Task<IActionResult> GetAvailableManagers()
+        {
+            var companyId = _currentUserService.CompanyId;
+            if (companyId == null)
+            {
+                return Unauthorized("Company information is missing from the token.");
+            }
+
+            var managers = await _userService.GetAvailableManagersAsync(companyId.Value);
+            return Ok(managers);
         }
     }
 }

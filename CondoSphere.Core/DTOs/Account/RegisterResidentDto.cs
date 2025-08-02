@@ -1,16 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace CondoSphere.Core.DTOs.Account
 {
-    /// <summary>
-    /// Represents the data required by a Company Admin to register a new Condominium Manager.
-    /// </summary>
-    public class RegisterManagerDto
+    public class RegisterResidentDto
     {
         [Required]
         [StringLength(100, MinimumLength = 2)]
@@ -23,5 +15,8 @@ namespace CondoSphere.Core.DTOs.Account
         [Required]
         [EmailAddress]
         public string Email { get; set; } = string.Empty;
+
+        [Required]
+        public int UnitId { get; set; }
     }
 }

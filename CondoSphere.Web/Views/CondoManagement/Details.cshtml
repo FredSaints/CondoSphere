@@ -1,0 +1,86 @@
+﻿@model CondoSphere.Web.Models.CondominiumDetailsViewModel
+
+@{
+    ViewData["Title"] = $"Manage: {Model.Condominium.Name}";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1>@Model.Condominium.Name</h1>
+        <p class="text-muted mb-0">@Model.Condominium.Address</p>
+    </div>
+    <div>
+        <a asp-action="CreateUnit" asp-route-condominiumId="@Model.Condominium.Id" class="btn btn-success">
+            <i class="bi bi-plus-square-fill me-1"></i> Add New Unit
+        </a>
+    </div>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-header">
+        <h5 class="mb-0">Units</h5>
+    </div>
+    <div class="card-body p-0">
+        @if (Model.Units.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-hover mb-0 align-middle">
+                    <thead>
+                        <tr>
+                            <th scope="col">Identifier</th>
+                            <th scope="col">Status / Resident</th>
+                            <th scope="col" class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var unit in Model.Units)
+                        {
+                            <tr>
+                                <td><strong>@unit.Identifier</strong></td>
+                                <td>
+                                    @if (unit.ResidentId.HasValue)
+                                    {
+                                        <span class="badge bg-info">Occupied</span>
+                                        <span class="ms-2">@unit.ResidentName</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-success">Vacant</span>
+                                    }
+                                </td>
+                                <td class="text-end">
+                                    @if (unit.ResidentId.HasValue)
+                                    {
+                                        <form asp-action="UnassignResident" asp-route-condominiumId="@Model.Condominium.Id" asp-route-unitId="@unit.Id" method="post" onsubmit="return confirm('Are you sure you want to unassign this resident? Their account will be deactivated.');">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="btn btn-sm btn-outline-danger">Unassign Resident</button>
+                                        </form>
+                                    }
+                                    else
+                                    {
+                                        <a asp-action="RegisterResident"
+                                           asp-route-unitId="@unit.Id"
+                                           asp-route-condominiumId="@Model.Condominium.Id"
+                                           class="btn btn-sm btn-primary">Register Resident</a>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="text-center p-4">
+                <p class="text-muted mb-0">No units have been created for this condominium yet.</p>
+            </div>
+        }
+    </div>
+</div>
+
+<div class="mt-4">
+    <a asp-action="Index" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left me-1"></i> Back to My Condos
+    </a>
+</div>

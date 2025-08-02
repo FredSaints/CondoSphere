@@ -29,5 +29,11 @@
         //  efficient, tenant-scoped queries without requiring a join.
         /// </summary>
         public int CompanyId { get; set; }
+
+        /// <summary>
+        /// The foreign key to the User who is the official resident of this unit.
+        /// Nullable because a unit can be vacant.
+        /// </summary>
+        public int? ResidentId { get; set; }
     }
 }

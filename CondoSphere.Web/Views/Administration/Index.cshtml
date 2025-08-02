@@ -1,0 +1,120 @@
+﻿@model ManagementDashboardViewModel
+
+@{
+    ViewData["Title"] = "Admin Dashboard";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1>@ViewData["Title"]</h1>
+        <p class="text-muted">Manage your company's users and condominiums.</p>
+    </div>
+    <div>
+        <a class="btn btn-primary" asp-action="RegisterManager">
+            <i class="bi bi-person-plus-fill me-1"></i> Register New Manager
+        </a>
+        <a class="btn btn-success" asp-action="CreateCondominium">
+            <i class="bi bi-building-fill-add me-1"></i> Create Condominium
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card shadow-sm mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Managed Condominiums</h5>
+            </div>
+            <div class="card-body p-0">
+                @if (Model.Condominiums.Any())
+                {
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Name</th>
+                                    <th scope="col">Address</th>
+                                    <th scope="col">Assigned Manager</th> @* <-- ADD THIS HEADER *@
+                                    <th scope="col" class="text-end">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var condo in Model.Condominiums)
+                                {
+                                    <tr>
+                                        <td>@condo.Name</td>
+                                        <td>@condo.Address</td>
+
+                                        @* ===== NEW LOGIC FOR MANAGER COLUMN ===== *@
+                                        <td>
+                                            @if (!string.IsNullOrEmpty(condo.ManagerName))
+                                            {
+                                                <span class="text-muted">@condo.ManagerName</span>
+                                            }
+                                        </td>
+
+                                        <td class="text-end">
+                                            @if (string.IsNullOrEmpty(condo.ManagerName))
+                                            {
+                                                <a asp-action="AssignManager" asp-route-condominiumId="@condo.Id" class="btn btn-sm btn-primary">Assign Manager</a>
+                                            }
+                                            else
+                                            {
+                                                <a asp-action="AssignManager" asp-route-condominiumId="@condo.Id" class="btn btn-sm btn-outline-secondary">Re-assign</a>
+                                            }
+                                            @* <a href="#" class="btn btn-sm btn-outline-primary">Edit</a> *@
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center p-4">
+                        <p class="text-muted mb-0">No condominiums have been created yet. Click the "Create Condominium" button to get started.</p>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card shadow-sm mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Company Users</h5>
+            </div>
+            <div class="card-body p-0">
+                @if (Model.Users.Any())
+                {
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Name</th>
+                                    <th scope="col">Role</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var user in Model.Users)
+                                {
+                                    <tr>
+                                        <td>@user.FirstName @user.LastName<br /><small class="text-muted">@user.Email</small></td>
+                                        <td><span class="badge bg-secondary">@user.Role</span></td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center p-4">
+                        <p class="text-muted mb-0">No users found.</p>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

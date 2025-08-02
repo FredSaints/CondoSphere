@@ -1,7 +1,9 @@
-﻿using CondoSphere.Core.DTOs.Account;
+﻿using CondoSphere.Core;
+using CondoSphere.Core.DTOs.Account;
 using CondoSphere.Web.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -76,12 +78,20 @@ namespace CondoSphere.Web.Controllers
                 new ClaimsPrincipal(claimsIdentity),
                 authProperties);
 
-            if (!string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
+            if (User.IsInRole(RoleConstants.CompanyAdmin))
             {
-                return Redirect(returnUrl);
+                return RedirectToAction("Index", "Administration");
+            }
+            if (User.IsInRole(RoleConstants.CondoManager))
+            {
+                return RedirectToAction("Index", "CondoManagement");
+            }
+            if (User.IsInRole(RoleConstants.CondoResident))
+            {
+                return RedirectToAction("Index", "Portal");
             }
 
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction("Index", "Home"); // Fallback for any other case
         }
 
         [HttpPost]
@@ -98,6 +108,41 @@ namespace CondoSphere.Web.Controllers
         public IActionResult AccessDenied()
         {
             return View();
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult SetPassword(string userId, string token)
+        {
+            if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(token))
+            {
+                return BadRequest("A user ID and token must be supplied for password set.");
+            }
+
+            var model = new SetPasswordDto { UserId = userId, Token = token };
+            return View(model);
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> SetPassword(SetPasswordDto model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            var (success, message) = await _apiClient.SetPasswordAsync(model);
+
+            if (success)
+            {
+                TempData["SuccessMessage"] = message;
+                return RedirectToAction(nameof(Login));
+            }
+
+            ModelState.AddModelError(string.Empty, message);
+            return View(model);
         }
     }
 }

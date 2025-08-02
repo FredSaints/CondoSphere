@@ -12,5 +12,7 @@ namespace CondoSphere.Application.Services.User
         Task<UserDto?> LoginAsync(LoginDto loginDto);
         Task<IdentityResult> RegisterManagerAsync(RegisterManagerDto registerDto, int companyId);
         Task<IEnumerable<UserListDto>> GetCompanyUsersWithRolesAsync(int companyId);
+        Task<IdentityResult> RegisterResidentAsync(RegisterResidentDto dto, int companyId, int condominiumId);
+        Task<IEnumerable<UserListDto>> GetAvailableManagersAsync(int companyId);
     }
 }

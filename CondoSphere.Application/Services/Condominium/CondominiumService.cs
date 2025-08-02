@@ -2,6 +2,7 @@
 using CondoSphere.Application.Interfaces;
 using CondoSphere.Core;
 using CondoSphere.Core.DTOs.Condominiums;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using CoreCondominium = CondoSphere.Core.Entities.Condominiums.Condominium;
 using CoreUser = CondoSphere.Core.Entities.Users.User;
@@ -37,8 +38,41 @@ namespace CondoSphere.Application.Services.Condominium
 
         public async Task<IEnumerable<CondominiumDto>> GetAllCondominiumsAsync(int companyId, int pageNumber, int pageSize)
         {
+            // 1. Fetch the raw condominium data from the repository
             var condominiums = await _condominiumRepository.GetAllAsync(companyId, pageNumber, pageSize);
-            return _mapper.Map<IEnumerable<CondominiumDto>>(condominiums);
+            if (!condominiums.Any())
+            {
+                return Enumerable.Empty<CondominiumDto>();
+            }
+
+            // 2. Map the entities to DTOs
+            var condominiumDtos = _mapper.Map<List<CondominiumDto>>(condominiums);
+
+            // 3. Efficiently fetch the names for all required managers in a single query
+            var managerIds = condominiums
+                .Where(c => c.ManagerId.HasValue)
+                .Select(c => c.ManagerId.Value)
+                .Distinct()
+                .ToList();
+
+            if (managerIds.Any())
+            {
+                var managers = await _userManager.Users
+                    .Where(u => managerIds.Contains(u.Id))
+                    .ToDictionaryAsync(u => u.Id, u => $"{u.FirstName} {u.LastName}");
+
+                // 4. Stitch the manager names onto the DTOs
+                foreach (var dto in condominiumDtos)
+                {
+                    var condo = condominiums.First(c => c.Id == dto.Id);
+                    if (condo.ManagerId.HasValue && managers.ContainsKey(condo.ManagerId.Value))
+                    {
+                        dto.ManagerName = managers[condo.ManagerId.Value];
+                    }
+                }
+            }
+
+            return condominiumDtos;
         }
 
         public async Task<CondominiumDto?> GetCondominiumByIdAsync(int id, int companyId)
@@ -87,6 +121,12 @@ namespace CondoSphere.Application.Services.Condominium
             condominium.ManagerId = managerId;
             _condominiumRepository.Update(condominium);
             return await _condominiumRepository.SaveChangesAsync() > 0;
+        }
+
+        public async Task<IEnumerable<CondominiumDto>> GetCondominiumsByManagerIdAsync(int managerId)
+        {
+            var condominiums = await _condominiumRepository.GetByManagerIdAsync(managerId);
+            return _mapper.Map<IEnumerable<CondominiumDto>>(condominiums);
         }
     }
 }

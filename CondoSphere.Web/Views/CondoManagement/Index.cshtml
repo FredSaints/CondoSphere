@@ -1,0 +1,41 @@
+﻿@model IEnumerable<CondoSphere.Core.DTOs.Condominiums.CondominiumDto>
+
+@{
+    ViewData["Title"] = "My Managed Condominiums";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1>@ViewData["Title"]</h1>
+        <p class="text-muted">Select a condominium to manage its units and residents.</p>
+    </div>
+</div>
+
+@if (Model.Any())
+{
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        @foreach (var condo in Model)
+        {
+            <div class="col">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title">@condo.Name</h5>
+                        <p class="card-text text-muted">@condo.Address</p>
+                    </div>
+                    <div class="card-footer bg-transparent border-top-0 text-end">
+                        <a asp-controller="CondoManagement" asp-action="Details" asp-route-id="@condo.Id" class="btn btn-primary">
+                            <i class="bi bi-gear-fill me-1"></i> Manage
+                        </a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+else
+{
+    <div class="text-center p-5">
+        <h3 class="text-muted">No Condominiums Assigned</h3>
+        <p>You have not been assigned to manage any condominiums yet. Please contact your company administrator.</p>
+    </div>
+}

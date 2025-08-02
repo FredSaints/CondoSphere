@@ -49,5 +49,12 @@ namespace CondoSphere.Infrastructure.Repositories
         {
             _context.Entry(condominium).State = EntityState.Modified;
         }
+        public async Task<IEnumerable<Condominium>> GetByManagerIdAsync(int managerId)
+        {
+            return await _context.Condominiums
+                .Where(c => c.ManagerId == managerId)
+                .AsNoTracking()
+                .ToListAsync();
+        }
     }
 }

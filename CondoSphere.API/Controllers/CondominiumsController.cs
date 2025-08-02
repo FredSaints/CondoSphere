@@ -43,7 +43,7 @@ namespace CondoSphere.API.Controllers
         }
 
         [HttpGet("{id}")]
-        [Authorize(Roles = RoleConstants.CompanyAdmin)]
+        [Authorize(Roles = RoleConstants.CondoManager, Policy = "IsCondoManagerPolicy")]
         public async Task<IActionResult> GetById(int id)
         {
             var companyId = _currentUserService.CompanyId;
@@ -53,6 +53,7 @@ namespace CondoSphere.API.Controllers
             }
 
             var condominium = await _condominiumService.GetCondominiumByIdAsync(id, companyId.Value);
+
             if (condominium == null)
             {
                 return NotFound();
@@ -126,23 +127,6 @@ namespace CondoSphere.API.Controllers
             return NoContent();
         }
 
-        //[HttpPatch("{condominiumId}/assign-manager/{managerId}")]
-        //[Authorize(Roles = RoleConstants.CompanyAdmin)]
-        //public async Task<IActionResult> AssignManager(int condominiumId, int managerId)
-        //{
-        //    var companyId = _currentUserService.CompanyId;
-        //    if (companyId == null) return Unauthorized();
-
-        //    var success = await _condominiumService.AssignManagerAsync(condominiumId, managerId, companyId.Value);
-
-        //    if (!success)
-        //    {
-        //        return BadRequest("Failed to assign manager. Verify condominium and manager IDs are valid for your company.");
-        //    }
-
-        //    return NoContent();
-        //}
-
         [HttpPatch("{condominiumId}/assign-manager")]
         [Authorize(Roles = RoleConstants.CompanyAdmin)]
         public async Task<IActionResult> AssignManager(int condominiumId, [FromBody] AssignManagerDto dto)
@@ -159,6 +143,22 @@ namespace CondoSphere.API.Controllers
             }
 
             return NoContent();
+        }
+
+        [HttpGet("my-managed")]
+        [Authorize(Roles = RoleConstants.CondoManager)]
+        public async Task<IActionResult> GetMyManagedCondominiums()
+        {
+            var managerId = _currentUserService.UserId;
+            if (managerId == null)
+            {
+                return Unauthorized("User ID is missing from the token.");
+            }
+
+            // We need a new service method for this. Let's add it.
+            var condominiums = await _condominiumService.GetCondominiumsByManagerIdAsync(managerId.Value);
+
+            return Ok(condominiums);
         }
     }
 }

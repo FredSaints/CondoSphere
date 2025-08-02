@@ -34,5 +34,23 @@ namespace CondoSphere.Infrastructure.Repositories
 
             return usersWithRoles;
         }
+
+        public async Task<IEnumerable<UserListDto>> GetUsersInRoleAsync(string roleName, int companyId)
+        {
+            var usersInRole = await _context.Users
+                .Where(u => u.CompanyId == companyId && _context.UserRoles.Any(ur => ur.UserId == u.Id && _context.Roles.Any(r => r.Id == ur.RoleId && r.Name == roleName)))
+                .Select(u => new UserListDto
+                {
+                    Id = u.Id,
+                    FirstName = u.FirstName,
+                    LastName = u.LastName,
+                    Email = u.Email,
+                    Role = roleName
+                })
+                .AsNoTracking()
+                .ToListAsync();
+
+            return usersInRole;
+        }
     }
 }

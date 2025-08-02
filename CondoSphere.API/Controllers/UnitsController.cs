@@ -113,5 +113,25 @@ namespace CondoSphere.API.Controllers
 
             return NoContent();
         }
+
+        [HttpPatch("{unitId}/unassign-resident")]
+        [Authorize(Roles = RoleConstants.CondoManager, Policy = "IsCondoManagerPolicy")]
+        public async Task<IActionResult> UnassignResident(int condominiumId, int unitId)
+        {
+            var unit = await _unitService.GetUnitByIdAsync(unitId);
+            if (unit == null || unit.CondominiumId != condominiumId)
+            {
+                return NotFound();
+            }
+
+            var success = await _unitService.UnassignResidentAsync(unitId);
+
+            if (success)
+            {
+                return NoContent();
+            }
+
+            return BadRequest(new { Message = "Failed to unassign resident. The unit might already be vacant." });
+        }
     }
 }
