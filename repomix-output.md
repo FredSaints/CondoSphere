@@ -28,18 +28,13 @@ The content is organized as follows:
 ## Notes
 - Some files may have been excluded based on .gitignore rules and Repomix's configuration
 - Binary files are not included in this packed representation. Please refer to the Repository Structure section for a complete list of file paths, including binary files
-- Files matching these patterns are excluded: **/*.jpg, **/*.png, **/*.csproj, **/*.sln, **/lib/**, **/bin/**, **/obj/**, **/Migrations/**, **/migrations/**, **/*.user, **/.github/**, .gitignore
+- Files matching these patterns are excluded: **/*.jpg, **/*.png, **/*.csproj, **/*.sln, **/lib/**, **/bin/**, **/obj/**, **/Migrations/**, **/migrations/**, **/*.user, **/.github/**, .gitignore, **/.vs/**
 - Files matching patterns in .gitignore are excluded
 - Files matching default ignore patterns are excluded
 - Files are sorted by Git change count (files with more changes are at the bottom)
 
 # Directory Structure
 ```
-.vs/CondoSphere/config/applicationhost.config
-.vs/CondoSphere/v17/DocumentLayout.backup.json
-.vs/CondoSphere/v17/DocumentLayout.json
-.vs/CondoSphere/v17/HierarchyCache.v1.txt
-.vs/VSWorkspaceState.json
 CondoSphere.API/appsettings.Development.json
 CondoSphere.API/appsettings.json
 CondoSphere.API/CondoSphere.API.http
@@ -151,2128 +146,16 @@ CondoSphere.Web/wwwroot/js/site.js
 
 # Files
 
-## File: .vs/CondoSphere/config/applicationhost.config
-```
-<?xml version="1.0" encoding="UTF-8"?>
-<!--
-
-    IIS configuration sections.
-
-    For schema documentation, see
-    %IIS_BIN%\config\schema\IIS_schema.xml.
-    
-    Please make a backup of this file before making any changes to it.
-
-    NOTE: The following environment variables are available to be used
-          within this file and are understood by the IIS Express.
-
-          %IIS_USER_HOME% - The IIS Express home directory for the user
-          %IIS_SITES_HOME% - The default home directory for sites
-          %IIS_BIN% - The location of the IIS Express binaries
-          %SYSTEMDRIVE% - The drive letter of %IIS_BIN%
-
--->
-<configuration>
-	<!--
-
-        The <configSections> section controls the registration of sections.
-        Section is the basic unit of deployment, locking, searching and
-        containment for configuration settings.
-        
-        Every section belongs to one section group.
-        A section group is a container of logically-related sections.
-        
-        Sections cannot be nested.
-        Section groups may be nested.
-        
-        <section
-            name=""  [Required, Collection Key] [XML name of the section]
-            allowDefinition="Everywhere" [MachineOnly|MachineToApplication|AppHostOnly|Everywhere] [Level where it can be set]
-            overrideModeDefault="Allow"  [Allow|Deny] [Default delegation mode]
-            allowLocation="true"  [true|false] [Allowed in location tags]
-        />
-        
-        The recommended way to unlock sections is by using a location tag:
-        <location path="Default Web Site" overrideMode="Allow">
-            <system.webServer>
-                <asp />
-            </system.webServer>
-        </location>
-
-    -->
-	<configSections>
-		<sectionGroup name="system.applicationHost">
-			<section name="applicationPools" allowDefinition="AppHostOnly" overrideModeDefault="Deny" />
-			<section name="configHistory" allowDefinition="AppHostOnly" overrideModeDefault="Deny" />
-			<section name="customMetadata" allowDefinition="AppHostOnly" overrideModeDefault="Deny" />
-			<section name="listenerAdapters" allowDefinition="AppHostOnly" overrideModeDefault="Deny" />
-			<section name="log" allowDefinition="AppHostOnly" overrideModeDefault="Deny" />
-			<section name="serviceAutoStartProviders" allowDefinition="AppHostOnly" overrideModeDefault="Deny" />
-			<section name="sites" allowDefinition="AppHostOnly" overrideModeDefault="Deny" />
-			<section name="webLimits" allowDefinition="AppHostOnly" overrideModeDefault="Deny" />
-		</sectionGroup>
-		<sectionGroup name="system.webServer">
-			<section name="asp" overrideModeDefault="Deny" />
-			<section name="caching" overrideModeDefault="Allow" />
-			<section name="cgi" overrideModeDefault="Deny" />
-			<section name="defaultDocument" overrideModeDefault="Allow" />
-			<section name="directoryBrowse" overrideModeDefault="Allow" />
-			<section name="fastCgi" allowDefinition="AppHostOnly" overrideModeDefault="Deny" />
-			<section name="globalModules" allowDefinition="AppHostOnly" overrideModeDefault="Deny" />
-			<section name="handlers" overrideModeDefault="Deny" />
-			<section name="httpCompression" overrideModeDefault="Allow" allowDefinition="Everywhere" />
-			<section name="httpErrors" overrideModeDefault="Allow" />
-			<section name="httpLogging" overrideModeDefault="Deny" />
-			<section name="httpProtocol" overrideModeDefault="Allow" />
-			<section name="httpRedirect" overrideModeDefault="Allow" />
-			<section name="httpTracing" overrideModeDefault="Deny" />
-			<section name="isapiFilters" allowDefinition="MachineToApplication" overrideModeDefault="Deny" />
-			<section name="modules" allowDefinition="MachineToApplication" overrideModeDefault="Deny" />
-			<section name="applicationInitialization" allowDefinition="MachineToApplication" overrideModeDefault="Allow" />
-			<section name="odbcLogging" overrideModeDefault="Deny" />
-			<sectionGroup name="security">
-				<section name="access" overrideModeDefault="Deny" />
-				<section name="applicationDependencies" overrideModeDefault="Deny" />
-				<sectionGroup name="authentication">
-					<section name="anonymousAuthentication" overrideModeDefault="Deny" />
-					<section name="basicAuthentication" overrideModeDefault="Deny" />
-					<section name="clientCertificateMappingAuthentication" overrideModeDefault="Deny" />
-					<section name="digestAuthentication" overrideModeDefault="Deny" />
-					<section name="iisClientCertificateMappingAuthentication" overrideModeDefault="Deny" />
-					<section name="windowsAuthentication" overrideModeDefault="Deny" />
-				</sectionGroup>
-				<section name="authorization" overrideModeDefault="Allow" />
-				<section name="ipSecurity" overrideModeDefault="Deny" />
-				<section name="dynamicIpSecurity" overrideModeDefault="Deny" />
-				<section name="isapiCgiRestriction" allowDefinition="AppHostOnly" overrideModeDefault="Deny" />
-				<section name="requestFiltering" overrideModeDefault="Allow" />
-			</sectionGroup>
-			<section name="serverRuntime" overrideModeDefault="Deny" />
-			<section name="serverSideInclude" overrideModeDefault="Deny" />
-			<section name="staticContent" overrideModeDefault="Allow" />
-			<sectionGroup name="tracing">
-				<section name="traceFailedRequests" overrideModeDefault="Allow" />
-				<section name="traceProviderDefinitions" overrideModeDefault="Deny" />
-			</sectionGroup>
-			<section name="urlCompression" overrideModeDefault="Allow" />
-			<section name="validation" overrideModeDefault="Allow" />
-			<sectionGroup name="webdav">
-				<section name="globalSettings" overrideModeDefault="Deny" />
-				<section name="authoring" overrideModeDefault="Deny" />
-				<section name="authoringRules" overrideModeDefault="Deny" />
-			</sectionGroup>
-			<sectionGroup name="rewrite">
-				<section name="allowedServerVariables" overrideModeDefault="Deny" />
-				<section name="rules" overrideModeDefault="Allow" />
-				<section name="outboundRules" overrideModeDefault="Allow" />
-				<section name="globalRules" overrideModeDefault="Deny" allowDefinition="AppHostOnly" />
-				<section name="providers" overrideModeDefault="Allow" />
-				<section name="rewriteMaps" overrideModeDefault="Allow" />
-			</sectionGroup>
-			<section name="webSocket" overrideModeDefault="Deny" />
-		</sectionGroup>
-	</configSections>
-	<configProtectedData>
-		<providers>
-			<add name="IISWASOnlyRsaProvider" type="" description="Uses RsaCryptoServiceProvider to encrypt and decrypt" keyContainerName="iisWasKey" cspProviderName="" useMachineContainer="true" useOAEP="false" />
-			<add name="AesProvider" type="Microsoft.ApplicationHost.AesProtectedConfigurationProvider" description="Uses an AES session key to encrypt and decrypt" keyContainerName="iisConfigurationKey" cspProviderName="" useOAEP="false" useMachineContainer="true" sessionKey="AQIAAA5mAAAApAAA/HKxkz6alrlAPez0IUgujj/6k3WxCDriHp6jvpv3yEZmo7h6SMzGLxo4mTrIQVHSkB7tmElHKfUFTzE2BWF7nFWHY6Z6qmGBauFzwJMwESjril7Gjz69RBFH259HQ6aRDq9Xfx7U7H4HtdmnKNqGjgl/hwPQBGeIlWiDh+sYv3vKB0QU971tjX6H2B+9armlnC8UOuA6JYMDMI/VLLL16sng0fWAy5JYe0YVABVjiAWDW264RZW9Tr1Oax4qHZKg+SdjULxeOc2YmpX+d0yeITo1HkPF1hN1gHpIPIUDo05ilHUNfR3OkjVCIQK4cFKCq1s8NH+y+13MxUC4Fn1AlQ==" />
-			<add name="IISWASOnlyAesProvider" type="Microsoft.ApplicationHost.AesProtectedConfigurationProvider" description="Uses an AES session key to encrypt and decrypt" keyContainerName="iisWasKey" cspProviderName="" useOAEP="false" useMachineContainer="true" sessionKey="AQIAAA5mAAAApAAALmU8lTC+v2qtfQiiiquvvLpUQqKLEXs+jSKoWCM/uPhyB++k4dwug19mGidNK5FYiWK2KYE1yhjVJcbp12E98Q0R2nT7eBiCMY2JairxQ591rqABK7keGaIjwH7PwGzSpILl3RJ4YFvJ/7ZXEJxeDZIjW8ZxWVXx+/VyHs9U3WguLEkgMUX3jrxJi8LouxaIVPJAv/YQ1ZCWs8zImitxX/C/7o7yaIxznfsN5nGQzQfpUDPeby99aw2zPVTtZI2LaWIBON8guABvZ6JtJVDWmfdK6sodbnwdZkr6/Z2rfvamT1dC1SpQrGG7ulR/f9/GXvCaW10ZVKxekBF/CYlNMg==" />
-		</providers>
-	</configProtectedData>
-	<system.applicationHost>
-		<applicationPools>
-			<add name="Clr4IntegratedAppPool" managedRuntimeVersion="v4.0" managedPipelineMode="Integrated" CLRConfigFile="%IIS_USER_HOME%\config\aspnet.config" autoStart="true" />
-			<add name="Clr4ClassicAppPool" managedRuntimeVersion="v4.0" managedPipelineMode="Classic" CLRConfigFile="%IIS_USER_HOME%\config\aspnet.config" autoStart="true" />
-			<add name="Clr2IntegratedAppPool" managedRuntimeVersion="v2.0" managedPipelineMode="Integrated" CLRConfigFile="%IIS_USER_HOME%\config\aspnet.config" autoStart="true" />
-			<add name="Clr2ClassicAppPool" managedRuntimeVersion="v2.0" managedPipelineMode="Classic" CLRConfigFile="%IIS_USER_HOME%\config\aspnet.config" autoStart="true" />
-			<add name="UnmanagedClassicAppPool" managedRuntimeVersion="" managedPipelineMode="Classic" autoStart="true" />
-			<applicationPoolDefaults managedRuntimeVersion="v4.0">
-				<processModel loadUserProfile="true" setProfileEnvironment="false" />
-			</applicationPoolDefaults>
-		</applicationPools>
-		<!--
-
-          The <listenerAdapters> section defines the protocols with which the
-          Windows Process Activation Service (WAS) binds.
-
-        -->
-		<listenerAdapters>
-			<add name="http" />
-		</listenerAdapters>
-		<sites>
-			<site name="WebSite1" id="1" serverAutoStart="true">
-				<application path="/">
-					<virtualDirectory path="/" physicalPath="%IIS_SITES_HOME%\WebSite1" />
-				</application>
-				<bindings>
-					<binding protocol="http" bindingInformation=":8080:localhost" />
-				</bindings>
-			</site>
-			<siteDefaults>
-				<!-- To enable logging, please change the below attribute "enabled" to "true" -->
-				<logFile logFormat="W3C" directory="%AppData%\Microsoft\IISExpressLogs" enabled="false" />
-				<traceFailedRequestsLogging directory="%AppData%\Microsoft" enabled="false" maxLogFileSizeKB="1024" />
-			</siteDefaults>
-			<applicationDefaults applicationPool="Clr4IntegratedAppPool" />
-			<virtualDirectoryDefaults allowSubDirConfig="true" />
-		</sites>
-		<webLimits />
-	</system.applicationHost>
-	<system.webServer>
-		<serverRuntime />
-		<asp scriptErrorSentToBrowser="true">
-			<cache diskTemplateCacheDirectory="%TEMP%\iisexpress\ASP Compiled Templates" />
-			<limits />
-		</asp>
-		<caching enabled="true" enableKernelCache="true">
-		</caching>
-		<cgi />
-		<defaultDocument enabled="true">
-			<files>
-				<add value="Default.htm" />
-				<add value="Default.asp" />
-				<add value="index.htm" />
-				<add value="index.html" />
-				<add value="iisstart.htm" />
-				<add value="default.aspx" />
-			</files>
-		</defaultDocument>
-		<directoryBrowse enabled="false" />
-		<fastCgi />
-		<!--
-
-          The <globalModules> section defines all native-code modules.
-          To enable a module, specify it in the <modules> section.
-
-        -->
-		<globalModules>
-			<add name="HttpLoggingModule" image="%IIS_BIN%\loghttp.dll" />
-			<add name="UriCacheModule" image="%IIS_BIN%\cachuri.dll" />
-			<add name="TokenCacheModule" image="%IIS_BIN%\cachtokn.dll" />
-			<add name="DynamicCompressionModule" image="%IIS_BIN%\compdyn.dll" />
-			<add name="StaticCompressionModule" image="%IIS_BIN%\compstat.dll" />
-			<add name="DefaultDocumentModule" image="%IIS_BIN%\defdoc.dll" />
-			<add name="DirectoryListingModule" image="%IIS_BIN%\dirlist.dll" />
-			<add name="ProtocolSupportModule" image="%IIS_BIN%\protsup.dll" />
-			<add name="HttpRedirectionModule" image="%IIS_BIN%\redirect.dll" />
-			<add name="ServerSideIncludeModule" image="%IIS_BIN%\iis_ssi.dll" />
-			<add name="StaticFileModule" image="%IIS_BIN%\static.dll" />
-			<add name="AnonymousAuthenticationModule" image="%IIS_BIN%\authanon.dll" />
-			<add name="CertificateMappingAuthenticationModule" image="%IIS_BIN%\authcert.dll" />
-			<add name="UrlAuthorizationModule" image="%IIS_BIN%\urlauthz.dll" />
-			<add name="BasicAuthenticationModule" image="%IIS_BIN%\authbas.dll" />
-			<add name="WindowsAuthenticationModule" image="%IIS_BIN%\authsspi.dll" />
-			<add name="IISCertificateMappingAuthenticationModule" image="%IIS_BIN%\authmap.dll" />
-			<add name="IpRestrictionModule" image="%IIS_BIN%\iprestr.dll" />
-			<add name="DynamicIpRestrictionModule" image="%IIS_BIN%\diprestr.dll" />
-			<add name="RequestFilteringModule" image="%IIS_BIN%\modrqflt.dll" />
-			<add name="CustomLoggingModule" image="%IIS_BIN%\logcust.dll" />
-			<add name="CustomErrorModule" image="%IIS_BIN%\custerr.dll" />
-			<add name="FailedRequestsTracingModule" image="%IIS_BIN%\iisfreb.dll" />
-			<add name="RequestMonitorModule" image="%IIS_BIN%\iisreqs.dll" />
-			<add name="IsapiModule" image="%IIS_BIN%\isapi.dll" />
-			<add name="IsapiFilterModule" image="%IIS_BIN%\filter.dll" />
-			<add name="CgiModule" image="%IIS_BIN%\cgi.dll" />
-			<add name="FastCgiModule" image="%IIS_BIN%\iisfcgi.dll" />
-			<!--            <add name="WebDAVModule" image="%IIS_BIN%\webdav.dll" /> -->
-			<add name="RewriteModule" image="%IIS_BIN%\rewrite.dll" />
-			<add name="ConfigurationValidationModule" image="%IIS_BIN%\validcfg.dll" />
-			<add name="WebSocketModule" image="%IIS_BIN%\iiswsock.dll" />
-			<add name="WebMatrixSupportModule" image="%IIS_BIN%\webmatrixsup.dll" />
-			<add name="ManagedEngine" image="%windir%\Microsoft.NET\Framework\v2.0.50727\webengine.dll" preCondition="integratedMode,runtimeVersionv2.0,bitness32" />
-			<add name="ManagedEngine64" image="%windir%\Microsoft.NET\Framework64\v2.0.50727\webengine.dll" preCondition="integratedMode,runtimeVersionv2.0,bitness64" />
-			<add name="ManagedEngineV4.0_32bit" image="%windir%\Microsoft.NET\Framework\v4.0.30319\webengine4.dll" preCondition="integratedMode,runtimeVersionv4.0,bitness32" />
-			<add name="ManagedEngineV4.0_64bit" image="%windir%\Microsoft.NET\Framework64\v4.0.30319\webengine4.dll" preCondition="integratedMode,runtimeVersionv4.0,bitness64" />
-			<add name="ApplicationInitializationModule" image="%IIS_BIN%\warmup.dll" />
-		</globalModules>
-		<httpCompression directory="%TEMP%">
-			<scheme name="gzip" dll="%IIS_BIN%\gzip.dll" />
-			<dynamicTypes>
-				<add mimeType="text/*" enabled="true" />
-				<add mimeType="message/*" enabled="true" />
-				<add mimeType="application/x-javascript" enabled="true" />
-				<add mimeType="application/javascript" enabled="true" />
-				<add mimeType="*/*" enabled="false" />
-				<add mimeType="text/event-stream" enabled="false" />
-			</dynamicTypes>
-			<staticTypes>
-				<add mimeType="text/*" enabled="true" />
-				<add mimeType="message/*" enabled="true" />
-				<add mimeType="application/javascript" enabled="true" />
-				<add mimeType="application/atom+xml" enabled="true" />
-				<add mimeType="application/xaml+xml" enabled="true" />
-				<add mimeType="image/svg+xml" enabled="true" />
-				<add mimeType="*/*" enabled="false" />
-			</staticTypes>
-		</httpCompression>
-		<httpErrors lockAttributes="allowAbsolutePathsWhenDelegated,defaultPath">
-			<error statusCode="401" prefixLanguageFilePath="%IIS_BIN%\custerr" path="401.htm" />
-			<error statusCode="403" prefixLanguageFilePath="%IIS_BIN%\custerr" path="403.htm" />
-			<error statusCode="404" prefixLanguageFilePath="%IIS_BIN%\custerr" path="404.htm" />
-			<error statusCode="405" prefixLanguageFilePath="%IIS_BIN%\custerr" path="405.htm" />
-			<error statusCode="406" prefixLanguageFilePath="%IIS_BIN%\custerr" path="406.htm" />
-			<error statusCode="412" prefixLanguageFilePath="%IIS_BIN%\custerr" path="412.htm" />
-			<error statusCode="500" prefixLanguageFilePath="%IIS_BIN%\custerr" path="500.htm" />
-			<error statusCode="501" prefixLanguageFilePath="%IIS_BIN%\custerr" path="501.htm" />
-			<error statusCode="502" prefixLanguageFilePath="%IIS_BIN%\custerr" path="502.htm" />
-		</httpErrors>
-		<httpLogging dontLog="false" />
-		<httpProtocol>
-			<customHeaders>
-				<clear />
-				<add name="X-Powered-By" value="ASP.NET" />
-			</customHeaders>
-			<redirectHeaders>
-				<clear />
-			</redirectHeaders>
-		</httpProtocol>
-		<httpRedirect enabled="false" />
-		<httpTracing />
-		<isapiFilters>
-			<filter name="ASP.Net_2.0.50727-64" path="%windir%\Microsoft.NET\Framework64\v2.0.50727\aspnet_filter.dll" enableCache="true" preCondition="bitness64,runtimeVersionv2.0" />
-			<filter name="ASP.Net_2.0.50727.0" path="%windir%\Microsoft.NET\Framework\v2.0.50727\aspnet_filter.dll" enableCache="true" preCondition="bitness32,runtimeVersionv2.0" />
-			<filter name="ASP.Net_2.0_for_v1.1" path="%windir%\Microsoft.NET\Framework\v2.0.50727\aspnet_filter.dll" enableCache="true" preCondition="runtimeVersionv1.1" />
-			<filter name="ASP.Net_4.0_32bit" path="%windir%\Microsoft.NET\Framework\v4.0.30319\aspnet_filter.dll" enableCache="true" preCondition="bitness32,runtimeVersionv4.0" />
-			<filter name="ASP.Net_4.0_64bit" path="%windir%\Microsoft.NET\Framework64\v4.0.30319\aspnet_filter.dll" enableCache="true" preCondition="bitness64,runtimeVersionv4.0" />
-		</isapiFilters>
-		<odbcLogging />
-		<security>
-			<access sslFlags="None" />
-			<applicationDependencies>
-				<application name="Active Server Pages" groupId="ASP" />
-			</applicationDependencies>
-			<authentication>
-				<anonymousAuthentication enabled="true" userName="" />
-				<basicAuthentication enabled="false" />
-				<clientCertificateMappingAuthentication enabled="false" />
-				<digestAuthentication enabled="false" />
-				<iisClientCertificateMappingAuthentication enabled="false">
-				</iisClientCertificateMappingAuthentication>
-				<windowsAuthentication enabled="false">
-					<providers>
-						<add value="Negotiate" />
-						<add value="NTLM" />
-					</providers>
-				</windowsAuthentication>
-			</authentication>
-			<authorization>
-				<add accessType="Allow" users="*" />
-			</authorization>
-			<ipSecurity allowUnlisted="true" />
-			<isapiCgiRestriction notListedIsapisAllowed="true" notListedCgisAllowed="true">
-				<add path="%windir%\Microsoft.NET\Framework64\v4.0.30319\webengine4.dll" allowed="true" groupId="ASP.NET_v4.0" description="ASP.NET_v4.0" />
-				<add path="%windir%\Microsoft.NET\Framework\v4.0.30319\webengine4.dll" allowed="true" groupId="ASP.NET_v4.0" description="ASP.NET_v4.0" />
-				<add path="%windir%\Microsoft.NET\Framework64\v2.0.50727\aspnet_isapi.dll" allowed="true" groupId="ASP.NET v2.0.50727" description="ASP.NET v2.0.50727" />
-				<add path="%windir%\Microsoft.NET\Framework\v2.0.50727\aspnet_isapi.dll" allowed="true" groupId="ASP.NET v2.0.50727" description="ASP.NET v2.0.50727" />
-			</isapiCgiRestriction>
-			<requestFiltering>
-				<fileExtensions allowUnlisted="true" applyToWebDAV="true">
-					<add fileExtension=".asa" allowed="false" />
-					<add fileExtension=".asax" allowed="false" />
-					<add fileExtension=".ascx" allowed="false" />
-					<add fileExtension=".master" allowed="false" />
-					<add fileExtension=".skin" allowed="false" />
-					<add fileExtension=".browser" allowed="false" />
-					<add fileExtension=".sitemap" allowed="false" />
-					<add fileExtension=".config" allowed="false" />
-					<add fileExtension=".cs" allowed="false" />
-					<add fileExtension=".csproj" allowed="false" />
-					<add fileExtension=".vb" allowed="false" />
-					<add fileExtension=".vbproj" allowed="false" />
-					<add fileExtension=".webinfo" allowed="false" />
-					<add fileExtension=".licx" allowed="false" />
-					<add fileExtension=".resx" allowed="false" />
-					<add fileExtension=".resources" allowed="false" />
-					<add fileExtension=".mdb" allowed="false" />
-					<add fileExtension=".vjsproj" allowed="false" />
-					<add fileExtension=".java" allowed="false" />
-					<add fileExtension=".jsl" allowed="false" />
-					<add fileExtension=".ldb" allowed="false" />
-					<add fileExtension=".dsdgm" allowed="false" />
-					<add fileExtension=".ssdgm" allowed="false" />
-					<add fileExtension=".lsad" allowed="false" />
-					<add fileExtension=".ssmap" allowed="false" />
-					<add fileExtension=".cd" allowed="false" />
-					<add fileExtension=".dsprototype" allowed="false" />
-					<add fileExtension=".lsaprototype" allowed="false" />
-					<add fileExtension=".sdm" allowed="false" />
-					<add fileExtension=".sdmDocument" allowed="false" />
-					<add fileExtension=".mdf" allowed="false" />
-					<add fileExtension=".ldf" allowed="false" />
-					<add fileExtension=".ad" allowed="false" />
-					<add fileExtension=".dd" allowed="false" />
-					<add fileExtension=".ldd" allowed="false" />
-					<add fileExtension=".sd" allowed="false" />
-					<add fileExtension=".adprototype" allowed="false" />
-					<add fileExtension=".lddprototype" allowed="false" />
-					<add fileExtension=".exclude" allowed="false" />
-					<add fileExtension=".refresh" allowed="false" />
-					<add fileExtension=".compiled" allowed="false" />
-					<add fileExtension=".msgx" allowed="false" />
-					<add fileExtension=".vsdisco" allowed="false" />
-					<add fileExtension=".rules" allowed="false" />
-				</fileExtensions>
-				<verbs allowUnlisted="true" applyToWebDAV="true" />
-				<hiddenSegments applyToWebDAV="true">
-					<add segment="web.config" />
-					<add segment="bin" />
-					<add segment="App_code" />
-					<add segment="App_GlobalResources" />
-					<add segment="App_LocalResources" />
-					<add segment="App_WebReferences" />
-					<add segment="App_Data" />
-					<add segment="App_Browsers" />
-				</hiddenSegments>
-			</requestFiltering>
-		</security>
-		<serverSideInclude ssiExecDisable="false" />
-		<staticContent lockAttributes="isDocFooterFileName">
-			<mimeMap fileExtension=".323" mimeType="text/h323" />
-			<mimeMap fileExtension=".3g2" mimeType="video/3gpp2" />
-			<mimeMap fileExtension=".3gp2" mimeType="video/3gpp2" />
-			<mimeMap fileExtension=".3gp" mimeType="video/3gpp" />
-			<mimeMap fileExtension=".3gpp" mimeType="video/3gpp" />
-			<mimeMap fileExtension=".aac" mimeType="audio/aac" />
-			<mimeMap fileExtension=".aaf" mimeType="application/octet-stream" />
-			<mimeMap fileExtension=".aca" mimeType="application/octet-stream" />
-			<mimeMap fileExtension=".accdb" mimeType="application/msaccess" />
-			<mimeMap fileExtension=".accde" mimeType="application/msaccess" />
-			<mimeMap fileExtension=".accdt" mimeType="application/msaccess" />
-			<mimeMap fileExtension=".acx" mimeType="application/internet-property-stream" />
-			<mimeMap fileExtension=".adt" mimeType="audio/vnd.dlna.adts" />
-			<mimeMap fileExtension=".adts" mimeType="audio/vnd.dlna.adts" />
-			<mimeMap fileExtension=".afm" mimeType="application/octet-stream" />
-			<mimeMap fileExtension=".ai" mimeType="application/postscript" />
-			<mimeMap fileExtension=".aif" mimeType="audio/x-aiff" />
-			<mimeMap fileExtension=".aifc" mimeType="audio/aiff" />
-			<mimeMap fileExtension=".aiff" mimeType="audio/aiff" />
-			<mimeMap fileExtension=".appcache" mimeType="text/cache-manifest" />
-			<mimeMap fileExtension=".application" mimeType="application/x-ms-application" />
-			<mimeMap fileExtension=".art" mimeType="image/x-jg" />
-			<mimeMap fileExtension=".asd" mimeType="application/octet-stream" />
-			<mimeMap fileExtension=".asf" mimeType="video/x-ms-asf" />
-			<mimeMap fileExtension=".asi" mimeType="application/octet-stream" />
-			<mimeMap fileExtension=".asm" mimeType="text/plain" />
-			<mimeMap fileExtension=".asr" mimeType="video/x-ms-asf" />
-			<mimeMap fileExtension=".asx" mimeType="video/x-ms-asf" />
-			<mimeMap fileExtension=".atom" mimeType="application/atom+xml" />
-			<mimeMap fileExtension=".au" mimeType="audio/basic" />
-			<mimeMap fileExtension=".avi" mimeType="video/avi" />
-			<mimeMap fileExtension=".axs" mimeType="application/olescript" />
-			<mimeMap fileExtension=".bas" mimeType="text/plain" />
-			<mimeMap fileExtension=".bcpio" mimeType="application/x-bcpio" />
-			<mimeMap fileExtension=".bin" mimeType="application/octet-stream" />
-			<mimeMap fileExtension=".bmp" mimeType="image/bmp" />
-			<mimeMap fileExtension=".c" mimeType="text/plain" />
-			<mimeMap fileExtension=".cab" mimeType="application/vnd.ms-cab-compressed" />
-			<mimeMap fileExtension=".calx" mimeType="application/vnd.ms-office.calx" />
-			<mimeMap fileExtension=".cat" mimeType="application/vnd.ms-pki.seccat" />
-			<mimeMap fileExtension=".cdf" mimeType="application/x-cdf" />
-			<mimeMap fileExtension=".chm" mimeType="application/octet-stream" />
-			<mimeMap fileExtension=".class" mimeType="application/x-java-applet" />
-			<mimeMap fileExtension=".clp" mimeType="application/x-msclip" />
-			<mimeMap fileExtension=".cmx" mimeType="image/x-cmx" />
-			<mimeMap fileExtension=".cnf" mimeType="text/plain" />
-			<mimeMap fileExtension=".cod" mimeType="image/cis-cod" />
-			<mimeMap fileExtension=".cpio" mimeType="application/x-cpio" />
-			<mimeMap fileExtension=".cpp" mimeType="text/plain" />
-			<mimeMap fileExtension=".crd" mimeType="application/x-mscardfile" />
-			<mimeMap fileExtension=".crl" mimeType="application/pkix-crl" />
-			<mimeMap fileExtension=".crt" mimeType="application/x-x509-ca-cert" />
-			<mimeMap fileExtension=".csh" mimeType="application/x-csh" />
-			<mimeMap fileExtension=".css" mimeType="text/css" />
-			<mimeMap fileExtension=".csv" mimeType="application/octet-stream" />
-			<mimeMap fileExtension=".cur" mimeType="application/octet-stream" />
-			<mimeMap fileExtension=".dcr" mimeType="application/x-director" />
-			<mimeMap fileExtension=".deploy" mimeType="application/octet-stream" />
-			<mimeMap fileExtension=".der" mimeType="application/x-x509-ca-cert" />
-			<mimeMap fileExtension=".dib" mimeType="image/bmp" />
-			<mimeMap fileExtension=".dir" mimeType="application/x-director" />
-			<mimeMap fileExtension=".disco" mimeType="text/xml" />
-			<mimeMap fileExtension=".dll" mimeType="application/x-msdownload" />
-			<mimeMap fileExtension=".dll.config" mimeType="text/xml" />
-			<mimeMap fileExtension=".dlm" mimeType="text/dlm" />
-			<mimeMap fileExtension=".doc" mimeType="application/msword" />
-			<mimeMap fileExtension=".docm" mimeType="application/vnd.ms-word.document.macroEnabled.12" />
-			<mimeMap fileExtension=".docx" mimeType="application/vnd.openxmlformats-officedocument.wordprocessingml.document" />
-			<mimeMap fileExtension=".dot" mimeType="application/msword" />
-			<mimeMap fileExtension=".dotm" mimeType="application/vnd.ms-word.template.macroEnabled.12" />
-			<mimeMap fileExtension=".dotx" mimeType="application/vnd.openxmlformats-officedocument.wordprocessingml.template" />
-			<mimeMap fileExtension=".dsp" mimeType="application/octet-stream" />
-			<mimeMap fileExtension=".dtd" mimeType="text/xml" />
-			<mimeMap fileExtension=".dvi" mimeType="application/x-dvi" />
-			<mimeMap fileExtension=".dvr-ms" mimeType="video/x-ms-dvr" />
-			<mimeMap fileExtension=".dwf" mimeType="drawing/x-dwf" />
-			<mimeMap fileExtension=".dwp" mimeType="application/octet-stream" />
-			<mimeMap fileExtension=".dxr" mimeType="application/x-director" />
-			<mimeMap fileExtension=".eml" mimeType="message/rfc822" />
-			<mimeMap fileExtension=".emz" mimeType="application/octet-stream" />
-			<mimeMap fileExtension=".eot" mimeType="application/vnd.ms-fontobject" />
-			<mimeMap fileExtension=".eps" mimeType="application/postscript" />
-			<mimeMap fileExtension=".esd" mimeType="application/vnd.ms-cab-compressed" />
-			<mimeMap fileExtension=".etx" mimeType="text/x-setext" />
-			<mimeMap fileExtension=".evy" mimeType="application/envoy" />
-			<mimeMap fileExtension=".exe" mimeType="application/octet-stream" />
-			<mimeMap fileExtension=".exe.config" mimeType="text/xml" />
-			<mimeMap fileExtension=".fdf" mimeType="application/vnd.fdf" />
-			<mimeMap fileExtension=".fif" mimeType="application/fractals" />
-			<mimeMap fileExtension=".fla" mimeType="application/octet-stream" />
-			<mimeMap fileExtension=".flr" mimeType="x-world/x-vrml" />
-			<mimeMap fileExtension=".flv" mimeType="video/x-flv" />
-			<mimeMap fileExtension=".gif" mimeType="image/gif" />
-			<mimeMap fileExtension=".glb" mimeType="model/gltf-binary" />
-			<mimeMap fileExtension=".gtar" mimeType="application/x-gtar" />
-			<mimeMap fileExtension=".gz" mimeType="application/x-gzip" />
-			<mimeMap fileExtension=".h" mimeType="text/plain" />
-			<mimeMap fileExtension=".hdf" mimeType="application/x-hdf" />
-			<mimeMap fileExtension=".hdml" mimeType="text/x-hdml" />
-			<mimeMap fileExtension=".hhc" mimeType="application/x-oleobject" />
-			<mimeMap fileExtension=".hhk" mimeType="application/octet-stream" />
-			<mimeMap fileExtension=".hhp" mimeType="application/octet-stream" />
-			<mimeMap fileExtension=".hlp" mimeType="application/winhlp" />
-			<mimeMap fileExtension=".hqx" mimeType="application/mac-binhex40" />
-			<mimeMap fileExtension=".hta" mimeType="application/hta" />
-			<mimeMap fileExtension=".htc" mimeType="text/x-component" />
-			<mimeMap fileExtension=".htm" mimeType="text/html" />
-			<mimeMap fileExtension=".html" mimeType="text/html" />
-			<mimeMap fileExtension=".htt" mimeType="text/webviewhtml" />
-			<mimeMap fileExtension=".hxt" mimeType="text/html" />
-			<mimeMap fileExtension=".ico" mimeType="image/x-icon" />
-			<mimeMap fileExtension=".ics" mimeType="text/calendar" />
-			<mimeMap fileExtension=".ief" mimeType="image/ief" />
-			<mimeMap fileExtension=".iii" mimeType="application/x-iphone" />
-			<mimeMap fileExtension=".inf" mimeType="application/octet-stream" />
-			<mimeMap fileExtension=".ins" mimeType="application/x-internet-signup" />
-			<mimeMap fileExtension=".isp" mimeType="application/x-internet-signup" />
-			<mimeMap fileExtension=".IVF" mimeType="video/x-ivf" />
-			<mimeMap fileExtension=".jar" mimeType="application/java-archive" />
-			<mimeMap fileExtension=".java" mimeType="application/octet-stream" />
-			<mimeMap fileExtension=".jck" mimeType="application/liquidmotion" />
-			<mimeMap fileExtension=".jcz" mimeType="application/liquidmotion" />
-			<mimeMap fileExtension=".jfif" mimeType="image/pjpeg" />
-			<mimeMap fileExtension=".jpb" mimeType="application/octet-stream" />
-			<mimeMap fileExtension=".jpe" mimeType="image/jpeg" />
-			<mimeMap fileExtension=".jpeg" mimeType="image/jpeg" />
-			<mimeMap fileExtension=".jpg" mimeType="image/jpeg" />
-			<mimeMap fileExtension=".js" mimeType="application/javascript" />
-			<mimeMap fileExtension=".json" mimeType="application/json" />
-			<mimeMap fileExtension=".jsonld" mimeType="application/ld+json" />
-			<mimeMap fileExtension=".jsx" mimeType="text/jscript" />
-			<mimeMap fileExtension=".latex" mimeType="application/x-latex" />
-			<mimeMap fileExtension=".less" mimeType="text/css" />
-			<mimeMap fileExtension=".lit" mimeType="application/x-ms-reader" />
-			<mimeMap fileExtension=".lpk" mimeType="application/octet-stream" />
-			<mimeMap fileExtension=".lsf" mimeType="video/x-la-asf" />
-			<mimeMap fileExtension=".lsx" mimeType="video/x-la-asf" />
-			<mimeMap fileExtension=".lzh" mimeType="application/octet-stream" />
-			<mimeMap fileExtension=".m13" mimeType="application/x-msmediaview" />
-			<mimeMap fileExtension=".m14" mimeType="application/x-msmediaview" />
-			<mimeMap fileExtension=".m1v" mimeType="video/mpeg" />
-			<mimeMap fileExtension=".m2ts" mimeType="video/vnd.dlna.mpeg-tts" />
-			<mimeMap fileExtension=".m3u" mimeType="audio/x-mpegurl" />
-			<mimeMap fileExtension=".m4a" mimeType="audio/mp4" />
-			<mimeMap fileExtension=".m4v" mimeType="video/mp4" />
-			<mimeMap fileExtension=".man" mimeType="application/x-troff-man" />
-			<mimeMap fileExtension=".manifest" mimeType="application/x-ms-manifest" />
-			<mimeMap fileExtension=".map" mimeType="text/plain" />
-			<mimeMap fileExtension=".mdb" mimeType="application/x-msaccess" />
-			<mimeMap fileExtension=".mdp" mimeType="application/octet-stream" />
-			<mimeMap fileExtension=".me" mimeType="application/x-troff-me" />
-			<mimeMap fileExtension=".mht" mimeType="message/rfc822" />
-			<mimeMap fileExtension=".mhtml" mimeType="message/rfc822" />
-			<mimeMap fileExtension=".mid" mimeType="audio/mid" />
-			<mimeMap fileExtension=".midi" mimeType="audio/mid" />
-			<mimeMap fileExtension=".mix" mimeType="application/octet-stream" />
-			<mimeMap fileExtension=".mmf" mimeType="application/x-smaf" />
-			<mimeMap fileExtension=".mno" mimeType="text/xml" />
-			<mimeMap fileExtension=".mny" mimeType="application/x-msmoney" />
-			<mimeMap fileExtension=".mov" mimeType="video/quicktime" />
-			<mimeMap fileExtension=".movie" mimeType="video/x-sgi-movie" />
-			<mimeMap fileExtension=".mp2" mimeType="video/mpeg" />
-			<mimeMap fileExtension=".mp3" mimeType="audio/mpeg" />
-			<mimeMap fileExtension=".mp4" mimeType="video/mp4" />
-			<mimeMap fileExtension=".mp4v" mimeType="video/mp4" />
-			<mimeMap fileExtension=".mpa" mimeType="video/mpeg" />
-			<mimeMap fileExtension=".mpe" mimeType="video/mpeg" />
-			<mimeMap fileExtension=".mpeg" mimeType="video/mpeg" />
-			<mimeMap fileExtension=".mpg" mimeType="video/mpeg" />
-			<mimeMap fileExtension=".mpp" mimeType="application/vnd.ms-project" />
-			<mimeMap fileExtension=".mpv2" mimeType="video/mpeg" />
-			<mimeMap fileExtension=".ms" mimeType="application/x-troff-ms" />
-			<mimeMap fileExtension=".msi" mimeType="application/octet-stream" />
-			<mimeMap fileExtension=".mso" mimeType="application/octet-stream" />
-			<mimeMap fileExtension=".mvb" mimeType="application/x-msmediaview" />
-			<mimeMap fileExtension=".mvc" mimeType="application/x-miva-compiled" />
-			<mimeMap fileExtension=".nc" mimeType="application/x-netcdf" />
-			<mimeMap fileExtension=".nsc" mimeType="video/x-ms-asf" />
-			<mimeMap fileExtension=".nws" mimeType="message/rfc822" />
-			<mimeMap fileExtension=".ocx" mimeType="application/octet-stream" />
-			<mimeMap fileExtension=".oda" mimeType="application/oda" />
-			<mimeMap fileExtension=".odc" mimeType="text/x-ms-odc" />
-			<mimeMap fileExtension=".ods" mimeType="application/oleobject" />
-			<mimeMap fileExtension=".oga" mimeType="audio/ogg" />
-			<mimeMap fileExtension=".ogg" mimeType="video/ogg" />
-			<mimeMap fileExtension=".ogv" mimeType="video/ogg" />
-			<mimeMap fileExtension=".one" mimeType="application/onenote" />
-			<mimeMap fileExtension=".onea" mimeType="application/onenote" />
-			<mimeMap fileExtension=".onetoc" mimeType="application/onenote" />
-			<mimeMap fileExtension=".onetoc2" mimeType="application/onenote" />
-			<mimeMap fileExtension=".onetmp" mimeType="application/onenote" />
-			<mimeMap fileExtension=".onepkg" mimeType="application/onenote" />
-			<mimeMap fileExtension=".osdx" mimeType="application/opensearchdescription+xml" />
-			<mimeMap fileExtension=".otf" mimeType="font/otf" />
-			<mimeMap fileExtension=".p10" mimeType="application/pkcs10" />
-			<mimeMap fileExtension=".p12" mimeType="application/x-pkcs12" />
-			<mimeMap fileExtension=".p7b" mimeType="application/x-pkcs7-certificates" />
-			<mimeMap fileExtension=".p7c" mimeType="application/pkcs7-mime" />
-			<mimeMap fileExtension=".p7m" mimeType="application/pkcs7-mime" />
-			<mimeMap fileExtension=".p7r" mimeType="application/x-pkcs7-certreqresp" />
-			<mimeMap fileExtension=".p7s" mimeType="application/pkcs7-signature" />
-			<mimeMap fileExtension=".pbm" mimeType="image/x-portable-bitmap" />
-			<mimeMap fileExtension=".pcx" mimeType="application/octet-stream" />
-			<mimeMap fileExtension=".pcz" mimeType="application/octet-stream" />
-			<mimeMap fileExtension=".pdf" mimeType="application/pdf" />
-			<mimeMap fileExtension=".pfb" mimeType="application/octet-stream" />
-			<mimeMap fileExtension=".pfm" mimeType="application/octet-stream" />
-			<mimeMap fileExtension=".pfx" mimeType="application/x-pkcs12" />
-			<mimeMap fileExtension=".pgm" mimeType="image/x-portable-graymap" />
-			<mimeMap fileExtension=".pko" mimeType="application/vnd.ms-pki.pko" />
-			<mimeMap fileExtension=".pma" mimeType="application/x-perfmon" />
-			<mimeMap fileExtension=".pmc" mimeType="application/x-perfmon" />
-			<mimeMap fileExtension=".pml" mimeType="application/x-perfmon" />
-			<mimeMap fileExtension=".pmr" mimeType="application/x-perfmon" />
-			<mimeMap fileExtension=".pmw" mimeType="application/x-perfmon" />
-			<mimeMap fileExtension=".png" mimeType="image/png" />
-			<mimeMap fileExtension=".pnm" mimeType="image/x-portable-anymap" />
-			<mimeMap fileExtension=".pnz" mimeType="image/png" />
-			<mimeMap fileExtension=".pot" mimeType="application/vnd.ms-powerpoint" />
-			<mimeMap fileExtension=".potm" mimeType="application/vnd.ms-powerpoint.template.macroEnabled.12" />
-			<mimeMap fileExtension=".potx" mimeType="application/vnd.openxmlformats-officedocument.presentationml.template" />
-			<mimeMap fileExtension=".ppam" mimeType="application/vnd.ms-powerpoint.addin.macroEnabled.12" />
-			<mimeMap fileExtension=".ppm" mimeType="image/x-portable-pixmap" />
-			<mimeMap fileExtension=".pps" mimeType="application/vnd.ms-powerpoint" />
-			<mimeMap fileExtension=".ppsm" mimeType="application/vnd.ms-powerpoint.slideshow.macroEnabled.12" />
-			<mimeMap fileExtension=".ppsx" mimeType="application/vnd.openxmlformats-officedocument.presentationml.slideshow" />
-			<mimeMap fileExtension=".ppt" mimeType="application/vnd.ms-powerpoint" />
-			<mimeMap fileExtension=".pptm" mimeType="application/vnd.ms-powerpoint.presentation.macroEnabled.12" />
-			<mimeMap fileExtension=".pptx" mimeType="application/vnd.openxmlformats-officedocument.presentationml.presentation" />
-			<mimeMap fileExtension=".prf" mimeType="application/pics-rules" />
-			<mimeMap fileExtension=".prm" mimeType="application/octet-stream" />
-			<mimeMap fileExtension=".prx" mimeType="application/octet-stream" />
-			<mimeMap fileExtension=".ps" mimeType="application/postscript" />
-			<mimeMap fileExtension=".psd" mimeType="application/octet-stream" />
-			<mimeMap fileExtension=".psm" mimeType="application/octet-stream" />
-			<mimeMap fileExtension=".psp" mimeType="application/octet-stream" />
-			<mimeMap fileExtension=".pub" mimeType="application/x-mspublisher" />
-			<mimeMap fileExtension=".qt" mimeType="video/quicktime" />
-			<mimeMap fileExtension=".qtl" mimeType="application/x-quicktimeplayer" />
-			<mimeMap fileExtension=".qxd" mimeType="application/octet-stream" />
-			<mimeMap fileExtension=".ra" mimeType="audio/x-pn-realaudio" />
-			<mimeMap fileExtension=".ram" mimeType="audio/x-pn-realaudio" />
-			<mimeMap fileExtension=".rar" mimeType="application/octet-stream" />
-			<mimeMap fileExtension=".ras" mimeType="image/x-cmu-raster" />
-			<mimeMap fileExtension=".rf" mimeType="image/vnd.rn-realflash" />
-			<mimeMap fileExtension=".rgb" mimeType="image/x-rgb" />
-			<mimeMap fileExtension=".rm" mimeType="application/vnd.rn-realmedia" />
-			<mimeMap fileExtension=".rmi" mimeType="audio/mid" />
-			<mimeMap fileExtension=".roff" mimeType="application/x-troff" />
-			<mimeMap fileExtension=".rpm" mimeType="audio/x-pn-realaudio-plugin" />
-			<mimeMap fileExtension=".rtf" mimeType="application/rtf" />
-			<mimeMap fileExtension=".rtx" mimeType="text/richtext" />
-			<mimeMap fileExtension=".scd" mimeType="application/x-msschedule" />
-			<mimeMap fileExtension=".sct" mimeType="text/scriptlet" />
-			<mimeMap fileExtension=".sea" mimeType="application/octet-stream" />
-			<mimeMap fileExtension=".setpay" mimeType="application/set-payment-initiation" />
-			<mimeMap fileExtension=".setreg" mimeType="application/set-registration-initiation" />
-			<mimeMap fileExtension=".sgml" mimeType="text/sgml" />
-			<mimeMap fileExtension=".sh" mimeType="application/x-sh" />
-			<mimeMap fileExtension=".shar" mimeType="application/x-shar" />
-			<mimeMap fileExtension=".sit" mimeType="application/x-stuffit" />
-			<mimeMap fileExtension=".sldm" mimeType="application/vnd.ms-powerpoint.slide.macroEnabled.12" />
-			<mimeMap fileExtension=".sldx" mimeType="application/vnd.openxmlformats-officedocument.presentationml.slide" />
-			<mimeMap fileExtension=".smd" mimeType="audio/x-smd" />
-			<mimeMap fileExtension=".smi" mimeType="application/octet-stream" />
-			<mimeMap fileExtension=".smx" mimeType="audio/x-smd" />
-			<mimeMap fileExtension=".smz" mimeType="audio/x-smd" />
-			<mimeMap fileExtension=".snd" mimeType="audio/basic" />
-			<mimeMap fileExtension=".snp" mimeType="application/octet-stream" />
-			<mimeMap fileExtension=".spc" mimeType="application/x-pkcs7-certificates" />
-			<mimeMap fileExtension=".spl" mimeType="application/futuresplash" />
-			<mimeMap fileExtension=".spx" mimeType="audio/ogg" />
-			<mimeMap fileExtension=".src" mimeType="application/x-wais-source" />
-			<mimeMap fileExtension=".ssm" mimeType="application/streamingmedia" />
-			<mimeMap fileExtension=".sst" mimeType="application/vnd.ms-pki.certstore" />
-			<mimeMap fileExtension=".stl" mimeType="application/vnd.ms-pki.stl" />
-			<mimeMap fileExtension=".sv4cpio" mimeType="application/x-sv4cpio" />
-			<mimeMap fileExtension=".sv4crc" mimeType="application/x-sv4crc" />
-			<mimeMap fileExtension=".svg" mimeType="image/svg+xml" />
-			<mimeMap fileExtension=".svgz" mimeType="image/svg+xml" />
-			<mimeMap fileExtension=".swf" mimeType="application/x-shockwave-flash" />
-			<mimeMap fileExtension=".t" mimeType="application/x-troff" />
-			<mimeMap fileExtension=".tar" mimeType="application/x-tar" />
-			<mimeMap fileExtension=".tcl" mimeType="application/x-tcl" />
-			<mimeMap fileExtension=".tex" mimeType="application/x-tex" />
-			<mimeMap fileExtension=".texi" mimeType="application/x-texinfo" />
-			<mimeMap fileExtension=".texinfo" mimeType="application/x-texinfo" />
-			<mimeMap fileExtension=".tgz" mimeType="application/x-compressed" />
-			<mimeMap fileExtension=".thmx" mimeType="application/vnd.ms-officetheme" />
-			<mimeMap fileExtension=".thn" mimeType="application/octet-stream" />
-			<mimeMap fileExtension=".tif" mimeType="image/tiff" />
-			<mimeMap fileExtension=".tiff" mimeType="image/tiff" />
-			<mimeMap fileExtension=".toc" mimeType="application/octet-stream" />
-			<mimeMap fileExtension=".tr" mimeType="application/x-troff" />
-			<mimeMap fileExtension=".trm" mimeType="application/x-msterminal" />
-			<mimeMap fileExtension=".ts" mimeType="video/vnd.dlna.mpeg-tts" />
-			<mimeMap fileExtension=".tsv" mimeType="text/tab-separated-values" />
-			<mimeMap fileExtension=".ttf" mimeType="application/octet-stream" />
-			<mimeMap fileExtension=".tts" mimeType="video/vnd.dlna.mpeg-tts" />
-			<mimeMap fileExtension=".txt" mimeType="text/plain" />
-			<mimeMap fileExtension=".u32" mimeType="application/octet-stream" />
-			<mimeMap fileExtension=".uls" mimeType="text/iuls" />
-			<mimeMap fileExtension=".ustar" mimeType="application/x-ustar" />
-			<mimeMap fileExtension=".vbs" mimeType="text/vbscript" />
-			<mimeMap fileExtension=".vcf" mimeType="text/x-vcard" />
-			<mimeMap fileExtension=".vcs" mimeType="text/plain" />
-			<mimeMap fileExtension=".vdx" mimeType="application/vnd.ms-visio.viewer" />
-			<mimeMap fileExtension=".vml" mimeType="text/xml" />
-			<mimeMap fileExtension=".vsd" mimeType="application/vnd.visio" />
-			<mimeMap fileExtension=".vss" mimeType="application/vnd.visio" />
-			<mimeMap fileExtension=".vst" mimeType="application/vnd.visio" />
-			<mimeMap fileExtension=".vsto" mimeType="application/x-ms-vsto" />
-			<mimeMap fileExtension=".vsw" mimeType="application/vnd.visio" />
-			<mimeMap fileExtension=".vsx" mimeType="application/vnd.visio" />
-			<mimeMap fileExtension=".vtx" mimeType="application/vnd.visio" />
-			<mimeMap fileExtension=".wasm" mimeType="application/wasm" />
-			<mimeMap fileExtension=".wav" mimeType="audio/wav" />
-			<mimeMap fileExtension=".wax" mimeType="audio/x-ms-wax" />
-			<mimeMap fileExtension=".wbmp" mimeType="image/vnd.wap.wbmp" />
-			<mimeMap fileExtension=".wcm" mimeType="application/vnd.ms-works" />
-			<mimeMap fileExtension=".wdb" mimeType="application/vnd.ms-works" />
-			<mimeMap fileExtension=".webm" mimeType="video/webm" />
-			<mimeMap fileExtension=".wks" mimeType="application/vnd.ms-works" />
-			<mimeMap fileExtension=".wm" mimeType="video/x-ms-wm" />
-			<mimeMap fileExtension=".wma" mimeType="audio/x-ms-wma" />
-			<mimeMap fileExtension=".wmd" mimeType="application/x-ms-wmd" />
-			<mimeMap fileExtension=".wmf" mimeType="application/x-msmetafile" />
-			<mimeMap fileExtension=".wml" mimeType="text/vnd.wap.wml" />
-			<mimeMap fileExtension=".wmlc" mimeType="application/vnd.wap.wmlc" />
-			<mimeMap fileExtension=".wmls" mimeType="text/vnd.wap.wmlscript" />
-			<mimeMap fileExtension=".wmlsc" mimeType="application/vnd.wap.wmlscriptc" />
-			<mimeMap fileExtension=".wmp" mimeType="video/x-ms-wmp" />
-			<mimeMap fileExtension=".wmv" mimeType="video/x-ms-wmv" />
-			<mimeMap fileExtension=".wmx" mimeType="video/x-ms-wmx" />
-			<mimeMap fileExtension=".wmz" mimeType="application/x-ms-wmz" />
-			<mimeMap fileExtension=".woff" mimeType="font/x-woff" />
-			<mimeMap fileExtension=".woff2" mimeType="application/font-woff2" />
-			<mimeMap fileExtension=".wps" mimeType="application/vnd.ms-works" />
-			<mimeMap fileExtension=".wri" mimeType="application/x-mswrite" />
-			<mimeMap fileExtension=".wrl" mimeType="x-world/x-vrml" />
-			<mimeMap fileExtension=".wrz" mimeType="x-world/x-vrml" />
-			<mimeMap fileExtension=".wsdl" mimeType="text/xml" />
-			<mimeMap fileExtension=".wtv" mimeType="video/x-ms-wtv" />
-			<mimeMap fileExtension=".wvx" mimeType="video/x-ms-wvx" />
-			<mimeMap fileExtension=".x" mimeType="application/directx" />
-			<mimeMap fileExtension=".xaf" mimeType="x-world/x-vrml" />
-			<mimeMap fileExtension=".xaml" mimeType="application/xaml+xml" />
-			<mimeMap fileExtension=".xap" mimeType="application/x-silverlight-app" />
-			<mimeMap fileExtension=".xbap" mimeType="application/x-ms-xbap" />
-			<mimeMap fileExtension=".xbm" mimeType="image/x-xbitmap" />
-			<mimeMap fileExtension=".xdr" mimeType="text/plain" />
-			<mimeMap fileExtension=".xht" mimeType="application/xhtml+xml" />
-			<mimeMap fileExtension=".xhtml" mimeType="application/xhtml+xml" />
-			<mimeMap fileExtension=".xla" mimeType="application/vnd.ms-excel" />
-			<mimeMap fileExtension=".xlam" mimeType="application/vnd.ms-excel.addin.macroEnabled.12" />
-			<mimeMap fileExtension=".xlc" mimeType="application/vnd.ms-excel" />
-			<mimeMap fileExtension=".xlm" mimeType="application/vnd.ms-excel" />
-			<mimeMap fileExtension=".xls" mimeType="application/vnd.ms-excel" />
-			<mimeMap fileExtension=".xlsb" mimeType="application/vnd.ms-excel.sheet.binary.macroEnabled.12" />
-			<mimeMap fileExtension=".xlsm" mimeType="application/vnd.ms-excel.sheet.macroEnabled.12" />
-			<mimeMap fileExtension=".xlsx" mimeType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" />
-			<mimeMap fileExtension=".xlt" mimeType="application/vnd.ms-excel" />
-			<mimeMap fileExtension=".xltm" mimeType="application/vnd.ms-excel.template.macroEnabled.12" />
-			<mimeMap fileExtension=".xltx" mimeType="application/vnd.openxmlformats-officedocument.spreadsheetml.template" />
-			<mimeMap fileExtension=".xlw" mimeType="application/vnd.ms-excel" />
-			<mimeMap fileExtension=".xml" mimeType="text/xml" />
-			<mimeMap fileExtension=".xof" mimeType="x-world/x-vrml" />
-			<mimeMap fileExtension=".xpm" mimeType="image/x-xpixmap" />
-			<mimeMap fileExtension=".xps" mimeType="application/vnd.ms-xpsdocument" />
-			<mimeMap fileExtension=".xsd" mimeType="text/xml" />
-			<mimeMap fileExtension=".xsf" mimeType="text/xml" />
-			<mimeMap fileExtension=".xsl" mimeType="text/xml" />
-			<mimeMap fileExtension=".xslt" mimeType="text/xml" />
-			<mimeMap fileExtension=".xsn" mimeType="application/octet-stream" />
-			<mimeMap fileExtension=".xtp" mimeType="application/octet-stream" />
-			<mimeMap fileExtension=".xwd" mimeType="image/x-xwindowdump" />
-			<mimeMap fileExtension=".z" mimeType="application/x-compress" />
-			<mimeMap fileExtension=".zip" mimeType="application/x-zip-compressed" />
-		</staticContent>
-		<tracing>
-			<traceFailedRequests>
-				<add path="*">
-					<traceAreas>
-						<add provider="ASP" verbosity="Verbose" />
-						<add provider="ASPNET" areas="Infrastructure,Module,Page,AppServices" verbosity="Verbose" />
-						<add provider="ISAPI Extension" verbosity="Verbose" />
-						<add provider="WWW Server" areas="Authentication,Security,Filter,StaticFile,CGI,Compression,Cache,RequestNotifications,Module,Rewrite,WebSocket" verbosity="Verbose" />
-					</traceAreas>
-					<failureDefinitions statusCodes="200-999" />
-				</add>
-			</traceFailedRequests>
-			<traceProviderDefinitions>
-				<add name="WWW Server" guid="{3a2a4e84-4c21-4981-ae10-3fda0d9b0f83}">
-					<areas>
-						<clear />
-						<add name="Authentication" value="2" />
-						<add name="Security" value="4" />
-						<add name="Filter" value="8" />
-						<add name="StaticFile" value="16" />
-						<add name="CGI" value="32" />
-						<add name="Compression" value="64" />
-						<add name="Cache" value="128" />
-						<add name="RequestNotifications" value="256" />
-						<add name="Module" value="512" />
-						<add name="Rewrite" value="1024" />
-						<add name="FastCGI" value="4096" />
-						<add name="WebSocket" value="16384" />
-					</areas>
-				</add>
-				<add name="ASP" guid="{06b94d9a-b15e-456e-a4ef-37c984a2cb4b}">
-					<areas>
-						<clear />
-					</areas>
-				</add>
-				<add name="ISAPI Extension" guid="{a1c2040e-8840-4c31-ba11-9871031a19ea}">
-					<areas>
-						<clear />
-					</areas>
-				</add>
-				<add name="ASPNET" guid="{AFF081FE-0247-4275-9C4E-021F3DC1DA35}">
-					<areas>
-						<add name="Infrastructure" value="1" />
-						<add name="Module" value="2" />
-						<add name="Page" value="4" />
-						<add name="AppServices" value="8" />
-					</areas>
-				</add>
-			</traceProviderDefinitions>
-		</tracing>
-		<urlCompression />
-		<validation />
-		<webdav>
-			<globalSettings>
-				<propertyStores>
-					<add name="webdav_simple_prop" image="%IIS_BIN%\webdav_simple_prop.dll" image32="%IIS_BIN%\webdav_simple_prop.dll" />
-				</propertyStores>
-				<lockStores>
-					<add name="webdav_simple_lock" image="%IIS_BIN%\webdav_simple_lock.dll" image32="%IIS_BIN%\webdav_simple_lock.dll" />
-				</lockStores>
-			</globalSettings>
-			<authoring>
-				<locks enabled="true" lockStore="webdav_simple_lock" />
-			</authoring>
-			<authoringRules />
-		</webdav>
-		<webSocket />
-		<applicationInitialization />
-	</system.webServer>
-	<location path="" overrideMode="Allow">
-		<system.webServer>
-			<modules>
-				<add name="IsapiFilterModule" lockItem="true" />
-				<add name="BasicAuthenticationModule" lockItem="true" />
-				<add name="IsapiModule" lockItem="true" />
-				<add name="HttpLoggingModule" lockItem="true" />
-				<add name="DynamicCompressionModule" lockItem="true" />
-				<add name="StaticCompressionModule" lockItem="true" />
-				<add name="DefaultDocumentModule" lockItem="true" />
-				<add name="DirectoryListingModule" lockItem="true" />
-				<add name="ProtocolSupportModule" lockItem="true" />
-				<add name="HttpRedirectionModule" lockItem="true" />
-				<add name="ServerSideIncludeModule" lockItem="true" />
-				<add name="StaticFileModule" lockItem="true" />
-				<add name="AnonymousAuthenticationModule" lockItem="true" />
-				<add name="CertificateMappingAuthenticationModule" lockItem="true" />
-				<add name="UrlAuthorizationModule" lockItem="true" />
-				<add name="WindowsAuthenticationModule" lockItem="true" />
-				<add name="IISCertificateMappingAuthenticationModule" lockItem="true" />
-				<add name="WebMatrixSupportModule" lockItem="true" />
-				<add name="IpRestrictionModule" lockItem="true" />
-				<add name="DynamicIpRestrictionModule" lockItem="true" />
-				<add name="RequestFilteringModule" lockItem="true" />
-				<add name="CustomLoggingModule" lockItem="true" />
-				<add name="CustomErrorModule" lockItem="true" />
-				<add name="FailedRequestsTracingModule" lockItem="true" />
-				<add name="CgiModule" lockItem="true" />
-				<add name="FastCgiModule" lockItem="true" />
-				<!--                <add name="WebDAVModule" /> -->
-				<add name="RewriteModule" />
-				<add name="OutputCache" type="System.Web.Caching.OutputCacheModule" preCondition="managedHandler" />
-				<add name="Session" type="System.Web.SessionState.SessionStateModule" preCondition="managedHandler" />
-				<add name="WindowsAuthentication" type="System.Web.Security.WindowsAuthenticationModule" preCondition="managedHandler" />
-				<add name="FormsAuthentication" type="System.Web.Security.FormsAuthenticationModule" preCondition="managedHandler" />
-				<add name="DefaultAuthentication" type="System.Web.Security.DefaultAuthenticationModule" preCondition="managedHandler" />
-				<add name="RoleManager" type="System.Web.Security.RoleManagerModule" preCondition="managedHandler" />
-				<add name="UrlAuthorization" type="System.Web.Security.UrlAuthorizationModule" preCondition="managedHandler" />
-				<add name="FileAuthorization" type="System.Web.Security.FileAuthorizationModule" preCondition="managedHandler" />
-				<add name="AnonymousIdentification" type="System.Web.Security.AnonymousIdentificationModule" preCondition="managedHandler" />
-				<add name="Profile" type="System.Web.Profile.ProfileModule" preCondition="managedHandler" />
-				<add name="UrlMappingsModule" type="System.Web.UrlMappingsModule" preCondition="managedHandler" />
-				<add name="ApplicationInitializationModule" lockItem="true" />
-				<add name="WebSocketModule" lockItem="true" />
-				<add name="ServiceModel-4.0" type="System.ServiceModel.Activation.ServiceHttpModule,System.ServiceModel.Activation,Version=4.0.0.0,Culture=neutral,PublicKeyToken=31bf3856ad364e35" preCondition="managedHandler,runtimeVersionv4.0" />
-				<add name="ConfigurationValidationModule" lockItem="true" />
-				<add name="UrlRoutingModule-4.0" type="System.Web.Routing.UrlRoutingModule" preCondition="managedHandler,runtimeVersionv4.0" />
-				<add name="ScriptModule-4.0" type="System.Web.Handlers.ScriptModule, System.Web.Extensions, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" preCondition="managedHandler,runtimeVersionv4.0" />
-				<add name="ServiceModel" type="System.ServiceModel.Activation.HttpModule, System.ServiceModel, Version=3.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" preCondition="managedHandler,runtimeVersionv2.0" />
-			</modules>
-			<handlers accessPolicy="Read, Script">
-				<!--                <add name="WebDAV" path="*" verb="PROPFIND,PROPPATCH,MKCOL,PUT,COPY,DELETE,MOVE,LOCK,UNLOCK" modules="WebDAVModule" resourceType="Unspecified" requireAccess="None" /> -->
-				<add name="AXD-ISAPI-4.0_64bit" path="*.axd" verb="GET,HEAD,POST,DEBUG" modules="IsapiModule" scriptProcessor="%windir%\Microsoft.NET\Framework64\v4.0.30319\aspnet_isapi.dll" preCondition="classicMode,runtimeVersionv4.0,bitness64" responseBufferLimit="0" />
-				<add name="PageHandlerFactory-ISAPI-4.0_64bit" path="*.aspx" verb="GET,HEAD,POST,DEBUG" modules="IsapiModule" scriptProcessor="%windir%\Microsoft.NET\Framework64\v4.0.30319\aspnet_isapi.dll" preCondition="classicMode,runtimeVersionv4.0,bitness64" responseBufferLimit="0" />
-				<add name="SimpleHandlerFactory-ISAPI-4.0_64bit" path="*.ashx" verb="GET,HEAD,POST,DEBUG" modules="IsapiModule" scriptProcessor="%windir%\Microsoft.NET\Framework64\v4.0.30319\aspnet_isapi.dll" preCondition="classicMode,runtimeVersionv4.0,bitness64" responseBufferLimit="0" />
-				<add name="WebServiceHandlerFactory-ISAPI-4.0_64bit" path="*.asmx" verb="GET,HEAD,POST,DEBUG" modules="IsapiModule" scriptProcessor="%windir%\Microsoft.NET\Framework64\v4.0.30319\aspnet_isapi.dll" preCondition="classicMode,runtimeVersionv4.0,bitness64" responseBufferLimit="0" />
-				<add name="HttpRemotingHandlerFactory-rem-ISAPI-4.0_64bit" path="*.rem" verb="GET,HEAD,POST,DEBUG" modules="IsapiModule" scriptProcessor="%windir%\Microsoft.NET\Framework64\v4.0.30319\aspnet_isapi.dll" preCondition="classicMode,runtimeVersionv4.0,bitness64" responseBufferLimit="0" />
-				<add name="HttpRemotingHandlerFactory-soap-ISAPI-4.0_64bit" path="*.soap" verb="GET,HEAD,POST,DEBUG" modules="IsapiModule" scriptProcessor="%windir%\Microsoft.NET\Framework64\v4.0.30319\aspnet_isapi.dll" preCondition="classicMode,runtimeVersionv4.0,bitness64" responseBufferLimit="0" />
-				<add name="svc-ISAPI-4.0_64bit" path="*.svc" verb="*" modules="IsapiModule" scriptProcessor="%windir%\Microsoft.NET\Framework64\v4.0.30319\aspnet_isapi.dll" preCondition="classicMode,runtimeVersionv4.0,bitness64" />
-				<add name="rules-ISAPI-4.0_64bit" path="*.rules" verb="*" modules="IsapiModule" scriptProcessor="%windir%\Microsoft.NET\Framework64\v4.0.30319\aspnet_isapi.dll" preCondition="classicMode,runtimeVersionv4.0,bitness64" />
-				<add name="xoml-ISAPI-4.0_64bit" path="*.xoml" verb="*" modules="IsapiModule" scriptProcessor="%windir%\Microsoft.NET\Framework64\v4.0.30319\aspnet_isapi.dll" preCondition="classicMode,runtimeVersionv4.0,bitness64" />
-				<add name="xamlx-ISAPI-4.0_64bit" path="*.xamlx" verb="GET,HEAD,POST,DEBUG" modules="IsapiModule" scriptProcessor="%windir%\Microsoft.NET\Framework64\v4.0.30319\aspnet_isapi.dll" preCondition="classicMode,runtimeVersionv4.0,bitness64" />
-				<add name="aspq-ISAPI-4.0_64bit" path="*.aspq" verb="*" modules="IsapiModule" scriptProcessor="%windir%\Microsoft.NET\Framework64\v4.0.30319\aspnet_isapi.dll" preCondition="classicMode,runtimeVersionv4.0,bitness64" responseBufferLimit="0" />
-				<add name="cshtm-ISAPI-4.0_64bit" path="*.cshtm" verb="GET,HEAD,POST,DEBUG" modules="IsapiModule" scriptProcessor="%windir%\Microsoft.NET\Framework64\v4.0.30319\aspnet_isapi.dll" preCondition="classicMode,runtimeVersionv4.0,bitness64" responseBufferLimit="0" />
-				<add name="cshtml-ISAPI-4.0_64bit" path="*.cshtml" verb="GET,HEAD,POST,DEBUG" modules="IsapiModule" scriptProcessor="%windir%\Microsoft.NET\Framework64\v4.0.30319\aspnet_isapi.dll" preCondition="classicMode,runtimeVersionv4.0,bitness64" responseBufferLimit="0" />
-				<add name="vbhtm-ISAPI-4.0_64bit" path="*.vbhtm" verb="GET,HEAD,POST,DEBUG" modules="IsapiModule" scriptProcessor="%windir%\Microsoft.NET\Framework64\v4.0.30319\aspnet_isapi.dll" preCondition="classicMode,runtimeVersionv4.0,bitness64" responseBufferLimit="0" />
-				<add name="vbhtml-ISAPI-4.0_64bit" path="*.vbhtml" verb="GET,HEAD,POST,DEBUG" modules="IsapiModule" scriptProcessor="%windir%\Microsoft.NET\Framework64\v4.0.30319\aspnet_isapi.dll" preCondition="classicMode,runtimeVersionv4.0,bitness64" responseBufferLimit="0" />
-				<add name="svc-Integrated" path="*.svc" verb="*" type="System.ServiceModel.Activation.HttpHandler, System.ServiceModel, Version=3.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" preCondition="integratedMode,runtimeVersionv2.0" />
-				<add name="svc-ISAPI-2.0" path="*.svc" verb="*" modules="IsapiModule" scriptProcessor="%windir%\Microsoft.NET\Framework\v2.0.50727\aspnet_isapi.dll" preCondition="classicMode,runtimeVersionv2.0,bitness32" />
-				<add name="xoml-Integrated" path="*.xoml" verb="*" type="System.ServiceModel.Activation.HttpHandler, System.ServiceModel, Version=3.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" preCondition="integratedMode,runtimeVersionv2.0" />
-				<add name="xoml-ISAPI-2.0" path="*.xoml" verb="*" modules="IsapiModule" scriptProcessor="%windir%\Microsoft.NET\Framework\v2.0.50727\aspnet_isapi.dll" preCondition="classicMode,runtimeVersionv2.0,bitness32" />
-				<add name="rules-Integrated" path="*.rules" verb="*" type="System.ServiceModel.Activation.HttpHandler, System.ServiceModel, Version=3.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" preCondition="integratedMode,runtimeVersionv2.0" />
-				<add name="rules-ISAPI-2.0" path="*.rules" verb="*" modules="IsapiModule" scriptProcessor="%windir%\Microsoft.NET\Framework\v2.0.50727\aspnet_isapi.dll" preCondition="classicMode,runtimeVersionv2.0,bitness32" />
-				<add name="AXD-ISAPI-4.0_32bit" path="*.axd" verb="GET,HEAD,POST,DEBUG" modules="IsapiModule" scriptProcessor="%windir%\Microsoft.NET\Framework\v4.0.30319\aspnet_isapi.dll" preCondition="classicMode,runtimeVersionv4.0,bitness32" responseBufferLimit="0" />
-				<add name="PageHandlerFactory-ISAPI-4.0_32bit" path="*.aspx" verb="GET,HEAD,POST,DEBUG" modules="IsapiModule" scriptProcessor="%windir%\Microsoft.NET\Framework\v4.0.30319\aspnet_isapi.dll" preCondition="classicMode,runtimeVersionv4.0,bitness32" responseBufferLimit="0" />
-				<add name="SimpleHandlerFactory-ISAPI-4.0_32bit" path="*.ashx" verb="GET,HEAD,POST,DEBUG" modules="IsapiModule" scriptProcessor="%windir%\Microsoft.NET\Framework\v4.0.30319\aspnet_isapi.dll" preCondition="classicMode,runtimeVersionv4.0,bitness32" responseBufferLimit="0" />
-				<add name="WebServiceHandlerFactory-ISAPI-4.0_32bit" path="*.asmx" verb="GET,HEAD,POST,DEBUG" modules="IsapiModule" scriptProcessor="%windir%\Microsoft.NET\Framework\v4.0.30319\aspnet_isapi.dll" preCondition="classicMode,runtimeVersionv4.0,bitness32" responseBufferLimit="0" />
-				<add name="HttpRemotingHandlerFactory-rem-ISAPI-4.0_32bit" path="*.rem" verb="GET,HEAD,POST,DEBUG" modules="IsapiModule" scriptProcessor="%windir%\Microsoft.NET\Framework\v4.0.30319\aspnet_isapi.dll" preCondition="classicMode,runtimeVersionv4.0,bitness32" responseBufferLimit="0" />
-				<add name="HttpRemotingHandlerFactory-soap-ISAPI-4.0_32bit" path="*.soap" verb="GET,HEAD,POST,DEBUG" modules="IsapiModule" scriptProcessor="%windir%\Microsoft.NET\Framework\v4.0.30319\aspnet_isapi.dll" preCondition="classicMode,runtimeVersionv4.0,bitness32" responseBufferLimit="0" />
-				<add name="svc-ISAPI-4.0_32bit" path="*.svc" verb="*" modules="IsapiModule" scriptProcessor="%windir%\Microsoft.NET\Framework\v4.0.30319\aspnet_isapi.dll" preCondition="classicMode,runtimeVersionv4.0,bitness32" />
-				<add name="rules-ISAPI-4.0_32bit" path="*.rules" verb="*" modules="IsapiModule" scriptProcessor="%windir%\Microsoft.NET\Framework\v4.0.30319\aspnet_isapi.dll" preCondition="classicMode,runtimeVersionv4.0,bitness32" />
-				<add name="xoml-ISAPI-4.0_32bit" path="*.xoml" verb="*" modules="IsapiModule" scriptProcessor="%windir%\Microsoft.NET\Framework\v4.0.30319\aspnet_isapi.dll" preCondition="classicMode,runtimeVersionv4.0,bitness32" />
-				<add name="xamlx-ISAPI-4.0_32bit" path="*.xamlx" verb="GET,HEAD,POST,DEBUG" modules="IsapiModule" scriptProcessor="%windir%\Microsoft.NET\Framework\v4.0.30319\aspnet_isapi.dll" preCondition="classicMode,runtimeVersionv4.0,bitness32" />
-				<add name="aspq-ISAPI-4.0_32bit" path="*.aspq" verb="*" modules="IsapiModule" scriptProcessor="%windir%\Microsoft.NET\Framework\v4.0.30319\aspnet_isapi.dll" preCondition="classicMode,runtimeVersionv4.0,bitness32" responseBufferLimit="0" />
-				<add name="cshtm-ISAPI-4.0_32bit" path="*.cshtm" verb="GET,HEAD,POST,DEBUG" modules="IsapiModule" scriptProcessor="%windir%\Microsoft.NET\Framework\v4.0.30319\aspnet_isapi.dll" preCondition="classicMode,runtimeVersionv4.0,bitness32" responseBufferLimit="0" />
-				<add name="cshtml-ISAPI-4.0_32bit" path="*.cshtml" verb="GET,HEAD,POST,DEBUG" modules="IsapiModule" scriptProcessor="%windir%\Microsoft.NET\Framework\v4.0.30319\aspnet_isapi.dll" preCondition="classicMode,runtimeVersionv4.0,bitness32" responseBufferLimit="0" />
-				<add name="vbhtm-ISAPI-4.0_32bit" path="*.vbhtm" verb="GET,HEAD,POST,DEBUG" modules="IsapiModule" scriptProcessor="%windir%\Microsoft.NET\Framework\v4.0.30319\aspnet_isapi.dll" preCondition="classicMode,runtimeVersionv4.0,bitness32" responseBufferLimit="0" />
-				<add name="vbhtml-ISAPI-4.0_32bit" path="*.vbhtml" verb="GET,HEAD,POST,DEBUG" modules="IsapiModule" scriptProcessor="%windir%\Microsoft.NET\Framework\v4.0.30319\aspnet_isapi.dll" preCondition="classicMode,runtimeVersionv4.0,bitness32" responseBufferLimit="0" />
-				<add name="TraceHandler-Integrated-4.0" path="trace.axd" verb="GET,HEAD,POST,DEBUG" type="System.Web.Handlers.TraceHandler" preCondition="integratedMode,runtimeVersionv4.0" />
-				<add name="WebAdminHandler-Integrated-4.0" path="WebAdmin.axd" verb="GET,DEBUG" type="System.Web.Handlers.WebAdminHandler" preCondition="integratedMode,runtimeVersionv4.0" />
-				<add name="AssemblyResourceLoader-Integrated-4.0" path="WebResource.axd" verb="GET,DEBUG" type="System.Web.Handlers.AssemblyResourceLoader" preCondition="integratedMode,runtimeVersionv4.0" />
-				<add name="PageHandlerFactory-Integrated-4.0" path="*.aspx" verb="GET,HEAD,POST,DEBUG" type="System.Web.UI.PageHandlerFactory" preCondition="integratedMode,runtimeVersionv4.0" />
-				<add name="SimpleHandlerFactory-Integrated-4.0" path="*.ashx" verb="GET,HEAD,POST,DEBUG" type="System.Web.UI.SimpleHandlerFactory" preCondition="integratedMode,runtimeVersionv4.0" />
-				<add name="WebServiceHandlerFactory-Integrated-4.0" path="*.asmx" verb="GET,HEAD,POST,DEBUG" type="System.Web.Script.Services.ScriptHandlerFactory, System.Web.Extensions, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" preCondition="integratedMode,runtimeVersionv4.0" />
-				<add name="HttpRemotingHandlerFactory-rem-Integrated-4.0" path="*.rem" verb="GET,HEAD,POST,DEBUG" type="System.Runtime.Remoting.Channels.Http.HttpRemotingHandlerFactory, System.Runtime.Remoting, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" preCondition="integratedMode,runtimeVersionv4.0" />
-				<add name="HttpRemotingHandlerFactory-soap-Integrated-4.0" path="*.soap" verb="GET,HEAD,POST,DEBUG" type="System.Runtime.Remoting.Channels.Http.HttpRemotingHandlerFactory, System.Runtime.Remoting, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" preCondition="integratedMode,runtimeVersionv4.0" />
-				<add name="svc-Integrated-4.0" path="*.svc" verb="*" type="System.ServiceModel.Activation.ServiceHttpHandlerFactory, System.ServiceModel.Activation, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" preCondition="integratedMode,runtimeVersionv4.0" />
-				<add name="rules-Integrated-4.0" path="*.rules" verb="*" type="System.ServiceModel.Activation.ServiceHttpHandlerFactory, System.ServiceModel.Activation, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" preCondition="integratedMode,runtimeVersionv4.0" />
-				<add name="xoml-Integrated-4.0" path="*.xoml" verb="*" type="System.ServiceModel.Activation.ServiceHttpHandlerFactory, System.ServiceModel.Activation, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" preCondition="integratedMode,runtimeVersionv4.0" />
-				<add name="xamlx-Integrated-4.0" path="*.xamlx" verb="GET,HEAD,POST,DEBUG" type="System.Xaml.Hosting.XamlHttpHandlerFactory, System.Xaml.Hosting, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" preCondition="integratedMode,runtimeVersionv4.0" />
-				<add name="aspq-Integrated-4.0" path="*.aspq" verb="GET,HEAD,POST,DEBUG" type="System.Web.HttpForbiddenHandler" preCondition="integratedMode,runtimeVersionv4.0" />
-				<add name="cshtm-Integrated-4.0" path="*.cshtm" verb="GET,HEAD,POST,DEBUG" type="System.Web.HttpForbiddenHandler" preCondition="integratedMode,runtimeVersionv4.0" />
-				<add name="cshtml-Integrated-4.0" path="*.cshtml" verb="GET,HEAD,POST,DEBUG" type="System.Web.HttpForbiddenHandler" preCondition="integratedMode,runtimeVersionv4.0" />
-				<add name="vbhtm-Integrated-4.0" path="*.vbhtm" verb="GET,HEAD,POST,DEBUG" type="System.Web.HttpForbiddenHandler" preCondition="integratedMode,runtimeVersionv4.0" />
-				<add name="vbhtml-Integrated-4.0" path="*.vbhtml" verb="GET,HEAD,POST,DEBUG" type="System.Web.HttpForbiddenHandler" preCondition="integratedMode,runtimeVersionv4.0" />
-				<add name="ScriptHandlerFactoryAppServices-Integrated-4.0" path="*_AppService.axd" verb="*" type="System.Web.Script.Services.ScriptHandlerFactory, System.Web.Extensions, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35" preCondition="integratedMode,runtimeVersionv4.0" />
-				<add name="ScriptResourceIntegrated-4.0" path="*ScriptResource.axd" verb="GET,HEAD" type="System.Web.Handlers.ScriptResourceHandler, System.Web.Extensions, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35" preCondition="integratedMode,runtimeVersionv4.0" />
-				<add name="ASPClassic" path="*.asp" verb="GET,HEAD,POST" modules="IsapiModule" scriptProcessor="%IIS_BIN%\asp.dll" resourceType="File" />
-				<add name="SecurityCertificate" path="*.cer" verb="GET,HEAD,POST" modules="IsapiModule" scriptProcessor="%IIS_BIN%\asp.dll" resourceType="File" />
-				<add name="ISAPI-dll" path="*.dll" verb="*" modules="IsapiModule" resourceType="File" requireAccess="Execute" allowPathInfo="true" />
-				<add name="TraceHandler-Integrated" path="trace.axd" verb="GET,HEAD,POST,DEBUG" type="System.Web.Handlers.TraceHandler" preCondition="integratedMode,runtimeVersionv2.0" />
-				<add name="WebAdminHandler-Integrated" path="WebAdmin.axd" verb="GET,DEBUG" type="System.Web.Handlers.WebAdminHandler" preCondition="integratedMode,runtimeVersionv2.0" />
-				<add name="AssemblyResourceLoader-Integrated" path="WebResource.axd" verb="GET,DEBUG" type="System.Web.Handlers.AssemblyResourceLoader" preCondition="integratedMode,runtimeVersionv2.0" />
-				<add name="PageHandlerFactory-Integrated" path="*.aspx" verb="GET,HEAD,POST,DEBUG" type="System.Web.UI.PageHandlerFactory" preCondition="integratedMode,runtimeVersionv2.0" />
-				<add name="SimpleHandlerFactory-Integrated" path="*.ashx" verb="GET,HEAD,POST,DEBUG" type="System.Web.UI.SimpleHandlerFactory" preCondition="integratedMode,runtimeVersionv2.0" />
-				<add name="WebServiceHandlerFactory-Integrated" path="*.asmx" verb="GET,HEAD,POST,DEBUG" type="System.Web.Services.Protocols.WebServiceHandlerFactory,System.Web.Services,Version=2.0.0.0,Culture=neutral,PublicKeyToken=b03f5f7f11d50a3a" preCondition="integratedMode,runtimeVersionv2.0" />
-				<add name="HttpRemotingHandlerFactory-rem-Integrated" path="*.rem" verb="GET,HEAD,POST,DEBUG" type="System.Runtime.Remoting.Channels.Http.HttpRemotingHandlerFactory,System.Runtime.Remoting,Version=2.0.0.0,Culture=neutral,PublicKeyToken=b77a5c561934e089" preCondition="integratedMode,runtimeVersionv2.0" />
-				<add name="HttpRemotingHandlerFactory-soap-Integrated" path="*.soap" verb="GET,HEAD,POST,DEBUG" type="System.Runtime.Remoting.Channels.Http.HttpRemotingHandlerFactory,System.Runtime.Remoting,Version=2.0.0.0,Culture=neutral,PublicKeyToken=b77a5c561934e089" preCondition="integratedMode,runtimeVersionv2.0" />
-				<add name="AXD-ISAPI-2.0" path="*.axd" verb="GET,HEAD,POST,DEBUG" modules="IsapiModule" scriptProcessor="%windir%\Microsoft.NET\Framework\v2.0.50727\aspnet_isapi.dll" preCondition="classicMode,runtimeVersionv2.0,bitness32" responseBufferLimit="0" />
-				<add name="PageHandlerFactory-ISAPI-2.0" path="*.aspx" verb="GET,HEAD,POST,DEBUG" modules="IsapiModule" scriptProcessor="%windir%\Microsoft.NET\Framework\v2.0.50727\aspnet_isapi.dll" preCondition="classicMode,runtimeVersionv2.0,bitness32" responseBufferLimit="0" />
-				<add name="SimpleHandlerFactory-ISAPI-2.0" path="*.ashx" verb="GET,HEAD,POST,DEBUG" modules="IsapiModule" scriptProcessor="%windir%\Microsoft.NET\Framework\v2.0.50727\aspnet_isapi.dll" preCondition="classicMode,runtimeVersionv2.0,bitness32" responseBufferLimit="0" />
-				<add name="WebServiceHandlerFactory-ISAPI-2.0" path="*.asmx" verb="GET,HEAD,POST,DEBUG" modules="IsapiModule" scriptProcessor="%windir%\Microsoft.NET\Framework\v2.0.50727\aspnet_isapi.dll" preCondition="classicMode,runtimeVersionv2.0,bitness32" responseBufferLimit="0" />
-				<add name="HttpRemotingHandlerFactory-rem-ISAPI-2.0" path="*.rem" verb="GET,HEAD,POST,DEBUG" modules="IsapiModule" scriptProcessor="%windir%\Microsoft.NET\Framework\v2.0.50727\aspnet_isapi.dll" preCondition="classicMode,runtimeVersionv2.0,bitness32" responseBufferLimit="0" />
-				<add name="HttpRemotingHandlerFactory-soap-ISAPI-2.0" path="*.soap" verb="GET,HEAD,POST,DEBUG" modules="IsapiModule" scriptProcessor="%windir%\Microsoft.NET\Framework\v2.0.50727\aspnet_isapi.dll" preCondition="classicMode,runtimeVersionv2.0,bitness32" responseBufferLimit="0" />
-				<add name="svc-ISAPI-2.0-64" path="*.svc" verb="*" modules="IsapiModule" scriptProcessor="%windir%\Microsoft.NET\Framework64\v2.0.50727\aspnet_isapi.dll" preCondition="classicMode,runtimeVersionv2.0,bitness64" />
-				<add name="AXD-ISAPI-2.0-64" path="*.axd" verb="GET,HEAD,POST,DEBUG" modules="IsapiModule" scriptProcessor="%windir%\Microsoft.NET\Framework64\v2.0.50727\aspnet_isapi.dll" preCondition="classicMode,runtimeVersionv2.0,bitness64" responseBufferLimit="0" />
-				<add name="PageHandlerFactory-ISAPI-2.0-64" path="*.aspx" verb="GET,HEAD,POST,DEBUG" modules="IsapiModule" scriptProcessor="%windir%\Microsoft.NET\Framework64\v2.0.50727\aspnet_isapi.dll" preCondition="classicMode,runtimeVersionv2.0,bitness64" responseBufferLimit="0" />
-				<add name="SimpleHandlerFactory-ISAPI-2.0-64" path="*.ashx" verb="GET,HEAD,POST,DEBUG" modules="IsapiModule" scriptProcessor="%windir%\Microsoft.NET\Framework64\v2.0.50727\aspnet_isapi.dll" preCondition="classicMode,runtimeVersionv2.0,bitness64" responseBufferLimit="0" />
-				<add name="WebServiceHandlerFactory-ISAPI-2.0-64" path="*.asmx" verb="GET,HEAD,POST,DEBUG" modules="IsapiModule" scriptProcessor="%windir%\Microsoft.NET\Framework64\v2.0.50727\aspnet_isapi.dll" preCondition="classicMode,runtimeVersionv2.0,bitness64" responseBufferLimit="0" />
-				<add name="HttpRemotingHandlerFactory-rem-ISAPI-2.0-64" path="*.rem" verb="GET,HEAD,POST,DEBUG" modules="IsapiModule" scriptProcessor="%windir%\Microsoft.NET\Framework64\v2.0.50727\aspnet_isapi.dll" preCondition="classicMode,runtimeVersionv2.0,bitness64" responseBufferLimit="0" />
-				<add name="HttpRemotingHandlerFactory-soap-ISAPI-2.0-64" path="*.soap" verb="GET,HEAD,POST,DEBUG" modules="IsapiModule" scriptProcessor="%windir%\Microsoft.NET\Framework64\v2.0.50727\aspnet_isapi.dll" preCondition="classicMode,runtimeVersionv2.0,bitness64" responseBufferLimit="0" />
-				<add name="rules-64-ISAPI-2.0" path="*.rules" verb="*" modules="IsapiModule" scriptProcessor="%windir%\Microsoft.NET\Framework64\v2.0.50727\aspnet_isapi.dll" preCondition="classicMode,runtimeVersionv2.0,bitness64" />
-				<add name="xoml-64-ISAPI-2.0" path="*.xoml" verb="*" modules="IsapiModule" scriptProcessor="%windir%\Microsoft.NET\Framework64\v2.0.50727\aspnet_isapi.dll" preCondition="classicMode,runtimeVersionv2.0,bitness64" />
-				<add name="CGI-exe" path="*.exe" verb="*" modules="CgiModule" resourceType="File" requireAccess="Execute" allowPathInfo="true" />
-				<add name="SSINC-stm" path="*.stm" verb="GET,HEAD,POST" modules="ServerSideIncludeModule" resourceType="File" />
-				<add name="SSINC-shtm" path="*.shtm" verb="GET,HEAD,POST" modules="ServerSideIncludeModule" resourceType="File" />
-				<add name="SSINC-shtml" path="*.shtml" verb="GET,HEAD,POST" modules="ServerSideIncludeModule" resourceType="File" />
-				<add name="TRACEVerbHandler" path="*" verb="TRACE" modules="ProtocolSupportModule" requireAccess="None" />
-				<add name="OPTIONSVerbHandler" path="*" verb="OPTIONS" modules="ProtocolSupportModule" requireAccess="None" />
-				<add name="ExtensionlessUrlHandler-ISAPI-4.0_32bit" path="*." verb="GET,HEAD,POST,DEBUG" modules="IsapiModule" scriptProcessor="%windir%\Microsoft.NET\Framework\v4.0.30319\aspnet_isapi.dll" preCondition="classicMode,runtimeVersionv4.0,bitness32" responseBufferLimit="0" />
-				<add name="ExtensionlessUrlHandler-ISAPI-4.0_64bit" path="*." verb="GET,HEAD,POST,DEBUG" modules="IsapiModule" scriptProcessor="%windir%\Microsoft.NET\Framework64\v4.0.30319\aspnet_isapi.dll" preCondition="classicMode,runtimeVersionv4.0,bitness64" responseBufferLimit="0" />
-				<add name="ExtensionlessUrlHandler-Integrated-4.0" path="*." verb="GET,HEAD,POST,DEBUG" type="System.Web.Handlers.TransferRequestHandler" preCondition="integratedMode,runtimeVersionv4.0" responseBufferLimit="0" />
-				<add name="StaticFile" path="*" verb="*" modules="StaticFileModule,DefaultDocumentModule,DirectoryListingModule" resourceType="Either" requireAccess="Read" />
-			</handlers>
-		</system.webServer>
-	</location>
-</configuration>
-```
-
-## File: .vs/CondoSphere/v17/DocumentLayout.backup.json
+## File: CondoSphere.API/appsettings.json
 ```json
 {
-  "Version": 1,
-  "WorkspaceRootPath": "C:\\Projectos\\CondoSphere\\",
-  "Documents": [
-    {
-      "AbsoluteMoniker": "D:0:0:{3CD67153-1978-4AFB-A62C-CE4D630BE31B}|CondoSphere.API\\CondoSphere.API.csproj|c:\\projectos\\condosphere\\condosphere.api\\controllers\\accountscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{3CD67153-1978-4AFB-A62C-CE4D630BE31B}|CondoSphere.API\\CondoSphere.API.csproj|solutionrelative:condosphere.api\\controllers\\accountscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{1E1FC90D-B1C1-4A4A-B8AE-F8FA723036EA}|CondoSphere.Web\\CondoSphere.Web.csproj|c:\\projectos\\condosphere\\condosphere.web\\controllers\\condomanagementcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{1E1FC90D-B1C1-4A4A-B8AE-F8FA723036EA}|CondoSphere.Web\\CondoSphere.Web.csproj|solutionrelative:condosphere.web\\controllers\\condomanagementcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{1E1FC90D-B1C1-4A4A-B8AE-F8FA723036EA}|CondoSphere.Web\\CondoSphere.Web.csproj|c:\\projectos\\condosphere\\condosphere.web\\views\\condomanagement\\details.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{1E1FC90D-B1C1-4A4A-B8AE-F8FA723036EA}|CondoSphere.Web\\CondoSphere.Web.csproj|solutionrelative:condosphere.web\\views\\condomanagement\\details.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{1E1FC90D-B1C1-4A4A-B8AE-F8FA723036EA}|CondoSphere.Web\\CondoSphere.Web.csproj|c:\\projectos\\condosphere\\condosphere.web\\models\\condominiumdetailsviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{1E1FC90D-B1C1-4A4A-B8AE-F8FA723036EA}|CondoSphere.Web\\CondoSphere.Web.csproj|solutionrelative:condosphere.web\\models\\condominiumdetailsviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{1E1FC90D-B1C1-4A4A-B8AE-F8FA723036EA}|CondoSphere.Web\\CondoSphere.Web.csproj|c:\\projectos\\condosphere\\condosphere.web\\services\\apiclient.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{1E1FC90D-B1C1-4A4A-B8AE-F8FA723036EA}|CondoSphere.Web\\CondoSphere.Web.csproj|solutionrelative:condosphere.web\\services\\apiclient.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{3CD67153-1978-4AFB-A62C-CE4D630BE31B}|CondoSphere.API\\CondoSphere.API.csproj|c:\\projectos\\condosphere\\condosphere.api\\controllers\\unitscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{3CD67153-1978-4AFB-A62C-CE4D630BE31B}|CondoSphere.API\\CondoSphere.API.csproj|solutionrelative:condosphere.api\\controllers\\unitscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{3CD67153-1978-4AFB-A62C-CE4D630BE31B}|CondoSphere.API\\CondoSphere.API.csproj|c:\\projectos\\condosphere\\condosphere.api\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{3CD67153-1978-4AFB-A62C-CE4D630BE31B}|CondoSphere.API\\CondoSphere.API.csproj|solutionrelative:condosphere.api\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{38537366-246F-4DB5-B861-3C250F99E8C7}|CondoSphere.Application\\CondoSphere.Application.csproj|c:\\projectos\\condosphere\\condosphere.application\\services\\condominium\\unitservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{38537366-246F-4DB5-B861-3C250F99E8C7}|CondoSphere.Application\\CondoSphere.Application.csproj|solutionrelative:condosphere.application\\services\\condominium\\unitservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{38537366-246F-4DB5-B861-3C250F99E8C7}|CondoSphere.Application\\CondoSphere.Application.csproj|c:\\projectos\\condosphere\\condosphere.application\\services\\condominium\\iunitservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{38537366-246F-4DB5-B861-3C250F99E8C7}|CondoSphere.Application\\CondoSphere.Application.csproj|solutionrelative:condosphere.application\\services\\condominium\\iunitservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{1E1FC90D-B1C1-4A4A-B8AE-F8FA723036EA}|CondoSphere.Web\\CondoSphere.Web.csproj|c:\\projectos\\condosphere\\condosphere.web\\views\\condomanagement\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{1E1FC90D-B1C1-4A4A-B8AE-F8FA723036EA}|CondoSphere.Web\\CondoSphere.Web.csproj|solutionrelative:condosphere.web\\views\\condomanagement\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{38537366-246F-4DB5-B861-3C250F99E8C7}|CondoSphere.Application\\CondoSphere.Application.csproj|c:\\projectos\\condosphere\\condosphere.application\\services\\user\\userservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{38537366-246F-4DB5-B861-3C250F99E8C7}|CondoSphere.Application\\CondoSphere.Application.csproj|solutionrelative:condosphere.application\\services\\user\\userservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{1E1FC90D-B1C1-4A4A-B8AE-F8FA723036EA}|CondoSphere.Web\\CondoSphere.Web.csproj|c:\\projectos\\condosphere\\condosphere.web\\views\\condomanagement\\registerresident.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{1E1FC90D-B1C1-4A4A-B8AE-F8FA723036EA}|CondoSphere.Web\\CondoSphere.Web.csproj|solutionrelative:condosphere.web\\views\\condomanagement\\registerresident.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning"
     }
-  ],
-  "DocumentGroupContainers": [
-    {
-      "Orientation": 0,
-      "VerticalTabListWidth": 256,
-      "DocumentGroups": [
-        {
-          "DockedWidth": 200,
-          "SelectedChildIndex": 6,
-          "Children": [
-            {
-              "$type": "Bookmark",
-              "Name": "ST:0:0:{1c64b9c2-e352-428e-a56d-0ace190b99a6}"
-            },
-            {
-              "$type": "Bookmark",
-              "Name": "ST:0:0:{aa2115a1-9712-457b-9047-dbb71ca2cdd2}"
-            },
-            {
-              "$type": "Bookmark",
-              "Name": "ST:0:0:{3ae79031-e1bc-11d0-8f78-00a0c9110057}"
-            },
-            {
-              "$type": "Bookmark",
-              "Name": "ST:0:0:{d78612c7-9962-4b83-95d9-268046dad23a}"
-            },
-            {
-              "$type": "Bookmark",
-              "Name": "ST:0:0:{eefa5220-e298-11d0-8f78-00a0c9110057}"
-            },
-            {
-              "$type": "Bookmark",
-              "Name": "ST:129:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "AccountsController.cs",
-              "DocumentMoniker": "C:\\Projectos\\CondoSphere\\CondoSphere.API\\Controllers\\AccountsController.cs",
-              "RelativeDocumentMoniker": "CondoSphere.API\\Controllers\\AccountsController.cs",
-              "ToolTip": "C:\\Projectos\\CondoSphere\\CondoSphere.API\\Controllers\\AccountsController.cs",
-              "RelativeToolTip": "CondoSphere.API\\Controllers\\AccountsController.cs",
-              "ViewState": "AgIAAAkAAAAAAAAAAAAAABwAAAAiAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-08-01T15:45:03.667Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "Details.cshtml",
-              "DocumentMoniker": "C:\\Projectos\\CondoSphere\\CondoSphere.Web\\Views\\CondoManagement\\Details.cshtml",
-              "RelativeDocumentMoniker": "CondoSphere.Web\\Views\\CondoManagement\\Details.cshtml",
-              "ToolTip": "C:\\Projectos\\CondoSphere\\CondoSphere.Web\\Views\\CondoManagement\\Details.cshtml",
-              "RelativeToolTip": "CondoSphere.Web\\Views\\CondoManagement\\Details.cshtml",
-              "ViewState": "AgIAAEAAAAAAAAAAAAAYwE8AAAAGAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-08-01T15:39:36.397Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "CondominiumDetailsViewModel.cs",
-              "DocumentMoniker": "C:\\Projectos\\CondoSphere\\CondoSphere.Web\\Models\\CondominiumDetailsViewModel.cs",
-              "RelativeDocumentMoniker": "CondoSphere.Web\\Models\\CondominiumDetailsViewModel.cs",
-              "ToolTip": "C:\\Projectos\\CondoSphere\\CondoSphere.Web\\Models\\CondominiumDetailsViewModel.cs",
-              "RelativeToolTip": "CondoSphere.Web\\Models\\CondominiumDetailsViewModel.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABMAAAABAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-08-01T15:36:29.572Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 4,
-              "Title": "ApiClient.cs",
-              "DocumentMoniker": "C:\\Projectos\\CondoSphere\\CondoSphere.Web\\Services\\ApiClient.cs",
-              "RelativeDocumentMoniker": "CondoSphere.Web\\Services\\ApiClient.cs",
-              "ToolTip": "C:\\Projectos\\CondoSphere\\CondoSphere.Web\\Services\\ApiClient.cs",
-              "RelativeToolTip": "CondoSphere.Web\\Services\\ApiClient.cs",
-              "ViewState": "AgIAAEgAAAAAAAAAAAAkwG0AAAAJAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-08-01T15:35:55.193Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 5,
-              "Title": "UnitsController.cs",
-              "DocumentMoniker": "C:\\Projectos\\CondoSphere\\CondoSphere.API\\Controllers\\UnitsController.cs",
-              "RelativeDocumentMoniker": "CondoSphere.API\\Controllers\\UnitsController.cs",
-              "ToolTip": "C:\\Projectos\\CondoSphere\\CondoSphere.API\\Controllers\\UnitsController.cs",
-              "RelativeToolTip": "CondoSphere.API\\Controllers\\UnitsController.cs",
-              "ViewState": "AgIAAGUAAAAAAAAAAAAYwHcAAAAJAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-08-01T15:35:20.882Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 6,
-              "Title": "Program.cs",
-              "DocumentMoniker": "C:\\Projectos\\CondoSphere\\CondoSphere.API\\Program.cs",
-              "RelativeDocumentMoniker": "CondoSphere.API\\Program.cs",
-              "ToolTip": "C:\\Projectos\\CondoSphere\\CondoSphere.API\\Program.cs",
-              "RelativeToolTip": "CondoSphere.API\\Program.cs",
-              "ViewState": "AgIAADYAAAAAAAAAAAAnwGEAAAAvAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-08-01T15:34:27.807Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 7,
-              "Title": "UnitService.cs",
-              "DocumentMoniker": "C:\\Projectos\\CondoSphere\\CondoSphere.Application\\Services\\Condominium\\UnitService.cs",
-              "RelativeDocumentMoniker": "CondoSphere.Application\\Services\\Condominium\\UnitService.cs",
-              "ToolTip": "C:\\Projectos\\CondoSphere\\CondoSphere.Application\\Services\\Condominium\\UnitService.cs",
-              "RelativeToolTip": "CondoSphere.Application\\Services\\Condominium\\UnitService.cs",
-              "ViewState": "AgIAADMAAAAAAAAAAAAAwEUAAAANAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-08-01T15:32:43.5Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 8,
-              "Title": "IUnitService.cs",
-              "DocumentMoniker": "C:\\Projectos\\CondoSphere\\CondoSphere.Application\\Services\\Condominium\\IUnitService.cs",
-              "RelativeDocumentMoniker": "CondoSphere.Application\\Services\\Condominium\\IUnitService.cs",
-              "ToolTip": "C:\\Projectos\\CondoSphere\\CondoSphere.Application\\Services\\Condominium\\IUnitService.cs",
-              "RelativeToolTip": "CondoSphere.Application\\Services\\Condominium\\IUnitService.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAA1AAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-08-01T15:32:07.177Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 9,
-              "Title": "Index.cshtml",
-              "DocumentMoniker": "C:\\Projectos\\CondoSphere\\CondoSphere.Web\\Views\\CondoManagement\\Index.cshtml",
-              "RelativeDocumentMoniker": "CondoSphere.Web\\Views\\CondoManagement\\Index.cshtml",
-              "ToolTip": "C:\\Projectos\\CondoSphere\\CondoSphere.Web\\Views\\CondoManagement\\Index.cshtml",
-              "RelativeToolTip": "CondoSphere.Web\\Views\\CondoManagement\\Index.cshtml",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-08-01T15:22:47.334Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 10,
-              "Title": "UserService.cs",
-              "DocumentMoniker": "C:\\Projectos\\CondoSphere\\CondoSphere.Application\\Services\\User\\UserService.cs",
-              "RelativeDocumentMoniker": "CondoSphere.Application\\Services\\User\\UserService.cs",
-              "ToolTip": "C:\\Projectos\\CondoSphere\\CondoSphere.Application\\Services\\User\\UserService.cs",
-              "RelativeToolTip": "CondoSphere.Application\\Services\\User\\UserService.cs",
-              "ViewState": "AgIAAJUAAAAAAAAAAAApwJoAAABZAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-08-01T14:43:44.411Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 11,
-              "Title": "RegisterResident.cshtml",
-              "DocumentMoniker": "C:\\Projectos\\CondoSphere\\CondoSphere.Web\\Views\\CondoManagement\\RegisterResident.cshtml",
-              "RelativeDocumentMoniker": "CondoSphere.Web\\Views\\CondoManagement\\RegisterResident.cshtml",
-              "ToolTip": "C:\\Projectos\\CondoSphere\\CondoSphere.Web\\Views\\CondoManagement\\RegisterResident.cshtml",
-              "RelativeToolTip": "CondoSphere.Web\\Views\\CondoManagement\\RegisterResident.cshtml",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAQwC0AAAABAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-08-01T14:42:21.94Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "CondoManagementController.cs",
-              "DocumentMoniker": "C:\\Projectos\\CondoSphere\\CondoSphere.Web\\Controllers\\CondoManagementController.cs",
-              "RelativeDocumentMoniker": "CondoSphere.Web\\Controllers\\CondoManagementController.cs",
-              "ToolTip": "C:\\Projectos\\CondoSphere\\CondoSphere.Web\\Controllers\\CondoManagementController.cs",
-              "RelativeToolTip": "CondoSphere.Web\\Controllers\\CondoManagementController.cs",
-              "ViewState": "AgIAAGYAAAAAAAAAAAAAwJAAAAAJAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-08-01T14:40:58.382Z",
-              "EditorCaption": ""
-            }
-          ]
-        }
-      ]
-    }
-  ]
-}
-```
-
-## File: .vs/CondoSphere/v17/DocumentLayout.json
-```json
-{
-  "Version": 1,
-  "WorkspaceRootPath": "C:\\Projectos\\CondoSphere\\",
-  "Documents": [
-    {
-      "AbsoluteMoniker": "D:0:0:{3CD67153-1978-4AFB-A62C-CE4D630BE31B}|CondoSphere.API\\CondoSphere.API.csproj|c:\\projectos\\condosphere\\condosphere.api\\controllers\\accountscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{3CD67153-1978-4AFB-A62C-CE4D630BE31B}|CondoSphere.API\\CondoSphere.API.csproj|solutionrelative:condosphere.api\\controllers\\accountscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{1E1FC90D-B1C1-4A4A-B8AE-F8FA723036EA}|CondoSphere.Web\\CondoSphere.Web.csproj|c:\\projectos\\condosphere\\condosphere.web\\controllers\\condomanagementcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{1E1FC90D-B1C1-4A4A-B8AE-F8FA723036EA}|CondoSphere.Web\\CondoSphere.Web.csproj|solutionrelative:condosphere.web\\controllers\\condomanagementcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{1E1FC90D-B1C1-4A4A-B8AE-F8FA723036EA}|CondoSphere.Web\\CondoSphere.Web.csproj|c:\\projectos\\condosphere\\condosphere.web\\views\\condomanagement\\details.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{1E1FC90D-B1C1-4A4A-B8AE-F8FA723036EA}|CondoSphere.Web\\CondoSphere.Web.csproj|solutionrelative:condosphere.web\\views\\condomanagement\\details.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{1E1FC90D-B1C1-4A4A-B8AE-F8FA723036EA}|CondoSphere.Web\\CondoSphere.Web.csproj|c:\\projectos\\condosphere\\condosphere.web\\models\\condominiumdetailsviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{1E1FC90D-B1C1-4A4A-B8AE-F8FA723036EA}|CondoSphere.Web\\CondoSphere.Web.csproj|solutionrelative:condosphere.web\\models\\condominiumdetailsviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{1E1FC90D-B1C1-4A4A-B8AE-F8FA723036EA}|CondoSphere.Web\\CondoSphere.Web.csproj|c:\\projectos\\condosphere\\condosphere.web\\services\\apiclient.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{1E1FC90D-B1C1-4A4A-B8AE-F8FA723036EA}|CondoSphere.Web\\CondoSphere.Web.csproj|solutionrelative:condosphere.web\\services\\apiclient.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{3CD67153-1978-4AFB-A62C-CE4D630BE31B}|CondoSphere.API\\CondoSphere.API.csproj|c:\\projectos\\condosphere\\condosphere.api\\controllers\\unitscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{3CD67153-1978-4AFB-A62C-CE4D630BE31B}|CondoSphere.API\\CondoSphere.API.csproj|solutionrelative:condosphere.api\\controllers\\unitscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{3CD67153-1978-4AFB-A62C-CE4D630BE31B}|CondoSphere.API\\CondoSphere.API.csproj|c:\\projectos\\condosphere\\condosphere.api\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{3CD67153-1978-4AFB-A62C-CE4D630BE31B}|CondoSphere.API\\CondoSphere.API.csproj|solutionrelative:condosphere.api\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{38537366-246F-4DB5-B861-3C250F99E8C7}|CondoSphere.Application\\CondoSphere.Application.csproj|c:\\projectos\\condosphere\\condosphere.application\\services\\condominium\\unitservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{38537366-246F-4DB5-B861-3C250F99E8C7}|CondoSphere.Application\\CondoSphere.Application.csproj|solutionrelative:condosphere.application\\services\\condominium\\unitservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{38537366-246F-4DB5-B861-3C250F99E8C7}|CondoSphere.Application\\CondoSphere.Application.csproj|c:\\projectos\\condosphere\\condosphere.application\\services\\condominium\\iunitservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{38537366-246F-4DB5-B861-3C250F99E8C7}|CondoSphere.Application\\CondoSphere.Application.csproj|solutionrelative:condosphere.application\\services\\condominium\\iunitservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{1E1FC90D-B1C1-4A4A-B8AE-F8FA723036EA}|CondoSphere.Web\\CondoSphere.Web.csproj|c:\\projectos\\condosphere\\condosphere.web\\views\\condomanagement\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{1E1FC90D-B1C1-4A4A-B8AE-F8FA723036EA}|CondoSphere.Web\\CondoSphere.Web.csproj|solutionrelative:condosphere.web\\views\\condomanagement\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{38537366-246F-4DB5-B861-3C250F99E8C7}|CondoSphere.Application\\CondoSphere.Application.csproj|c:\\projectos\\condosphere\\condosphere.application\\services\\user\\userservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{38537366-246F-4DB5-B861-3C250F99E8C7}|CondoSphere.Application\\CondoSphere.Application.csproj|solutionrelative:condosphere.application\\services\\user\\userservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{1E1FC90D-B1C1-4A4A-B8AE-F8FA723036EA}|CondoSphere.Web\\CondoSphere.Web.csproj|c:\\projectos\\condosphere\\condosphere.web\\views\\condomanagement\\registerresident.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{1E1FC90D-B1C1-4A4A-B8AE-F8FA723036EA}|CondoSphere.Web\\CondoSphere.Web.csproj|solutionrelative:condosphere.web\\views\\condomanagement\\registerresident.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    }
-  ],
-  "DocumentGroupContainers": [
-    {
-      "Orientation": 0,
-      "VerticalTabListWidth": 256,
-      "DocumentGroups": [
-        {
-          "DockedWidth": 200,
-          "SelectedChildIndex": 6,
-          "Children": [
-            {
-              "$type": "Bookmark",
-              "Name": "ST:0:0:{1c64b9c2-e352-428e-a56d-0ace190b99a6}"
-            },
-            {
-              "$type": "Bookmark",
-              "Name": "ST:0:0:{aa2115a1-9712-457b-9047-dbb71ca2cdd2}"
-            },
-            {
-              "$type": "Bookmark",
-              "Name": "ST:0:0:{3ae79031-e1bc-11d0-8f78-00a0c9110057}"
-            },
-            {
-              "$type": "Bookmark",
-              "Name": "ST:0:0:{d78612c7-9962-4b83-95d9-268046dad23a}"
-            },
-            {
-              "$type": "Bookmark",
-              "Name": "ST:0:0:{eefa5220-e298-11d0-8f78-00a0c9110057}"
-            },
-            {
-              "$type": "Bookmark",
-              "Name": "ST:129:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "AccountsController.cs",
-              "DocumentMoniker": "C:\\Projectos\\CondoSphere\\CondoSphere.API\\Controllers\\AccountsController.cs",
-              "RelativeDocumentMoniker": "CondoSphere.API\\Controllers\\AccountsController.cs",
-              "ToolTip": "C:\\Projectos\\CondoSphere\\CondoSphere.API\\Controllers\\AccountsController.cs",
-              "RelativeToolTip": "CondoSphere.API\\Controllers\\AccountsController.cs",
-              "ViewState": "AgIAAAkAAAAAAAAAAAAAABwAAAAiAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-08-01T15:45:03.667Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "Details.cshtml",
-              "DocumentMoniker": "C:\\Projectos\\CondoSphere\\CondoSphere.Web\\Views\\CondoManagement\\Details.cshtml",
-              "RelativeDocumentMoniker": "CondoSphere.Web\\Views\\CondoManagement\\Details.cshtml",
-              "ToolTip": "C:\\Projectos\\CondoSphere\\CondoSphere.Web\\Views\\CondoManagement\\Details.cshtml",
-              "RelativeToolTip": "CondoSphere.Web\\Views\\CondoManagement\\Details.cshtml",
-              "ViewState": "AgIAAEAAAAAAAAAAAAAYwE8AAAAGAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-08-01T15:39:36.397Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "CondominiumDetailsViewModel.cs",
-              "DocumentMoniker": "C:\\Projectos\\CondoSphere\\CondoSphere.Web\\Models\\CondominiumDetailsViewModel.cs",
-              "RelativeDocumentMoniker": "CondoSphere.Web\\Models\\CondominiumDetailsViewModel.cs",
-              "ToolTip": "C:\\Projectos\\CondoSphere\\CondoSphere.Web\\Models\\CondominiumDetailsViewModel.cs",
-              "RelativeToolTip": "CondoSphere.Web\\Models\\CondominiumDetailsViewModel.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABMAAAABAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-08-01T15:36:29.572Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 4,
-              "Title": "ApiClient.cs",
-              "DocumentMoniker": "C:\\Projectos\\CondoSphere\\CondoSphere.Web\\Services\\ApiClient.cs",
-              "RelativeDocumentMoniker": "CondoSphere.Web\\Services\\ApiClient.cs",
-              "ToolTip": "C:\\Projectos\\CondoSphere\\CondoSphere.Web\\Services\\ApiClient.cs",
-              "RelativeToolTip": "CondoSphere.Web\\Services\\ApiClient.cs",
-              "ViewState": "AgIAAEgAAAAAAAAAAAAkwG0AAAAJAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-08-01T15:35:55.193Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 5,
-              "Title": "UnitsController.cs",
-              "DocumentMoniker": "C:\\Projectos\\CondoSphere\\CondoSphere.API\\Controllers\\UnitsController.cs",
-              "RelativeDocumentMoniker": "CondoSphere.API\\Controllers\\UnitsController.cs",
-              "ToolTip": "C:\\Projectos\\CondoSphere\\CondoSphere.API\\Controllers\\UnitsController.cs",
-              "RelativeToolTip": "CondoSphere.API\\Controllers\\UnitsController.cs",
-              "ViewState": "AgIAAGUAAAAAAAAAAAAYwHcAAAAJAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-08-01T15:35:20.882Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 6,
-              "Title": "Program.cs",
-              "DocumentMoniker": "C:\\Projectos\\CondoSphere\\CondoSphere.API\\Program.cs",
-              "RelativeDocumentMoniker": "CondoSphere.API\\Program.cs",
-              "ToolTip": "C:\\Projectos\\CondoSphere\\CondoSphere.API\\Program.cs",
-              "RelativeToolTip": "CondoSphere.API\\Program.cs",
-              "ViewState": "AgIAADYAAAAAAAAAAAAnwGEAAAAvAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-08-01T15:34:27.807Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 7,
-              "Title": "UnitService.cs",
-              "DocumentMoniker": "C:\\Projectos\\CondoSphere\\CondoSphere.Application\\Services\\Condominium\\UnitService.cs",
-              "RelativeDocumentMoniker": "CondoSphere.Application\\Services\\Condominium\\UnitService.cs",
-              "ToolTip": "C:\\Projectos\\CondoSphere\\CondoSphere.Application\\Services\\Condominium\\UnitService.cs",
-              "RelativeToolTip": "CondoSphere.Application\\Services\\Condominium\\UnitService.cs",
-              "ViewState": "AgIAADMAAAAAAAAAAAAAwEUAAAANAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-08-01T15:32:43.5Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 8,
-              "Title": "IUnitService.cs",
-              "DocumentMoniker": "C:\\Projectos\\CondoSphere\\CondoSphere.Application\\Services\\Condominium\\IUnitService.cs",
-              "RelativeDocumentMoniker": "CondoSphere.Application\\Services\\Condominium\\IUnitService.cs",
-              "ToolTip": "C:\\Projectos\\CondoSphere\\CondoSphere.Application\\Services\\Condominium\\IUnitService.cs",
-              "RelativeToolTip": "CondoSphere.Application\\Services\\Condominium\\IUnitService.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAA1AAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-08-01T15:32:07.177Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 9,
-              "Title": "Index.cshtml",
-              "DocumentMoniker": "C:\\Projectos\\CondoSphere\\CondoSphere.Web\\Views\\CondoManagement\\Index.cshtml",
-              "RelativeDocumentMoniker": "CondoSphere.Web\\Views\\CondoManagement\\Index.cshtml",
-              "ToolTip": "C:\\Projectos\\CondoSphere\\CondoSphere.Web\\Views\\CondoManagement\\Index.cshtml",
-              "RelativeToolTip": "CondoSphere.Web\\Views\\CondoManagement\\Index.cshtml",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-08-01T15:22:47.334Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 10,
-              "Title": "UserService.cs",
-              "DocumentMoniker": "C:\\Projectos\\CondoSphere\\CondoSphere.Application\\Services\\User\\UserService.cs",
-              "RelativeDocumentMoniker": "CondoSphere.Application\\Services\\User\\UserService.cs",
-              "ToolTip": "C:\\Projectos\\CondoSphere\\CondoSphere.Application\\Services\\User\\UserService.cs",
-              "RelativeToolTip": "CondoSphere.Application\\Services\\User\\UserService.cs",
-              "ViewState": "AgIAAJUAAAAAAAAAAAApwJoAAABZAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-08-01T14:43:44.411Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 11,
-              "Title": "RegisterResident.cshtml",
-              "DocumentMoniker": "C:\\Projectos\\CondoSphere\\CondoSphere.Web\\Views\\CondoManagement\\RegisterResident.cshtml",
-              "RelativeDocumentMoniker": "CondoSphere.Web\\Views\\CondoManagement\\RegisterResident.cshtml",
-              "ToolTip": "C:\\Projectos\\CondoSphere\\CondoSphere.Web\\Views\\CondoManagement\\RegisterResident.cshtml",
-              "RelativeToolTip": "CondoSphere.Web\\Views\\CondoManagement\\RegisterResident.cshtml",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAQwC0AAAABAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-08-01T14:42:21.94Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "CondoManagementController.cs",
-              "DocumentMoniker": "C:\\Projectos\\CondoSphere\\CondoSphere.Web\\Controllers\\CondoManagementController.cs",
-              "RelativeDocumentMoniker": "CondoSphere.Web\\Controllers\\CondoManagementController.cs",
-              "ToolTip": "C:\\Projectos\\CondoSphere\\CondoSphere.Web\\Controllers\\CondoManagementController.cs",
-              "RelativeToolTip": "CondoSphere.Web\\Controllers\\CondoManagementController.cs",
-              "ViewState": "AgIAAGYAAAAAAAAAAAAAwJAAAAAJAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-08-01T14:40:58.382Z",
-              "EditorCaption": ""
-            }
-          ]
-        }
-      ]
-    }
-  ]
-}
-```
-
-## File: .vs/CondoSphere/v17/HierarchyCache.v1.txt
-```
-++Solution 'CondoSphere' ‎ (5 of 5 projects)
-i:{00000000-0000-0000-0000-000000000000}:CondoSphere.sln
-++CondoSphere.API
-i:{00000000-0000-0000-0000-000000000000}:CondoSphere.API
-++Connected Services 
-i:{3cd67153-1978-4afb-a62c-ce4d630be31b}:>1561
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:>1562
-++Dependencies
-i:{3cd67153-1978-4afb-a62c-ce4d630be31b}:>1566
-i:{0e6bf8fa-9c45-4820-b08e-bc9bb2e2cbc1}:>995
-i:{38537366-246f-4db5-b861-3c250f99e8c7}:>997
-i:{b0f6b621-c045-46cd-833d-c61526c966f1}:>996
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:>1565
-++Properties
-i:{3cd67153-1978-4afb-a62c-ce4d630be31b}:c:\projectos\condosphere\condosphere.api\properties\
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\projectos\condosphere\condosphere.web\properties\
-++launchSettings.json
-i:{3cd67153-1978-4afb-a62c-ce4d630be31b}:c:\projectos\condosphere\condosphere.api\properties\launchsettings.json
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\projectos\condosphere\condosphere.web\properties\launchsettings.json
-++Controllers
-i:{3cd67153-1978-4afb-a62c-ce4d630be31b}:c:\projectos\condosphere\condosphere.api\controllers\
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\projectos\condosphere\condosphere.web\controllers\
-++AccountsController.cs
-i:{3cd67153-1978-4afb-a62c-ce4d630be31b}:c:\projectos\condosphere\condosphere.api\controllers\accountscontroller.cs
-++CondominiumsController.cs
-i:{3cd67153-1978-4afb-a62c-ce4d630be31b}:c:\projectos\condosphere\condosphere.api\controllers\condominiumscontroller.cs
-++ResidentsController.cs
-i:{3cd67153-1978-4afb-a62c-ce4d630be31b}:c:\projectos\condosphere\condosphere.api\controllers\residentscontroller.cs
-++UnitsController.cs
-i:{3cd67153-1978-4afb-a62c-ce4d630be31b}:c:\projectos\condosphere\condosphere.api\controllers\unitscontroller.cs
-++appsettings.json
-i:{3cd67153-1978-4afb-a62c-ce4d630be31b}:c:\projectos\condosphere\condosphere.api\appsettings.json
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\projectos\condosphere\condosphere.web\appsettings.json
-++CondoSphere.API.http
-i:{3cd67153-1978-4afb-a62c-ce4d630be31b}:c:\projectos\condosphere\condosphere.api\condosphere.api.http
-++Program.cs
-i:{3cd67153-1978-4afb-a62c-ce4d630be31b}:c:\projectos\condosphere\condosphere.api\program.cs
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\projectos\condosphere\condosphere.web\program.cs
-++No service dependencies discovered
-i:{3cd67153-1978-4afb-a62c-ce4d630be31b}:>1563
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:>1564
-++Analyzers
-i:{3cd67153-1978-4afb-a62c-ce4d630be31b}:>1667
-i:{0e6bf8fa-9c45-4820-b08e-bc9bb2e2cbc1}:>1568
-i:{38537366-246f-4db5-b861-3c250f99e8c7}:>1617
-i:{b0f6b621-c045-46cd-833d-c61526c966f1}:>1639
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:>1570
-++Frameworks
-i:{3cd67153-1978-4afb-a62c-ce4d630be31b}:>1690
-i:{0e6bf8fa-9c45-4820-b08e-bc9bb2e2cbc1}:>1611
-i:{38537366-246f-4db5-b861-3c250f99e8c7}:>1628
-i:{b0f6b621-c045-46cd-833d-c61526c966f1}:>1656
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:>1594
-++Packages
-i:{3cd67153-1978-4afb-a62c-ce4d630be31b}:>1693
-i:{0e6bf8fa-9c45-4820-b08e-bc9bb2e2cbc1}:>1613
-i:{38537366-246f-4db5-b861-3c250f99e8c7}:>1630
-i:{b0f6b621-c045-46cd-833d-c61526c966f1}:>1659
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:>1597
-++Projects
-i:{3cd67153-1978-4afb-a62c-ce4d630be31b}:>1663
-i:{38537366-246f-4db5-b861-3c250f99e8c7}:>1615
-i:{b0f6b621-c045-46cd-833d-c61526c966f1}:>1636
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:>1567
-++appsettings.Development.json
-i:{3cd67153-1978-4afb-a62c-ce4d630be31b}:c:\projectos\condosphere\condosphere.api\appsettings.development.json
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\projectos\condosphere\condosphere.web\appsettings.development.json
-++Microsoft.AspNetCore.Analyzers
-i:{3cd67153-1978-4afb-a62c-ce4d630be31b}:c:\program files\dotnet\sdk\9.0.302\sdks\microsoft.net.sdk.web\analyzers\cs\microsoft.aspnetcore.analyzers.dll
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\program files\dotnet\sdk\9.0.302\sdks\microsoft.net.sdk.web\analyzers\cs\microsoft.aspnetcore.analyzers.dll
-++Microsoft.AspNetCore.App.Analyzers
-i:{3cd67153-1978-4afb-a62c-ce4d630be31b}:c:\program files\dotnet\packs\microsoft.aspnetcore.app.ref\8.0.18\analyzers\dotnet\cs\microsoft.aspnetcore.app.analyzers.dll
-i:{b0f6b621-c045-46cd-833d-c61526c966f1}:c:\program files\dotnet\packs\microsoft.aspnetcore.app.ref\8.0.18\analyzers\dotnet\cs\microsoft.aspnetcore.app.analyzers.dll
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\program files\dotnet\packs\microsoft.aspnetcore.app.ref\8.0.18\analyzers\dotnet\cs\microsoft.aspnetcore.app.analyzers.dll
-++Microsoft.AspNetCore.App.CodeFixes
-i:{3cd67153-1978-4afb-a62c-ce4d630be31b}:c:\program files\dotnet\packs\microsoft.aspnetcore.app.ref\8.0.18\analyzers\dotnet\cs\microsoft.aspnetcore.app.codefixes.dll
-i:{b0f6b621-c045-46cd-833d-c61526c966f1}:c:\program files\dotnet\packs\microsoft.aspnetcore.app.ref\8.0.18\analyzers\dotnet\cs\microsoft.aspnetcore.app.codefixes.dll
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\program files\dotnet\packs\microsoft.aspnetcore.app.ref\8.0.18\analyzers\dotnet\cs\microsoft.aspnetcore.app.codefixes.dll
-++Microsoft.AspNetCore.Components.Analyzers
-i:{3cd67153-1978-4afb-a62c-ce4d630be31b}:c:\program files\dotnet\packs\microsoft.aspnetcore.app.ref\8.0.18\analyzers\dotnet\cs\microsoft.aspnetcore.components.analyzers.dll
-i:{b0f6b621-c045-46cd-833d-c61526c966f1}:c:\program files\dotnet\packs\microsoft.aspnetcore.app.ref\8.0.18\analyzers\dotnet\cs\microsoft.aspnetcore.components.analyzers.dll
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\program files\dotnet\packs\microsoft.aspnetcore.app.ref\8.0.18\analyzers\dotnet\cs\microsoft.aspnetcore.components.analyzers.dll
-++Microsoft.AspNetCore.Mvc.Analyzers
-i:{3cd67153-1978-4afb-a62c-ce4d630be31b}:c:\program files\dotnet\sdk\9.0.302\sdks\microsoft.net.sdk.web\analyzers\cs\microsoft.aspnetcore.mvc.analyzers.dll
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\program files\dotnet\sdk\9.0.302\sdks\microsoft.net.sdk.web\analyzers\cs\microsoft.aspnetcore.mvc.analyzers.dll
-++Microsoft.AspNetCore.Razor.Utilities.Shared
-i:{3cd67153-1978-4afb-a62c-ce4d630be31b}:c:\program files\dotnet\sdk\9.0.302\sdks\microsoft.net.sdk.razor\source-generators\microsoft.aspnetcore.razor.utilities.shared.dll
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\program files\dotnet\sdk\9.0.302\sdks\microsoft.net.sdk.razor\source-generators\microsoft.aspnetcore.razor.utilities.shared.dll
-++Microsoft.CodeAnalysis.Analyzers
-i:{3cd67153-1978-4afb-a62c-ce4d630be31b}:c:\users\fredp\.nuget\packages\microsoft.codeanalysis.analyzers\3.3.3\analyzers\dotnet\cs\microsoft.codeanalysis.analyzers.dll
-i:{b0f6b621-c045-46cd-833d-c61526c966f1}:c:\users\fredp\.nuget\packages\microsoft.codeanalysis.analyzers\3.3.3\analyzers\dotnet\cs\microsoft.codeanalysis.analyzers.dll
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\users\fredp\.nuget\packages\microsoft.codeanalysis.analyzers\3.3.3\analyzers\dotnet\cs\microsoft.codeanalysis.analyzers.dll
-++Microsoft.CodeAnalysis.CSharp.Analyzers
-i:{3cd67153-1978-4afb-a62c-ce4d630be31b}:c:\users\fredp\.nuget\packages\microsoft.codeanalysis.analyzers\3.3.3\analyzers\dotnet\cs\microsoft.codeanalysis.csharp.analyzers.dll
-i:{b0f6b621-c045-46cd-833d-c61526c966f1}:c:\users\fredp\.nuget\packages\microsoft.codeanalysis.analyzers\3.3.3\analyzers\dotnet\cs\microsoft.codeanalysis.csharp.analyzers.dll
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\users\fredp\.nuget\packages\microsoft.codeanalysis.analyzers\3.3.3\analyzers\dotnet\cs\microsoft.codeanalysis.csharp.analyzers.dll
-++Microsoft.CodeAnalysis.CSharp.NetAnalyzers
-i:{3cd67153-1978-4afb-a62c-ce4d630be31b}:c:\program files\dotnet\sdk\9.0.302\sdks\microsoft.net.sdk\analyzers\microsoft.codeanalysis.csharp.netanalyzers.dll
-i:{0e6bf8fa-9c45-4820-b08e-bc9bb2e2cbc1}:c:\program files\dotnet\sdk\9.0.302\sdks\microsoft.net.sdk\analyzers\microsoft.codeanalysis.csharp.netanalyzers.dll
-i:{38537366-246f-4db5-b861-3c250f99e8c7}:c:\program files\dotnet\sdk\9.0.302\sdks\microsoft.net.sdk\analyzers\microsoft.codeanalysis.csharp.netanalyzers.dll
-i:{b0f6b621-c045-46cd-833d-c61526c966f1}:c:\program files\dotnet\sdk\9.0.302\sdks\microsoft.net.sdk\analyzers\microsoft.codeanalysis.csharp.netanalyzers.dll
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\program files\dotnet\sdk\9.0.302\sdks\microsoft.net.sdk\analyzers\microsoft.codeanalysis.csharp.netanalyzers.dll
-++Microsoft.CodeAnalysis.NetAnalyzers
-i:{3cd67153-1978-4afb-a62c-ce4d630be31b}:c:\program files\dotnet\sdk\9.0.302\sdks\microsoft.net.sdk\analyzers\microsoft.codeanalysis.netanalyzers.dll
-i:{0e6bf8fa-9c45-4820-b08e-bc9bb2e2cbc1}:c:\program files\dotnet\sdk\9.0.302\sdks\microsoft.net.sdk\analyzers\microsoft.codeanalysis.netanalyzers.dll
-i:{38537366-246f-4db5-b861-3c250f99e8c7}:c:\program files\dotnet\sdk\9.0.302\sdks\microsoft.net.sdk\analyzers\microsoft.codeanalysis.netanalyzers.dll
-i:{b0f6b621-c045-46cd-833d-c61526c966f1}:c:\program files\dotnet\sdk\9.0.302\sdks\microsoft.net.sdk\analyzers\microsoft.codeanalysis.netanalyzers.dll
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\program files\dotnet\sdk\9.0.302\sdks\microsoft.net.sdk\analyzers\microsoft.codeanalysis.netanalyzers.dll
-++Microsoft.CodeAnalysis.Razor.Compiler
-i:{3cd67153-1978-4afb-a62c-ce4d630be31b}:c:\program files\dotnet\sdk\9.0.302\sdks\microsoft.net.sdk.razor\source-generators\microsoft.codeanalysis.razor.compiler.dll
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\program files\dotnet\sdk\9.0.302\sdks\microsoft.net.sdk.razor\source-generators\microsoft.codeanalysis.razor.compiler.dll
-++Microsoft.EntityFrameworkCore.Analyzers
-i:{3cd67153-1978-4afb-a62c-ce4d630be31b}:c:\users\fredp\.nuget\packages\microsoft.entityframeworkcore.analyzers\8.0.18\analyzers\dotnet\cs\microsoft.entityframeworkcore.analyzers.dll
-i:{b0f6b621-c045-46cd-833d-c61526c966f1}:c:\users\fredp\.nuget\packages\microsoft.entityframeworkcore.analyzers\8.0.18\analyzers\dotnet\cs\microsoft.entityframeworkcore.analyzers.dll
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\users\fredp\.nuget\packages\microsoft.entityframeworkcore.analyzers\8.0.18\analyzers\dotnet\cs\microsoft.entityframeworkcore.analyzers.dll
-i:{38537366-246f-4db5-b861-3c250f99e8c7}:c:\users\fredp\.nuget\packages\microsoft.entityframeworkcore.analyzers\8.0.18\analyzers\dotnet\cs\microsoft.entityframeworkcore.analyzers.dll
-++Microsoft.Extensions.Logging.Generators
-i:{3cd67153-1978-4afb-a62c-ce4d630be31b}:c:\program files\dotnet\packs\microsoft.aspnetcore.app.ref\8.0.18\analyzers\dotnet\roslyn4.4\cs\microsoft.extensions.logging.generators.dll
-i:{0e6bf8fa-9c45-4820-b08e-bc9bb2e2cbc1}:c:\users\fredp\.nuget\packages\microsoft.extensions.logging.abstractions\8.0.2\analyzers\dotnet\roslyn4.4\cs\microsoft.extensions.logging.generators.dll
-i:{38537366-246f-4db5-b861-3c250f99e8c7}:c:\users\fredp\.nuget\packages\microsoft.extensions.logging.abstractions\8.0.3\analyzers\dotnet\roslyn4.4\cs\microsoft.extensions.logging.generators.dll
-i:{b0f6b621-c045-46cd-833d-c61526c966f1}:c:\program files\dotnet\packs\microsoft.aspnetcore.app.ref\8.0.18\analyzers\dotnet\roslyn4.4\cs\microsoft.extensions.logging.generators.dll
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\program files\dotnet\packs\microsoft.aspnetcore.app.ref\8.0.18\analyzers\dotnet\roslyn4.4\cs\microsoft.extensions.logging.generators.dll
-++Microsoft.Extensions.ObjectPool
-i:{3cd67153-1978-4afb-a62c-ce4d630be31b}:c:\program files\dotnet\sdk\9.0.302\sdks\microsoft.net.sdk.razor\source-generators\microsoft.extensions.objectpool.dll
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\program files\dotnet\sdk\9.0.302\sdks\microsoft.net.sdk.razor\source-generators\microsoft.extensions.objectpool.dll
-++Microsoft.Extensions.Options.SourceGeneration
-i:{3cd67153-1978-4afb-a62c-ce4d630be31b}:c:\program files\dotnet\packs\microsoft.aspnetcore.app.ref\8.0.18\analyzers\dotnet\roslyn4.4\cs\microsoft.extensions.options.sourcegeneration.dll
-i:{0e6bf8fa-9c45-4820-b08e-bc9bb2e2cbc1}:c:\users\fredp\.nuget\packages\microsoft.extensions.options\8.0.2\analyzers\dotnet\roslyn4.4\cs\microsoft.extensions.options.sourcegeneration.dll
-i:{38537366-246f-4db5-b861-3c250f99e8c7}:c:\users\fredp\.nuget\packages\microsoft.extensions.options\8.0.2\analyzers\dotnet\roslyn4.4\cs\microsoft.extensions.options.sourcegeneration.dll
-i:{b0f6b621-c045-46cd-833d-c61526c966f1}:c:\program files\dotnet\packs\microsoft.aspnetcore.app.ref\8.0.18\analyzers\dotnet\roslyn4.4\cs\microsoft.extensions.options.sourcegeneration.dll
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\program files\dotnet\packs\microsoft.aspnetcore.app.ref\8.0.18\analyzers\dotnet\roslyn4.4\cs\microsoft.extensions.options.sourcegeneration.dll
-++Microsoft.Interop.ComInterfaceGenerator
-i:{3cd67153-1978-4afb-a62c-ce4d630be31b}:c:\program files\dotnet\packs\microsoft.netcore.app.ref\8.0.18\analyzers\dotnet\cs\microsoft.interop.cominterfacegenerator.dll
-i:{0e6bf8fa-9c45-4820-b08e-bc9bb2e2cbc1}:c:\program files\dotnet\packs\microsoft.netcore.app.ref\8.0.18\analyzers\dotnet\cs\microsoft.interop.cominterfacegenerator.dll
-i:{38537366-246f-4db5-b861-3c250f99e8c7}:c:\program files\dotnet\packs\microsoft.netcore.app.ref\8.0.18\analyzers\dotnet\cs\microsoft.interop.cominterfacegenerator.dll
-i:{b0f6b621-c045-46cd-833d-c61526c966f1}:c:\program files\dotnet\packs\microsoft.netcore.app.ref\8.0.18\analyzers\dotnet\cs\microsoft.interop.cominterfacegenerator.dll
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\program files\dotnet\packs\microsoft.netcore.app.ref\8.0.18\analyzers\dotnet\cs\microsoft.interop.cominterfacegenerator.dll
-++Microsoft.Interop.JavaScript.JSImportGenerator
-i:{3cd67153-1978-4afb-a62c-ce4d630be31b}:c:\program files\dotnet\packs\microsoft.netcore.app.ref\8.0.18\analyzers\dotnet\cs\microsoft.interop.javascript.jsimportgenerator.dll
-i:{0e6bf8fa-9c45-4820-b08e-bc9bb2e2cbc1}:c:\program files\dotnet\packs\microsoft.netcore.app.ref\8.0.18\analyzers\dotnet\cs\microsoft.interop.javascript.jsimportgenerator.dll
-i:{38537366-246f-4db5-b861-3c250f99e8c7}:c:\program files\dotnet\packs\microsoft.netcore.app.ref\8.0.18\analyzers\dotnet\cs\microsoft.interop.javascript.jsimportgenerator.dll
-i:{b0f6b621-c045-46cd-833d-c61526c966f1}:c:\program files\dotnet\packs\microsoft.netcore.app.ref\8.0.18\analyzers\dotnet\cs\microsoft.interop.javascript.jsimportgenerator.dll
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\program files\dotnet\packs\microsoft.netcore.app.ref\8.0.18\analyzers\dotnet\cs\microsoft.interop.javascript.jsimportgenerator.dll
-++Microsoft.Interop.LibraryImportGenerator
-i:{3cd67153-1978-4afb-a62c-ce4d630be31b}:c:\program files\dotnet\packs\microsoft.netcore.app.ref\8.0.18\analyzers\dotnet\cs\microsoft.interop.libraryimportgenerator.dll
-i:{0e6bf8fa-9c45-4820-b08e-bc9bb2e2cbc1}:c:\program files\dotnet\packs\microsoft.netcore.app.ref\8.0.18\analyzers\dotnet\cs\microsoft.interop.libraryimportgenerator.dll
-i:{38537366-246f-4db5-b861-3c250f99e8c7}:c:\program files\dotnet\packs\microsoft.netcore.app.ref\8.0.18\analyzers\dotnet\cs\microsoft.interop.libraryimportgenerator.dll
-i:{b0f6b621-c045-46cd-833d-c61526c966f1}:c:\program files\dotnet\packs\microsoft.netcore.app.ref\8.0.18\analyzers\dotnet\cs\microsoft.interop.libraryimportgenerator.dll
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\program files\dotnet\packs\microsoft.netcore.app.ref\8.0.18\analyzers\dotnet\cs\microsoft.interop.libraryimportgenerator.dll
-++Microsoft.Interop.SourceGeneration
-i:{3cd67153-1978-4afb-a62c-ce4d630be31b}:c:\program files\dotnet\packs\microsoft.netcore.app.ref\8.0.18\analyzers\dotnet\cs\microsoft.interop.sourcegeneration.dll
-i:{0e6bf8fa-9c45-4820-b08e-bc9bb2e2cbc1}:c:\program files\dotnet\packs\microsoft.netcore.app.ref\8.0.18\analyzers\dotnet\cs\microsoft.interop.sourcegeneration.dll
-i:{38537366-246f-4db5-b861-3c250f99e8c7}:c:\program files\dotnet\packs\microsoft.netcore.app.ref\8.0.18\analyzers\dotnet\cs\microsoft.interop.sourcegeneration.dll
-i:{b0f6b621-c045-46cd-833d-c61526c966f1}:c:\program files\dotnet\packs\microsoft.netcore.app.ref\8.0.18\analyzers\dotnet\cs\microsoft.interop.sourcegeneration.dll
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\program files\dotnet\packs\microsoft.netcore.app.ref\8.0.18\analyzers\dotnet\cs\microsoft.interop.sourcegeneration.dll
-++System.Collections.Immutable
-i:{3cd67153-1978-4afb-a62c-ce4d630be31b}:c:\program files\dotnet\sdk\9.0.302\sdks\microsoft.net.sdk.razor\source-generators\system.collections.immutable.dll
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\program files\dotnet\sdk\9.0.302\sdks\microsoft.net.sdk.razor\source-generators\system.collections.immutable.dll
-++System.Text.Json.SourceGeneration
-i:{3cd67153-1978-4afb-a62c-ce4d630be31b}:c:\program files\dotnet\packs\microsoft.netcore.app.ref\8.0.18\analyzers\dotnet\cs\system.text.json.sourcegeneration.dll
-i:{0e6bf8fa-9c45-4820-b08e-bc9bb2e2cbc1}:c:\program files\dotnet\packs\microsoft.netcore.app.ref\8.0.18\analyzers\dotnet\cs\system.text.json.sourcegeneration.dll
-i:{38537366-246f-4db5-b861-3c250f99e8c7}:c:\program files\dotnet\packs\microsoft.netcore.app.ref\8.0.18\analyzers\dotnet\cs\system.text.json.sourcegeneration.dll
-i:{b0f6b621-c045-46cd-833d-c61526c966f1}:c:\program files\dotnet\packs\microsoft.netcore.app.ref\8.0.18\analyzers\dotnet\cs\system.text.json.sourcegeneration.dll
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\program files\dotnet\packs\microsoft.netcore.app.ref\8.0.18\analyzers\dotnet\cs\system.text.json.sourcegeneration.dll
-++System.Text.RegularExpressions.Generator
-i:{3cd67153-1978-4afb-a62c-ce4d630be31b}:c:\program files\dotnet\packs\microsoft.netcore.app.ref\8.0.18\analyzers\dotnet\cs\system.text.regularexpressions.generator.dll
-i:{0e6bf8fa-9c45-4820-b08e-bc9bb2e2cbc1}:c:\program files\dotnet\packs\microsoft.netcore.app.ref\8.0.18\analyzers\dotnet\cs\system.text.regularexpressions.generator.dll
-i:{38537366-246f-4db5-b861-3c250f99e8c7}:c:\program files\dotnet\packs\microsoft.netcore.app.ref\8.0.18\analyzers\dotnet\cs\system.text.regularexpressions.generator.dll
-i:{b0f6b621-c045-46cd-833d-c61526c966f1}:c:\program files\dotnet\packs\microsoft.netcore.app.ref\8.0.18\analyzers\dotnet\cs\system.text.regularexpressions.generator.dll
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\program files\dotnet\packs\microsoft.netcore.app.ref\8.0.18\analyzers\dotnet\cs\system.text.regularexpressions.generator.dll
-++Microsoft.AspNetCore.App
-i:{3cd67153-1978-4afb-a62c-ce4d630be31b}:>1691
-i:{b0f6b621-c045-46cd-833d-c61526c966f1}:>1657
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:>1595
-++Microsoft.NETCore.App
-i:{3cd67153-1978-4afb-a62c-ce4d630be31b}:>1692
-i:{0e6bf8fa-9c45-4820-b08e-bc9bb2e2cbc1}:>1612
-i:{38537366-246f-4db5-b861-3c250f99e8c7}:>1629
-i:{b0f6b621-c045-46cd-833d-c61526c966f1}:>1658
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:>1596
-++AutoMapper (15.0.0)
-i:{3cd67153-1978-4afb-a62c-ce4d630be31b}:>1697
-i:{38537366-246f-4db5-b861-3c250f99e8c7}:>1635
-++FluentValidation.DependencyInjectionExtensions (12.0.0)
-i:{3cd67153-1978-4afb-a62c-ce4d630be31b}:>1694
-++Microsoft.AspNetCore.Authentication.JwtBearer (8.0.18)
-i:{3cd67153-1978-4afb-a62c-ce4d630be31b}:>1698
-++Microsoft.EntityFrameworkCore.Design (8.0.18)
-i:{3cd67153-1978-4afb-a62c-ce4d630be31b}:>1695
-++Swashbuckle.AspNetCore (6.6.2)
-i:{3cd67153-1978-4afb-a62c-ce4d630be31b}:>1696
-++CondoSphere.Application
-i:{3cd67153-1978-4afb-a62c-ce4d630be31b}:>1666
-i:{02ea681e-c7d8-13c7-8484-4ac65e1b71e8}:CondoSphere.Application
-i:{b0f6b621-c045-46cd-833d-c61526c966f1}:>1638
-++CondoSphere.Core
-i:{3cd67153-1978-4afb-a62c-ce4d630be31b}:>1665
-i:{02ea681e-c7d8-13c7-8484-4ac65e1b71e8}:CondoSphere.Core
-i:{38537366-246f-4db5-b861-3c250f99e8c7}:>1616
-i:{b0f6b621-c045-46cd-833d-c61526c966f1}:>1637
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:>1569
-++CondoSphere.Infrastructure
-i:{3cd67153-1978-4afb-a62c-ce4d630be31b}:>1664
-i:{02ea681e-c7d8-13c7-8484-4ac65e1b71e8}:CondoSphere.Infrastructure
-++Libraries
-i:{00000000-0000-0000-0000-000000000000}:Libraries
-++DTOs
-i:{0e6bf8fa-9c45-4820-b08e-bc9bb2e2cbc1}:c:\projectos\condosphere\condosphere.core\dtos\
-++Account
-i:{0e6bf8fa-9c45-4820-b08e-bc9bb2e2cbc1}:c:\projectos\condosphere\condosphere.core\dtos\account\
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\projectos\condosphere\condosphere.web\views\account\
-++AssignManagerDto.cs
-i:{0e6bf8fa-9c45-4820-b08e-bc9bb2e2cbc1}:c:\projectos\condosphere\condosphere.core\dtos\account\assignmanagerdto.cs
-++LoginDto.cs
-i:{0e6bf8fa-9c45-4820-b08e-bc9bb2e2cbc1}:c:\projectos\condosphere\condosphere.core\dtos\account\logindto.cs
-++RegisterDto.cs
-i:{0e6bf8fa-9c45-4820-b08e-bc9bb2e2cbc1}:c:\projectos\condosphere\condosphere.core\dtos\account\registerdto.cs
-++RegisterManagerDto.cs
-i:{0e6bf8fa-9c45-4820-b08e-bc9bb2e2cbc1}:c:\projectos\condosphere\condosphere.core\dtos\account\registermanagerdto.cs
-++RegisterResidentDto.cs
-i:{0e6bf8fa-9c45-4820-b08e-bc9bb2e2cbc1}:c:\projectos\condosphere\condosphere.core\dtos\account\registerresidentdto.cs
-++SetPasswordDto.cs
-i:{0e6bf8fa-9c45-4820-b08e-bc9bb2e2cbc1}:c:\projectos\condosphere\condosphere.core\dtos\account\setpassworddto.cs
-++UserDto.cs
-i:{0e6bf8fa-9c45-4820-b08e-bc9bb2e2cbc1}:c:\projectos\condosphere\condosphere.core\dtos\account\userdto.cs
-++UserListDto.cs
-i:{0e6bf8fa-9c45-4820-b08e-bc9bb2e2cbc1}:c:\projectos\condosphere\condosphere.core\dtos\account\userlistdto.cs
-++Condominiums
-i:{0e6bf8fa-9c45-4820-b08e-bc9bb2e2cbc1}:c:\projectos\condosphere\condosphere.core\dtos\condominiums\
-i:{0e6bf8fa-9c45-4820-b08e-bc9bb2e2cbc1}:c:\projectos\condosphere\condosphere.core\entities\condominiums\
-i:{38537366-246f-4db5-b861-3c250f99e8c7}:c:\projectos\condosphere\condosphere.application\validators\condominiums\
-++Entities
-i:{0e6bf8fa-9c45-4820-b08e-bc9bb2e2cbc1}:c:\projectos\condosphere\condosphere.core\entities\
-++Enums
-i:{0e6bf8fa-9c45-4820-b08e-bc9bb2e2cbc1}:c:\projectos\condosphere\condosphere.core\enums\
-++IEntity.cs
-i:{0e6bf8fa-9c45-4820-b08e-bc9bb2e2cbc1}:c:\projectos\condosphere\condosphere.core\ientity.cs
-++RoleConstants.cs
-i:{0e6bf8fa-9c45-4820-b08e-bc9bb2e2cbc1}:c:\projectos\condosphere\condosphere.core\roleconstants.cs
-++CondominiumDto.cs
-i:{0e6bf8fa-9c45-4820-b08e-bc9bb2e2cbc1}:c:\projectos\condosphere\condosphere.core\dtos\condominiums\condominiumdto.cs
-++CreateUpdateCondominiumDto.cs
-i:{0e6bf8fa-9c45-4820-b08e-bc9bb2e2cbc1}:c:\projectos\condosphere\condosphere.core\dtos\condominiums\createupdatecondominiumdto.cs
-++CreateUpdateUnitDto.cs
-i:{0e6bf8fa-9c45-4820-b08e-bc9bb2e2cbc1}:c:\projectos\condosphere\condosphere.core\dtos\condominiums\createupdateunitdto.cs
-++UnitDto.cs
-i:{0e6bf8fa-9c45-4820-b08e-bc9bb2e2cbc1}:c:\projectos\condosphere\condosphere.core\dtos\condominiums\unitdto.cs
-++Financials
-i:{0e6bf8fa-9c45-4820-b08e-bc9bb2e2cbc1}:c:\projectos\condosphere\condosphere.core\entities\financials\
-++Users
-i:{0e6bf8fa-9c45-4820-b08e-bc9bb2e2cbc1}:c:\projectos\condosphere\condosphere.core\entities\users\
-++InterventionStatus.cs
-i:{0e6bf8fa-9c45-4820-b08e-bc9bb2e2cbc1}:c:\projectos\condosphere\condosphere.core\enums\interventionstatus.cs
-++OccurrenceStatus.cs
-i:{0e6bf8fa-9c45-4820-b08e-bc9bb2e2cbc1}:c:\projectos\condosphere\condosphere.core\enums\occurrencestatus.cs
-++SystemRole.cs
-i:{0e6bf8fa-9c45-4820-b08e-bc9bb2e2cbc1}:c:\projectos\condosphere\condosphere.core\enums\systemrole.cs
-++UnitQuotaStatus.cs
-i:{0e6bf8fa-9c45-4820-b08e-bc9bb2e2cbc1}:c:\projectos\condosphere\condosphere.core\enums\unitquotastatus.cs
-++Microsoft.Extensions.Identity.Stores (8.0.18)
-i:{0e6bf8fa-9c45-4820-b08e-bc9bb2e2cbc1}:>1614
-++Assembly.cs
-i:{0e6bf8fa-9c45-4820-b08e-bc9bb2e2cbc1}:c:\projectos\condosphere\condosphere.core\entities\condominiums\assembly.cs
-++Condominium.cs
-i:{0e6bf8fa-9c45-4820-b08e-bc9bb2e2cbc1}:c:\projectos\condosphere\condosphere.core\entities\condominiums\condominium.cs
-++Document.cs
-i:{0e6bf8fa-9c45-4820-b08e-bc9bb2e2cbc1}:c:\projectos\condosphere\condosphere.core\entities\condominiums\document.cs
-++Intervention.cs
-i:{0e6bf8fa-9c45-4820-b08e-bc9bb2e2cbc1}:c:\projectos\condosphere\condosphere.core\entities\condominiums\intervention.cs
-++Occurrence.cs
-i:{0e6bf8fa-9c45-4820-b08e-bc9bb2e2cbc1}:c:\projectos\condosphere\condosphere.core\entities\condominiums\occurrence.cs
-++Unit.cs
-i:{0e6bf8fa-9c45-4820-b08e-bc9bb2e2cbc1}:c:\projectos\condosphere\condosphere.core\entities\condominiums\unit.cs
-++Expense.cs
-i:{0e6bf8fa-9c45-4820-b08e-bc9bb2e2cbc1}:c:\projectos\condosphere\condosphere.core\entities\financials\expense.cs
-++QuotaPayment.cs
-i:{0e6bf8fa-9c45-4820-b08e-bc9bb2e2cbc1}:c:\projectos\condosphere\condosphere.core\entities\financials\quotapayment.cs
-++Receipt.cs
-i:{0e6bf8fa-9c45-4820-b08e-bc9bb2e2cbc1}:c:\projectos\condosphere\condosphere.core\entities\financials\receipt.cs
-++UnitQuota.cs
-i:{0e6bf8fa-9c45-4820-b08e-bc9bb2e2cbc1}:c:\projectos\condosphere\condosphere.core\entities\financials\unitquota.cs
-++Company.cs
-i:{0e6bf8fa-9c45-4820-b08e-bc9bb2e2cbc1}:c:\projectos\condosphere\condosphere.core\entities\users\company.cs
-++Notification.cs
-i:{0e6bf8fa-9c45-4820-b08e-bc9bb2e2cbc1}:c:\projectos\condosphere\condosphere.core\entities\users\notification.cs
-++User.cs
-i:{0e6bf8fa-9c45-4820-b08e-bc9bb2e2cbc1}:c:\projectos\condosphere\condosphere.core\entities\users\user.cs
-++Authorization
-i:{38537366-246f-4db5-b861-3c250f99e8c7}:c:\projectos\condosphere\condosphere.application\authorization\
-i:{b0f6b621-c045-46cd-833d-c61526c966f1}:c:\projectos\condosphere\condosphere.infrastructure\authorization\
-++Interfaces
-i:{38537366-246f-4db5-b861-3c250f99e8c7}:c:\projectos\condosphere\condosphere.application\interfaces\
-++Mappings
-i:{38537366-246f-4db5-b861-3c250f99e8c7}:c:\projectos\condosphere\condosphere.application\mappings\
-++Services
-i:{38537366-246f-4db5-b861-3c250f99e8c7}:c:\projectos\condosphere\condosphere.application\services\
-i:{b0f6b621-c045-46cd-833d-c61526c966f1}:c:\projectos\condosphere\condosphere.infrastructure\services\
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\projectos\condosphere\condosphere.web\services\
-++Validators
-i:{38537366-246f-4db5-b861-3c250f99e8c7}:c:\projectos\condosphere\condosphere.application\validators\
-++IsCondoManagerRequirement.cs
-i:{38537366-246f-4db5-b861-3c250f99e8c7}:c:\projectos\condosphere\condosphere.application\authorization\iscondomanagerrequirement.cs
-++ICompanyRepository.cs
-i:{38537366-246f-4db5-b861-3c250f99e8c7}:c:\projectos\condosphere\condosphere.application\interfaces\icompanyrepository.cs
-++ICondominiumRepository.cs
-i:{38537366-246f-4db5-b861-3c250f99e8c7}:c:\projectos\condosphere\condosphere.application\interfaces\icondominiumrepository.cs
-++ICurrentUserService.cs
-i:{38537366-246f-4db5-b861-3c250f99e8c7}:c:\projectos\condosphere\condosphere.application\interfaces\icurrentuserservice.cs
-++IMailService.cs
-i:{38537366-246f-4db5-b861-3c250f99e8c7}:c:\projectos\condosphere\condosphere.application\interfaces\imailservice.cs
-++IUnitOfWork.cs
-i:{38537366-246f-4db5-b861-3c250f99e8c7}:c:\projectos\condosphere\condosphere.application\interfaces\iunitofwork.cs
-++IUnitRepository.cs
-i:{38537366-246f-4db5-b861-3c250f99e8c7}:c:\projectos\condosphere\condosphere.application\interfaces\iunitrepository.cs
-++IUserRepository.cs
-i:{38537366-246f-4db5-b861-3c250f99e8c7}:c:\projectos\condosphere\condosphere.application\interfaces\iuserrepository.cs
-++CondominiumProfile.cs
-i:{38537366-246f-4db5-b861-3c250f99e8c7}:c:\projectos\condosphere\condosphere.application\mappings\condominiumprofile.cs
-++UnitProfile.cs
-i:{38537366-246f-4db5-b861-3c250f99e8c7}:c:\projectos\condosphere\condosphere.application\mappings\unitprofile.cs
-++Condominium
-i:{38537366-246f-4db5-b861-3c250f99e8c7}:c:\projectos\condosphere\condosphere.application\services\condominium\
-i:{b0f6b621-c045-46cd-833d-c61526c966f1}:c:\projectos\condosphere\condosphere.infrastructure\data\migrations\condominium\
-++Token
-i:{38537366-246f-4db5-b861-3c250f99e8c7}:c:\projectos\condosphere\condosphere.application\services\token\
-++User
-i:{38537366-246f-4db5-b861-3c250f99e8c7}:c:\projectos\condosphere\condosphere.application\services\user\
-++FluentValidation (12.0.0)
-i:{38537366-246f-4db5-b861-3c250f99e8c7}:>1634
-++Microsoft.AspNetCore.Authorization (8.0.18)
-i:{38537366-246f-4db5-b861-3c250f99e8c7}:>1633
-++Microsoft.AspNetCore.Identity (2.3.1)
-i:{38537366-246f-4db5-b861-3c250f99e8c7}:>1632
-++System.IdentityModel.Tokens.Jwt (8.12.1)
-i:{38537366-246f-4db5-b861-3c250f99e8c7}:>1631
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:>1599
-++CondominiumService.cs
-i:{38537366-246f-4db5-b861-3c250f99e8c7}:c:\projectos\condosphere\condosphere.application\services\condominium\condominiumservice.cs
-++ICondominiumService.cs
-i:{38537366-246f-4db5-b861-3c250f99e8c7}:c:\projectos\condosphere\condosphere.application\services\condominium\icondominiumservice.cs
-++IUnitService.cs
-i:{38537366-246f-4db5-b861-3c250f99e8c7}:c:\projectos\condosphere\condosphere.application\services\condominium\iunitservice.cs
-++UnitService.cs
-i:{38537366-246f-4db5-b861-3c250f99e8c7}:c:\projectos\condosphere\condosphere.application\services\condominium\unitservice.cs
-++ITokenService.cs
-i:{38537366-246f-4db5-b861-3c250f99e8c7}:c:\projectos\condosphere\condosphere.application\services\token\itokenservice.cs
-++TokenService.cs
-i:{38537366-246f-4db5-b861-3c250f99e8c7}:c:\projectos\condosphere\condosphere.application\services\token\tokenservice.cs
-++IUserService.cs
-i:{38537366-246f-4db5-b861-3c250f99e8c7}:c:\projectos\condosphere\condosphere.application\services\user\iuserservice.cs
-++UserService.cs
-i:{38537366-246f-4db5-b861-3c250f99e8c7}:c:\projectos\condosphere\condosphere.application\services\user\userservice.cs
-++CreateUpdateCondominiumDtoValidator.cs
-i:{38537366-246f-4db5-b861-3c250f99e8c7}:c:\projectos\condosphere\condosphere.application\validators\condominiums\createupdatecondominiumdtovalidator.cs
-++CreateUpdateUnitDtoValidator.cs
-i:{38537366-246f-4db5-b861-3c250f99e8c7}:c:\projectos\condosphere\condosphere.application\validators\condominiums\createupdateunitdtovalidator.cs
-++Data
-i:{b0f6b621-c045-46cd-833d-c61526c966f1}:c:\projectos\condosphere\condosphere.infrastructure\data\
-++Repositories
-i:{b0f6b621-c045-46cd-833d-c61526c966f1}:c:\projectos\condosphere\condosphere.infrastructure\repositories\
-++IsCondoManagerHandler.cs
-i:{b0f6b621-c045-46cd-833d-c61526c966f1}:c:\projectos\condosphere\condosphere.infrastructure\authorization\iscondomanagerhandler.cs
-++Migrations
-i:{b0f6b621-c045-46cd-833d-c61526c966f1}:c:\projectos\condosphere\condosphere.infrastructure\data\migrations\
-++CondominiumDbContext.cs
-i:{b0f6b621-c045-46cd-833d-c61526c966f1}:c:\projectos\condosphere\condosphere.infrastructure\data\condominiumdbcontext.cs
-++SeedDb.cs
-i:{b0f6b621-c045-46cd-833d-c61526c966f1}:c:\projectos\condosphere\condosphere.infrastructure\data\seeddb.cs
-++UserManagementDbContext.cs
-i:{b0f6b621-c045-46cd-833d-c61526c966f1}:c:\projectos\condosphere\condosphere.infrastructure\data\usermanagementdbcontext.cs
-++CompanyRepository.cs
-i:{b0f6b621-c045-46cd-833d-c61526c966f1}:c:\projectos\condosphere\condosphere.infrastructure\repositories\companyrepository.cs
-++CondominiumRepository.cs
-i:{b0f6b621-c045-46cd-833d-c61526c966f1}:c:\projectos\condosphere\condosphere.infrastructure\repositories\condominiumrepository.cs
-++UnitOfWork.cs
-i:{b0f6b621-c045-46cd-833d-c61526c966f1}:c:\projectos\condosphere\condosphere.infrastructure\repositories\unitofwork.cs
-++UnitRepository.cs
-i:{b0f6b621-c045-46cd-833d-c61526c966f1}:c:\projectos\condosphere\condosphere.infrastructure\repositories\unitrepository.cs
-++UserRepository.cs
-i:{b0f6b621-c045-46cd-833d-c61526c966f1}:c:\projectos\condosphere\condosphere.infrastructure\repositories\userrepository.cs
-++CurrentUserService.cs
-i:{b0f6b621-c045-46cd-833d-c61526c966f1}:c:\projectos\condosphere\condosphere.infrastructure\services\currentuserservice.cs
-++MailService.cs
-i:{b0f6b621-c045-46cd-833d-c61526c966f1}:c:\projectos\condosphere\condosphere.infrastructure\services\mailservice.cs
-++Microsoft.AspNetCore.Identity.EntityFrameworkCore (8.0.18)
-i:{b0f6b621-c045-46cd-833d-c61526c966f1}:>1661
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:>1600
-++Microsoft.EntityFrameworkCore.SqlServer (8.0.18)
-i:{b0f6b621-c045-46cd-833d-c61526c966f1}:>1660
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:>1598
-++Microsoft.EntityFrameworkCore.Tools (8.0.18)
-i:{b0f6b621-c045-46cd-833d-c61526c966f1}:>1662
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:>1601
-++UserManagement
-i:{b0f6b621-c045-46cd-833d-c61526c966f1}:c:\projectos\condosphere\condosphere.infrastructure\data\migrations\usermanagement\
-++20250709181303_InitialCondoDbCreate.cs
-i:{b0f6b621-c045-46cd-833d-c61526c966f1}:c:\projectos\condosphere\condosphere.infrastructure\data\migrations\condominium\20250709181303_initialcondodbcreate.cs
-++20250710095332_AddManagerIdToCondominium.cs
-i:{b0f6b621-c045-46cd-833d-c61526c966f1}:c:\projectos\condosphere\condosphere.infrastructure\data\migrations\condominium\20250710095332_addmanageridtocondominium.cs
-++20250714114014_AddResidentIdToUnit.cs
-i:{b0f6b621-c045-46cd-833d-c61526c966f1}:c:\projectos\condosphere\condosphere.infrastructure\data\migrations\condominium\20250714114014_addresidentidtounit.cs
-++CondominiumDbContextModelSnapshot.cs
-i:{b0f6b621-c045-46cd-833d-c61526c966f1}:c:\projectos\condosphere\condosphere.infrastructure\data\migrations\condominium\condominiumdbcontextmodelsnapshot.cs
-++20250708211620_InitialUserDbCreate.cs
-i:{b0f6b621-c045-46cd-833d-c61526c966f1}:c:\projectos\condosphere\condosphere.infrastructure\data\migrations\usermanagement\20250708211620_initialuserdbcreate.cs
-++UserManagementDbContextModelSnapshot.cs
-i:{b0f6b621-c045-46cd-833d-c61526c966f1}:c:\projectos\condosphere\condosphere.infrastructure\data\migrations\usermanagement\usermanagementdbcontextmodelsnapshot.cs
-++20250709181303_InitialCondoDbCreate.Designer.cs
-i:{b0f6b621-c045-46cd-833d-c61526c966f1}:c:\projectos\condosphere\condosphere.infrastructure\data\migrations\condominium\20250709181303_initialcondodbcreate.designer.cs
-++20250710095332_AddManagerIdToCondominium.Designer.cs
-i:{b0f6b621-c045-46cd-833d-c61526c966f1}:c:\projectos\condosphere\condosphere.infrastructure\data\migrations\condominium\20250710095332_addmanageridtocondominium.designer.cs
-++20250714114014_AddResidentIdToUnit.Designer.cs
-i:{b0f6b621-c045-46cd-833d-c61526c966f1}:c:\projectos\condosphere\condosphere.infrastructure\data\migrations\condominium\20250714114014_addresidentidtounit.designer.cs
-++20250708211620_InitialUserDbCreate.Designer.cs
-i:{b0f6b621-c045-46cd-833d-c61526c966f1}:c:\projectos\condosphere\condosphere.infrastructure\data\migrations\usermanagement\20250708211620_initialuserdbcreate.designer.cs
-++CondoSphere.Web
-i:{00000000-0000-0000-0000-000000000000}:CondoSphere.Web
-++wwwroot
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\projectos\condosphere\condosphere.web\wwwroot\
-++AccountController.cs
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\projectos\condosphere\condosphere.web\controllers\accountcontroller.cs
-++CondoManagementController.cs
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\projectos\condosphere\condosphere.web\controllers\condomanagementcontroller.cs
-++HomeController.cs
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\projectos\condosphere\condosphere.web\controllers\homecontroller.cs
-++ManagementController.cs
-++Models
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\projectos\condosphere\condosphere.web\models\
-++CondominiumDetailsViewModel.cs
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\projectos\condosphere\condosphere.web\models\condominiumdetailsviewmodel.cs
-++ErrorViewModel.cs
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\projectos\condosphere\condosphere.web\models\errorviewmodel.cs
-++ManagementDashboardViewModel.cs
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\projectos\condosphere\condosphere.web\models\managementdashboardviewmodel.cs
-++ApiClient.cs
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\projectos\condosphere\condosphere.web\services\apiclient.cs
-++JwtForwardingDelegatingHandler.cs
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\projectos\condosphere\condosphere.web\services\jwtforwardingdelegatinghandler.cs
-++Views
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\projectos\condosphere\condosphere.web\views\
-++Login.cshtml
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\projectos\condosphere\condosphere.web\views\account\login.cshtml
-++SetPassword.cshtml
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\projectos\condosphere\condosphere.web\views\account\setpassword.cshtml
-++Home
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\projectos\condosphere\condosphere.web\views\home\
-++Management
-++Index.cshtml
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\projectos\condosphere\condosphere.web\views\home\index.cshtml
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\projectos\condosphere\condosphere.web\views\administration\index.cshtml
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\projectos\condosphere\condosphere.web\views\condomanagement\index.cshtml
-++RegisterManager.cshtml
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\projectos\condosphere\condosphere.web\views\administration\registermanager.cshtml
-++Shared
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\projectos\condosphere\condosphere.web\views\shared\
-++_Layout.cshtml
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\projectos\condosphere\condosphere.web\views\shared\_layout.cshtml
-++_LoginPartial.cshtml
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\projectos\condosphere\condosphere.web\views\shared\_loginpartial.cshtml
-++_ValidationScriptsPartial.cshtml
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\projectos\condosphere\condosphere.web\views\shared\_validationscriptspartial.cshtml
-++Error.cshtml
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\projectos\condosphere\condosphere.web\views\shared\error.cshtml
-++_ViewImports.cshtml
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\projectos\condosphere\condosphere.web\views\_viewimports.cshtml
-++_ViewStart.cshtml
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\projectos\condosphere\condosphere.web\views\_viewstart.cshtml
-++css
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\projectos\condosphere\condosphere.web\wwwroot\css\
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\projectos\condosphere\condosphere.web\wwwroot\lib\bootstrap\dist\css\
-++js
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\projectos\condosphere\condosphere.web\wwwroot\js\
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\projectos\condosphere\condosphere.web\wwwroot\lib\bootstrap\dist\js\
-++lib
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\projectos\condosphere\condosphere.web\wwwroot\lib\
-++favicon.ico
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\projectos\condosphere\condosphere.web\wwwroot\favicon.ico
-++Privacy.cshtml
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\projectos\condosphere\condosphere.web\views\home\privacy.cshtml
-++_Layout.cshtml.css
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\projectos\condosphere\condosphere.web\views\shared\_layout.cshtml.css
-++site.css
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\projectos\condosphere\condosphere.web\wwwroot\css\site.css
-++site.js
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\projectos\condosphere\condosphere.web\wwwroot\js\site.js
-++bootstrap
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\projectos\condosphere\condosphere.web\wwwroot\lib\bootstrap\
-++jquery
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\projectos\condosphere\condosphere.web\wwwroot\lib\jquery\
-++jquery-validation
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\projectos\condosphere\condosphere.web\wwwroot\lib\jquery-validation\
-++jquery-validation-unobtrusive
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\projectos\condosphere\condosphere.web\wwwroot\lib\jquery-validation-unobtrusive\
-++dist
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\projectos\condosphere\condosphere.web\wwwroot\lib\bootstrap\dist\
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\projectos\condosphere\condosphere.web\wwwroot\lib\jquery\dist\
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\projectos\condosphere\condosphere.web\wwwroot\lib\jquery-validation\dist\
-++LICENSE
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\projectos\condosphere\condosphere.web\wwwroot\lib\bootstrap\license
-++LICENSE.txt
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\projectos\condosphere\condosphere.web\wwwroot\lib\jquery\license.txt
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\projectos\condosphere\condosphere.web\wwwroot\lib\jquery-validation-unobtrusive\license.txt
-++LICENSE.md
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\projectos\condosphere\condosphere.web\wwwroot\lib\jquery-validation\license.md
-++jquery.validate.unobtrusive.js
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\projectos\condosphere\condosphere.web\wwwroot\lib\jquery-validation-unobtrusive\jquery.validate.unobtrusive.js
-++jquery.js
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\projectos\condosphere\condosphere.web\wwwroot\lib\jquery\dist\jquery.js
-++additional-methods.js
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\projectos\condosphere\condosphere.web\wwwroot\lib\jquery-validation\dist\additional-methods.js
-++jquery.validate.js
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\projectos\condosphere\condosphere.web\wwwroot\lib\jquery-validation\dist\jquery.validate.js
-++jquery.validate.unobtrusive.min.js
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\projectos\condosphere\condosphere.web\wwwroot\lib\jquery-validation-unobtrusive\jquery.validate.unobtrusive.min.js
-++bootstrap.css
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\projectos\condosphere\condosphere.web\wwwroot\lib\bootstrap\dist\css\bootstrap.css
-++bootstrap-grid.css
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\projectos\condosphere\condosphere.web\wwwroot\lib\bootstrap\dist\css\bootstrap-grid.css
-++bootstrap-reboot.css
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\projectos\condosphere\condosphere.web\wwwroot\lib\bootstrap\dist\css\bootstrap-reboot.css
-++bootstrap-utilities.css
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\projectos\condosphere\condosphere.web\wwwroot\lib\bootstrap\dist\css\bootstrap-utilities.css
-++bootstrap.js
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\projectos\condosphere\condosphere.web\wwwroot\lib\bootstrap\dist\js\bootstrap.js
-++jquery.min.js
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\projectos\condosphere\condosphere.web\wwwroot\lib\jquery\dist\jquery.min.js
-++additional-methods.min.js
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\projectos\condosphere\condosphere.web\wwwroot\lib\jquery-validation\dist\additional-methods.min.js
-++jquery.validate.min.js
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\projectos\condosphere\condosphere.web\wwwroot\lib\jquery-validation\dist\jquery.validate.min.js
-++bootstrap.css.map
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\projectos\condosphere\condosphere.web\wwwroot\lib\bootstrap\dist\css\bootstrap.css.map
-++bootstrap.min.css
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\projectos\condosphere\condosphere.web\wwwroot\lib\bootstrap\dist\css\bootstrap.min.css
-++bootstrap.rtl.css
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\projectos\condosphere\condosphere.web\wwwroot\lib\bootstrap\dist\css\bootstrap.rtl.css
-++bootstrap-grid.css.map
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\projectos\condosphere\condosphere.web\wwwroot\lib\bootstrap\dist\css\bootstrap-grid.css.map
-++bootstrap-grid.min.css
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\projectos\condosphere\condosphere.web\wwwroot\lib\bootstrap\dist\css\bootstrap-grid.min.css
-++bootstrap-grid.rtl.css
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\projectos\condosphere\condosphere.web\wwwroot\lib\bootstrap\dist\css\bootstrap-grid.rtl.css
-++bootstrap-reboot.css.map
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\projectos\condosphere\condosphere.web\wwwroot\lib\bootstrap\dist\css\bootstrap-reboot.css.map
-++bootstrap-reboot.min.css
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\projectos\condosphere\condosphere.web\wwwroot\lib\bootstrap\dist\css\bootstrap-reboot.min.css
-++bootstrap-reboot.rtl.css
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\projectos\condosphere\condosphere.web\wwwroot\lib\bootstrap\dist\css\bootstrap-reboot.rtl.css
-++bootstrap-utilities.css.map
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\projectos\condosphere\condosphere.web\wwwroot\lib\bootstrap\dist\css\bootstrap-utilities.css.map
-++bootstrap-utilities.min.css
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\projectos\condosphere\condosphere.web\wwwroot\lib\bootstrap\dist\css\bootstrap-utilities.min.css
-++bootstrap-utilities.rtl.css
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\projectos\condosphere\condosphere.web\wwwroot\lib\bootstrap\dist\css\bootstrap-utilities.rtl.css
-++bootstrap.bundle.js
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\projectos\condosphere\condosphere.web\wwwroot\lib\bootstrap\dist\js\bootstrap.bundle.js
-++bootstrap.esm.js
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\projectos\condosphere\condosphere.web\wwwroot\lib\bootstrap\dist\js\bootstrap.esm.js
-++bootstrap.js.map
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\projectos\condosphere\condosphere.web\wwwroot\lib\bootstrap\dist\js\bootstrap.js.map
-++bootstrap.min.js
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\projectos\condosphere\condosphere.web\wwwroot\lib\bootstrap\dist\js\bootstrap.min.js
-++jquery.min.map
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\projectos\condosphere\condosphere.web\wwwroot\lib\jquery\dist\jquery.min.map
-++bootstrap.min.css.map
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\projectos\condosphere\condosphere.web\wwwroot\lib\bootstrap\dist\css\bootstrap.min.css.map
-++bootstrap.rtl.css.map
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\projectos\condosphere\condosphere.web\wwwroot\lib\bootstrap\dist\css\bootstrap.rtl.css.map
-++bootstrap.rtl.min.css
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\projectos\condosphere\condosphere.web\wwwroot\lib\bootstrap\dist\css\bootstrap.rtl.min.css
-++bootstrap-grid.min.css.map
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\projectos\condosphere\condosphere.web\wwwroot\lib\bootstrap\dist\css\bootstrap-grid.min.css.map
-++bootstrap-grid.rtl.css.map
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\projectos\condosphere\condosphere.web\wwwroot\lib\bootstrap\dist\css\bootstrap-grid.rtl.css.map
-++bootstrap-grid.rtl.min.css
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\projectos\condosphere\condosphere.web\wwwroot\lib\bootstrap\dist\css\bootstrap-grid.rtl.min.css
-++bootstrap-reboot.min.css.map
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\projectos\condosphere\condosphere.web\wwwroot\lib\bootstrap\dist\css\bootstrap-reboot.min.css.map
-++bootstrap-reboot.rtl.css.map
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\projectos\condosphere\condosphere.web\wwwroot\lib\bootstrap\dist\css\bootstrap-reboot.rtl.css.map
-++bootstrap-reboot.rtl.min.css
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\projectos\condosphere\condosphere.web\wwwroot\lib\bootstrap\dist\css\bootstrap-reboot.rtl.min.css
-++bootstrap-utilities.min.css.map
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\projectos\condosphere\condosphere.web\wwwroot\lib\bootstrap\dist\css\bootstrap-utilities.min.css.map
-++bootstrap-utilities.rtl.css.map
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\projectos\condosphere\condosphere.web\wwwroot\lib\bootstrap\dist\css\bootstrap-utilities.rtl.css.map
-++bootstrap-utilities.rtl.min.css
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\projectos\condosphere\condosphere.web\wwwroot\lib\bootstrap\dist\css\bootstrap-utilities.rtl.min.css
-++bootstrap.bundle.js.map
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\projectos\condosphere\condosphere.web\wwwroot\lib\bootstrap\dist\js\bootstrap.bundle.js.map
-++bootstrap.bundle.min.js
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\projectos\condosphere\condosphere.web\wwwroot\lib\bootstrap\dist\js\bootstrap.bundle.min.js
-++bootstrap.esm.js.map
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\projectos\condosphere\condosphere.web\wwwroot\lib\bootstrap\dist\js\bootstrap.esm.js.map
-++bootstrap.esm.min.js
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\projectos\condosphere\condosphere.web\wwwroot\lib\bootstrap\dist\js\bootstrap.esm.min.js
-++bootstrap.min.js.map
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\projectos\condosphere\condosphere.web\wwwroot\lib\bootstrap\dist\js\bootstrap.min.js.map
-++bootstrap.rtl.min.css.map
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\projectos\condosphere\condosphere.web\wwwroot\lib\bootstrap\dist\css\bootstrap.rtl.min.css.map
-++bootstrap-grid.rtl.min.css.map
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\projectos\condosphere\condosphere.web\wwwroot\lib\bootstrap\dist\css\bootstrap-grid.rtl.min.css.map
-++bootstrap-reboot.rtl.min.css.map
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\projectos\condosphere\condosphere.web\wwwroot\lib\bootstrap\dist\css\bootstrap-reboot.rtl.min.css.map
-++bootstrap-utilities.rtl.min.css.map
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\projectos\condosphere\condosphere.web\wwwroot\lib\bootstrap\dist\css\bootstrap-utilities.rtl.min.css.map
-++bootstrap.bundle.min.js.map
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\projectos\condosphere\condosphere.web\wwwroot\lib\bootstrap\dist\js\bootstrap.bundle.min.js.map
-++bootstrap.esm.min.js.map
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\projectos\condosphere\condosphere.web\wwwroot\lib\bootstrap\dist\js\bootstrap.esm.min.js.map
-++CreateCondominium.cshtml
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\projectos\condosphere\condosphere.web\views\administration\createcondominium.cshtml
-++AssignManagerViewModel.cs
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\projectos\condosphere\condosphere.web\models\assignmanagerviewmodel.cs
-++AssignManager.cshtml
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\projectos\condosphere\condosphere.web\views\administration\assignmanager.cshtml
-++Microsoft.EntityFrameworkCore (8.0.18)
-i:{38537366-246f-4db5-b861-3c250f99e8c7}:>1705
-++Administration
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\projectos\condosphere\condosphere.web\views\administration\
-++AdministrationController.cs
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\projectos\condosphere\condosphere.web\controllers\administrationcontroller.cs
-++NewFolder
-++CondoManagement
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\projectos\condosphere\condosphere.web\views\condomanagement\
-++Details.cshtml
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\projectos\condosphere\condosphere.web\views\condomanagement\details.cshtml
-++CreateUnit.cshtml
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\projectos\condosphere\condosphere.web\views\condomanagement\createunit.cshtml
-++RegisterResident.cshtml
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\projectos\condosphere\condosphere.web\views\condomanagement\registerresident.cshtml
-++RegisterResidentViewModel.cs
-i:{1e1fc90d-b1c1-4a4a-b8ae-f8fa723036ea}:c:\projectos\condosphere\condosphere.web\models\registerresidentviewmodel.cs
-```
-
-## File: .vs/VSWorkspaceState.json
-```json
-{
-  "ExpandedNodes": [
-    ""
-  ],
-  "SelectedNode": "\\CondoSphere.sln",
-  "PreviewInSolutionExplorer": false
+  },
+  "AllowedHosts": "*"
 }
 ```
 
@@ -2326,950 +209,6 @@ namespace CondoSphere.API.Controllers
             return BadRequest(result.Errors);
         }
     }
-}
-```
-
-## File: CondoSphere.Core/DTOs/Account/RegisterResidentDto.cs
-```csharp
-using System.ComponentModel.DataAnnotations;
-
-namespace CondoSphere.Core.DTOs.Account
-{
-    public class RegisterResidentDto
-    {
-        [Required]
-        [StringLength(100, MinimumLength = 2)]
-        public string FirstName { get; set; } = string.Empty;
-
-        [Required]
-        [StringLength(100, MinimumLength = 2)]
-        public string LastName { get; set; } = string.Empty;
-
-        [Required]
-        [EmailAddress]
-        public string Email { get; set; } = string.Empty;
-
-        [Required]
-        public int UnitId { get; set; }
-    }
-}
-```
-
-## File: CondoSphere.Core/DTOs/Account/SetPasswordDto.cs
-```csharp
-using System.ComponentModel.DataAnnotations;
-
-namespace CondoSphere.Core.DTOs.Account
-{
-    public class SetPasswordDto
-    {
-        [Required]
-        public string UserId { get; set; } = string.Empty;
-
-        [Required]
-        public string Token { get; set; } = string.Empty;
-
-        [Required]
-        [StringLength(100, MinimumLength = 6)]
-        public string Password { get; set; } = string.Empty;
-
-        [Required]
-        [Compare(nameof(Password), ErrorMessage = "The password and confirmation password do not match.")]
-        public string ConfirmPassword { get; set; } = string.Empty;
-    }
-}
-```
-
-## File: CondoSphere.Web/Controllers/AdministrationController.cs
-```csharp
-using CondoSphere.Core;
-using CondoSphere.Core.DTOs.Account;
-using CondoSphere.Core.DTOs.Condominiums;
-using CondoSphere.Web.Models;
-using CondoSphere.Web.Services;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-
-namespace CondoSphere.Web.Controllers
-{
-    [Authorize(Roles = RoleConstants.CompanyAdmin)]
-    [Route("administration")] // Optional: You can add a base route for the entire controller
-    public class AdministrationController : Controller
-    {
-        private readonly ApiClient _apiClient;
-
-        public AdministrationController(ApiClient apiClient)
-        {
-            _apiClient = apiClient;
-        }
-
-        [HttpGet("")] // This will now map to "/administration"
-        public async Task<IActionResult> Index()
-        {
-            var users = await _apiClient.GetUsersAsync();
-            var condominiums = await _apiClient.GetCondominiumsAsync();
-
-            var viewModel = new ManagementDashboardViewModel
-            {
-                Users = users ?? new List<UserListDto>(),
-                Condominiums = condominiums ?? new List<CondominiumDto>()
-            };
-
-            return View(viewModel);
-        }
-
-        [HttpGet("register-manager")] // Maps to "/administration/register-manager"
-        public IActionResult RegisterManager()
-        {
-            return View();
-        }
-
-        [HttpPost("register-manager")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> RegisterManager(RegisterManagerDto model)
-        {
-            if (!ModelState.IsValid)
-            {
-                return View(model);
-            }
-
-            var success = await _apiClient.RegisterManagerAsync(model);
-
-            if (success)
-            {
-                TempData["SuccessMessage"] = "Manager registration initiated. They will receive an email to set their password.";
-                return RedirectToAction(nameof(Index));
-            }
-
-            ModelState.AddModelError(string.Empty, "Failed to register manager. The email may already be in use.");
-            return View(model);
-        }
-
-        [HttpGet("create-condominium")] // Maps to "/administration/create-condominium"
-        public IActionResult CreateCondominium()
-        {
-            return View();
-        }
-
-        [HttpPost("create-condominium")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateCondominium(CreateUpdateCondominiumDto model)
-        {
-            if (!ModelState.IsValid)
-            {
-                return View(model);
-            }
-
-            var success = await _apiClient.CreateCondominiumAsync(model);
-
-            if (success)
-            {
-                TempData["SuccessMessage"] = "Condominium created successfully!";
-                return RedirectToAction(nameof(Index));
-            }
-
-            ModelState.AddModelError(string.Empty, "An error occurred while creating the condominium. Please try again.");
-            return View(model);
-        }
-
-        // ===== CORRECTED ROUTES BELOW =====
-        [HttpGet("condominiums/{condominiumId}/assign-manager")]
-        public async Task<IActionResult> AssignManager(int condominiumId)
-        {
-            var condo = await _apiClient.GetCondominiumDetailsAsync(condominiumId);
-            if (condo == null)
-            {
-                return NotFound();
-            }
-
-            var managers = await _apiClient.GetAvailableManagersAsync();
-
-            ViewData["Condominium"] = condo;
-            ViewData["AvailableManagers"] = managers.Select(m => new SelectListItem
-            {
-                Text = $"{m.FirstName} {m.LastName} ({m.Email})",
-                Value = m.Id.ToString()
-            });
-
-            return View(new AssignManagerViewModel());
-        }
-
-        [HttpPost("condominiums/{condominiumId}/assign-manager")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> AssignManager(int condominiumId, AssignManagerViewModel model)
-        {
-            if (!ModelState.IsValid)
-            {
-                await RepopulateAssignManagerViewDataAsync(condominiumId);
-                return View(model);
-            }
-
-            var dto = new AssignManagerDto { ManagerId = model.SelectedManagerId };
-            var success = await _apiClient.AssignManagerAsync(condominiumId, dto);
-
-            if (success)
-            {
-                TempData["SuccessMessage"] = "Manager assigned successfully!";
-                return RedirectToAction(nameof(Index));
-            }
-
-            ModelState.AddModelError(string.Empty, "An error occurred while assigning the manager. Please verify the manager is valid and try again.");
-
-            await RepopulateAssignManagerViewDataAsync(condominiumId);
-            return View(model);
-        }
-
-        private async Task RepopulateAssignManagerViewDataAsync(int condominiumId)
-        {
-            var condo = await _apiClient.GetCondominiumDetailsAsync(condominiumId);
-            var managers = await _apiClient.GetAvailableManagersAsync();
-            ViewData["Condominium"] = condo;
-            ViewData["AvailableManagers"] = managers.Select(m => new SelectListItem
-            {
-                Text = $"{m.FirstName} {m.LastName} ({m.Email})",
-                Value = m.Id.ToString()
-            });
-        }
-    }
-}
-```
-
-## File: CondoSphere.Web/Controllers/CondoManagementController.cs
-```csharp
-using CondoSphere.Core;
-using CondoSphere.Core.DTOs.Account;
-using CondoSphere.Core.DTOs.Condominiums;
-using CondoSphere.Web.Models;
-using CondoSphere.Web.Services;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-
-namespace CondoSphere.Web.Controllers
-{
-    [Authorize(Roles = RoleConstants.CondoManager)]
-    [Route("condo-management")]
-    public class CondoManagementController : Controller
-    {
-        private readonly ApiClient _apiClient;
-
-        public CondoManagementController(ApiClient apiClient)
-        {
-            _apiClient = apiClient;
-        }
-
-        [HttpGet("")]
-        public async Task<IActionResult> Index()
-        {
-            var condominiums = await _apiClient.GetMyManagedCondominiumsAsync();
-            return View(condominiums);
-        }
-
-        [HttpGet("{id}")]
-        public async Task<IActionResult> Details(int id)
-        {
-            var condo = await _apiClient.GetCondominiumDetailsAsync(id);
-            var units = await _apiClient.GetUnitsForCondominiumAsync(id);
-            var users = await _apiClient.GetUsersAsync();
-            var userLookup = users.ToDictionary(u => u.Id, u => $"{u.FirstName} {u.LastName}");
-
-            var unitViewModels = units.Select(unit => new UnitDetailViewModel
-            {
-                Id = unit.Id,
-                Identifier = unit.Identifier,
-                ResidentId = unit.ResidentId,
-                ResidentName = unit.ResidentId.HasValue && userLookup.ContainsKey(unit.ResidentId.Value)
-                    ? userLookup[unit.ResidentId.Value]
-                    : null
-            });
-
-            var viewModel = new CondominiumDetailsViewModel
-            {
-                Condominium = condo,
-                Units = unitViewModels
-            };
-
-            return View(viewModel);
-        }
-
-        [HttpGet("units/{unitId}/register-resident")]
-        public IActionResult RegisterResident(int unitId, int condominiumId)
-        {
-            var model = new RegisterResidentViewModel
-            {
-                UnitId = unitId,
-                CondominiumId = condominiumId
-            };
-            return View(model);
-        }
-
-        [HttpPost("units/{unitId}/register-resident")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> RegisterResident(RegisterResidentViewModel model)
-        {
-            if (!ModelState.IsValid)
-            {
-                return View(model);
-            }
-
-            // Create the DTO to send to the API from the ViewModel
-            var dto = new RegisterResidentDto
-            {
-                UnitId = model.UnitId,
-                FirstName = model.FirstName,
-                LastName = model.LastName,
-                Email = model.Email
-            };
-
-            // ===== CORRECTED LOGIC HERE =====
-            // The ApiClient method returns a simple boolean, not a tuple.
-            var success = await _apiClient.RegisterResidentAsync(model.CondominiumId, dto);
-
-            if (success)
-            {
-                TempData["SuccessMessage"] = "Resident registered successfully! A welcome email has been sent.";
-                return RedirectToAction(nameof(Details), new { id = model.CondominiumId });
-            }
-
-            // Use a generic error message since the current ApiClient doesn't return a specific one.
-            ModelState.AddModelError(string.Empty, "Failed to register resident. The unit may be occupied or the email may be in use.");
-            return View(model);
-        }
-
-        [HttpGet("{condominiumId}/units/create")]
-        public IActionResult CreateUnit(int condominiumId)
-        {
-            ViewData["CondominiumId"] = condominiumId;
-            return View();
-        }
-
-        [HttpPost("{condominiumId}/units/create")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateUnit(int condominiumId, CreateUpdateUnitDto dto)
-        {
-            if (!ModelState.IsValid)
-            {
-                ViewData["CondominiumId"] = condominiumId;
-                return View(dto);
-            }
-
-            var success = await _apiClient.CreateUnitAsync(condominiumId, dto);
-            if (success)
-            {
-                TempData["SuccessMessage"] = $"Unit '{dto.Identifier}' was created successfully!";
-                return RedirectToAction(nameof(Details), new { id = condominiumId });
-            }
-
-            ModelState.AddModelError(string.Empty, "Failed to create the unit. Please try again.");
-            ViewData["CondominiumId"] = condominiumId;
-            return View(dto);
-        }
-
-        [HttpPost("{condominiumId}/units/{unitId}/unassign")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> UnassignResident(int condominiumId, int unitId)
-        {
-            var success = await _apiClient.UnassignResidentAsync(condominiumId, unitId);
-
-            if (success)
-            {
-                TempData["SuccessMessage"] = "Resident has been unassigned and the unit is now vacant.";
-            }
-            else
-            {
-                TempData["ErrorMessage"] = "Failed to unassign resident."; // We'll need to display this in the layout
-            }
-
-            return RedirectToAction(nameof(Details), new { id = condominiumId });
-        }
-    }
-}
-```
-
-## File: CondoSphere.Web/Models/AssignManagerViewModel.cs
-```csharp
-using CondoSphere.Core.DTOs.Condominiums;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using System.ComponentModel.DataAnnotations;
-
-namespace CondoSphere.Web.Models
-{
-    public class AssignManagerViewModel
-    {
-        [Required(ErrorMessage = "Please select a manager.")]
-        [Display(Name = "Select Manager")]
-        public int SelectedManagerId { get; set; }
-    }
-}
-```
-
-## File: CondoSphere.Web/Models/CondominiumDetailsViewModel.cs
-```csharp
-using CondoSphere.Core.DTOs.Condominiums;
-
-namespace CondoSphere.Web.Models
-{
-    // A new class to hold combined Unit and Resident information for the view
-    public class UnitDetailViewModel
-    {
-        public int Id { get; set; }
-        public string Identifier { get; set; } = string.Empty;
-        public int? ResidentId { get; set; }
-        public string? ResidentName { get; set; }
-    }
-
-    public class CondominiumDetailsViewModel
-    {
-        public CondominiumDto Condominium { get; set; }
-        // The list now uses our new, richer view model
-        public IEnumerable<UnitDetailViewModel> Units { get; set; } = new List<UnitDetailViewModel>();
-    }
-}
-```
-
-## File: CondoSphere.Web/Models/RegisterResidentViewModel.cs
-```csharp
-using System.ComponentModel.DataAnnotations;
-
-namespace CondoSphere.Web.Models
-{
-    public class RegisterResidentViewModel
-    {
-        [Required]
-        public int UnitId { get; set; }
-
-        [Required]
-        public int CondominiumId { get; set; }
-
-        [Required]
-        [StringLength(100, MinimumLength = 2)]
-        public string FirstName { get; set; } = string.Empty;
-
-        [Required]
-        [StringLength(100, MinimumLength = 2)]
-        public string LastName { get; set; } = string.Empty;
-
-        [Required]
-        [EmailAddress]
-        public string Email { get; set; } = string.Empty;
-    }
-}
-```
-
-## File: CondoSphere.Web/Views/Account/SetPassword.cshtml
-```
-@model CondoSphere.Core.DTOs.Account.SetPasswordDto
-
-@{
-    ViewData["Title"] = "Set Your Password";
-}
-
-<h1>@ViewData["Title"]</h1>
-<h4>Complete your account registration by setting a secure password.</h4>
-<hr />
-
-<div class="row">
-    <div class="col-md-6">
-        <form asp-action="SetPassword" method="post">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-
-            <input type="hidden" asp-for="UserId" />
-            <input type="hidden" asp-for="Token" />
-
-            <div class="form-floating mb-3">
-                <input asp-for="Password" class="form-control" type="password" />
-                <label asp-for="Password"></label>
-                <span asp-validation-for="Password" class="text-danger"></span>
-            </div>
-
-            <div class="form-floating mb-3">
-                <input asp-for="ConfirmPassword" class="form-control" type="password" />
-                <label asp-for="ConfirmPassword"></label>
-                <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
-            </div>
-
-            <button type="submit" class="btn btn-primary">Set Password</button>
-        </form>
-    </div>
-</div>
-
-@section Scripts {
-    <partial name="_ValidationScriptsPartial" />
-}
-```
-
-## File: CondoSphere.Web/Views/Administration/AssignManager.cshtml
-```
-@model AssignManagerViewModel
-@{
-    ViewData["Title"] = "Assign Manager";
-    // Retrieve the display data from ViewData
-    var condominium = ViewData["Condominium"] as CondoSphere.Core.DTOs.Condominiums.CondominiumDto;
-    var availableManagers = ViewData["AvailableManagers"] as IEnumerable<SelectListItem>;
-}
-
-<h1>@ViewData["Title"]</h1>
-<hr />
-<h4>Condominium: <strong>@condominium.Name</strong></h4>
-<p>Select a manager from the list below to assign them to this condominium.</p>
-
-<div class="row">
-    <div class="col-md-6">
-        <form asp-action="AssignManager" asp-route-condominiumId="@condominium.Id" method="post">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-
-            <div class="form-group mb-3">
-                <label asp-for="SelectedManagerId" class="form-label"></label>
-                <select asp-for="SelectedManagerId" asp-items="availableManagers" class="form-control">
-                    <option value="">-- Please select a manager --</option>
-                </select>
-                <span asp-validation-for="SelectedManagerId" class="text-danger"></span>
-            </div>
-
-            <button type="submit" class="btn btn-primary">Assign Manager</button>
-            <a asp-action="Index" class="btn btn-secondary">Cancel</a>
-        </form>
-    </div>
-</div>
-```
-
-## File: CondoSphere.Web/Views/Administration/CreateCondominium.cshtml
-```
-@model CondoSphere.Core.DTOs.Condominiums.CreateUpdateCondominiumDto
-
-@{
-    ViewData["Title"] = "Create New Condominium";
-}
-
-<h1>@ViewData["Title"]</h1>
-<hr />
-
-<div class="row">
-    <div class="col-md-6">
-        <form asp-action="CreateCondominium" method="post">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-
-            <div class="form-floating mb-3">
-                <input asp-for="Name" class="form-control" placeholder="e.g., Central Park Residences" />
-                <label asp-for="Name"></label>
-                <span asp-validation-for="Name" class="text-danger"></span>
-            </div>
-
-            <div class="form-floating mb-3">
-                <input asp-for="Address" class="form-control" placeholder="e.g., 123 Main Street, Anytown" />
-                <label asp-for="Address"></label>
-                <span asp-validation-for="Address" class="text-danger"></span>
-            </div>
-
-            <button type="submit" class="btn btn-success">Create Condominium</button>
-            <a asp-action="Index" class="btn btn-secondary">Cancel</a>
-        </form>
-    </div>
-</div>
-
-@section Scripts {
-    <partial name="_ValidationScriptsPartial" />
-}
-```
-
-## File: CondoSphere.Web/Views/Administration/Index.cshtml
-```
-@model ManagementDashboardViewModel
-
-@{
-    ViewData["Title"] = "Admin Dashboard";
-}
-
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <div>
-        <h1>@ViewData["Title"]</h1>
-        <p class="text-muted">Manage your company's users and condominiums.</p>
-    </div>
-    <div>
-        <a class="btn btn-primary" asp-action="RegisterManager">
-            <i class="bi bi-person-plus-fill me-1"></i> Register New Manager
-        </a>
-        <a class="btn btn-success" asp-action="CreateCondominium">
-            <i class="bi bi-building-fill-add me-1"></i> Create Condominium
-        </a>
-    </div>
-</div>
-
-<div class="row">
-    <div class="col-lg-8">
-        <div class="card shadow-sm mb-4">
-            <div class="card-header">
-                <h5 class="mb-0">Managed Condominiums</h5>
-            </div>
-            <div class="card-body p-0">
-                @if (Model.Condominiums.Any())
-                {
-                    <div class="table-responsive">
-                        <table class="table table-hover mb-0">
-                            <thead>
-                                <tr>
-                                    <th scope="col">Name</th>
-                                    <th scope="col">Address</th>
-                                    <th scope="col">Assigned Manager</th> @* <-- ADD THIS HEADER *@
-                                    <th scope="col" class="text-end">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var condo in Model.Condominiums)
-                                {
-                                    <tr>
-                                        <td>@condo.Name</td>
-                                        <td>@condo.Address</td>
-
-                                        @* ===== NEW LOGIC FOR MANAGER COLUMN ===== *@
-                                        <td>
-                                            @if (!string.IsNullOrEmpty(condo.ManagerName))
-                                            {
-                                                <span class="text-muted">@condo.ManagerName</span>
-                                            }
-                                        </td>
-
-                                        <td class="text-end">
-                                            @if (string.IsNullOrEmpty(condo.ManagerName))
-                                            {
-                                                <a asp-action="AssignManager" asp-route-condominiumId="@condo.Id" class="btn btn-sm btn-primary">Assign Manager</a>
-                                            }
-                                            else
-                                            {
-                                                <a asp-action="AssignManager" asp-route-condominiumId="@condo.Id" class="btn btn-sm btn-outline-secondary">Re-assign</a>
-                                            }
-                                            @* <a href="#" class="btn btn-sm btn-outline-primary">Edit</a> *@
-                                        </td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
-                    </div>
-                }
-                else
-                {
-                    <div class="text-center p-4">
-                        <p class="text-muted mb-0">No condominiums have been created yet. Click the "Create Condominium" button to get started.</p>
-                    </div>
-                }
-            </div>
-        </div>
-    </div>
-
-    <div class="col-lg-4">
-        <div class="card shadow-sm mb-4">
-            <div class="card-header">
-                <h5 class="mb-0">Company Users</h5>
-            </div>
-            <div class="card-body p-0">
-                @if (Model.Users.Any())
-                {
-                    <div class="table-responsive">
-                        <table class="table table-hover mb-0">
-                            <thead>
-                                <tr>
-                                    <th scope="col">Name</th>
-                                    <th scope="col">Role</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var user in Model.Users)
-                                {
-                                    <tr>
-                                        <td>@user.FirstName @user.LastName<br /><small class="text-muted">@user.Email</small></td>
-                                        <td><span class="badge bg-secondary">@user.Role</span></td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
-                    </div>
-                }
-                else
-                {
-                    <div class="text-center p-4">
-                        <p class="text-muted mb-0">No users found.</p>
-                    </div>
-                }
-            </div>
-        </div>
-    </div>
-</div>
-```
-
-## File: CondoSphere.Web/Views/Administration/RegisterManager.cshtml
-```
-@model CondoSphere.Core.DTOs.Account.RegisterManagerDto
-
-@{
-    ViewData["Title"] = "Register New Manager";
-}
-
-<h1>@ViewData["Title"]</h1>
-<hr />
-
-<div class="row">
-    <div class="col-md-6">
-        <form asp-action="RegisterManager" method="post">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-
-            <div class="form-floating mb-3">
-                <input asp-for="FirstName" class="form-control" />
-                <label asp-for="FirstName"></label>
-                <span asp-validation-for="FirstName" class="text-danger"></span>
-            </div>
-
-            <div class="form-floating mb-3">
-                <input asp-for="LastName" class="form-control" />
-                <label asp-for="LastName"></label>
-                <span asp-validation-for="LastName" class="text-danger"></span>
-            </div>
-
-            <div class="form-floating mb-3">
-                <input asp-for="Email" class="form-control" />
-                <label asp-for="Email"></label>
-                <span asp-validation-for="Email" class="text-danger"></span>
-            </div>
-
-            <button type="submit" class="btn btn-primary">Register Manager</button>
-            <a asp-action="Index" class="btn btn-secondary">Cancel</a>
-        </form>
-    </div>
-</div>
-
-@section Scripts {
-    <partial name="_ValidationScriptsPartial" />
-}
-```
-
-## File: CondoSphere.Web/Views/CondoManagement/CreateUnit.cshtml
-```
-@model CondoSphere.Core.DTOs.Condominiums.CreateUpdateUnitDto
-
-@{
-    ViewData["Title"] = "Add New Unit";
-    var condominiumId = ViewData["CondominiumId"];
-}
-
-<h1>@ViewData["Title"]</h1>
-<hr />
-
-<div class="row">
-    <div class="col-md-6">
-        <form asp-action="CreateUnit" asp-route-condominiumId="@condominiumId" method="post">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-
-            <div class="form-floating mb-3">
-                <input asp-for="Identifier" class="form-control" placeholder="e.g., Apt 101, Block B - Floor 2" />
-                <label asp-for="Identifier">Unit Identifier</label>
-                <span asp-validation-for="Identifier" class="text-danger"></span>
-            </div>
-
-            <button type="submit" class="btn btn-success">Create Unit</button>
-            <a asp-action="Details" asp-route-id="@condominiumId" class="btn btn-secondary">Cancel</a>
-        </form>
-    </div>
-</div>
-
-@section Scripts {
-    <partial name="_ValidationScriptsPartial" />
-}
-```
-
-## File: CondoSphere.Web/Views/CondoManagement/Details.cshtml
-```
-@model CondoSphere.Web.Models.CondominiumDetailsViewModel
-
-@{
-    ViewData["Title"] = $"Manage: {Model.Condominium.Name}";
-}
-
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <div>
-        <h1>@Model.Condominium.Name</h1>
-        <p class="text-muted mb-0">@Model.Condominium.Address</p>
-    </div>
-    <div>
-        <a asp-action="CreateUnit" asp-route-condominiumId="@Model.Condominium.Id" class="btn btn-success">
-            <i class="bi bi-plus-square-fill me-1"></i> Add New Unit
-        </a>
-    </div>
-</div>
-
-<div class="card shadow-sm">
-    <div class="card-header">
-        <h5 class="mb-0">Units</h5>
-    </div>
-    <div class="card-body p-0">
-        @if (Model.Units.Any())
-        {
-            <div class="table-responsive">
-                <table class="table table-hover mb-0 align-middle">
-                    <thead>
-                        <tr>
-                            <th scope="col">Identifier</th>
-                            <th scope="col">Status / Resident</th>
-                            <th scope="col" class="text-end">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var unit in Model.Units)
-                        {
-                            <tr>
-                                <td><strong>@unit.Identifier</strong></td>
-                                <td>
-                                    @if (unit.ResidentId.HasValue)
-                                    {
-                                        <span class="badge bg-info">Occupied</span>
-                                        <span class="ms-2">@unit.ResidentName</span>
-                                    }
-                                    else
-                                    {
-                                        <span class="badge bg-success">Vacant</span>
-                                    }
-                                </td>
-                                <td class="text-end">
-                                    @if (unit.ResidentId.HasValue)
-                                    {
-                                        <form asp-action="UnassignResident" asp-route-condominiumId="@Model.Condominium.Id" asp-route-unitId="@unit.Id" method="post" onsubmit="return confirm('Are you sure you want to unassign this resident? Their account will be deactivated.');">
-                                            @Html.AntiForgeryToken()
-                                            <button type="submit" class="btn btn-sm btn-outline-danger">Unassign Resident</button>
-                                        </form>
-                                    }
-                                    else
-                                    {
-                                        <a asp-action="RegisterResident"
-                                           asp-route-unitId="@unit.Id"
-                                           asp-route-condominiumId="@Model.Condominium.Id"
-                                           class="btn btn-sm btn-primary">Register Resident</a>
-                                    }
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
-        }
-        else
-        {
-            <div class="text-center p-4">
-                <p class="text-muted mb-0">No units have been created for this condominium yet.</p>
-            </div>
-        }
-    </div>
-</div>
-
-<div class="mt-4">
-    <a asp-action="Index" class="btn btn-outline-secondary">
-        <i class="bi bi-arrow-left me-1"></i> Back to My Condos
-    </a>
-</div>
-```
-
-## File: CondoSphere.Web/Views/CondoManagement/Index.cshtml
-```
-@model IEnumerable<CondoSphere.Core.DTOs.Condominiums.CondominiumDto>
-
-@{
-    ViewData["Title"] = "My Managed Condominiums";
-}
-
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <div>
-        <h1>@ViewData["Title"]</h1>
-        <p class="text-muted">Select a condominium to manage its units and residents.</p>
-    </div>
-</div>
-
-@if (Model.Any())
-{
-    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-        @foreach (var condo in Model)
-        {
-            <div class="col">
-                <div class="card h-100 shadow-sm">
-                    <div class="card-body">
-                        <h5 class="card-title">@condo.Name</h5>
-                        <p class="card-text text-muted">@condo.Address</p>
-                    </div>
-                    <div class="card-footer bg-transparent border-top-0 text-end">
-                        <a asp-controller="CondoManagement" asp-action="Details" asp-route-id="@condo.Id" class="btn btn-primary">
-                            <i class="bi bi-gear-fill me-1"></i> Manage
-                        </a>
-                    </div>
-                </div>
-            </div>
-        }
-    </div>
-}
-else
-{
-    <div class="text-center p-5">
-        <h3 class="text-muted">No Condominiums Assigned</h3>
-        <p>You have not been assigned to manage any condominiums yet. Please contact your company administrator.</p>
-    </div>
-}
-```
-
-## File: CondoSphere.Web/Views/CondoManagement/RegisterResident.cshtml
-```
-@model CondoSphere.Web.Models.RegisterResidentViewModel
-
-@{
-    ViewData["Title"] = "Register New Resident";
-}
-
-<h1>@ViewData["Title"]</h1>
-<p class="text-muted">You are registering a new resident for Unit ID: @Model.UnitId in Condominium ID: @Model.CondominiumId</p>
-<hr />
-
-<div class="row">
-    <div class="col-md-6">
-        <form asp-action="RegisterResident" method="post">
-            <div asp-validation-summary="All" class="text-danger"></div>
-
-            @* Add hidden fields for the IDs to ensure they are posted back *@
-            <input type="hidden" asp-for="UnitId" />
-            <input type="hidden" asp-for="CondominiumId" />
-
-            <div class="form-floating mb-3">
-                <input asp-for="FirstName" class="form-control" />
-                <label asp-for="FirstName"></label>
-                <span asp-validation-for="FirstName" class="text-danger"></span>
-            </div>
-
-            <div class="form-floating mb-3">
-                <input asp-for="LastName" class="form-control" />
-                <label asp-for="LastName"></label>
-                <span asp-validation-for="LastName" class="text-danger"></span>
-            </div>
-
-            <div class="form-floating mb-3">
-                <input asp-for="Email" class="form-control" />
-                <label asp-for="Email"></label>
-                <span asp-validation-for="Email" class="text-danger"></span>
-            </div>
-
-            <button type="submit" class="btn btn-primary">Register Resident</button>
-            <a asp-action="Details" asp-route-id="@Model.CondominiumId" class="btn btn-secondary">Cancel</a>
-        </form>
-    </div>
-</div>
-
-@section Scripts {
-    <partial name="_ValidationScriptsPartial" />
-}
-```
-
-## File: CondoSphere.API/appsettings.json
-```json
-{
-  "Logging": {
-    "LogLevel": {
-      "Default": "Information",
-      "Microsoft.AspNetCore": "Warning"
-    }
-  },
-  "AllowedHosts": "*"
 }
 ```
 
@@ -3401,20 +340,6 @@ namespace CondoSphere.Application.Interfaces
 }
 ```
 
-## File: CondoSphere.Application/Interfaces/IUserRepository.cs
-```csharp
-using CondoSphere.Core.DTOs.Account;
-
-namespace CondoSphere.Application.Interfaces
-{
-    public interface IUserRepository
-    {
-        Task<IEnumerable<UserListDto>> GetCompanyUsersWithRolesAsync(int companyId);
-        Task<IEnumerable<UserListDto>> GetUsersInRoleAsync(string roleName, int companyId);
-    }
-}
-```
-
 ## File: CondoSphere.Application/Mappings/CondominiumProfile.cs
 ```csharp
 using AutoMapper;
@@ -3453,136 +378,6 @@ namespace CondoSphere.Application.Mappings
         {
             CreateMap<Unit, UnitDto>();
             CreateMap<CreateUpdateUnitDto, Unit>();
-        }
-    }
-}
-```
-
-## File: CondoSphere.Application/Services/Condominium/ICondominiumService.cs
-```csharp
-using CondoSphere.Core.DTOs.Condominiums;
-
-namespace CondoSphere.Application.Services.Condominium
-{
-    public interface ICondominiumService
-    {
-        Task<CondominiumDto?> GetCondominiumByIdAsync(int id, int companyId);
-        Task<IEnumerable<CondominiumDto>> GetAllCondominiumsAsync(int companyId, int pageNumber, int pageSize);
-        Task<CondominiumDto> CreateCondominiumAsync(CreateUpdateCondominiumDto condominiumDto, int companyId);
-        Task<bool> UpdateCondominiumAsync(int id, CreateUpdateCondominiumDto condominiumDto, int companyId);
-        Task<bool> DeleteCondominiumAsync(int id, int companyId);
-        Task<bool> AssignManagerAsync(int condominiumId, int managerId, int companyId);
-        Task<IEnumerable<CondominiumDto>> GetCondominiumsByManagerIdAsync(int managerId);
-    }
-}
-```
-
-## File: CondoSphere.Application/Services/Condominium/IUnitService.cs
-```csharp
-using CondoSphere.Core.DTOs.Condominiums;
-
-namespace CondoSphere.Application.Services.Condominium
-{
-    public interface IUnitService
-    {
-        Task<IEnumerable<UnitDto>> GetUnitsForCondominiumAsync(int condominiumId);
-        Task<UnitDto?> GetUnitByIdAsync(int unitId);
-        Task<UnitDto> CreateUnitAsync(CreateUpdateUnitDto unitDto, int condominiumId, int companyId);
-        Task<bool> UpdateUnitAsync(int unitId, CreateUpdateUnitDto unitDto);
-        Task<bool> DeleteUnitAsync(int unitId);
-        Task<bool> UnassignResidentAsync(int unitId);
-    }
-}
-```
-
-## File: CondoSphere.Application/Services/Condominium/UnitService.cs
-```csharp
-using AutoMapper;
-using CondoSphere.Application.Interfaces;
-using CondoSphere.Core.DTOs.Condominiums;
-using Microsoft.AspNetCore.Identity;
-using CoreUnit = CondoSphere.Core.Entities.Condominiums.Unit;
-using CoreUser = CondoSphere.Core.Entities.Users.User;
-
-namespace CondoSphere.Application.Services.Condominium
-{
-    public class UnitService : IUnitService
-    {
-        private readonly IUnitRepository _unitRepository;
-        private readonly IMapper _mapper;
-        private readonly UserManager<CoreUser> _userManager;
-
-        public UnitService(IUnitRepository unitRepository, IMapper mapper, UserManager<CoreUser> userManager)
-        {
-            _unitRepository = unitRepository;
-            _mapper = mapper;
-            _userManager = userManager;
-        }
-
-        public async Task<UnitDto> CreateUnitAsync(CreateUpdateUnitDto unitDto, int condominiumId, int companyId)
-        {
-            var unit = _mapper.Map<CoreUnit>(unitDto);
-            unit.CondominiumId = condominiumId;
-            unit.CompanyId = companyId;
-
-            await _unitRepository.AddAsync(unit);
-            await _unitRepository.SaveChangesAsync();
-
-            return _mapper.Map<UnitDto>(unit);
-        }
-
-        public async Task<bool> DeleteUnitAsync(int unitId)
-        {
-            var unit = await _unitRepository.GetByIdAsync(unitId);
-            if (unit == null) return false;
-
-            _unitRepository.Remove(unit);
-            return await _unitRepository.SaveChangesAsync() > 0;
-        }
-
-        public async Task<UnitDto?> GetUnitByIdAsync(int unitId)
-        {
-            var unit = await _unitRepository.GetByIdAsync(unitId);
-            return _mapper.Map<UnitDto>(unit);
-        }
-
-        public async Task<IEnumerable<UnitDto>> GetUnitsForCondominiumAsync(int condominiumId)
-        {
-            var units = await _unitRepository.GetAllAsync(condominiumId);
-            return _mapper.Map<IEnumerable<UnitDto>>(units);
-        }
-
-        public async Task<bool> UpdateUnitAsync(int unitId, CreateUpdateUnitDto unitDto)
-        {
-            var unit = await _unitRepository.GetByIdAsync(unitId);
-            if (unit == null) return false;
-
-            _mapper.Map(unitDto, unit);
-            _unitRepository.Update(unit);
-            return await _unitRepository.SaveChangesAsync() > 0;
-        }
-
-        public async Task<bool> UnassignResidentAsync(int unitId)
-        {
-            var unit = await _unitRepository.GetByIdAsync(unitId);
-            if (unit?.ResidentId == null)
-            {
-                return false;
-            }
-
-            var residentId = unit.ResidentId.Value;
-
-            unit.ResidentId = null;
-            _unitRepository.Update(unit);
-
-            var formerResident = await _userManager.FindByIdAsync(residentId.ToString());
-            if (formerResident != null)
-            {
-                formerResident.IsActive = false;
-                await _userManager.UpdateAsync(formerResident);
-            }
-
-            return await _unitRepository.SaveChangesAsync() > 0;
         }
     }
 }
@@ -3782,21 +577,13 @@ namespace CondoSphere.Core.DTOs.Account
 }
 ```
 
-## File: CondoSphere.Core/DTOs/Account/RegisterManagerDto.cs
+## File: CondoSphere.Core/DTOs/Account/RegisterResidentDto.cs
 ```csharp
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CondoSphere.Core.DTOs.Account
 {
-    /// <summary>
-    /// Represents the data required by a Company Admin to register a new Condominium Manager.
-    /// </summary>
-    public class RegisterManagerDto
+    public class RegisterResidentDto
     {
         [Required]
         [StringLength(100, MinimumLength = 2)]
@@ -3809,6 +596,34 @@ namespace CondoSphere.Core.DTOs.Account
         [Required]
         [EmailAddress]
         public string Email { get; set; } = string.Empty;
+
+        [Required]
+        public int UnitId { get; set; }
+    }
+}
+```
+
+## File: CondoSphere.Core/DTOs/Account/SetPasswordDto.cs
+```csharp
+using System.ComponentModel.DataAnnotations;
+
+namespace CondoSphere.Core.DTOs.Account
+{
+    public class SetPasswordDto
+    {
+        [Required]
+        public string UserId { get; set; } = string.Empty;
+
+        [Required]
+        public string Token { get; set; } = string.Empty;
+
+        [Required]
+        [StringLength(100, MinimumLength = 6)]
+        public string Password { get; set; } = string.Empty;
+
+        [Required]
+        [Compare(nameof(Password), ErrorMessage = "The password and confirmation password do not match.")]
+        public string ConfirmPassword { get; set; } = string.Empty;
     }
 }
 ```
@@ -3840,24 +655,6 @@ namespace CondoSphere.Core.DTOs.Account
         public string LastName { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;
         public string Role { get; set; } = string.Empty;
-    }
-}
-```
-
-## File: CondoSphere.Core/DTOs/Condominiums/CondominiumDto.cs
-```csharp
-namespace CondoSphere.Core.DTOs.Condominiums
-{
-    /// <summary>
-    /// Represents a condominium when being displayed to the user.
-    /// </summary>
-    public class CondominiumDto
-    {
-        public int Id { get; set; }
-        public string Name { get; set; } = string.Empty;
-        public string Address { get; set; } = string.Empty;
-        public int CompanyId { get; set; }
-        public string? ManagerName { get; set; }
     }
 }
 ```
@@ -3894,23 +691,6 @@ namespace CondoSphere.Core.DTOs.Condominiums
     public class CreateUpdateUnitDto
     {
         public string Identifier { get; set; } = string.Empty;
-    }
-}
-```
-
-## File: CondoSphere.Core/DTOs/Condominiums/UnitDto.cs
-```csharp
-namespace CondoSphere.Core.DTOs.Condominiums
-{
-    /// <summary>
-    /// Represents a Unit when being displayed to the user.
-    /// </summary>
-    public class UnitDto
-    {
-        public int Id { get; set; }
-        public string Identifier { get; set; } = string.Empty;
-        public int CondominiumId { get; set; }
-        public int? ResidentId { get; set; }
     }
 }
 ```
@@ -4640,66 +1420,6 @@ namespace CondoSphere.Infrastructure.Repositories
 }
 ```
 
-## File: CondoSphere.Infrastructure/Repositories/UserRepository.cs
-```csharp
-using CondoSphere.Application.Interfaces;
-using CondoSphere.Core.DTOs.Account;
-using CondoSphere.Infrastructure.Data;
-using Microsoft.EntityFrameworkCore;
-
-namespace CondoSphere.Infrastructure.Repositories
-{
-    public class UserRepository : IUserRepository
-    {
-        private readonly UserManagementDbContext _context;
-
-        public UserRepository(UserManagementDbContext context)
-        {
-            _context = context;
-        }
-
-        public async Task<IEnumerable<UserListDto>> GetCompanyUsersWithRolesAsync(int companyId)
-        {
-            var usersWithRoles = await _context.Users
-                .Where(u => u.CompanyId == companyId)
-                .Select(u => new UserListDto
-                {
-                    Id = u.Id,
-                    FirstName = u.FirstName,
-                    LastName = u.LastName,
-                    Email = u.Email,
-                    Role = (from userRole in _context.UserRoles
-                            join role in _context.Roles on userRole.RoleId equals role.Id
-                            where userRole.UserId == u.Id
-                            select role.Name).FirstOrDefault() ?? "No Role"
-                })
-                .AsNoTracking()
-                .ToListAsync();
-
-            return usersWithRoles;
-        }
-
-        public async Task<IEnumerable<UserListDto>> GetUsersInRoleAsync(string roleName, int companyId)
-        {
-            var usersInRole = await _context.Users
-                .Where(u => u.CompanyId == companyId && _context.UserRoles.Any(ur => ur.UserId == u.Id && _context.Roles.Any(r => r.Id == ur.RoleId && r.Name == roleName)))
-                .Select(u => new UserListDto
-                {
-                    Id = u.Id,
-                    FirstName = u.FirstName,
-                    LastName = u.LastName,
-                    Email = u.Email,
-                    Role = roleName
-                })
-                .AsNoTracking()
-                .ToListAsync();
-
-            return usersInRole;
-        }
-    }
-}
-```
-
 ## File: CondoSphere.Infrastructure/Services/MailService.cs
 ```csharp
 using CondoSphere.Application.Interfaces;
@@ -4766,6 +1486,312 @@ namespace CondoSphere.Infrastructure.Services
 }
 ```
 
+## File: CondoSphere.Web/Controllers/AdministrationController.cs
+```csharp
+using CondoSphere.Core;
+using CondoSphere.Core.DTOs.Account;
+using CondoSphere.Core.DTOs.Condominiums;
+using CondoSphere.Web.Models;
+using CondoSphere.Web.Services;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+
+namespace CondoSphere.Web.Controllers
+{
+    [Authorize(Roles = RoleConstants.CompanyAdmin)]
+    [Route("administration")] // Optional: You can add a base route for the entire controller
+    public class AdministrationController : Controller
+    {
+        private readonly ApiClient _apiClient;
+
+        public AdministrationController(ApiClient apiClient)
+        {
+            _apiClient = apiClient;
+        }
+
+        [HttpGet("")] // This will now map to "/administration"
+        public async Task<IActionResult> Index()
+        {
+            var users = await _apiClient.GetUsersAsync();
+            var condominiums = await _apiClient.GetCondominiumsAsync();
+
+            var viewModel = new ManagementDashboardViewModel
+            {
+                Users = users ?? new List<UserListDto>(),
+                Condominiums = condominiums ?? new List<CondominiumDto>()
+            };
+
+            return View(viewModel);
+        }
+
+        [HttpGet("register-manager")] // Maps to "/administration/register-manager"
+        public IActionResult RegisterManager()
+        {
+            return View();
+        }
+
+        [HttpPost("register-manager")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> RegisterManager(RegisterManagerDto model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            var success = await _apiClient.RegisterManagerAsync(model);
+
+            if (success)
+            {
+                TempData["SuccessMessage"] = "Manager registration initiated. They will receive an email to set their password.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            ModelState.AddModelError(string.Empty, "Failed to register manager. The email may already be in use.");
+            return View(model);
+        }
+
+        [HttpGet("create-condominium")] // Maps to "/administration/create-condominium"
+        public IActionResult CreateCondominium()
+        {
+            return View();
+        }
+
+        [HttpPost("create-condominium")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateCondominium(CreateUpdateCondominiumDto model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            var success = await _apiClient.CreateCondominiumAsync(model);
+
+            if (success)
+            {
+                TempData["SuccessMessage"] = "Condominium created successfully!";
+                return RedirectToAction(nameof(Index));
+            }
+
+            ModelState.AddModelError(string.Empty, "An error occurred while creating the condominium. Please try again.");
+            return View(model);
+        }
+
+        // ===== CORRECTED ROUTES BELOW =====
+        [HttpGet("condominiums/{condominiumId}/assign-manager")]
+        public async Task<IActionResult> AssignManager(int condominiumId)
+        {
+            var condo = await _apiClient.GetCondominiumDetailsAsync(condominiumId);
+            if (condo == null)
+            {
+                return NotFound();
+            }
+
+            var managers = await _apiClient.GetAvailableManagersAsync();
+
+            ViewData["Condominium"] = condo;
+            ViewData["AvailableManagers"] = managers.Select(m => new SelectListItem
+            {
+                Text = $"{m.FirstName} {m.LastName} ({m.Email})",
+                Value = m.Id.ToString()
+            });
+
+            return View(new AssignManagerViewModel());
+        }
+
+        [HttpPost("condominiums/{condominiumId}/assign-manager")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AssignManager(int condominiumId, AssignManagerViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                await RepopulateAssignManagerViewDataAsync(condominiumId);
+                return View(model);
+            }
+
+            var dto = new AssignManagerDto { ManagerId = model.SelectedManagerId };
+            var success = await _apiClient.AssignManagerAsync(condominiumId, dto);
+
+            if (success)
+            {
+                TempData["SuccessMessage"] = "Manager assigned successfully!";
+                return RedirectToAction(nameof(Index));
+            }
+
+            ModelState.AddModelError(string.Empty, "An error occurred while assigning the manager. Please verify the manager is valid and try again.");
+
+            await RepopulateAssignManagerViewDataAsync(condominiumId);
+            return View(model);
+        }
+
+        private async Task RepopulateAssignManagerViewDataAsync(int condominiumId)
+        {
+            var condo = await _apiClient.GetCondominiumDetailsAsync(condominiumId);
+            var managers = await _apiClient.GetAvailableManagersAsync();
+            ViewData["Condominium"] = condo;
+            ViewData["AvailableManagers"] = managers.Select(m => new SelectListItem
+            {
+                Text = $"{m.FirstName} {m.LastName} ({m.Email})",
+                Value = m.Id.ToString()
+            });
+        }
+    }
+}
+```
+
+## File: CondoSphere.Web/Controllers/CondoManagementController.cs
+```csharp
+using CondoSphere.Core;
+using CondoSphere.Core.DTOs.Account;
+using CondoSphere.Core.DTOs.Condominiums;
+using CondoSphere.Web.Models;
+using CondoSphere.Web.Services;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+
+namespace CondoSphere.Web.Controllers
+{
+    [Authorize(Roles = RoleConstants.CondoManager)]
+    [Route("condo-management")]
+    public class CondoManagementController : Controller
+    {
+        private readonly ApiClient _apiClient;
+
+        public CondoManagementController(ApiClient apiClient)
+        {
+            _apiClient = apiClient;
+        }
+
+        [HttpGet("")]
+        public async Task<IActionResult> Index()
+        {
+            var condominiums = await _apiClient.GetMyManagedCondominiumsAsync();
+            return View(condominiums);
+        }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> Details(int id)
+        {
+            var condo = await _apiClient.GetCondominiumDetailsAsync(id);
+            var units = await _apiClient.GetUnitsForCondominiumAsync(id);
+            var users = await _apiClient.GetUsersAsync();
+            var userLookup = users.ToDictionary(u => u.Id, u => $"{u.FirstName} {u.LastName}");
+
+            var unitViewModels = units.Select(unit => new UnitDetailViewModel
+            {
+                Id = unit.Id,
+                Identifier = unit.Identifier,
+                ResidentId = unit.ResidentId,
+                ResidentName = unit.ResidentId.HasValue && userLookup.ContainsKey(unit.ResidentId.Value)
+                    ? userLookup[unit.ResidentId.Value]
+                    : null
+            });
+
+            var viewModel = new CondominiumDetailsViewModel
+            {
+                Condominium = condo,
+                Units = unitViewModels
+            };
+
+            return View(viewModel);
+        }
+
+        [HttpGet("units/{unitId}/register-resident")]
+        public IActionResult RegisterResident(int unitId, int condominiumId)
+        {
+            var model = new RegisterResidentViewModel
+            {
+                UnitId = unitId,
+                CondominiumId = condominiumId
+            };
+            return View(model);
+        }
+
+        [HttpPost("units/{unitId}/register-resident")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> RegisterResident(RegisterResidentViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            // Create the DTO to send to the API from the ViewModel
+            var dto = new RegisterResidentDto
+            {
+                UnitId = model.UnitId,
+                FirstName = model.FirstName,
+                LastName = model.LastName,
+                Email = model.Email
+            };
+
+            // ===== CORRECTED LOGIC HERE =====
+            // The ApiClient method returns a simple boolean, not a tuple.
+            var success = await _apiClient.RegisterResidentAsync(model.CondominiumId, dto);
+
+            if (success)
+            {
+                TempData["SuccessMessage"] = "Resident registered successfully! A welcome email has been sent.";
+                return RedirectToAction(nameof(Details), new { id = model.CondominiumId });
+            }
+
+            // Use a generic error message since the current ApiClient doesn't return a specific one.
+            ModelState.AddModelError(string.Empty, "Failed to register resident. The unit may be occupied or the email may be in use.");
+            return View(model);
+        }
+
+        [HttpGet("{condominiumId}/units/create")]
+        public IActionResult CreateUnit(int condominiumId)
+        {
+            ViewData["CondominiumId"] = condominiumId;
+            return View();
+        }
+
+        [HttpPost("{condominiumId}/units/create")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateUnit(int condominiumId, CreateUpdateUnitDto dto)
+        {
+            if (!ModelState.IsValid)
+            {
+                ViewData["CondominiumId"] = condominiumId;
+                return View(dto);
+            }
+
+            var success = await _apiClient.CreateUnitAsync(condominiumId, dto);
+            if (success)
+            {
+                TempData["SuccessMessage"] = $"Unit '{dto.Identifier}' was created successfully!";
+                return RedirectToAction(nameof(Details), new { id = condominiumId });
+            }
+
+            ModelState.AddModelError(string.Empty, "Failed to create the unit. Please try again.");
+            ViewData["CondominiumId"] = condominiumId;
+            return View(dto);
+        }
+
+        [HttpPost("{condominiumId}/units/{unitId}/unassign")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UnassignResident(int condominiumId, int unitId)
+        {
+            var success = await _apiClient.UnassignResidentAsync(condominiumId, unitId);
+
+            if (success)
+            {
+                TempData["SuccessMessage"] = "Resident has been unassigned and the unit is now vacant.";
+            }
+            else
+            {
+                TempData["ErrorMessage"] = "Failed to unassign resident."; // We'll need to display this in the layout
+            }
+
+            return RedirectToAction(nameof(Details), new { id = condominiumId });
+        }
+    }
+}
+```
+
 ## File: CondoSphere.Web/Controllers/HomeController.cs
 ```csharp
 using CondoSphere.Web.Models;
@@ -4802,6 +1828,47 @@ namespace CondoSphere.Web.Controllers
 }
 ```
 
+## File: CondoSphere.Web/Models/AssignManagerViewModel.cs
+```csharp
+using CondoSphere.Core.DTOs.Condominiums;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using System.ComponentModel.DataAnnotations;
+
+namespace CondoSphere.Web.Models
+{
+    public class AssignManagerViewModel
+    {
+        [Required(ErrorMessage = "Please select a manager.")]
+        [Display(Name = "Select Manager")]
+        public int SelectedManagerId { get; set; }
+    }
+}
+```
+
+## File: CondoSphere.Web/Models/CondominiumDetailsViewModel.cs
+```csharp
+using CondoSphere.Core.DTOs.Condominiums;
+
+namespace CondoSphere.Web.Models
+{
+    // A new class to hold combined Unit and Resident information for the view
+    public class UnitDetailViewModel
+    {
+        public int Id { get; set; }
+        public string Identifier { get; set; } = string.Empty;
+        public int? ResidentId { get; set; }
+        public string? ResidentName { get; set; }
+    }
+
+    public class CondominiumDetailsViewModel
+    {
+        public CondominiumDto Condominium { get; set; }
+        // The list now uses our new, richer view model
+        public IEnumerable<UnitDetailViewModel> Units { get; set; } = new List<UnitDetailViewModel>();
+    }
+}
+```
+
 ## File: CondoSphere.Web/Models/ErrorViewModel.cs
 ```csharp
 namespace CondoSphere.Web.Models
@@ -4826,6 +1893,35 @@ namespace CondoSphere.Web.Models
     {
         public IEnumerable<UserListDto> Users { get; set; } = new List<UserListDto>();
         public IEnumerable<CondominiumDto> Condominiums { get; set; } = new List<CondominiumDto>();
+    }
+}
+```
+
+## File: CondoSphere.Web/Models/RegisterResidentViewModel.cs
+```csharp
+using System.ComponentModel.DataAnnotations;
+
+namespace CondoSphere.Web.Models
+{
+    public class RegisterResidentViewModel
+    {
+        [Required]
+        public int UnitId { get; set; }
+
+        [Required]
+        public int CondominiumId { get; set; }
+
+        [Required]
+        [StringLength(100, MinimumLength = 2)]
+        public string FirstName { get; set; } = string.Empty;
+
+        [Required]
+        [StringLength(100, MinimumLength = 2)]
+        public string LastName { get; set; } = string.Empty;
+
+        [Required]
+        [EmailAddress]
+        public string Email { get; set; } = string.Empty;
     }
 }
 ```
@@ -4949,6 +2045,510 @@ namespace CondoSphere.Web.Services
                 </div>
             </form>
         </section>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+```
+
+## File: CondoSphere.Web/Views/Account/SetPassword.cshtml
+```
+@model CondoSphere.Core.DTOs.Account.SetPasswordDto
+
+@{
+    ViewData["Title"] = "Set Your Password";
+}
+
+<h1>@ViewData["Title"]</h1>
+<h4>Complete your account registration by setting a secure password.</h4>
+<hr />
+
+<div class="row">
+    <div class="col-md-6">
+        <form asp-action="SetPassword" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <input type="hidden" asp-for="UserId" />
+            <input type="hidden" asp-for="Token" />
+
+            <div class="form-floating mb-3">
+                <input asp-for="Password" class="form-control" type="password" />
+                <label asp-for="Password"></label>
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
+
+            <div class="form-floating mb-3">
+                <input asp-for="ConfirmPassword" class="form-control" type="password" />
+                <label asp-for="ConfirmPassword"></label>
+                <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Set Password</button>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+```
+
+## File: CondoSphere.Web/Views/Administration/AssignManager.cshtml
+```
+@model AssignManagerViewModel
+@{
+    ViewData["Title"] = "Assign Manager";
+    // Retrieve the display data from ViewData
+    var condominium = ViewData["Condominium"] as CondoSphere.Core.DTOs.Condominiums.CondominiumDto;
+    var availableManagers = ViewData["AvailableManagers"] as IEnumerable<SelectListItem>;
+}
+
+<h1>@ViewData["Title"]</h1>
+<hr />
+<h4>Condominium: <strong>@condominium.Name</strong></h4>
+<p>Select a manager from the list below to assign them to this condominium.</p>
+
+<div class="row">
+    <div class="col-md-6">
+        <form asp-action="AssignManager" asp-route-condominiumId="@condominium.Id" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="form-group mb-3">
+                <label asp-for="SelectedManagerId" class="form-label"></label>
+                <select asp-for="SelectedManagerId" asp-items="availableManagers" class="form-control">
+                    <option value="">-- Please select a manager --</option>
+                </select>
+                <span asp-validation-for="SelectedManagerId" class="text-danger"></span>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Assign Manager</button>
+            <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+        </form>
+    </div>
+</div>
+```
+
+## File: CondoSphere.Web/Views/Administration/CreateCondominium.cshtml
+```
+@model CondoSphere.Core.DTOs.Condominiums.CreateUpdateCondominiumDto
+
+@{
+    ViewData["Title"] = "Create New Condominium";
+}
+
+<h1>@ViewData["Title"]</h1>
+<hr />
+
+<div class="row">
+    <div class="col-md-6">
+        <form asp-action="CreateCondominium" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="form-floating mb-3">
+                <input asp-for="Name" class="form-control" placeholder="e.g., Central Park Residences" />
+                <label asp-for="Name"></label>
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+
+            <div class="form-floating mb-3">
+                <input asp-for="Address" class="form-control" placeholder="e.g., 123 Main Street, Anytown" />
+                <label asp-for="Address"></label>
+                <span asp-validation-for="Address" class="text-danger"></span>
+            </div>
+
+            <button type="submit" class="btn btn-success">Create Condominium</button>
+            <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+```
+
+## File: CondoSphere.Web/Views/Administration/Index.cshtml
+```
+@model ManagementDashboardViewModel
+
+@{
+    ViewData["Title"] = "Admin Dashboard";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1>@ViewData["Title"]</h1>
+        <p class="text-muted">Manage your company's users and condominiums.</p>
+    </div>
+    <div>
+        <a class="btn btn-primary" asp-action="RegisterManager">
+            <i class="bi bi-person-plus-fill me-1"></i> Register New Manager
+        </a>
+        <a class="btn btn-success" asp-action="CreateCondominium">
+            <i class="bi bi-building-fill-add me-1"></i> Create Condominium
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card shadow-sm mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Managed Condominiums</h5>
+            </div>
+            <div class="card-body p-0">
+                @if (Model.Condominiums.Any())
+                {
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Name</th>
+                                    <th scope="col">Address</th>
+                                    <th scope="col">Assigned Manager</th> @* <-- ADD THIS HEADER *@
+                                    <th scope="col" class="text-end">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var condo in Model.Condominiums)
+                                {
+                                    <tr>
+                                        <td>@condo.Name</td>
+                                        <td>@condo.Address</td>
+
+                                        @* ===== NEW LOGIC FOR MANAGER COLUMN ===== *@
+                                        <td>
+                                            @if (!string.IsNullOrEmpty(condo.ManagerName))
+                                            {
+                                                <span class="text-muted">@condo.ManagerName</span>
+                                            }
+                                        </td>
+
+                                        <td class="text-end">
+                                            @if (string.IsNullOrEmpty(condo.ManagerName))
+                                            {
+                                                <a asp-action="AssignManager" asp-route-condominiumId="@condo.Id" class="btn btn-sm btn-primary">Assign Manager</a>
+                                            }
+                                            else
+                                            {
+                                                <a asp-action="AssignManager" asp-route-condominiumId="@condo.Id" class="btn btn-sm btn-outline-secondary">Re-assign</a>
+                                            }
+                                            @* <a href="#" class="btn btn-sm btn-outline-primary">Edit</a> *@
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center p-4">
+                        <p class="text-muted mb-0">No condominiums have been created yet. Click the "Create Condominium" button to get started.</p>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card shadow-sm mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Company Users</h5>
+            </div>
+            <div class="card-body p-0">
+                @if (Model.Users.Any())
+                {
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Name</th>
+                                    <th scope="col">Role</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var user in Model.Users)
+                                {
+                                    <tr>
+                                        <td>@user.FirstName @user.LastName<br /><small class="text-muted">@user.Email</small></td>
+                                        <td><span class="badge bg-secondary">@user.Role</span></td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center p-4">
+                        <p class="text-muted mb-0">No users found.</p>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+```
+
+## File: CondoSphere.Web/Views/Administration/RegisterManager.cshtml
+```
+@model CondoSphere.Core.DTOs.Account.RegisterManagerDto
+
+@{
+    ViewData["Title"] = "Register New Manager";
+}
+
+<h1>@ViewData["Title"]</h1>
+<hr />
+
+<div class="row">
+    <div class="col-md-6">
+        <form asp-action="RegisterManager" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="form-floating mb-3">
+                <input asp-for="FirstName" class="form-control" />
+                <label asp-for="FirstName"></label>
+                <span asp-validation-for="FirstName" class="text-danger"></span>
+            </div>
+
+            <div class="form-floating mb-3">
+                <input asp-for="LastName" class="form-control" />
+                <label asp-for="LastName"></label>
+                <span asp-validation-for="LastName" class="text-danger"></span>
+            </div>
+
+            <div class="form-floating mb-3">
+                <input asp-for="Email" class="form-control" />
+                <label asp-for="Email"></label>
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Register Manager</button>
+            <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+```
+
+## File: CondoSphere.Web/Views/CondoManagement/CreateUnit.cshtml
+```
+@model CondoSphere.Core.DTOs.Condominiums.CreateUpdateUnitDto
+
+@{
+    ViewData["Title"] = "Add New Unit";
+    var condominiumId = ViewData["CondominiumId"];
+}
+
+<h1>@ViewData["Title"]</h1>
+<hr />
+
+<div class="row">
+    <div class="col-md-6">
+        <form asp-action="CreateUnit" asp-route-condominiumId="@condominiumId" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="form-floating mb-3">
+                <input asp-for="Identifier" class="form-control" placeholder="e.g., Apt 101, Block B - Floor 2" />
+                <label asp-for="Identifier">Unit Identifier</label>
+                <span asp-validation-for="Identifier" class="text-danger"></span>
+            </div>
+
+            <button type="submit" class="btn btn-success">Create Unit</button>
+            <a asp-action="Details" asp-route-id="@condominiumId" class="btn btn-secondary">Cancel</a>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+```
+
+## File: CondoSphere.Web/Views/CondoManagement/Details.cshtml
+```
+@model CondoSphere.Web.Models.CondominiumDetailsViewModel
+
+@{
+    ViewData["Title"] = $"Manage: {Model.Condominium.Name}";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1>@Model.Condominium.Name</h1>
+        <p class="text-muted mb-0">@Model.Condominium.Address</p>
+    </div>
+    <div>
+        <a asp-action="CreateUnit" asp-route-condominiumId="@Model.Condominium.Id" class="btn btn-success">
+            <i class="bi bi-plus-square-fill me-1"></i> Add New Unit
+        </a>
+    </div>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-header">
+        <h5 class="mb-0">Units</h5>
+    </div>
+    <div class="card-body p-0">
+        @if (Model.Units.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-hover mb-0 align-middle">
+                    <thead>
+                        <tr>
+                            <th scope="col">Identifier</th>
+                            <th scope="col">Status / Resident</th>
+                            <th scope="col" class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var unit in Model.Units)
+                        {
+                            <tr>
+                                <td><strong>@unit.Identifier</strong></td>
+                                <td>
+                                    @if (unit.ResidentId.HasValue)
+                                    {
+                                        <span class="badge bg-info">Occupied</span>
+                                        <span class="ms-2">@unit.ResidentName</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-success">Vacant</span>
+                                    }
+                                </td>
+                                <td class="text-end">
+                                    @if (unit.ResidentId.HasValue)
+                                    {
+                                        <form asp-action="UnassignResident" asp-route-condominiumId="@Model.Condominium.Id" asp-route-unitId="@unit.Id" method="post" onsubmit="return confirm('Are you sure you want to unassign this resident? Their account will be deactivated.');">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="btn btn-sm btn-outline-danger">Unassign Resident</button>
+                                        </form>
+                                    }
+                                    else
+                                    {
+                                        <a asp-action="RegisterResident"
+                                           asp-route-unitId="@unit.Id"
+                                           asp-route-condominiumId="@Model.Condominium.Id"
+                                           class="btn btn-sm btn-primary">Register Resident</a>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="text-center p-4">
+                <p class="text-muted mb-0">No units have been created for this condominium yet.</p>
+            </div>
+        }
+    </div>
+</div>
+
+<div class="mt-4">
+    <a asp-action="Index" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left me-1"></i> Back to My Condos
+    </a>
+</div>
+```
+
+## File: CondoSphere.Web/Views/CondoManagement/Index.cshtml
+```
+@model IEnumerable<CondoSphere.Core.DTOs.Condominiums.CondominiumDto>
+
+@{
+    ViewData["Title"] = "My Managed Condominiums";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1>@ViewData["Title"]</h1>
+        <p class="text-muted">Select a condominium to manage its units and residents.</p>
+    </div>
+</div>
+
+@if (Model.Any())
+{
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        @foreach (var condo in Model)
+        {
+            <div class="col">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title">@condo.Name</h5>
+                        <p class="card-text text-muted">@condo.Address</p>
+                    </div>
+                    <div class="card-footer bg-transparent border-top-0 text-end">
+                        <a asp-controller="CondoManagement" asp-action="Details" asp-route-id="@condo.Id" class="btn btn-primary">
+                            <i class="bi bi-gear-fill me-1"></i> Manage
+                        </a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+else
+{
+    <div class="text-center p-5">
+        <h3 class="text-muted">No Condominiums Assigned</h3>
+        <p>You have not been assigned to manage any condominiums yet. Please contact your company administrator.</p>
+    </div>
+}
+```
+
+## File: CondoSphere.Web/Views/CondoManagement/RegisterResident.cshtml
+```
+@model CondoSphere.Web.Models.RegisterResidentViewModel
+
+@{
+    ViewData["Title"] = "Register New Resident";
+}
+
+<h1>@ViewData["Title"]</h1>
+<p class="text-muted">You are registering a new resident for Unit ID: @Model.UnitId in Condominium ID: @Model.CondominiumId</p>
+<hr />
+
+<div class="row">
+    <div class="col-md-6">
+        <form asp-action="RegisterResident" method="post">
+            <div asp-validation-summary="All" class="text-danger"></div>
+
+            @* Add hidden fields for the IDs to ensure they are posted back *@
+            <input type="hidden" asp-for="UnitId" />
+            <input type="hidden" asp-for="CondominiumId" />
+
+            <div class="form-floating mb-3">
+                <input asp-for="FirstName" class="form-control" />
+                <label asp-for="FirstName"></label>
+                <span asp-validation-for="FirstName" class="text-danger"></span>
+            </div>
+
+            <div class="form-floating mb-3">
+                <input asp-for="LastName" class="form-control" />
+                <label asp-for="LastName"></label>
+                <span asp-validation-for="LastName" class="text-danger"></span>
+            </div>
+
+            <div class="form-floating mb-3">
+                <input asp-for="Email" class="form-control" />
+                <label asp-for="Email"></label>
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Register Resident</button>
+            <a asp-action="Details" asp-route-id="@Model.CondominiumId" class="btn btn-secondary">Cancel</a>
+        </form>
     </div>
 </div>
 
@@ -5145,6 +2745,579 @@ Content-Type: application/json
   "email": "test.admin@mynewcompany.com",
   "password": "123456",
   "confirmPassword": "123456!"
+}
+```
+
+## File: CondoSphere.Application/Interfaces/ICurrentUserService.cs
+```csharp
+namespace CondoSphere.Application.Interfaces
+{
+    public interface ICurrentUserService
+    {
+        int? UserId { get; }
+        int? CompanyId { get; }
+        string? UserEmail { get; }
+        bool IsInRole(string roleName);
+        Task<(bool IsAuthorized, int? CompanyId)> CanManageCondominium(int condominiumId);
+    }
+}
+```
+
+## File: CondoSphere.Application/Interfaces/IUserRepository.cs
+```csharp
+using CondoSphere.Core.DTOs.Account;
+
+namespace CondoSphere.Application.Interfaces
+{
+    public interface IUserRepository
+    {
+        Task<IEnumerable<UserListDto>> GetCompanyUsersWithRolesAsync(int companyId);
+        Task<IEnumerable<UserListDto>> GetUsersInRoleAsync(string roleName, int companyId);
+    }
+}
+```
+
+## File: CondoSphere.Application/Services/Condominium/ICondominiumService.cs
+```csharp
+using CondoSphere.Core.DTOs.Condominiums;
+
+namespace CondoSphere.Application.Services.Condominium
+{
+    public interface ICondominiumService
+    {
+        Task<CondominiumDto?> GetCondominiumByIdAsync(int id, int companyId);
+        Task<IEnumerable<CondominiumDto>> GetAllCondominiumsAsync(int companyId, int pageNumber, int pageSize);
+        Task<CondominiumDto> CreateCondominiumAsync(CreateUpdateCondominiumDto condominiumDto, int companyId);
+        Task<bool> UpdateCondominiumAsync(int id, CreateUpdateCondominiumDto condominiumDto, int companyId);
+        Task<bool> DeleteCondominiumAsync(int id, int companyId);
+        Task<bool> AssignManagerAsync(int condominiumId, int managerId, int companyId);
+        Task<IEnumerable<CondominiumDto>> GetCondominiumsByManagerIdAsync(int managerId);
+    }
+}
+```
+
+## File: CondoSphere.Application/Services/Condominium/IUnitService.cs
+```csharp
+using CondoSphere.Core.DTOs.Condominiums;
+
+namespace CondoSphere.Application.Services.Condominium
+{
+    public interface IUnitService
+    {
+        Task<IEnumerable<UnitDto>> GetUnitsForCondominiumAsync(int condominiumId);
+        Task<UnitDto?> GetUnitByIdAsync(int unitId);
+        Task<UnitDto> CreateUnitAsync(CreateUpdateUnitDto unitDto, int condominiumId, int companyId);
+        Task<bool> UpdateUnitAsync(int unitId, CreateUpdateUnitDto unitDto);
+        Task<bool> DeleteUnitAsync(int unitId);
+        Task<bool> UnassignResidentAsync(int unitId);
+    }
+}
+```
+
+## File: CondoSphere.Application/Services/Condominium/UnitService.cs
+```csharp
+using AutoMapper;
+using CondoSphere.Application.Interfaces;
+using CondoSphere.Core.DTOs.Condominiums;
+using Microsoft.AspNetCore.Identity;
+using CoreUnit = CondoSphere.Core.Entities.Condominiums.Unit;
+using CoreUser = CondoSphere.Core.Entities.Users.User;
+
+namespace CondoSphere.Application.Services.Condominium
+{
+    public class UnitService : IUnitService
+    {
+        private readonly IUnitRepository _unitRepository;
+        private readonly IMapper _mapper;
+        private readonly UserManager<CoreUser> _userManager;
+
+        public UnitService(IUnitRepository unitRepository, IMapper mapper, UserManager<CoreUser> userManager)
+        {
+            _unitRepository = unitRepository;
+            _mapper = mapper;
+            _userManager = userManager;
+        }
+
+        public async Task<UnitDto> CreateUnitAsync(CreateUpdateUnitDto unitDto, int condominiumId, int companyId)
+        {
+            var unit = _mapper.Map<CoreUnit>(unitDto);
+            unit.CondominiumId = condominiumId;
+            unit.CompanyId = companyId;
+
+            await _unitRepository.AddAsync(unit);
+            await _unitRepository.SaveChangesAsync();
+
+            return _mapper.Map<UnitDto>(unit);
+        }
+
+        public async Task<bool> DeleteUnitAsync(int unitId)
+        {
+            var unit = await _unitRepository.GetByIdAsync(unitId);
+            if (unit == null) return false;
+
+            _unitRepository.Remove(unit);
+            return await _unitRepository.SaveChangesAsync() > 0;
+        }
+
+        public async Task<UnitDto?> GetUnitByIdAsync(int unitId)
+        {
+            var unit = await _unitRepository.GetByIdAsync(unitId);
+            return _mapper.Map<UnitDto>(unit);
+        }
+
+        public async Task<IEnumerable<UnitDto>> GetUnitsForCondominiumAsync(int condominiumId)
+        {
+            var units = await _unitRepository.GetAllAsync(condominiumId);
+            return _mapper.Map<IEnumerable<UnitDto>>(units);
+        }
+
+        public async Task<bool> UpdateUnitAsync(int unitId, CreateUpdateUnitDto unitDto)
+        {
+            var unit = await _unitRepository.GetByIdAsync(unitId);
+            if (unit == null) return false;
+
+            _mapper.Map(unitDto, unit);
+            _unitRepository.Update(unit);
+            return await _unitRepository.SaveChangesAsync() > 0;
+        }
+
+        public async Task<bool> UnassignResidentAsync(int unitId)
+        {
+            var unit = await _unitRepository.GetByIdAsync(unitId);
+            if (unit?.ResidentId == null)
+            {
+                return false;
+            }
+
+            var residentId = unit.ResidentId.Value;
+
+            unit.ResidentId = null;
+            _unitRepository.Update(unit);
+
+            var formerResident = await _userManager.FindByIdAsync(residentId.ToString());
+            if (formerResident != null)
+            {
+                formerResident.IsActive = false;
+                await _userManager.UpdateAsync(formerResident);
+            }
+
+            return await _unitRepository.SaveChangesAsync() > 0;
+        }
+    }
+}
+```
+
+## File: CondoSphere.Core/DTOs/Account/RegisterManagerDto.cs
+```csharp
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace CondoSphere.Core.DTOs.Account
+{
+    /// <summary>
+    /// Represents the data required by a Company Admin to register a new Condominium Manager.
+    /// </summary>
+    public class RegisterManagerDto
+    {
+        [Required]
+        [StringLength(100, MinimumLength = 2)]
+        public string FirstName { get; set; } = string.Empty;
+
+        [Required]
+        [StringLength(100, MinimumLength = 2)]
+        public string LastName { get; set; } = string.Empty;
+
+        [Required]
+        [EmailAddress]
+        public string Email { get; set; } = string.Empty;
+    }
+}
+```
+
+## File: CondoSphere.Core/DTOs/Condominiums/CondominiumDto.cs
+```csharp
+namespace CondoSphere.Core.DTOs.Condominiums
+{
+    /// <summary>
+    /// Represents a condominium when being displayed to the user.
+    /// </summary>
+    public class CondominiumDto
+    {
+        public int Id { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public string Address { get; set; } = string.Empty;
+        public int CompanyId { get; set; }
+        public string? ManagerName { get; set; }
+    }
+}
+```
+
+## File: CondoSphere.Core/DTOs/Condominiums/UnitDto.cs
+```csharp
+namespace CondoSphere.Core.DTOs.Condominiums
+{
+    /// <summary>
+    /// Represents a Unit when being displayed to the user.
+    /// </summary>
+    public class UnitDto
+    {
+        public int Id { get; set; }
+        public string Identifier { get; set; } = string.Empty;
+        public int CondominiumId { get; set; }
+        public int? ResidentId { get; set; }
+    }
+}
+```
+
+## File: CondoSphere.Core/Entities/Condominiums/Condominium.cs
+```csharp
+using CondoSphere.Core;
+
+namespace CondoSphere.Core.Entities.Condominiums
+{
+    public class Condominium : IEntity
+    {
+        public int Id { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public string Address { get; set; } = string.Empty;
+        public int CompanyId { get; set; }
+        public int? ManagerId { get; set; }
+    }
+}
+```
+
+## File: CondoSphere.Infrastructure/Authorization/IsCondoManagerHandler.cs
+```csharp
+using CondoSphere.Application.Authorization;
+using CondoSphere.Core;
+using CondoSphere.Infrastructure.Data;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Routing;
+using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
+using System.Threading.Tasks;
+
+namespace CondoSphere.Infrastructure.Authorization
+{
+    public class IsCondoManagerHandler : AuthorizationHandler<IsCondoManagerRequirement>
+    {
+        private readonly CondominiumDbContext _condoContext;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+
+        public IsCondoManagerHandler(CondominiumDbContext condoContext, IHttpContextAccessor httpContextAccessor)
+        {
+            _condoContext = condoContext;
+            _httpContextAccessor = httpContextAccessor;
+        }
+
+        protected override async Task HandleRequirementAsync(
+            AuthorizationHandlerContext context,
+            IsCondoManagerRequirement requirement)
+        {
+            // First, check for the override role. A CompanyAdmin can manage everything.
+            if (context.User.IsInRole(RoleConstants.CompanyAdmin))
+            {
+                context.Succeed(requirement);
+                return;
+            }
+
+            var httpContext = _httpContextAccessor.HttpContext;
+            if (httpContext == null)
+            {
+                context.Fail();
+                return;
+            }
+
+            var userIdClaim = context.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (!int.TryParse(userIdClaim, out var userId))
+            {
+                context.Fail();
+                return;
+            }
+
+            var condominiumIdRouteValue = httpContext.GetRouteValue("condominiumId")?.ToString();
+            if (!int.TryParse(condominiumIdRouteValue, out var condominiumId))
+            {
+                condominiumIdRouteValue = httpContext.GetRouteValue("id")?.ToString();
+                if (!int.TryParse(condominiumIdRouteValue, out condominiumId))
+                {
+                    context.Fail();
+                    return;
+                }
+            }
+
+            // Check the database to see if this user is the manager of this condominium.
+            // We do NOT use IgnoreQueryFilters() here. This is intentional.
+            // We want this authorization check to respect any global filters, such as a
+            // potential future soft-delete "IsActive" flag on condominiums.
+            bool isManagerOfCondo = await _condoContext.Condominiums
+                .AnyAsync(c => c.Id == condominiumId && c.ManagerId == userId);
+
+            if (isManagerOfCondo)
+            {
+                context.Succeed(requirement);
+            }
+            else
+            {
+                context.Fail();
+            }
+        }
+    }
+}
+```
+
+## File: CondoSphere.Infrastructure/Data/SeedDb.cs
+```csharp
+using CondoSphere.Core;
+using CondoSphere.Core.Entities.Users;
+using Microsoft.AspNetCore.Identity;
+
+namespace CondoSphere.Infrastructure.Data
+{
+    /// <summary>
+    /// Responsible for seeding initial data into the database.
+    /// </summary>
+    public class SeedDb
+    {
+        private readonly UserManagementDbContext _context;
+        private readonly UserManager<User> _userManager;
+        private readonly RoleManager<IdentityRole<int>> _roleManager;
+
+        public SeedDb(UserManagementDbContext context, UserManager<User> userManager, RoleManager<IdentityRole<int>> roleManager)
+        {
+            _context = context;
+            _userManager = userManager;
+            _roleManager = roleManager;
+        }
+
+        public async Task SeedAsync()
+        {
+            await _context.Database.EnsureCreatedAsync();
+            await CheckRolesAsync();
+        }
+
+        private async Task CheckRolesAsync()
+        {
+            // Use the constant for the check
+            if (!await _roleManager.RoleExistsAsync(RoleConstants.CompanyAdmin))
+            {
+                // Use the constants for creation
+                await _roleManager.CreateAsync(new IdentityRole<int>(RoleConstants.CompanyAdmin));
+                await _roleManager.CreateAsync(new IdentityRole<int>(RoleConstants.CondoManager));
+                await _roleManager.CreateAsync(new IdentityRole<int>(RoleConstants.CondoResident));
+                await _roleManager.CreateAsync(new IdentityRole<int>(RoleConstants.Employee));
+                await _roleManager.CreateAsync(new IdentityRole<int>(RoleConstants.PlatformSuperAdmin));
+            }
+        }
+    }
+}
+```
+
+## File: CondoSphere.Infrastructure/Data/UserManagementDbContext.cs
+```csharp
+using CondoSphere.Core.Entities.Users;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
+
+namespace CondoSphere.Infrastructure.Data
+{
+    /// <summary>
+    /// Represents the database context for the User Management database.
+    /// Inherits from IdentityDbContext to include tables for ASP.NET Core Identity.
+    /// </summary>
+    public class UserManagementDbContext : IdentityDbContext<User, IdentityRole<int>, int>
+    {
+        // DbSet properties tell EF Core which of our entities should become tables.
+
+        /// <summary>
+        /// Represents the 'Companies' table.
+        /// </summary>
+        public DbSet<Company> Companies { get; set; }
+
+        /// <summary>
+        /// Represents the 'Notifications' table.
+        /// </summary>
+        public DbSet<Notification> Notifications { get; set; }
+
+        public UserManagementDbContext(DbContextOptions<UserManagementDbContext> options)
+            : base(options)
+        {
+        }
+
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            base.OnModelCreating(builder);
+            builder.Entity<User>().HasQueryFilter(u => u.IsActive);
+            builder.Entity<Company>().HasQueryFilter(c => c.IsActive);
+        }
+    }
+}
+```
+
+## File: CondoSphere.Infrastructure/Repositories/UserRepository.cs
+```csharp
+using CondoSphere.Application.Interfaces;
+using CondoSphere.Core.DTOs.Account;
+using CondoSphere.Infrastructure.Data;
+using Microsoft.EntityFrameworkCore;
+
+namespace CondoSphere.Infrastructure.Repositories
+{
+    public class UserRepository : IUserRepository
+    {
+        private readonly UserManagementDbContext _context;
+
+        public UserRepository(UserManagementDbContext context)
+        {
+            _context = context;
+        }
+
+        public async Task<IEnumerable<UserListDto>> GetCompanyUsersWithRolesAsync(int companyId)
+        {
+            var usersWithRoles = await _context.Users
+                .Where(u => u.CompanyId == companyId)
+                .Select(u => new UserListDto
+                {
+                    Id = u.Id,
+                    FirstName = u.FirstName,
+                    LastName = u.LastName,
+                    Email = u.Email,
+                    Role = (from userRole in _context.UserRoles
+                            join role in _context.Roles on userRole.RoleId equals role.Id
+                            where userRole.UserId == u.Id
+                            select role.Name).FirstOrDefault() ?? "No Role"
+                })
+                .AsNoTracking()
+                .ToListAsync();
+
+            return usersWithRoles;
+        }
+
+        public async Task<IEnumerable<UserListDto>> GetUsersInRoleAsync(string roleName, int companyId)
+        {
+            var usersInRole = await _context.Users
+                .Where(u => u.CompanyId == companyId && _context.UserRoles.Any(ur => ur.UserId == u.Id && _context.Roles.Any(r => r.Id == ur.RoleId && r.Name == roleName)))
+                .Select(u => new UserListDto
+                {
+                    Id = u.Id,
+                    FirstName = u.FirstName,
+                    LastName = u.LastName,
+                    Email = u.Email,
+                    Role = roleName
+                })
+                .AsNoTracking()
+                .ToListAsync();
+
+            return usersInRole;
+        }
+    }
+}
+```
+
+## File: CondoSphere.Infrastructure/Services/CurrentUserService.cs
+```csharp
+using CondoSphere.Application.Interfaces;
+using CondoSphere.Infrastructure.Data;
+using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
+
+namespace CondoSphere.Infrastructure.Services
+{
+    public class CurrentUserService : ICurrentUserService
+    {
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly CondominiumDbContext _condoContext;
+
+        public CurrentUserService(IHttpContextAccessor httpContextAccessor, CondominiumDbContext condoContext)
+        {
+            _httpContextAccessor = httpContextAccessor;
+            _condoContext = condoContext;
+        }
+
+        public int? UserId => GetClaimValue<int>(ClaimTypes.NameIdentifier);
+
+        public int? CompanyId => GetClaimValue<int>("companyId");
+
+        public string? UserEmail => GetClaimValue<string>(ClaimTypes.Email);
+
+        public bool IsInRole(string roleName)
+        {
+            return _httpContextAccessor.HttpContext?.User.IsInRole(roleName) ?? false;
+        }
+
+        private T? GetClaimValue<T>(string claimType)
+        {
+            var claimValue = _httpContextAccessor.HttpContext?.User?.FindFirstValue(claimType);
+            if (string.IsNullOrEmpty(claimValue))
+            {
+                return default;
+            }
+            return (T)Convert.ChangeType(claimValue, typeof(T));
+        }
+
+        public async Task<(bool IsAuthorized, int? CompanyId)> CanManageCondominium(int condominiumId)
+        {
+            var userId = this.UserId; // Get user ID from the existing property
+            if (userId == null) return (false, null);
+
+            // One single, efficient database call to check everything.
+            var condo = await _condoContext.Condominiums
+                                .AsNoTracking()
+                                .FirstOrDefaultAsync(c => c.Id == condominiumId && c.ManagerId == userId);
+
+            if (condo != null)
+            {
+                // If found, user is authorized, and we return the condo's CompanyId.
+                return (true, condo.CompanyId);
+            }
+
+            // If not found, user is not authorized.
+            return (false, null);
+        }
+    }
+}
+```
+
+## File: CondoSphere.Web/appsettings.Development.json
+```json
+{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning"
+    }
+  },
+  "AllowedHosts": "*"
+}
+```
+
+## File: CondoSphere.API/appsettings.Development.json
+```json
+{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning"
+    }
+  },
+  "AllowedHosts": "*",
+  "ConnectionStrings": {
+    "UserManagementConnection": "Server=(LocalDb)\\MSSQLLocalDB;Database=CondoSphere_UserManagementDB;Trusted_Connection=True;",
+    "CondominiumConnection": "Server=(LocalDb)\\MSSQLLocalDB;Database=CondoSphere_CondominiumDB;Trusted_Connection=True;"
+  },
+  "MailSettings": {
+    "From": "condosphere.geral@gmail.com",
+    "Smtp": "smtp.gmail.com",
+    "Port": 587,
+    "Username": "condosphere.geral@gmail.com"
+  }
 }
 ```
 
@@ -5673,21 +3846,6 @@ namespace CondoSphere.Application.Interfaces
 }
 ```
 
-## File: CondoSphere.Application/Interfaces/ICurrentUserService.cs
-```csharp
-namespace CondoSphere.Application.Interfaces
-{
-    public interface ICurrentUserService
-    {
-        int? UserId { get; }
-        int? CompanyId { get; }
-        string? UserEmail { get; }
-        bool IsInRole(string roleName);
-        Task<(bool IsAuthorized, int? CompanyId)> CanManageCondominium(int condominiumId);
-    }
-}
-```
-
 ## File: CondoSphere.Application/Services/Condominium/CondominiumService.cs
 ```csharp
 using AutoMapper;
@@ -6081,23 +4239,6 @@ namespace CondoSphere.Application.Services.User
 }
 ```
 
-## File: CondoSphere.Core/Entities/Condominiums/Condominium.cs
-```csharp
-using CondoSphere.Core;
-
-namespace CondoSphere.Core.Entities.Condominiums
-{
-    public class Condominium : IEntity
-    {
-        public int Id { get; set; }
-        public string Name { get; set; } = string.Empty;
-        public string Address { get; set; } = string.Empty;
-        public int CompanyId { get; set; }
-        public int? ManagerId { get; set; }
-    }
-}
-```
-
 ## File: CondoSphere.Core/Entities/Condominiums/Unit.cs
 ```csharp
 namespace CondoSphere.Core.Entities.Condominiums
@@ -6137,176 +4278,6 @@ namespace CondoSphere.Core.Entities.Condominiums
         /// Nullable because a unit can be vacant.
         /// </summary>
         public int? ResidentId { get; set; }
-    }
-}
-```
-
-## File: CondoSphere.Infrastructure/Authorization/IsCondoManagerHandler.cs
-```csharp
-using CondoSphere.Application.Authorization;
-using CondoSphere.Core;
-using CondoSphere.Infrastructure.Data;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Routing;
-using Microsoft.EntityFrameworkCore;
-using System.Security.Claims;
-using System.Threading.Tasks;
-
-namespace CondoSphere.Infrastructure.Authorization
-{
-    public class IsCondoManagerHandler : AuthorizationHandler<IsCondoManagerRequirement>
-    {
-        private readonly CondominiumDbContext _condoContext;
-        private readonly IHttpContextAccessor _httpContextAccessor;
-
-        public IsCondoManagerHandler(CondominiumDbContext condoContext, IHttpContextAccessor httpContextAccessor)
-        {
-            _condoContext = condoContext;
-            _httpContextAccessor = httpContextAccessor;
-        }
-
-        protected override async Task HandleRequirementAsync(
-            AuthorizationHandlerContext context,
-            IsCondoManagerRequirement requirement)
-        {
-            // First, check for the override role. A CompanyAdmin can manage everything.
-            if (context.User.IsInRole(RoleConstants.CompanyAdmin))
-            {
-                context.Succeed(requirement);
-                return;
-            }
-
-            var httpContext = _httpContextAccessor.HttpContext;
-            if (httpContext == null)
-            {
-                context.Fail();
-                return;
-            }
-
-            var userIdClaim = context.User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (!int.TryParse(userIdClaim, out var userId))
-            {
-                context.Fail();
-                return;
-            }
-
-            var condominiumIdRouteValue = httpContext.GetRouteValue("condominiumId")?.ToString();
-            if (!int.TryParse(condominiumIdRouteValue, out var condominiumId))
-            {
-                condominiumIdRouteValue = httpContext.GetRouteValue("id")?.ToString();
-                if (!int.TryParse(condominiumIdRouteValue, out condominiumId))
-                {
-                    context.Fail();
-                    return;
-                }
-            }
-
-            // Check the database to see if this user is the manager of this condominium.
-            // We do NOT use IgnoreQueryFilters() here. This is intentional.
-            // We want this authorization check to respect any global filters, such as a
-            // potential future soft-delete "IsActive" flag on condominiums.
-            bool isManagerOfCondo = await _condoContext.Condominiums
-                .AnyAsync(c => c.Id == condominiumId && c.ManagerId == userId);
-
-            if (isManagerOfCondo)
-            {
-                context.Succeed(requirement);
-            }
-            else
-            {
-                context.Fail();
-            }
-        }
-    }
-}
-```
-
-## File: CondoSphere.Infrastructure/Data/SeedDb.cs
-```csharp
-using CondoSphere.Core;
-using CondoSphere.Core.Entities.Users;
-using Microsoft.AspNetCore.Identity;
-
-namespace CondoSphere.Infrastructure.Data
-{
-    /// <summary>
-    /// Responsible for seeding initial data into the database.
-    /// </summary>
-    public class SeedDb
-    {
-        private readonly UserManagementDbContext _context;
-        private readonly UserManager<User> _userManager;
-        private readonly RoleManager<IdentityRole<int>> _roleManager;
-
-        public SeedDb(UserManagementDbContext context, UserManager<User> userManager, RoleManager<IdentityRole<int>> roleManager)
-        {
-            _context = context;
-            _userManager = userManager;
-            _roleManager = roleManager;
-        }
-
-        public async Task SeedAsync()
-        {
-            await _context.Database.EnsureCreatedAsync();
-            await CheckRolesAsync();
-        }
-
-        private async Task CheckRolesAsync()
-        {
-            // Use the constant for the check
-            if (!await _roleManager.RoleExistsAsync(RoleConstants.CompanyAdmin))
-            {
-                // Use the constants for creation
-                await _roleManager.CreateAsync(new IdentityRole<int>(RoleConstants.CompanyAdmin));
-                await _roleManager.CreateAsync(new IdentityRole<int>(RoleConstants.CondoManager));
-                await _roleManager.CreateAsync(new IdentityRole<int>(RoleConstants.CondoResident));
-                await _roleManager.CreateAsync(new IdentityRole<int>(RoleConstants.Employee));
-                await _roleManager.CreateAsync(new IdentityRole<int>(RoleConstants.PlatformSuperAdmin));
-            }
-        }
-    }
-}
-```
-
-## File: CondoSphere.Infrastructure/Data/UserManagementDbContext.cs
-```csharp
-using CondoSphere.Core.Entities.Users;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore;
-
-namespace CondoSphere.Infrastructure.Data
-{
-    /// <summary>
-    /// Represents the database context for the User Management database.
-    /// Inherits from IdentityDbContext to include tables for ASP.NET Core Identity.
-    /// </summary>
-    public class UserManagementDbContext : IdentityDbContext<User, IdentityRole<int>, int>
-    {
-        // DbSet properties tell EF Core which of our entities should become tables.
-
-        /// <summary>
-        /// Represents the 'Companies' table.
-        /// </summary>
-        public DbSet<Company> Companies { get; set; }
-
-        /// <summary>
-        /// Represents the 'Notifications' table.
-        /// </summary>
-        public DbSet<Notification> Notifications { get; set; }
-
-        public UserManagementDbContext(DbContextOptions<UserManagementDbContext> options)
-            : base(options)
-        {
-        }
-
-        protected override void OnModelCreating(ModelBuilder builder)
-        {
-            base.OnModelCreating(builder);
-            builder.Entity<User>().HasQueryFilter(u => u.IsActive);
-            builder.Entity<Company>().HasQueryFilter(c => c.IsActive);
-        }
     }
 }
 ```
@@ -6372,84 +4343,6 @@ namespace CondoSphere.Infrastructure.Repositories
                 .ToListAsync();
         }
     }
-}
-```
-
-## File: CondoSphere.Infrastructure/Services/CurrentUserService.cs
-```csharp
-using CondoSphere.Application.Interfaces;
-using CondoSphere.Infrastructure.Data;
-using Microsoft.AspNetCore.Http;
-using Microsoft.EntityFrameworkCore;
-using System.Security.Claims;
-
-namespace CondoSphere.Infrastructure.Services
-{
-    public class CurrentUserService : ICurrentUserService
-    {
-        private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly CondominiumDbContext _condoContext;
-
-        public CurrentUserService(IHttpContextAccessor httpContextAccessor, CondominiumDbContext condoContext)
-        {
-            _httpContextAccessor = httpContextAccessor;
-            _condoContext = condoContext;
-        }
-
-        public int? UserId => GetClaimValue<int>(ClaimTypes.NameIdentifier);
-
-        public int? CompanyId => GetClaimValue<int>("companyId");
-
-        public string? UserEmail => GetClaimValue<string>(ClaimTypes.Email);
-
-        public bool IsInRole(string roleName)
-        {
-            return _httpContextAccessor.HttpContext?.User.IsInRole(roleName) ?? false;
-        }
-
-        private T? GetClaimValue<T>(string claimType)
-        {
-            var claimValue = _httpContextAccessor.HttpContext?.User?.FindFirstValue(claimType);
-            if (string.IsNullOrEmpty(claimValue))
-            {
-                return default;
-            }
-            return (T)Convert.ChangeType(claimValue, typeof(T));
-        }
-
-        public async Task<(bool IsAuthorized, int? CompanyId)> CanManageCondominium(int condominiumId)
-        {
-            var userId = this.UserId; // Get user ID from the existing property
-            if (userId == null) return (false, null);
-
-            // One single, efficient database call to check everything.
-            var condo = await _condoContext.Condominiums
-                                .AsNoTracking()
-                                .FirstOrDefaultAsync(c => c.Id == condominiumId && c.ManagerId == userId);
-
-            if (condo != null)
-            {
-                // If found, user is authorized, and we return the condo's CompanyId.
-                return (true, condo.CompanyId);
-            }
-
-            // If not found, user is not authorized.
-            return (false, null);
-        }
-    }
-}
-```
-
-## File: CondoSphere.Web/appsettings.Development.json
-```json
-{
-  "Logging": {
-    "LogLevel": {
-      "Default": "Information",
-      "Microsoft.AspNetCore": "Warning"
-    }
-  },
-  "AllowedHosts": "*"
 }
 ```
 
@@ -6603,6 +4496,73 @@ namespace CondoSphere.Web.Controllers
         }
     }
 }
+```
+
+## File: CondoSphere.Web/Program.cs
+```csharp
+using CondoSphere.Web.Services;
+
+var builder = WebApplication.CreateBuilder(args);
+
+// --- Add services to the container. ---
+
+// 1. Configure standard MVC services.
+builder.Services.AddControllersWithViews();
+builder.Services.AddHttpContextAccessor(); // Required for the handler to access the current HttpContext
+
+// 2. Register the handler. It's transient because handlers can have state.
+builder.Services.AddTransient<JwtForwardingDelegatingHandler>();
+
+// 3. Configure Authentication services using the "Cookies" scheme.
+builder.Services.AddAuthentication("Cookies")
+    .AddCookie("Cookies", options =>
+    {
+        // The name of the cookie that will store our authentication session.
+        options.Cookie.Name = "CondoSphere.AuthCookie";
+        // If an unauthenticated user tries to access a protected page, redirect them to the Login page.
+        options.LoginPath = "/Account/Login";
+        // If a logged-in user tries to access a resource they don't have permission for.
+        options.AccessDeniedPath = "/Account/AccessDenied";
+    });
+
+// 4. Configure Authorization services. This can be expanded with policies later.
+builder.Services.AddAuthorization();
+
+// 5. Configure our typed HttpClient for communicating with the API.
+builder.Services.AddHttpClient<ApiClient>(client =>
+{
+    // Set the base URL for all API calls made by this client.
+    // This value comes from our appsettings file (e.g., appsettings.Development.json).
+    client.BaseAddress = new Uri(builder.Configuration["ApiSettings:BaseUrl"]);
+})
+.AddHttpMessageHandler<JwtForwardingDelegatingHandler>(); // Attach the handler to the HttpClient pipeline
+
+var app = builder.Build();
+
+// --- Configure the HTTP request pipeline. ---
+
+if (!app.Environment.IsDevelopment())
+{
+    app.UseExceptionHandler("/Home/Error");
+    app.UseHsts();
+}
+
+app.UseHttpsRedirection();
+app.UseStaticFiles();
+
+app.UseRouting();
+
+// The correct order for authentication middleware in the pipeline:
+// 1. UseAuthentication: Identifies who the user is by reading the cookie.
+// 2. UseAuthorization: Checks if the identified user has permission to access the requested resource.
+app.UseAuthentication();
+app.UseAuthorization();
+
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Home}/{action=Index}/{id?}");
+
+app.Run();
 ```
 
 ## File: CondoSphere.Web/Services/ApiClient.cs
@@ -6811,96 +4771,6 @@ namespace CondoSphere.Web.Services
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
-```
-
-## File: CondoSphere.API/appsettings.Development.json
-```json
-{
-  "Logging": {
-    "LogLevel": {
-      "Default": "Information",
-      "Microsoft.AspNetCore": "Warning"
-    }
-  },
-  "AllowedHosts": "*",
-  "ConnectionStrings": {
-    "UserManagementConnection": "Server=(LocalDb)\\MSSQLLocalDB;Database=CondoSphere_UserManagementDB;Trusted_Connection=True;",
-    "CondominiumConnection": "Server=(LocalDb)\\MSSQLLocalDB;Database=CondoSphere_CondominiumDB;Trusted_Connection=True;"
-  },
-  "MailSettings": {
-    "From": "condosphere.geral@gmail.com",
-    "Smtp": "smtp.gmail.com",
-    "Port": 587,
-    "Username": "condosphere.geral@gmail.com"
-  }
-}
-```
-
-## File: CondoSphere.Web/Program.cs
-```csharp
-using CondoSphere.Web.Services;
-
-var builder = WebApplication.CreateBuilder(args);
-
-// --- Add services to the container. ---
-
-// 1. Configure standard MVC services.
-builder.Services.AddControllersWithViews();
-builder.Services.AddHttpContextAccessor(); // Required for the handler to access the current HttpContext
-
-// 2. Register the handler. It's transient because handlers can have state.
-builder.Services.AddTransient<JwtForwardingDelegatingHandler>();
-
-// 3. Configure Authentication services using the "Cookies" scheme.
-builder.Services.AddAuthentication("Cookies")
-    .AddCookie("Cookies", options =>
-    {
-        // The name of the cookie that will store our authentication session.
-        options.Cookie.Name = "CondoSphere.AuthCookie";
-        // If an unauthenticated user tries to access a protected page, redirect them to the Login page.
-        options.LoginPath = "/Account/Login";
-        // If a logged-in user tries to access a resource they don't have permission for.
-        options.AccessDeniedPath = "/Account/AccessDenied";
-    });
-
-// 4. Configure Authorization services. This can be expanded with policies later.
-builder.Services.AddAuthorization();
-
-// 5. Configure our typed HttpClient for communicating with the API.
-builder.Services.AddHttpClient<ApiClient>(client =>
-{
-    // Set the base URL for all API calls made by this client.
-    // This value comes from our appsettings file (e.g., appsettings.Development.json).
-    client.BaseAddress = new Uri(builder.Configuration["ApiSettings:BaseUrl"]);
-})
-.AddHttpMessageHandler<JwtForwardingDelegatingHandler>(); // Attach the handler to the HttpClient pipeline
-
-var app = builder.Build();
-
-// --- Configure the HTTP request pipeline. ---
-
-if (!app.Environment.IsDevelopment())
-{
-    app.UseExceptionHandler("/Home/Error");
-    app.UseHsts();
-}
-
-app.UseHttpsRedirection();
-app.UseStaticFiles();
-
-app.UseRouting();
-
-// The correct order for authentication middleware in the pipeline:
-// 1. UseAuthentication: Identifies who the user is by reading the cookie.
-// 2. UseAuthorization: Checks if the identified user has permission to access the requested resource.
-app.UseAuthentication();
-app.UseAuthorization();
-
-app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
-
-app.Run();
 ```
 
 ## File: CondoSphere.API/Program.cs

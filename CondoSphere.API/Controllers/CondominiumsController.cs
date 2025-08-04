@@ -43,7 +43,7 @@ namespace CondoSphere.API.Controllers
         }
 
         [HttpGet("{id}")]
-        [Authorize(Roles = RoleConstants.CondoManager, Policy = "IsCondoManagerPolicy")]
+        [Authorize(Policy = "IsCondoManagerPolicy")]
         public async Task<IActionResult> GetById(int id)
         {
             var companyId = _currentUserService.CompanyId;
