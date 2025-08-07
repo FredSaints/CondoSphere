@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 namespace CondoSphere.Web.Controllers
 {
     [Authorize(Roles = RoleConstants.CompanyAdmin)]
-    [Route("administration")] // Optional: You can add a base route for the entire controller
+    [Route("administration")]
     public class AdministrationController : Controller
     {
         private readonly ApiClient _apiClient;
@@ -20,7 +20,7 @@ namespace CondoSphere.Web.Controllers
             _apiClient = apiClient;
         }
 
-        [HttpGet("")] // This will now map to "/administration"
+        [HttpGet("")]
         public async Task<IActionResult> Index()
         {
             var users = await _apiClient.GetUsersAsync();
@@ -32,10 +32,14 @@ namespace CondoSphere.Web.Controllers
                 Condominiums = condominiums ?? new List<CondominiumDto>()
             };
 
+            var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            int.TryParse(userIdClaim, out var currentUserId);
+            ViewData["CurrentUserId"] = currentUserId;
+
             return View(viewModel);
         }
 
-        [HttpGet("register-manager")] // Maps to "/administration/register-manager"
+        [HttpGet("register-manager")]
         public IActionResult RegisterManager()
         {
             return View();
@@ -62,7 +66,7 @@ namespace CondoSphere.Web.Controllers
             return View(model);
         }
 
-        [HttpGet("create-condominium")] // Maps to "/administration/create-condominium"
+        [HttpGet("create-condominium")]
         public IActionResult CreateCondominium()
         {
             return View();
@@ -89,7 +93,6 @@ namespace CondoSphere.Web.Controllers
             return View(model);
         }
 
-        // ===== CORRECTED ROUTES BELOW =====
         [HttpGet("condominiums/{condominiumId}/assign-manager")]
         public async Task<IActionResult> AssignManager(int condominiumId)
         {
@@ -146,6 +149,38 @@ namespace CondoSphere.Web.Controllers
                 Text = $"{m.FirstName} {m.LastName} ({m.Email})",
                 Value = m.Id.ToString()
             });
+        }
+
+        [HttpPost("users/{userId}/deactivate")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeactivateUser(int userId)
+        {
+            var success = await _apiClient.DeactivateUserAsync(userId);
+            if (success)
+            {
+                TempData["SuccessMessage"] = "User successfully deactivated.";
+            }
+            else
+            {
+                TempData["ErrorMessage"] = "Failed to deactivate user.";
+            }
+            return RedirectToAction(nameof(Index));
+        }
+
+        [HttpPost("users/{userId}/activate")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ActivateUser(int userId)
+        {
+            var success = await _apiClient.ActivateUserAsync(userId);
+            if (success)
+            {
+                TempData["SuccessMessage"] = "User successfully activated.";
+            }
+            else
+            {
+                TempData["ErrorMessage"] = "Failed to activate user.";
+            }
+            return RedirectToAction(nameof(Index));
         }
     }
 }

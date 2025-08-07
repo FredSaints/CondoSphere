@@ -1,5 +1,6 @@
 ﻿using CondoSphere.Core;
 using CondoSphere.Core.DTOs.Account;
+using CondoSphere.Web.Models;
 using CondoSphere.Web.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -9,6 +10,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using System.Text.Json;
 
 namespace CondoSphere.Web.Controllers
 {
@@ -143,6 +145,96 @@ namespace CondoSphere.Web.Controllers
 
             ModelState.AddModelError(string.Empty, message);
             return View(model);
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult Register()
+        {
+            return View(new RegisterDto());
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Register(RegisterDto model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            var (success, message) = await _apiClient.RegisterCompanyAdminAsync(model);
+
+            if (success)
+            {
+                TempData["SuccessMessage"] = message;
+                return RedirectToAction("RegistrationComplete");
+            }
+
+            ModelState.AddModelError(string.Empty, message);
+            return View(model);
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult RegistrationComplete()
+        {
+            return View();
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public async Task<IActionResult> ConfirmEmail(string userId, string token)
+        {
+            if (string.IsNullOrWhiteSpace(userId) || string.IsNullOrWhiteSpace(token))
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            var (success, message) = await _apiClient.ConfirmEmailAsync(userId, token);
+
+            if (success)
+            {
+                TempData["SuccessMessage"] = message;
+                return RedirectToAction("Login");
+            }
+            else
+            {
+                TempData["ErrorMessage"] = message;
+                return RedirectToAction("Login");
+            }
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult ForgotPassword()
+        {
+            return View(new ForgotPasswordViewModel());
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+            var (success, rawMessage) = await _apiClient.ForgotPasswordAsync(model.Email);
+
+            string displayMessage = JsonDocument.Parse(rawMessage).RootElement.GetProperty("message").GetString();
+
+            return RedirectToAction("ForgotPasswordConfirmation", new { message = displayMessage });
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult ForgotPasswordConfirmation(string message)
+        {
+            ViewData["Message"] = message;
+            return View();
         }
     }
 }

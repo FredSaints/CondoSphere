@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/CondoSphere.Web.styles.css" asp-append-version="true" />
+    @* Added reference for Bootstrap Icons used in some views *@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 </head>
 <body>
@@ -27,7 +28,7 @@
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
 
-                        @* ===== START OF NEW ROLE-AWARE NAVIGATION ===== *@
+                        @* ===== START OF ROLE-AWARE NAVIGATION ===== *@
                         @if (User.Identity != null && User.Identity.IsAuthenticated)
                         {
                             if (User.IsInRole(RoleConstants.CompanyAdmin))
@@ -45,11 +46,12 @@
                             if (User.IsInRole(RoleConstants.CondoResident))
                             {
                                 <li class="nav-item">
+                                    @* This is a placeholder for a future feature *@
                                     <a class="nav-link text-dark" asp-controller="Portal" asp-action="Index">My Portal</a>
                                 </li>
                             }
                         }
-                        @* ===== END OF NEW ROLE-AWARE NAVIGATION ===== *@
+                        @* ===== END OF ROLE-AWARE NAVIGATION ===== *@
 
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
@@ -64,13 +66,21 @@
     </header>
     <div class="container">
         <main role="main" class="pb-3">
-            @* Add support for TempData success messages *@
             @if (TempData["SuccessMessage"] != null)
             {
-                <div class="alert alert-success" role="alert">
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
                     @TempData["SuccessMessage"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
             }
+            @if (TempData["ErrorMessage"] != null)
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    @TempData["ErrorMessage"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+
             @RenderBody()
         </main>
     </div>

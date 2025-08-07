@@ -133,5 +133,22 @@ namespace CondoSphere.API.Controllers
 
             return BadRequest(new { Message = "Failed to unassign resident. The unit might already be vacant." });
         }
+
+        [HttpPatch("{unitId}/assign-resident")]
+        [Authorize(Roles = RoleConstants.CondoManager, Policy = "IsCondoManagerPolicy")]
+        public async Task<IActionResult> AssignResident(int condominiumId, int unitId, [FromBody] AssignResidentDto dto)
+        {
+            var companyId = _currentUserService.CompanyId;
+            if (companyId == null) return Forbid();
+
+            var success = await _unitService.AssignExistingResidentAsync(unitId, dto.ResidentId, companyId.Value);
+
+            if (success)
+            {
+                return NoContent();
+            }
+
+            return BadRequest(new { Message = "Failed to assign resident. The unit may be occupied or the resident invalid." });
+        }
     }
 }

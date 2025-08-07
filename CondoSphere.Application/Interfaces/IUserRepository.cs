@@ -1,4 +1,6 @@
 ﻿using CondoSphere.Core.DTOs.Account;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace CondoSphere.Application.Interfaces
 {

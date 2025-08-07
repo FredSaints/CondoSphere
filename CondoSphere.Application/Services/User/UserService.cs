@@ -4,6 +4,7 @@ using CondoSphere.Core;
 using CondoSphere.Core.DTOs.Account;
 using CondoSphere.Core.Entities.Users;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using System.Net;
 using CoreUser = CondoSphere.Core.Entities.Users.User;
@@ -17,8 +18,7 @@ namespace CondoSphere.Application.Services.User
         private readonly ITokenService _tokenService;
         private readonly IMailService _mailService;
         private readonly IConfiguration _configuration;
-        private readonly IUserRepository _userRepository;
-        private readonly IUnitRepository _unitRepository; // Dependency for resident registration
+        private readonly ICurrentUserService _currentUserService;
 
         public UserService(
             UserManager<CoreUser> userManager,
@@ -26,16 +26,19 @@ namespace CondoSphere.Application.Services.User
             ITokenService tokenService,
             IMailService mailService,
             IConfiguration configuration,
-            IUserRepository userRepository,
-            IUnitRepository unitRepository) // Inject the new dependency
+            ICurrentUserService currentUserService)
         {
             _userManager = userManager;
             _unitOfWork = unitOfWork;
             _tokenService = tokenService;
             _mailService = mailService;
             _configuration = configuration;
-            _userRepository = userRepository;
-            _unitRepository = unitRepository; // Assign the new dependency
+            _currentUserService = currentUserService;
+        }
+
+        public async Task<CoreUser?> GetUserByIdAsync(int userId)
+        {
+            return await _userManager.FindByIdAsync(userId.ToString());
         }
 
         public async Task<UserDto?> LoginAsync(LoginDto loginDto)
@@ -63,51 +66,42 @@ namespace CondoSphere.Application.Services.User
                 return IdentityResult.Failed(new IdentityError { Description = "An account with this email address already exists." });
             }
 
-            await _unitOfWork.BeginTransactionAsync();
-            try
+            var newCompany = new Company { Name = registerDto.CompanyName, IsActive = true };
+            await _unitOfWork.Companies.AddAsync(newCompany);
+            await _unitOfWork.CompleteAsync();
+
+            var newUser = new CoreUser
             {
-                var newCompany = new Company { Name = registerDto.CompanyName, IsActive = true };
-                await _unitOfWork.Companies.AddAsync(newCompany);
+                FirstName = registerDto.FirstName,
+                LastName = registerDto.LastName,
+                Email = registerDto.Email,
+                UserName = registerDto.Email,
+                CompanyId = newCompany.Id,
+                IsActive = true
+            };
+
+            var result = await _userManager.CreateAsync(newUser, registerDto.Password);
+            if (!result.Succeeded)
+            {
+                // If user creation fails, we should remove the company we just created.
+                _unitOfWork.Companies.Remove(newCompany);
                 await _unitOfWork.CompleteAsync();
-
-                var newUser = new CoreUser
-                {
-                    FirstName = registerDto.FirstName,
-                    LastName = registerDto.LastName,
-                    Email = registerDto.Email,
-                    UserName = registerDto.Email,
-                    CompanyId = newCompany.Id,
-                    IsActive = true
-                };
-
-                var result = await _userManager.CreateAsync(newUser, registerDto.Password);
-                if (!result.Succeeded)
-                {
-                    await _unitOfWork.RollbackAsync();
-                    return result;
-                }
-
-                await _userManager.AddToRoleAsync(newUser, RoleConstants.CompanyAdmin);
-
-                var token = await _userManager.GenerateEmailConfirmationTokenAsync(newUser);
-                var encodedToken = WebUtility.UrlEncode(token);
-                var webAppBaseUrl = _configuration["ClientSettings:WebAppBaseUrl"];
-                var confirmationLink = $"{webAppBaseUrl}/Account/ConfirmEmail?userId={newUser.Id}&token={encodedToken}";
-
-                await _mailService.SendEmailAsync(
-                    newUser.Email,
-                    "Confirm your CondoSphere Account",
-                    $"<h1>Welcome to CondoSphere!</h1><p>Please confirm your account by <a href='{confirmationLink}'>clicking here</a>.</p>");
-
-                await _unitOfWork.CommitAsync();
-
-                return IdentityResult.Success;
+                return result;
             }
-            catch
-            {
-                await _unitOfWork.RollbackAsync();
-                throw;
-            }
+
+            await _userManager.AddToRoleAsync(newUser, RoleConstants.CompanyAdmin);
+
+            var token = await _userManager.GenerateEmailConfirmationTokenAsync(newUser);
+            var encodedToken = WebUtility.UrlEncode(token);
+            var webAppBaseUrl = _configuration["ClientSettings:WebAppBaseUrl"];
+            var confirmationLink = $"{webAppBaseUrl}/Account/ConfirmEmail?userId={newUser.Id}&token={encodedToken}";
+
+            await _mailService.SendEmailAsync(
+                newUser.Email,
+                "Confirm your CondoSphere Account",
+                $"<h1>Welcome to CondoSphere!</h1><p>Please confirm your account by <a href='{confirmationLink}'>clicking here</a>.</p>");
+
+            return IdentityResult.Success;
         }
 
         public async Task<IdentityResult> RegisterManagerAsync(RegisterManagerDto registerDto, int companyId)
@@ -126,10 +120,10 @@ namespace CondoSphere.Application.Services.User
                 UserName = registerDto.Email,
                 CompanyId = companyId,
                 IsActive = true,
-                EmailConfirmed = false // Email is not confirmed until they set the password
+                EmailConfirmed = false
             };
 
-            var result = await _userManager.CreateAsync(newUser); // Create user without password
+            var result = await _userManager.CreateAsync(newUser);
             if (!result.Succeeded)
             {
                 return result;
@@ -137,7 +131,6 @@ namespace CondoSphere.Application.Services.User
 
             await _userManager.AddToRoleAsync(newUser, RoleConstants.CondoManager);
 
-            // Generate and send the "Set Password" link
             var token = await _userManager.GeneratePasswordResetTokenAsync(newUser);
             var encodedToken = WebUtility.UrlEncode(token);
             var setPasswordLink = $"{_configuration["ClientSettings:WebAppBaseUrl"]}/Account/SetPassword?userId={newUser.Id}&token={encodedToken}";
@@ -154,32 +147,29 @@ namespace CondoSphere.Application.Services.User
 
         public async Task<IEnumerable<UserListDto>> GetCompanyUsersWithRolesAsync(int companyId)
         {
-            return await _userRepository.GetCompanyUsersWithRolesAsync(companyId);
+            // Access repositories through the UnitOfWork
+            return await _unitOfWork.Users.GetCompanyUsersWithRolesAsync(companyId);
         }
 
         public async Task<IdentityResult> RegisterResidentAsync(RegisterResidentDto dto, int companyId, int condominiumId)
         {
-            // 1. Validate that the Unit exists, belongs to the correct condominium, and is available
-            var unit = await _unitRepository.GetByIdAsync(dto.UnitId);
+            // This method now saves changes across both database contexts in a coordinated way.
+            var unit = await _unitOfWork.Units.GetByIdAsync(dto.UnitId);
             if (unit == null || unit.CondominiumId != condominiumId)
             {
                 return IdentityResult.Failed(new IdentityError { Code = "UnitNotFound", Description = "Unit not found in this condominium." });
             }
-
             if (unit.ResidentId.HasValue)
             {
                 return IdentityResult.Failed(new IdentityError { Code = "UnitOccupied", Description = "This unit already has an assigned resident." });
             }
 
-            // 2. Check if user email already exists
             var existingUser = await _userManager.FindByEmailAsync(dto.Email);
             if (existingUser != null)
             {
                 return IdentityResult.Failed(new IdentityError { Code = "DuplicateEmail", Description = "An account with this email address already exists." });
             }
 
-            // 3. Create the new user WITHOUT a password.
-            // The account is created but is effectively 'locked' until a password is set.
             var newUser = new CoreUser
             {
                 FirstName = dto.FirstName,
@@ -191,25 +181,20 @@ namespace CondoSphere.Application.Services.User
                 EmailConfirmed = false
             };
 
-            var result = await _userManager.CreateAsync(newUser); // This overload does not require a password.
+            var result = await _userManager.CreateAsync(newUser);
             if (!result.Succeeded)
             {
                 return result;
             }
 
-            // 4. Assign the correct role
             await _userManager.AddToRoleAsync(newUser, RoleConstants.CondoResident);
 
-            // 5. Link the new user to the unit and save
             unit.ResidentId = newUser.Id;
-            _unitRepository.Update(unit);
-            await _unitRepository.SaveChangesAsync();
+            _unitOfWork.Units.Update(unit);
+            await _unitOfWork.CompleteAsync();
 
-            // 6. Generate a "Set Password" token and send the welcome email
             var token = await _userManager.GeneratePasswordResetTokenAsync(newUser);
             var encodedToken = WebUtility.UrlEncode(token);
-
-            // This URL will point to a new page we need to create in the Web project
             var setPasswordLink = $"{_configuration["ClientSettings:WebAppBaseUrl"]}/Account/SetPassword?userId={newUser.Id}&token={encodedToken}";
 
             await _mailService.SendEmailAsync(
@@ -225,7 +210,134 @@ namespace CondoSphere.Application.Services.User
 
         public async Task<IEnumerable<UserListDto>> GetAvailableManagersAsync(int companyId)
         {
-            return await _userRepository.GetUsersInRoleAsync(RoleConstants.CondoManager, companyId);
+            // Access repositories through the UnitOfWork
+            return await _unitOfWork.Users.GetUsersInRoleAsync(RoleConstants.CondoManager, companyId);
+        }
+
+        public async Task<IEnumerable<UserListDto>> GetAvailableResidentsAsync(int companyId)
+        {
+            // Access repositories through the UnitOfWork
+            var allCompanyResidents = await _unitOfWork.Users.GetUsersInRoleAsync(RoleConstants.CondoResident, companyId);
+            var occupiedUnitResidentIds = await _unitOfWork.Units.GetOccupiedUnitResidentIdsAsync(companyId);
+
+            var availableResidents = allCompanyResidents
+                .Where(resident => !occupiedUnitResidentIds.Contains(resident.Id))
+                .ToList();
+
+            return availableResidents;
+        }
+
+        public async Task<bool> DeactivateUserAsync(int userIdToDeactivate, int adminCompanyId)
+        {
+            var userToDeactivate = await _userManager.FindByIdAsync(userIdToDeactivate.ToString());
+            if (userToDeactivate == null || userToDeactivate.CompanyId != adminCompanyId)
+            {
+                return false;
+            }
+            if (userToDeactivate.Id == _currentUserService.UserId)
+            {
+                return false; // Cannot deactivate self
+            }
+
+            userToDeactivate.IsActive = false;
+            var result = await _userManager.UpdateAsync(userToDeactivate);
+            if (!result.Succeeded)
+            {
+                return false;
+            }
+
+            // Unassign from unit if they were a resident
+            var unit = await _unitOfWork.Units.GetUnitByResidentIdAsync(userIdToDeactivate);
+            if (unit != null)
+            {
+                unit.ResidentId = null;
+                _unitOfWork.Units.Update(unit);
+                await _unitOfWork.CompleteAsync();
+            }
+
+            return true;
+        }
+
+        public async Task<bool> ActivateUserAsync(int userIdToActivate, int adminCompanyId)
+        {
+            var userToActivate = await _userManager.Users
+                .IgnoreQueryFilters()
+                .FirstOrDefaultAsync(u => u.Id == userIdToActivate);
+
+            if (userToActivate == null || userToActivate.CompanyId != adminCompanyId)
+            {
+                return false;
+            }
+
+            userToActivate.IsActive = true;
+            var result = await _userManager.UpdateAsync(userToActivate);
+            return result.Succeeded;
+        }
+
+        public async Task<bool> ForgotPasswordAsync(string email)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null || !user.EmailConfirmed)
+            {
+                return true;
+            }
+
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+            var encodedToken = WebUtility.UrlEncode(token);
+
+            var resetLink = $"{_configuration["ClientSettings:WebAppBaseUrl"]}/Account/SetPassword?userId={user.Id}&token={encodedToken}";
+
+            await _mailService.SendEmailAsync(
+                email,
+                "Reset Your CondoSphere Password",
+                $"<h1>Password Reset Request</h1>" +
+                $"<p>Please reset your password by <a href='{resetLink}'>clicking here</a>.</p>" +
+                $"<p>If you did not request a password reset, please ignore this email.</p>");
+
+            return true;
+        }
+
+        public async Task<(bool Success, IEnumerable<IdentityError>? Errors)> UpdateProfileAsync(int userId, UpdateProfileDto dto)
+        {
+            var user = await _userManager.FindByIdAsync(userId.ToString());
+            if (user == null)
+                return (false, new[] { new IdentityError { Description = "User not found." } });
+
+            user.FirstName = dto.FirstName;
+            user.LastName = dto.LastName;
+            user.ProfilePictureUrl = dto.ProfilePictureUrl;
+
+            var result = await _userManager.UpdateAsync(user);
+            return (result.Succeeded, result.Errors);
+        }
+
+        public async Task<(bool Success, IEnumerable<IdentityError>? Errors)> ChangePasswordAsync(int userId, ChangePasswordDto dto)
+        {
+            var user = await _userManager.FindByIdAsync(userId.ToString());
+            if (user == null)
+                return (false, new[] { new IdentityError { Description = "User not found." } });
+
+            var result = await _userManager.ChangePasswordAsync(user, dto.CurrentPassword, dto.NewPassword);
+            return (result.Succeeded, result.Errors);
+        }
+
+        public async Task<UserProfileDto?> GetUserProfileAsync(int userId)
+        {
+            var user = await _userManager.FindByIdAsync(userId.ToString());
+            if (user == null) return null;
+
+            var roles = await _userManager.GetRolesAsync(user);
+
+            return new UserProfileDto
+            {
+                Id = user.Id,
+                FirstName = user.FirstName ?? "",
+                LastName = user.LastName ?? "",
+                Email = user.Email,
+                ProfilePictureUrl = user.ProfilePictureUrl,
+                CompanyId = user.CompanyId,
+                Roles = roles
+            };
         }
     }
 }

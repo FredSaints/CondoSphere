@@ -10,5 +10,6 @@ namespace CondoSphere.Application.Services.Condominium
         Task<bool> UpdateUnitAsync(int unitId, CreateUpdateUnitDto unitDto);
         Task<bool> DeleteUnitAsync(int unitId);
         Task<bool> UnassignResidentAsync(int unitId);
+        Task<bool> AssignExistingResidentAsync(int unitId, int residentId, int companyId);
     }
 }

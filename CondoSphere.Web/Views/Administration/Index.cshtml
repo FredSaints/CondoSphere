@@ -1,13 +1,15 @@
 ﻿@model ManagementDashboardViewModel
+@using CondoSphere.Core
 
 @{
     ViewData["Title"] = "Admin Dashboard";
+    var currentUserId = (int)ViewData["CurrentUserId"];
 }
 
 <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
         <h1>@ViewData["Title"]</h1>
-        <p class="text-muted">Manage your company's users and condominiums.</p>
+        <p class="text-muted">Manage your company's condominiums and users.</p>
     </div>
     <div>
         <a class="btn btn-primary" asp-action="RegisterManager">
@@ -20,7 +22,7 @@
 </div>
 
 <div class="row">
-    <div class="col-lg-8">
+    <div class="col-lg-7">
         <div class="card shadow-sm mb-4">
             <div class="card-header">
                 <h5 class="mb-0">Managed Condominiums</h5>
@@ -29,12 +31,12 @@
                 @if (Model.Condominiums.Any())
                 {
                     <div class="table-responsive">
-                        <table class="table table-hover mb-0">
+                        <table class="table table-hover mb-0 align-middle">
                             <thead>
                                 <tr>
                                     <th scope="col">Name</th>
                                     <th scope="col">Address</th>
-                                    <th scope="col">Assigned Manager</th> @* <-- ADD THIS HEADER *@
+                                    <th scope="col">Assigned Manager</th>
                                     <th scope="col" class="text-end">Actions</th>
                                 </tr>
                             </thead>
@@ -44,15 +46,12 @@
                                     <tr>
                                         <td>@condo.Name</td>
                                         <td>@condo.Address</td>
-
-                                        @* ===== NEW LOGIC FOR MANAGER COLUMN ===== *@
                                         <td>
                                             @if (!string.IsNullOrEmpty(condo.ManagerName))
                                             {
                                                 <span class="text-muted">@condo.ManagerName</span>
                                             }
                                         </td>
-
                                         <td class="text-end">
                                             @if (string.IsNullOrEmpty(condo.ManagerName))
                                             {
@@ -62,7 +61,6 @@
                                             {
                                                 <a asp-action="AssignManager" asp-route-condominiumId="@condo.Id" class="btn btn-sm btn-outline-secondary">Re-assign</a>
                                             }
-                                            @* <a href="#" class="btn btn-sm btn-outline-primary">Edit</a> *@
                                         </td>
                                     </tr>
                                 }
@@ -80,7 +78,7 @@
         </div>
     </div>
 
-    <div class="col-lg-4">
+    <div class="col-lg-5">
         <div class="card shadow-sm mb-4">
             <div class="card-header">
                 <h5 class="mb-0">Company Users</h5>
@@ -89,11 +87,13 @@
                 @if (Model.Users.Any())
                 {
                     <div class="table-responsive">
-                        <table class="table table-hover mb-0">
+                        <table class="table table-hover mb-0 align-middle">
                             <thead>
                                 <tr>
                                     <th scope="col">Name</th>
                                     <th scope="col">Role</th>
+                                    <th scope="col">Status</th>
+                                    <th scope="col">Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -102,6 +102,35 @@
                                     <tr>
                                         <td>@user.FirstName @user.LastName<br /><small class="text-muted">@user.Email</small></td>
                                         <td><span class="badge bg-secondary">@user.Role</span></td>
+                                        <td>
+                                            @if (user.IsActive)
+                                            {
+                                                <span class="badge bg-success">Active</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-danger">Inactive</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            @if (user.Id != currentUserId)
+                                            {
+                                                if (user.IsActive)
+                                                {
+                                                    <form asp-action="DeactivateUser" asp-route-userId="@user.Id" method="post" onsubmit="return confirm('Are you sure you want to deactivate this user?');">
+                                                        @Html.AntiForgeryToken()
+                                                        <button type="submit" class="btn btn-sm btn-outline-warning">Deactivate</button>
+                                                    </form>
+                                                }
+                                                else
+                                                {
+                                                    <form asp-action="ActivateUser" asp-route-userId="@user.Id" method="post">
+                                                        @Html.AntiForgeryToken()
+                                                        <button type="submit" class="btn btn-sm btn-outline-success">Activate</button>
+                                                    </form>
+                                                }
+                                            }
+                                        </td>
                                     </tr>
                                 }
                             </tbody>

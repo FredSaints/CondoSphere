@@ -5,6 +5,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CondoSphere.Infrastructure.Repositories
 {
+    /// <summary>
+    /// Implements the ICondominiumRepository using Entity Framework Core.
+    /// This repository modifies the change tracker but does not save to the database.
+    /// </summary>
     public class CondominiumRepository : ICondominiumRepository
     {
         private readonly CondominiumDbContext _context;
@@ -40,15 +44,12 @@ namespace CondoSphere.Infrastructure.Repositories
             _context.Condominiums.Remove(condominium);
         }
 
-        public async Task<int> SaveChangesAsync()
-        {
-            return await _context.SaveChangesAsync();
-        }
-
         public void Update(Condominium condominium)
         {
+            // This marks the entity for update in EF Core's change tracker.
             _context.Entry(condominium).State = EntityState.Modified;
         }
+
         public async Task<IEnumerable<Condominium>> GetByManagerIdAsync(int managerId)
         {
             return await _context.Condominiums

@@ -1,0 +1,36 @@
+﻿@model CondoSphere.Core.DTOs.Occurrences.CreateOccurrenceDto
+
+@{
+    ViewData["Title"] = "Report New Occurrence";
+}
+
+<h1>@ViewData["Title"]</h1>
+<p>Please provide a clear title and a detailed description of the issue.</p>
+<hr />
+
+<div class="row">
+    <div class="col-md-8">
+        <form asp-action="CreateOccurrence" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="form-floating mb-3">
+                <input asp-for="Title" class="form-control" placeholder="e.g., Leaky faucet in kitchen" />
+                <label asp-for="Title"></label>
+                <span asp-validation-for="Title" class="text-danger"></span>
+            </div>
+
+            <div class="form-floating mb-3">
+                <textarea asp-for="Description" class="form-control" placeholder="Describe the issue in detail..." style="height: 150px"></textarea>
+                <label asp-for="Description"></label>
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+
+            <button type="submit" class="btn btn-success">Submit Report</button>
+            <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

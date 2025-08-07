@@ -25,12 +25,15 @@ namespace CondoSphere.Application.Services.Token
         {
             var claims = new List<Claim>
             {
-                new Claim(ClaimTypes.Name, user.UserName),
-            
                 new Claim(JwtRegisteredClaimNames.NameId, user.Id.ToString()),
                 new Claim(JwtRegisteredClaimNames.Email, user.Email),
-                new Claim(JwtRegisteredClaimNames.GivenName, user.FirstName ?? string.Empty),
-                new Claim("companyId", user.CompanyId.ToString() ?? string.Empty)
+                
+                new Claim(ClaimTypes.Name, user.UserName),
+                new Claim(ClaimTypes.GivenName, user.FirstName ?? string.Empty),
+                new Claim(ClaimTypes.Surname, user.LastName ?? string.Empty),
+
+                new Claim("companyId", user.CompanyId.ToString() ?? string.Empty),
+                new Claim("profile_picture", user.ProfilePictureUrl ?? string.Empty)
             };
 
             var roles = await _userManager.GetRolesAsync(user);

@@ -9,6 +9,7 @@ namespace CondoSphere.Application.Interfaces
         void Remove(Unit unit);
         Task<Unit?> GetByIdAsync(int unitId);
         Task<IEnumerable<Unit>> GetAllAsync(int condominiumId);
-        Task<int> SaveChangesAsync();
+        Task<IEnumerable<int>> GetOccupiedUnitResidentIdsAsync(int companyId);
+        Task<Unit?> GetUnitByResidentIdAsync(int residentId);
     }
 }

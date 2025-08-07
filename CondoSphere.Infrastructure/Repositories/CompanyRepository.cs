@@ -6,6 +6,7 @@ namespace CondoSphere.Infrastructure.Repositories
 {
     /// <summary>
     /// Implements the ICompanyRepository using Entity Framework Core.
+    /// This repository modifies the change tracker but does not save to the database.
     /// </summary>
     public class CompanyRepository : ICompanyRepository
     {
@@ -18,17 +19,14 @@ namespace CondoSphere.Infrastructure.Repositories
 
         public async Task AddAsync(Company company)
         {
+            // This adds the entity to EF Core's change tracker.
             await _context.Companies.AddAsync(company);
         }
 
         public void Remove(Company company)
         {
+            // This marks the entity for deletion in EF Core's change tracker.
             _context.Companies.Remove(company);
-        }
-
-        public async Task<int> SaveChangesAsync()
-        {
-            return await _context.SaveChangesAsync();
         }
     }
 }

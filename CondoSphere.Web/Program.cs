@@ -6,7 +6,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // 1. Configure standard MVC services.
 builder.Services.AddControllersWithViews();
-builder.Services.AddHttpContextAccessor(); // Required for the handler to access the current HttpContext
+builder.Services.AddHttpContextAccessor();
 
 // 2. Register the handler. It's transient because handlers can have state.
 builder.Services.AddTransient<JwtForwardingDelegatingHandler>();
@@ -34,6 +34,7 @@ builder.Services.AddHttpClient<ApiClient>(client =>
     client.BaseAddress = new Uri(builder.Configuration["ApiSettings:BaseUrl"]);
 })
 .AddHttpMessageHandler<JwtForwardingDelegatingHandler>(); // Attach the handler to the HttpClient pipeline
+builder.Services.AddScoped<IImageService, ImageService>();
 
 var app = builder.Build();
 

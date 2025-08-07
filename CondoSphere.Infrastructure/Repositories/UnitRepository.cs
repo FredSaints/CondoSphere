@@ -2,6 +2,9 @@
 using CondoSphere.Core.Entities.Condominiums;
 using CondoSphere.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace CondoSphere.Infrastructure.Repositories
 {
@@ -19,6 +22,16 @@ namespace CondoSphere.Infrastructure.Repositories
             await _context.Units.AddAsync(unit);
         }
 
+        public void Update(Unit unit)
+        {
+            _context.Entry(unit).State = EntityState.Modified;
+        }
+
+        public void Remove(Unit unit)
+        {
+            _context.Units.Remove(unit);
+        }
+
         public async Task<IEnumerable<Unit>> GetAllAsync(int condominiumId)
         {
             return await _context.Units
@@ -32,19 +45,19 @@ namespace CondoSphere.Infrastructure.Repositories
             return await _context.Units.FindAsync(unitId);
         }
 
-        public void Remove(Unit unit)
+        public async Task<IEnumerable<int>> GetOccupiedUnitResidentIdsAsync(int companyId)
         {
-            _context.Units.Remove(unit);
+            return await _context.Units
+                .Where(u => u.CompanyId == companyId && u.ResidentId.HasValue)
+                .Select(u => u.ResidentId.Value)
+                .Distinct()
+                .ToListAsync();
         }
 
-        public async Task<int> SaveChangesAsync()
+        public async Task<Unit?> GetUnitByResidentIdAsync(int residentId)
         {
-            return await _context.SaveChangesAsync();
-        }
-
-        public void Update(Unit unit)
-        {
-            _context.Entry(unit).State = EntityState.Modified;
+            return await _context.Units
+                .FirstOrDefaultAsync(u => u.ResidentId == residentId);
         }
     }
 }

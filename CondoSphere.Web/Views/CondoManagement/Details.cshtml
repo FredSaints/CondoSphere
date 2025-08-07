@@ -45,7 +45,10 @@
                                     }
                                     else
                                     {
-                                        <span class="badge bg-success">Vacant</span>
+                                        <a asp-action="AssignResident"
+                                           asp-route-unitId="@unit.Id"
+                                           asp-route-condominiumId="@Model.Condominium.Id"
+                                           class="btn btn-sm btn-primary">Assign Resident</a>
                                     }
                                 </td>
                                 <td class="text-end">
@@ -83,4 +86,52 @@
     <a asp-action="Index" class="btn btn-outline-secondary">
         <i class="bi bi-arrow-left me-1"></i> Back to My Condos
     </a>
+</div>
+<hr class="my-4" />
+
+<div class="card shadow-sm">
+    <div class="card-header">
+        <h5 class="mb-0">Reported Occurrences</h5>
+    </div>
+    <div class="card-body p-0">
+        @if (Model.Occurrences.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-hover mb-0 align-middle">
+                    <thead>
+                        <tr>
+                            <th scope="col">Title</th>
+                            <th scope="col">Reported By</th>
+                            <th scope="col">Date</th>
+                            <th scope="col">Status</th>
+                            <th scope="col" class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var occurrence in Model.Occurrences)
+                        {
+                            <tr>
+                                <td><strong>@occurrence.Title</strong></td>
+                                <td>@occurrence.ReportedByUserName</td>
+                                <td>@occurrence.ReportedDate.ToString("yyyy-MM-dd HH:mm")</td>
+                                <td>
+                                    @* We can make these badges dynamic later based on status *@
+                                    <span class="badge bg-danger">@occurrence.Status</span>
+                                </td>
+                                <td class="text-end">
+                                    <a href="#" class="btn btn-sm btn-outline-primary">View Details</a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="text-center p-4">
+                <p class="text-muted mb-0">No occurrences have been reported for this condominium yet.</p>
+            </div>
+        }
+    </div>
 </div>

@@ -1,0 +1,66 @@
+﻿@model CondoSphere.Web.Models.PortalDashboardViewModel
+
+@{
+    ViewData["Title"] = "My Portal";
+}
+
+<h1>Welcome to your Resident Portal</h1>
+<p class="text-muted">Here you can view documents, report issues, and manage your account.</p>
+<hr />
+
+<div class="row">
+    <div class="col-md-8">
+        <h4>My Reported Occurrences</h4>
+
+        @if (Model.Occurrences.Any())
+        {
+            <div class="table-responsive border rounded">
+                <table class="table table-hover mb-0 align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th scope="col">Title</th>
+                            <th scope="col">Date Reported</th>
+                            <th scope="col">Status</th>
+                            <th scope="col" class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var occurrence in Model.Occurrences)
+                        {
+                            <tr>
+                                <td><strong>@occurrence.Title</strong></td>
+                                <td>@occurrence.ReportedDate.ToLocalTime().ToString("yyyy-MM-dd HH:mm")</td>
+                                <td>
+                                    @* We can use a switch to show different colored badges for status *@
+                                    <span class="badge @(occurrence.Status == CondoSphere.Core.Enums.OccurrenceStatus.Open ? "bg-danger" : "bg-secondary")">
+                                        @occurrence.Status
+                                    </span>
+                                </td>
+                                <td class="text-end">
+                                    <a href="#" class="btn btn-sm btn-outline-primary">View Details</a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="text-center p-4 border rounded">
+                <p class="text-muted mb-0">You have not reported any occurrences yet.</p>
+            </div>
+        }
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Have an issue?</h5>
+                <p class="card-text">Report a maintenance issue or other problem in your unit or common areas.</p>
+                <a asp-action="CreateOccurrence" class="btn btn-primary w-100">
+                    <i class="bi bi-flag-fill me-1"></i> Report New Occurrence
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

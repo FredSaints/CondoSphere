@@ -116,23 +116,15 @@ namespace CondoSphere.API.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> ConfirmEmail(int userId, string token)
         {
-            if (string.IsNullOrWhiteSpace(token))
-            {
-                return BadRequest("A valid token is required.");
-            }
-
             var user = await _userManager.FindByIdAsync(userId.ToString());
             if (user == null)
-            {
                 return NotFound("User not found.");
-            }
 
-            var decodedToken = System.Net.WebUtility.UrlDecode(token);
-            var result = await _userManager.ConfirmEmailAsync(user, decodedToken);
+            var result = await _userManager.ConfirmEmailAsync(user, token);
 
             if (result.Succeeded)
             {
-                return Content("<h1>Email confirmed successfully!</h1><p>You can now log in.</p>", "text/html");
+                return Ok(new { Message = "Email confirmed successfully." });
             }
 
             return BadRequest("Email could not be confirmed. The link may have expired.");
@@ -150,8 +142,6 @@ namespace CondoSphere.API.Controllers
             var user = await _userManager.FindByIdAsync(setPasswordDto.UserId);
             if (user == null)
             {
-                // Do not reveal that the user does not exist.
-                // Return a generic success message to prevent user enumeration attacks.
                 return Ok(new { Message = "If a matching account was found, a password has been set." });
             }
 
@@ -185,6 +175,57 @@ namespace CondoSphere.API.Controllers
 
             var managers = await _userService.GetAvailableManagersAsync(companyId.Value);
             return Ok(managers);
+        }
+
+        [HttpGet("available-residents")]
+        [Authorize(Roles = RoleConstants.CondoManager)]
+        public async Task<IActionResult> GetAvailableResidents()
+        {
+            var companyId = _currentUserService.CompanyId;
+            if (companyId == null) return Unauthorized();
+
+            var residents = await _userService.GetAvailableResidentsAsync(companyId.Value);
+            return Ok(residents);
+        }
+
+        [HttpPost("users/{userId}/deactivate")]
+        [Authorize(Roles = RoleConstants.CompanyAdmin)]
+        public async Task<IActionResult> DeactivateUser(int userId)
+        {
+            var adminCompanyId = _currentUserService.CompanyId;
+            if (adminCompanyId == null) return Unauthorized();
+
+            var success = await _userService.DeactivateUserAsync(userId, adminCompanyId.Value);
+            if (success) return NoContent();
+
+            return BadRequest("Failed to deactivate user.");
+        }
+
+        [HttpPost("users/{userId}/activate")]
+        [Authorize(Roles = RoleConstants.CompanyAdmin)]
+        public async Task<IActionResult> ActivateUser(int userId)
+        {
+            var adminCompanyId = _currentUserService.CompanyId;
+            if (adminCompanyId == null) return Unauthorized();
+
+            var success = await _userService.ActivateUserAsync(userId, adminCompanyId.Value);
+            if (success) return NoContent();
+
+            return BadRequest("Failed to activate user.");
+        }
+
+        [HttpPost("forgot-password")]
+        [AllowAnonymous]
+        public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordDto dto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            await _userService.ForgotPasswordAsync(dto.Email);
+
+            return Ok(new { Message = "If an account with that email exists, a password reset link has been sent." });
         }
     }
 }

@@ -19,6 +19,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\CondoSphere.Core\CondoSphere.Core.csproj" />
+    <ProjectReference Include="..\CondoSphere.Infrastructure\CondoSphere.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

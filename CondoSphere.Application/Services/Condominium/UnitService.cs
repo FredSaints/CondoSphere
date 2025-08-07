@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using CondoSphere.Application.Interfaces;
+using CondoSphere.Core;
 using CondoSphere.Core.DTOs.Condominiums;
 using Microsoft.AspNetCore.Identity;
 using CoreUnit = CondoSphere.Core.Entities.Condominiums.Unit;
@@ -9,13 +10,13 @@ namespace CondoSphere.Application.Services.Condominium
 {
     public class UnitService : IUnitService
     {
-        private readonly IUnitRepository _unitRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly UserManager<CoreUser> _userManager;
 
-        public UnitService(IUnitRepository unitRepository, IMapper mapper, UserManager<CoreUser> userManager)
+        public UnitService(IUnitOfWork unitOfWork, IMapper mapper, UserManager<CoreUser> userManager)
         {
-            _unitRepository = unitRepository;
+            _unitOfWork = unitOfWork;
             _mapper = mapper;
             _userManager = userManager;
         }
@@ -26,64 +27,89 @@ namespace CondoSphere.Application.Services.Condominium
             unit.CondominiumId = condominiumId;
             unit.CompanyId = companyId;
 
-            await _unitRepository.AddAsync(unit);
-            await _unitRepository.SaveChangesAsync();
+            await _unitOfWork.Units.AddAsync(unit);
+            await _unitOfWork.CompleteAsync();
 
             return _mapper.Map<UnitDto>(unit);
         }
 
         public async Task<bool> DeleteUnitAsync(int unitId)
         {
-            var unit = await _unitRepository.GetByIdAsync(unitId);
+            var unit = await _unitOfWork.Units.GetByIdAsync(unitId);
             if (unit == null) return false;
 
-            _unitRepository.Remove(unit);
-            return await _unitRepository.SaveChangesAsync() > 0;
+            _unitOfWork.Units.Remove(unit);
+            await _unitOfWork.CompleteAsync();
+            return true;
         }
 
         public async Task<UnitDto?> GetUnitByIdAsync(int unitId)
         {
-            var unit = await _unitRepository.GetByIdAsync(unitId);
+            var unit = await _unitOfWork.Units.GetByIdAsync(unitId);
             return _mapper.Map<UnitDto>(unit);
         }
 
         public async Task<IEnumerable<UnitDto>> GetUnitsForCondominiumAsync(int condominiumId)
         {
-            var units = await _unitRepository.GetAllAsync(condominiumId);
+            var units = await _unitOfWork.Units.GetAllAsync(condominiumId);
             return _mapper.Map<IEnumerable<UnitDto>>(units);
         }
 
         public async Task<bool> UpdateUnitAsync(int unitId, CreateUpdateUnitDto unitDto)
         {
-            var unit = await _unitRepository.GetByIdAsync(unitId);
+            var unit = await _unitOfWork.Units.GetByIdAsync(unitId);
             if (unit == null) return false;
 
             _mapper.Map(unitDto, unit);
-            _unitRepository.Update(unit);
-            return await _unitRepository.SaveChangesAsync() > 0;
+            _unitOfWork.Units.Update(unit);
+            await _unitOfWork.CompleteAsync();
+            return true;
         }
 
         public async Task<bool> UnassignResidentAsync(int unitId)
         {
-            var unit = await _unitRepository.GetByIdAsync(unitId);
+            var unit = await _unitOfWork.Units.GetByIdAsync(unitId);
             if (unit?.ResidentId == null)
             {
                 return false;
             }
-
-            var residentId = unit.ResidentId.Value;
-
             unit.ResidentId = null;
-            _unitRepository.Update(unit);
+            _unitOfWork.Units.Update(unit);
+            await _unitOfWork.CompleteAsync();
+            return true;
+        }
 
-            var formerResident = await _userManager.FindByIdAsync(residentId.ToString());
-            if (formerResident != null)
+        public async Task<bool> AssignExistingResidentAsync(int unitId, int residentId, int companyId)
+        {
+            var unit = await _unitOfWork.Units.GetByIdAsync(unitId);
+            if (unit == null || unit.CompanyId != companyId || unit.ResidentId.HasValue)
             {
-                formerResident.IsActive = false;
-                await _userManager.UpdateAsync(formerResident);
+                return false;
             }
 
-            return await _unitRepository.SaveChangesAsync() > 0;
+            var resident = await _userManager.FindByIdAsync(residentId.ToString());
+            if (resident == null || resident.CompanyId != companyId)
+            {
+                return false;
+            }
+
+            if (!await _userManager.IsInRoleAsync(resident, RoleConstants.CondoResident))
+            {
+                return false;
+            }
+
+            unit.ResidentId = residentId;
+            _unitOfWork.Units.Update(unit);
+
+            // If a resident is assigned, ensure their account is active.
+            if (!resident.IsActive)
+            {
+                resident.IsActive = true;
+                await _userManager.UpdateAsync(resident);
+            }
+
+            await _unitOfWork.CompleteAsync();
+            return true;
         }
     }
 }

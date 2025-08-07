@@ -1,4 +1,5 @@
 ﻿using CondoSphere.Core.DTOs.Condominiums;
+using CondoSphere.Core.DTOs.Occurrences;
 
 namespace CondoSphere.Web.Models
 {
@@ -14,7 +15,7 @@ namespace CondoSphere.Web.Models
     public class CondominiumDetailsViewModel
     {
         public CondominiumDto Condominium { get; set; }
-        // The list now uses our new, richer view model
         public IEnumerable<UnitDetailViewModel> Units { get; set; } = new List<UnitDetailViewModel>();
+        public IEnumerable<OccurrenceDto> Occurrences { get; set; } = new List<OccurrenceDto>();
     }
 }

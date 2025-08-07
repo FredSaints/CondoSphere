@@ -11,16 +11,16 @@ namespace CondoSphere.Application.Services.Condominium
 {
     public class CondominiumService : ICondominiumService
     {
-        private readonly ICondominiumRepository _condominiumRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly UserManager<CoreUser> _userManager;
         private readonly IMapper _mapper;
 
         public CondominiumService(
-            ICondominiumRepository condominiumRepository,
+            IUnitOfWork unitOfWork,
             UserManager<CoreUser> userManager,
             IMapper mapper)
         {
-            _condominiumRepository = condominiumRepository;
+            _unitOfWork = unitOfWork;
             _userManager = userManager;
             _mapper = mapper;
         }
@@ -30,16 +30,17 @@ namespace CondoSphere.Application.Services.Condominium
             var condominium = _mapper.Map<CoreCondominium>(condominiumDto);
             condominium.CompanyId = companyId;
 
-            await _condominiumRepository.AddAsync(condominium);
-            await _condominiumRepository.SaveChangesAsync();
+            await _unitOfWork.Condominiums.AddAsync(condominium);
+
+            await _unitOfWork.CompleteAsync();
 
             return _mapper.Map<CondominiumDto>(condominium);
         }
 
         public async Task<IEnumerable<CondominiumDto>> GetAllCondominiumsAsync(int companyId, int pageNumber, int pageSize)
         {
-            // 1. Fetch the raw condominium data from the repository
-            var condominiums = await _condominiumRepository.GetAllAsync(companyId, pageNumber, pageSize);
+            // 1. Fetch the raw condominium data from the repository via UnitOfWork
+            var condominiums = await _unitOfWork.Condominiums.GetAllAsync(companyId, pageNumber, pageSize);
             if (!condominiums.Any())
             {
                 return Enumerable.Empty<CondominiumDto>();
@@ -61,7 +62,6 @@ namespace CondoSphere.Application.Services.Condominium
                     .Where(u => managerIds.Contains(u.Id))
                     .ToDictionaryAsync(u => u.Id, u => $"{u.FirstName} {u.LastName}");
 
-                // 4. Stitch the manager names onto the DTOs
                 foreach (var dto in condominiumDtos)
                 {
                     var condo = condominiums.First(c => c.Id == dto.Id);
@@ -77,13 +77,13 @@ namespace CondoSphere.Application.Services.Condominium
 
         public async Task<CondominiumDto?> GetCondominiumByIdAsync(int id, int companyId)
         {
-            var condominium = await _condominiumRepository.GetByIdAsync(id, companyId);
+            var condominium = await _unitOfWork.Condominiums.GetByIdAsync(id, companyId);
             return _mapper.Map<CondominiumDto>(condominium);
         }
 
         public async Task<bool> UpdateCondominiumAsync(int id, CreateUpdateCondominiumDto condominiumDto, int companyId)
         {
-            var condominium = await _condominiumRepository.GetByIdAsync(id, companyId);
+            var condominium = await _unitOfWork.Condominiums.GetByIdAsync(id, companyId);
             if (condominium == null)
             {
                 return false;
@@ -91,25 +91,27 @@ namespace CondoSphere.Application.Services.Condominium
 
             _mapper.Map(condominiumDto, condominium);
 
-            _condominiumRepository.Update(condominium);
-            return await _condominiumRepository.SaveChangesAsync() > 0;
+            _unitOfWork.Condominiums.Update(condominium);
+            await _unitOfWork.CompleteAsync();
+            return true;
         }
 
         public async Task<bool> DeleteCondominiumAsync(int id, int companyId)
         {
-            var condominium = await _condominiumRepository.GetByIdAsync(id, companyId);
+            var condominium = await _unitOfWork.Condominiums.GetByIdAsync(id, companyId);
             if (condominium == null)
             {
                 return false;
             }
 
-            _condominiumRepository.Remove(condominium);
-            return await _condominiumRepository.SaveChangesAsync() > 0;
+            _unitOfWork.Condominiums.Remove(condominium);
+            await _unitOfWork.CompleteAsync();
+            return true;
         }
 
         public async Task<bool> AssignManagerAsync(int condominiumId, int managerId, int companyId)
         {
-            var condominium = await _condominiumRepository.GetByIdAsync(condominiumId, companyId);
+            var condominium = await _unitOfWork.Condominiums.GetByIdAsync(condominiumId, companyId);
             if (condominium == null) return false;
 
             var manager = await _userManager.FindByIdAsync(managerId.ToString());
@@ -119,13 +121,15 @@ namespace CondoSphere.Application.Services.Condominium
             if (!roles.Contains(RoleConstants.CondoManager)) return false;
 
             condominium.ManagerId = managerId;
-            _condominiumRepository.Update(condominium);
-            return await _condominiumRepository.SaveChangesAsync() > 0;
+            _unitOfWork.Condominiums.Update(condominium);
+
+            await _unitOfWork.CompleteAsync();
+            return true;
         }
 
         public async Task<IEnumerable<CondominiumDto>> GetCondominiumsByManagerIdAsync(int managerId)
         {
-            var condominiums = await _condominiumRepository.GetByManagerIdAsync(managerId);
+            var condominiums = await _unitOfWork.Condominiums.GetByManagerIdAsync(managerId);
             return _mapper.Map<IEnumerable<CondominiumDto>>(condominiums);
         }
     }

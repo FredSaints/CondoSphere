@@ -40,24 +40,31 @@ CondoSphere.API/appsettings.json
 CondoSphere.API/CondoSphere.API.http
 CondoSphere.API/Controllers/AccountsController.cs
 CondoSphere.API/Controllers/CondominiumsController.cs
+CondoSphere.API/Controllers/OccurrencesController.cs
+CondoSphere.API/Controllers/ProfileController.cs
 CondoSphere.API/Controllers/ResidentsController.cs
 CondoSphere.API/Controllers/UnitsController.cs
 CondoSphere.API/Program.cs
 CondoSphere.API/Properties/launchSettings.json
+CondoSphere.Application/Authorization/CanAccessOccurrenceRequirement.cs
 CondoSphere.Application/Authorization/IsCondoManagerRequirement.cs
 CondoSphere.Application/Interfaces/ICompanyRepository.cs
 CondoSphere.Application/Interfaces/ICondominiumRepository.cs
 CondoSphere.Application/Interfaces/ICurrentUserService.cs
 CondoSphere.Application/Interfaces/IMailService.cs
+CondoSphere.Application/Interfaces/IOccurrenceRepository.cs
 CondoSphere.Application/Interfaces/IUnitOfWork.cs
 CondoSphere.Application/Interfaces/IUnitRepository.cs
 CondoSphere.Application/Interfaces/IUserRepository.cs
 CondoSphere.Application/Mappings/CondominiumProfile.cs
+CondoSphere.Application/Mappings/OccurrenceProfile.cs
 CondoSphere.Application/Mappings/UnitProfile.cs
 CondoSphere.Application/Services/Condominium/CondominiumService.cs
 CondoSphere.Application/Services/Condominium/ICondominiumService.cs
 CondoSphere.Application/Services/Condominium/IUnitService.cs
 CondoSphere.Application/Services/Condominium/UnitService.cs
+CondoSphere.Application/Services/Occurrence/IOccurrenceService.cs
+CondoSphere.Application/Services/Occurrence/OccurrenceService.cs
 CondoSphere.Application/Services/Token/ITokenService.cs
 CondoSphere.Application/Services/Token/TokenService.cs
 CondoSphere.Application/Services/User/IUserService.cs
@@ -65,17 +72,24 @@ CondoSphere.Application/Services/User/UserService.cs
 CondoSphere.Application/Validators/Condominiums/CreateUpdateCondominiumDtoValidator.cs
 CondoSphere.Application/Validators/Condominiums/CreateUpdateUnitDtoValidator.cs
 CondoSphere.Core/DTOs/Account/AssignManagerDto.cs
+CondoSphere.Core/DTOs/Account/AssignResidentDto.cs
+CondoSphere.Core/DTOs/Account/ChangePasswordDto.cs
+CondoSphere.Core/DTOs/Account/ForgotPasswordDto.cs
 CondoSphere.Core/DTOs/Account/LoginDto.cs
 CondoSphere.Core/DTOs/Account/RegisterDto.cs
 CondoSphere.Core/DTOs/Account/RegisterManagerDto.cs
 CondoSphere.Core/DTOs/Account/RegisterResidentDto.cs
 CondoSphere.Core/DTOs/Account/SetPasswordDto.cs
+CondoSphere.Core/DTOs/Account/UpdateProfileDto.cs
 CondoSphere.Core/DTOs/Account/UserDto.cs
 CondoSphere.Core/DTOs/Account/UserListDto.cs
+CondoSphere.Core/DTOs/Account/UserProfileDto.cs
 CondoSphere.Core/DTOs/Condominiums/CondominiumDto.cs
 CondoSphere.Core/DTOs/Condominiums/CreateUpdateCondominiumDto.cs
 CondoSphere.Core/DTOs/Condominiums/CreateUpdateUnitDto.cs
 CondoSphere.Core/DTOs/Condominiums/UnitDto.cs
+CondoSphere.Core/DTOs/Occurrences/CreateOccurrenceDto.cs
+CondoSphere.Core/DTOs/Occurrences/OccurrenceDto.cs
 CondoSphere.Core/Entities/Condominiums/Assembly.cs
 CondoSphere.Core/Entities/Condominiums/Condominium.cs
 CondoSphere.Core/Entities/Condominiums/Document.cs
@@ -95,12 +109,14 @@ CondoSphere.Core/Enums/SystemRole.cs
 CondoSphere.Core/Enums/UnitQuotaStatus.cs
 CondoSphere.Core/IEntity.cs
 CondoSphere.Core/RoleConstants.cs
+CondoSphere.Infrastructure/Authorization/CanAccessOccurrenceHandler.cs
 CondoSphere.Infrastructure/Authorization/IsCondoManagerHandler.cs
 CondoSphere.Infrastructure/Data/CondominiumDbContext.cs
 CondoSphere.Infrastructure/Data/SeedDb.cs
 CondoSphere.Infrastructure/Data/UserManagementDbContext.cs
 CondoSphere.Infrastructure/Repositories/CompanyRepository.cs
 CondoSphere.Infrastructure/Repositories/CondominiumRepository.cs
+CondoSphere.Infrastructure/Repositories/OccurrenceRepository.cs
 CondoSphere.Infrastructure/Repositories/UnitOfWork.cs
 CondoSphere.Infrastructure/Repositories/UnitRepository.cs
 CondoSphere.Infrastructure/Repositories/UserRepository.cs
@@ -112,29 +128,47 @@ CondoSphere.Web/Controllers/AccountController.cs
 CondoSphere.Web/Controllers/AdministrationController.cs
 CondoSphere.Web/Controllers/CondoManagementController.cs
 CondoSphere.Web/Controllers/HomeController.cs
+CondoSphere.Web/Controllers/PortalController.cs
+CondoSphere.Web/Controllers/ProfileController.cs
 CondoSphere.Web/Models/AssignManagerViewModel.cs
+CondoSphere.Web/Models/AssignResidentViewModel.cs
+CondoSphere.Web/Models/ChangePasswordViewModel.cs
 CondoSphere.Web/Models/CondominiumDetailsViewModel.cs
 CondoSphere.Web/Models/ErrorViewModel.cs
+CondoSphere.Web/Models/ForgotPasswordViewModel.cs
 CondoSphere.Web/Models/ManagementDashboardViewModel.cs
+CondoSphere.Web/Models/MyProfileViewModel.cs
+CondoSphere.Web/Models/PortalDashboardViewModel.cs
 CondoSphere.Web/Models/RegisterResidentViewModel.cs
 CondoSphere.Web/Program.cs
 CondoSphere.Web/Properties/launchSettings.json
 CondoSphere.Web/Services/ApiClient.cs
+CondoSphere.Web/Services/IImageService.cs
+CondoSphere.Web/Services/ImageService.cs
 CondoSphere.Web/Services/JwtForwardingDelegatingHandler.cs
 CondoSphere.Web/Views/_ViewImports.cshtml
 CondoSphere.Web/Views/_ViewStart.cshtml
+CondoSphere.Web/Views/Account/ForgotPassword.cshtml
+CondoSphere.Web/Views/Account/ForgotPasswordConfirmation.cshtml
 CondoSphere.Web/Views/Account/Login.cshtml
+CondoSphere.Web/Views/Account/Register.cshtml
+CondoSphere.Web/Views/Account/RegistrationComplete.cshtml
 CondoSphere.Web/Views/Account/SetPassword.cshtml
 CondoSphere.Web/Views/Administration/AssignManager.cshtml
 CondoSphere.Web/Views/Administration/CreateCondominium.cshtml
 CondoSphere.Web/Views/Administration/Index.cshtml
 CondoSphere.Web/Views/Administration/RegisterManager.cshtml
+CondoSphere.Web/Views/CondoManagement/AssignResident.cshtml
 CondoSphere.Web/Views/CondoManagement/CreateUnit.cshtml
 CondoSphere.Web/Views/CondoManagement/Details.cshtml
 CondoSphere.Web/Views/CondoManagement/Index.cshtml
 CondoSphere.Web/Views/CondoManagement/RegisterResident.cshtml
 CondoSphere.Web/Views/Home/Index.cshtml
 CondoSphere.Web/Views/Home/Privacy.cshtml
+CondoSphere.Web/Views/Portal/CreateOccurrence.cshtml
+CondoSphere.Web/Views/Portal/Index.cshtml
+CondoSphere.Web/Views/Profile/ChangePassword.cshtml
+CondoSphere.Web/Views/Profile/Index.cshtml
 CondoSphere.Web/Views/Shared/_Layout.cshtml
 CondoSphere.Web/Views/Shared/_Layout.cshtml.css
 CondoSphere.Web/Views/Shared/_LoginPartial.cshtml
@@ -142,12 +176,2294 @@ CondoSphere.Web/Views/Shared/_ValidationScriptsPartial.cshtml
 CondoSphere.Web/Views/Shared/Error.cshtml
 CondoSphere.Web/wwwroot/css/site.css
 CondoSphere.Web/wwwroot/js/site.js
+repomix-error.md
 ```
 
 # Files
 
+## File: CondoSphere.API/Controllers/OccurrencesController.cs
+````csharp
+using CondoSphere.Application.Interfaces;
+using CondoSphere.Application.Services.Occurrence;
+using CondoSphere.Core;
+using CondoSphere.Core.DTOs.Occurrences;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using CoreOccurrence = CondoSphere.Core.Entities.Condominiums.Occurrence;
+
+namespace CondoSphere.API.Controllers
+{
+    [ApiController]
+    [Route("api/occurrences")]
+    [Authorize]
+    public class OccurrencesController : ControllerBase
+    {
+        private readonly IOccurrenceService _occurrenceService;
+        private readonly ICurrentUserService _currentUserService;
+        private readonly IAuthorizationService _authorizationService;
+        private readonly IOccurrenceRepository _occurrenceRepository;
+
+        public OccurrencesController(
+            IOccurrenceService occurrenceService,
+            ICurrentUserService currentUserService,
+            IAuthorizationService authorizationService,
+            IOccurrenceRepository occurrenceRepository)
+        {
+            _occurrenceService = occurrenceService;
+            _currentUserService = currentUserService;
+            _authorizationService = authorizationService;
+            _occurrenceRepository = occurrenceRepository;
+        }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetById(int id)
+        {
+            // First, get the raw entity from the repository to check authorization against.
+            CoreOccurrence? occurrence = await _occurrenceRepository.GetByIdAsync(id);
+            if (occurrence == null)
+            {
+                return NotFound();
+            }
+
+            // Check if the current user is authorized to view this specific occurrence resource.
+            var authorizationResult = await _authorizationService.AuthorizeAsync(User, occurrence, "CanAccessOccurrence");
+            if (!authorizationResult.Succeeded)
+            {
+                // Return 403 Forbidden if the policy check fails.
+                return Forbid();
+            }
+
+            // If authorized, get the rich DTO from the service to return to the client.
+            var occurrenceDto = await _occurrenceService.GetOccurrenceByIdAsync(id);
+            return Ok(occurrenceDto);
+        }
+
+        [HttpPost]
+        [Authorize(Roles = RoleConstants.CondoResident)]
+        public async Task<IActionResult> CreateOccurrence([FromBody] CreateOccurrenceDto dto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            // The controller's job is to get the user ID from the security context.
+            var residentUserId = _currentUserService.UserId;
+            if (residentUserId == null)
+            {
+                return Unauthorized("User ID could not be determined from token.");
+            }
+
+            // The controller passes the clean ID to the service layer.
+            var newOccurrenceDto = await _occurrenceService.CreateOccurrenceAsync(dto, residentUserId.Value);
+
+            if (newOccurrenceDto == null)
+            {
+                // The service returned null, meaning the business rule failed (user not in a unit).
+                return BadRequest(new { Message = "Could not create occurrence. The user may not be assigned to a unit." });
+            }
+
+            // Return a 201 Created status with a Location header pointing to the new resource.
+            return CreatedAtAction(
+                nameof(GetById),
+                new { id = newOccurrenceDto.Id },
+                newOccurrenceDto);
+        }
+
+        [HttpGet("~/api/condominiums/{condominiumId}/occurrences")]
+        [Authorize(Policy = "IsCondoManagerPolicy")]
+        public async Task<IActionResult> GetOccurrencesForCondominium(int condominiumId)
+        {
+            var occurrences = await _occurrenceService.GetOccurrencesForCondominiumAsync(condominiumId);
+            return Ok(occurrences);
+        }
+
+        [HttpGet("my-occurrences")]
+        [Authorize(Roles = RoleConstants.CondoResident)]
+        public async Task<IActionResult> GetMyOccurrences()
+        {
+            var residentUserId = _currentUserService.UserId;
+            if (residentUserId == null)
+            {
+                return Unauthorized("User ID could not be determined from token.");
+            }
+
+            var occurrences = await _occurrenceService.GetOccurrencesForResidentAsync(residentUserId.Value);
+
+            return Ok(occurrences);
+        }
+    }
+}
+````
+
+## File: CondoSphere.API/Controllers/ProfileController.cs
+````csharp
+using CondoSphere.Application.Interfaces;
+using CondoSphere.Application.Services.User;
+using CondoSphere.Core.DTOs.Account;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
+
+namespace CondoSphere.API.Controllers
+{
+    [ApiController]
+    [Route("api/[controller]")]
+    [Authorize]
+    public class ProfileController : ControllerBase
+    {
+        private readonly IUserService _userService;
+        private readonly ICurrentUserService _currentUserService;
+
+        public ProfileController(IUserService userService, ICurrentUserService currentUserService)
+        {
+            _userService = userService;
+            _currentUserService = currentUserService;
+        }
+
+        [HttpPut] // This endpoint now only accepts JSON.
+        public async Task<IActionResult> UpdateProfile([FromBody] UpdateProfileDto dto)
+        {
+            var userId = _currentUserService.UserId;
+            if (userId == null) return Unauthorized();
+
+            var (success, errors) = await _userService.UpdateProfileAsync(userId.Value, dto);
+
+            if (success) return Ok(new { message = "Profile updated successfully." });
+            return BadRequest(errors);
+        }
+
+        [HttpPost("change-password")]
+        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDto dto)
+        {
+            var userId = _currentUserService.UserId;
+            if (userId == null) return Unauthorized();
+
+            var (success, errors) = await _userService.ChangePasswordAsync(userId.Value, dto);
+
+            if (success) return Ok(new { message = "Password changed successfully." });
+            return BadRequest(errors);
+        }
+
+        [HttpGet] // Route will be GET /api/profile
+        public async Task<IActionResult> GetProfile()
+        {
+            var userId = _currentUserService.UserId;
+            if (userId == null) return Unauthorized();
+
+            var profile = await _userService.GetUserProfileAsync(userId.Value);
+            if (profile == null) return NotFound();
+
+            return Ok(profile);
+        }
+    }
+}
+````
+
+## File: CondoSphere.Application/Authorization/CanAccessOccurrenceRequirement.cs
+````csharp
+using Microsoft.AspNetCore.Authorization;
+
+namespace CondoSphere.Application.Authorization
+{
+    public class CanAccessOccurrenceRequirement : IAuthorizationRequirement { }
+}
+````
+
+## File: CondoSphere.Application/Interfaces/IOccurrenceRepository.cs
+````csharp
+using CondoSphere.Core.Entities.Condominiums;
+
+namespace CondoSphere.Application.Interfaces
+{
+    public interface IOccurrenceRepository
+    {
+        Task<IEnumerable<Occurrence>> GetAllForCondominiumAsync(int condominiumId);
+        Task<Occurrence?> GetByIdAsync(int occurrenceId);
+        Task AddAsync(Occurrence occurrence);
+        Task<IEnumerable<Occurrence>> GetAllForResidentAsync(int residentUserId);
+    }
+}
+````
+
+## File: CondoSphere.Application/Mappings/OccurrenceProfile.cs
+````csharp
+using AutoMapper;
+using CondoSphere.Core.DTOs.Occurrences;
+using CondoSphere.Core.Entities.Condominiums;
+
+namespace CondoSphere.Application.Mappings
+{
+    public class OccurrenceProfile : Profile
+    {
+        public OccurrenceProfile()
+        {
+            CreateMap<Occurrence, OccurrenceDto>();
+            CreateMap<CreateOccurrenceDto, Occurrence>();
+        }
+    }
+}
+````
+
+## File: CondoSphere.Application/Services/Occurrence/IOccurrenceService.cs
+````csharp
+using CondoSphere.Core.DTOs.Occurrences;
+
+namespace CondoSphere.Application.Services.Occurrence
+{
+    public interface IOccurrenceService
+    {
+        Task<IEnumerable<OccurrenceDto>> GetOccurrencesForCondominiumAsync(int condominiumId);
+        Task<OccurrenceDto?> CreateOccurrenceAsync(CreateOccurrenceDto dto, int residentUserId);
+        Task<OccurrenceDto?> GetOccurrenceByIdAsync(int occurrenceId);
+        Task<IEnumerable<OccurrenceDto>> GetOccurrencesForResidentAsync(int residentUserId);
+    }
+}
+````
+
+## File: CondoSphere.Application/Services/Occurrence/OccurrenceService.cs
+````csharp
+using AutoMapper;
+using CondoSphere.Application.Interfaces;
+using CondoSphere.Core.DTOs.Occurrences;
+using CondoSphere.Core.Enums;
+using CoreOccurrence = CondoSphere.Core.Entities.Condominiums.Occurrence;
+using CoreUser = CondoSphere.Core.Entities.Users.User;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+
+namespace CondoSphere.Application.Services.Occurrence
+{
+    public class OccurrenceService : IOccurrenceService
+    {
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly UserManager<CoreUser> _userManager;
+        private readonly IMapper _mapper;
+
+        public OccurrenceService(
+            IUnitOfWork unitOfWork,
+            UserManager<CoreUser> userManager,
+            IMapper mapper)
+        {
+            _unitOfWork = unitOfWork;
+            _userManager = userManager;
+            _mapper = mapper;
+        }
+
+        public async Task<IEnumerable<OccurrenceDto>> GetOccurrencesForCondominiumAsync(int condominiumId)
+        {
+            var occurrences = await _unitOfWork.Occurrences.GetAllForCondominiumAsync(condominiumId);
+            if (!occurrences.Any())
+            {
+                return Enumerable.Empty<OccurrenceDto>();
+            }
+
+            var occurrenceDtos = _mapper.Map<List<OccurrenceDto>>(occurrences);
+
+            var reporterIds = occurrences.Select(o => o.ReportedByUserId).Distinct().ToList();
+            var reporters = await _userManager.Users
+                .Where(u => reporterIds.Contains(u.Id))
+                .ToDictionaryAsync(u => u.Id, u => $"{u.FirstName} {u.LastName}");
+
+            foreach (var dto in occurrenceDtos)
+            {
+                var originalOccurrence = occurrences.First(o => o.Id == dto.Id);
+                if (reporters.ContainsKey(originalOccurrence.ReportedByUserId))
+                {
+                    dto.ReportedByUserName = reporters[originalOccurrence.ReportedByUserId];
+                }
+            }
+
+            return occurrenceDtos;
+        }
+
+        public async Task<OccurrenceDto?> CreateOccurrenceAsync(CreateOccurrenceDto dto, int residentUserId)
+        {
+            // 1. Find the unit associated with the logged-in resident using the Unit of Work.
+            var unit = await _unitOfWork.Units.GetUnitByResidentIdAsync(residentUserId);
+            if (unit == null)
+            {
+                // SECURITY: This resident is not assigned to a unit, so they cannot create an occurrence.
+                return null;
+            }
+
+            // 2. Create the new Occurrence entity from the DTO using AutoMapper.
+            var newOccurrence = _mapper.Map<CoreOccurrence>(dto);
+
+            // 3. Populate all system-managed properties.
+            newOccurrence.ReportedDate = DateTime.UtcNow;
+            newOccurrence.Status = OccurrenceStatus.Open;
+            newOccurrence.ReportedByUserId = residentUserId;
+            newOccurrence.UnitId = unit.Id;
+            newOccurrence.CondominiumId = unit.CondominiumId;
+            newOccurrence.CompanyId = unit.CompanyId;
+
+            // 4. Add the new entity to the database via the repository and save all changes.
+            await _unitOfWork.Occurrences.AddAsync(newOccurrence);
+            await _unitOfWork.CompleteAsync();
+
+            // 5. Map the newly created entity (which now has an ID) back to a DTO to return.
+            return _mapper.Map<OccurrenceDto>(newOccurrence);
+        }
+
+        public async Task<OccurrenceDto?> GetOccurrenceByIdAsync(int occurrenceId)
+        {
+            var occurrence = await _unitOfWork.Occurrences.GetByIdAsync(occurrenceId);
+            if (occurrence == null)
+            {
+                return null;
+            }
+
+            return _mapper.Map<OccurrenceDto>(occurrence);
+        }
+
+        public async Task<IEnumerable<OccurrenceDto>> GetOccurrencesForResidentAsync(int residentUserId)
+        {
+            var occurrences = await _unitOfWork.Occurrences.GetAllForResidentAsync(residentUserId);
+
+            return _mapper.Map<IEnumerable<OccurrenceDto>>(occurrences);
+        }
+    }
+}
+````
+
+## File: CondoSphere.Core/DTOs/Account/AssignResidentDto.cs
+````csharp
+using System.ComponentModel.DataAnnotations;
+
+namespace CondoSphere.Core.DTOs.Condominiums
+{
+    public class AssignResidentDto
+    {
+        [Required]
+        public int ResidentId { get; set; }
+    }
+}
+````
+
+## File: CondoSphere.Core/DTOs/Account/ChangePasswordDto.cs
+````csharp
+using System.ComponentModel.DataAnnotations;
+
+namespace CondoSphere.Core.DTOs.Account
+{
+    public class ChangePasswordDto
+    {
+        [Required]
+        [DataType(DataType.Password)]
+        public string CurrentPassword { get; set; } = string.Empty;
+
+        [Required]
+        [StringLength(100, MinimumLength = 6)]
+        [DataType(DataType.Password)]
+        public string NewPassword { get; set; } = string.Empty;
+
+        [DataType(DataType.Password)]
+        [Compare("NewPassword", ErrorMessage = "The new password and confirmation password do not match.")]
+        public string ConfirmPassword { get; set; } = string.Empty;
+    }
+}
+````
+
+## File: CondoSphere.Core/DTOs/Account/ForgotPasswordDto.cs
+````csharp
+using System.ComponentModel.DataAnnotations;
+
+namespace CondoSphere.Core.DTOs.Account
+{
+    public class ForgotPasswordDto
+    {
+        [Required]
+        [EmailAddress]
+        public string Email { get; set; } = string.Empty;
+    }
+}
+````
+
+## File: CondoSphere.Core/DTOs/Account/UpdateProfileDto.cs
+````csharp
+using System.ComponentModel.DataAnnotations;
+
+namespace CondoSphere.Core.DTOs.Account
+{
+    public class UpdateProfileDto
+    {
+        [Required]
+        [StringLength(100, MinimumLength = 2)]
+        public string FirstName { get; set; } = string.Empty;
+
+        [Required]
+        [StringLength(100, MinimumLength = 2)]
+        public string LastName { get; set; } = string.Empty;
+        public string? ProfilePictureUrl { get; set; }
+    }
+}
+````
+
+## File: CondoSphere.Core/DTOs/Account/UserProfileDto.cs
+````csharp
+namespace CondoSphere.Core.DTOs.Account
+{
+    // This DTO represents the full profile data we need on the frontend.
+    public class UserProfileDto
+    {
+        public int Id { get; set; }
+        public string FirstName { get; set; } = string.Empty;
+        public string LastName { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
+        public string? ProfilePictureUrl { get; set; }
+        public int? CompanyId { get; set; }
+        public IEnumerable<string> Roles { get; set; } = new List<string>();
+    }
+}
+````
+
+## File: CondoSphere.Core/DTOs/Occurrences/CreateOccurrenceDto.cs
+````csharp
+using System.ComponentModel.DataAnnotations;
+
+namespace CondoSphere.Core.DTOs.Occurrences
+{
+    public class CreateOccurrenceDto
+    {
+        [Required]
+        [StringLength(100, MinimumLength = 5, ErrorMessage = "The Title must be between 5 and 100 characters.")]
+        public string Title { get; set; } = string.Empty;
+
+        [Required]
+        [StringLength(1000, MinimumLength = 10, ErrorMessage = "The Description must be between 10 and 1000 characters.")]
+        public string Description { get; set; } = string.Empty;
+    }
+}
+````
+
+## File: CondoSphere.Core/DTOs/Occurrences/OccurrenceDto.cs
+````csharp
+using CondoSphere.Core.Enums;
+
+namespace CondoSphere.Core.DTOs.Occurrences
+{
+    public class OccurrenceDto
+    {
+        public int Id { get; set; }
+        public string Title { get; set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
+        public DateTime ReportedDate { get; set; }
+        public OccurrenceStatus Status { get; set; }
+        public string ReportedByUserName { get; set; } = string.Empty;
+        public int? UnitId { get; set; }
+    }
+}
+````
+
+## File: CondoSphere.Infrastructure/Authorization/CanAccessOccurrenceHandler.cs
+````csharp
+using CondoSphere.Application.Authorization;
+using CondoSphere.Application.Interfaces;
+using CondoSphere.Core;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using CoreOccurrence = CondoSphere.Core.Entities.Condominiums.Occurrence;
+using CoreUser = CondoSphere.Core.Entities.Users.User;
+
+namespace CondoSphere.Infrastructure.Authorization
+{
+    // Use the 'CoreOccurrence' alias for the resource type
+    public class CanAccessOccurrenceHandler : AuthorizationHandler<CanAccessOccurrenceRequirement, CoreOccurrence>
+    {
+        private readonly ICurrentUserService _currentUserService;
+        // Use the 'CoreUser' alias here
+        private readonly UserManager<CoreUser> _userManager;
+
+        public CanAccessOccurrenceHandler(ICurrentUserService currentUserService, UserManager<CoreUser> userManager)
+        {
+            _currentUserService = currentUserService;
+            _userManager = userManager;
+        }
+
+        protected override async Task HandleRequirementAsync(
+            AuthorizationHandlerContext context,
+            CanAccessOccurrenceRequirement requirement,
+            CoreOccurrence resource) // And use the alias for the resource parameter
+        {
+            var userId = _currentUserService.UserId;
+            if (userId == null)
+            {
+                context.Fail();
+                return;
+            }
+
+            // Rule 1: Allow if the user is the one who reported it.
+            if (resource.ReportedByUserId == userId.Value)
+            {
+                context.Succeed(requirement);
+                return;
+            }
+
+            // Rule 2 & 3: Allow if the user is a CompanyAdmin or CondoManager for that company.
+            var user = await _userManager.FindByIdAsync(userId.Value.ToString());
+            if (user?.CompanyId == resource.CompanyId)
+            {
+                if (context.User.IsInRole(RoleConstants.CompanyAdmin) || context.User.IsInRole(RoleConstants.CondoManager))
+                {
+                    context.Succeed(requirement);
+                    return;
+                }
+            }
+
+            context.Fail();
+        }
+    }
+}
+````
+
+## File: CondoSphere.Infrastructure/Repositories/OccurrenceRepository.cs
+````csharp
+using CondoSphere.Application.Interfaces;
+using CondoSphere.Core.Entities.Condominiums;
+using CondoSphere.Infrastructure.Data;
+using Microsoft.EntityFrameworkCore;
+
+namespace CondoSphere.Infrastructure.Repositories
+{
+    public class OccurrenceRepository : IOccurrenceRepository
+    {
+        private readonly CondominiumDbContext _context;
+
+        public OccurrenceRepository(CondominiumDbContext context)
+        {
+            _context = context;
+        }
+
+        public async Task AddAsync(Occurrence occurrence)
+        {
+            // This adds the entity to EF Core's change tracker.
+            await _context.Occurrences.AddAsync(occurrence);
+        }
+
+        public async Task<IEnumerable<Occurrence>> GetAllForCondominiumAsync(int condominiumId)
+        {
+            return await _context.Occurrences
+                .Where(o => o.CondominiumId == condominiumId)
+                .OrderByDescending(o => o.ReportedDate)
+                .AsNoTracking()
+                .ToListAsync();
+        }
+
+        public async Task<Occurrence?> GetByIdAsync(int occurrenceId)
+        {
+            return await _context.Occurrences.FindAsync(occurrenceId);
+        }
+
+        public async Task<IEnumerable<Occurrence>> GetAllForResidentAsync(int residentUserId)
+        {
+            return await _context.Occurrences
+                .Where(o => o.ReportedByUserId == residentUserId)
+                .OrderByDescending(o => o.ReportedDate)
+                .AsNoTracking()
+                .ToListAsync();
+        }
+    }
+}
+````
+
+## File: CondoSphere.Web/Controllers/PortalController.cs
+````csharp
+using CondoSphere.Core;
+using CondoSphere.Core.DTOs.Occurrences;
+using CondoSphere.Web.Models;
+using CondoSphere.Web.Services;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+
+namespace CondoSphere.Web.Controllers
+{
+    [Authorize(Roles = RoleConstants.CondoResident)]
+    [Route("portal")]
+    public class PortalController : Controller
+    {
+        private readonly ApiClient _apiClient;
+
+        public PortalController(ApiClient apiClient)
+        {
+            _apiClient = apiClient;
+        }
+
+        [HttpGet("")]
+        public async Task<IActionResult> Index()
+        {
+            // 1. Call the ApiClient to get the user's occurrences.
+            var occurrences = await _apiClient.GetMyOccurrencesAsync();
+
+            // 2. Create an instance of our new ViewModel.
+            var viewModel = new PortalDashboardViewModel
+            {
+                Occurrences = occurrences ?? new List<OccurrenceDto>()
+            };
+
+            // 3. Pass the strongly-typed model to the view.
+            return View(viewModel);
+        }
+
+        [HttpGet("create-occurrence")]
+        public IActionResult CreateOccurrence()
+        {
+            return View(new CreateOccurrenceDto());
+        }
+
+        [HttpPost("create-occurrence")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateOccurrence(CreateOccurrenceDto model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            var result = await _apiClient.CreateOccurrenceAsync(model);
+
+            if (result != null)
+            {
+                TempData["SuccessMessage"] = $"Occurrence '{model.Title}' was reported successfully!";
+                return RedirectToAction(nameof(Index));
+            }
+
+            ModelState.AddModelError(string.Empty, "An error occurred while reporting the occurrence. Please try again.");
+            return View(model);
+        }
+    }
+}
+````
+
+## File: CondoSphere.Web/Controllers/ProfileController.cs
+````csharp
+using CondoSphere.Core.DTOs.Account;
+using CondoSphere.Web.Models;
+using CondoSphere.Web.Services;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
+
+namespace CondoSphere.Web.Controllers
+{
+    [Authorize]
+    [Route("profile")]
+    public class ProfileController : Controller
+    {
+        private readonly ApiClient _apiClient;
+        private readonly IImageService _imageService;
+
+        public ProfileController(ApiClient apiClient, IImageService imageService)
+        {
+            _apiClient = apiClient;
+            _imageService = imageService;
+        }
+
+        [HttpGet("")]
+        public IActionResult Index()
+        {
+            var model = new MyProfileViewModel
+            {
+                FirstName = User.FindFirstValue(ClaimTypes.GivenName) ?? "",
+                LastName = User.FindFirstValue(ClaimTypes.Surname) ?? "",
+                CurrentProfileImageUrl = User.FindFirstValue("profile_picture")
+            };
+            return View(model);
+        }
+
+        [HttpPost("")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Index(MyProfileViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            // This part remains the same: save the image and update the database via the API.
+            string? newImageUrl = model.CurrentProfileImageUrl;
+            if (model.ProfileImage != null && model.ProfileImage.Length > 0)
+            {
+                newImageUrl = await _imageService.SaveImageAsync(model.ProfileImage, "user-photos", model.CurrentProfileImageUrl);
+            }
+            var dto = new UpdateProfileDto
+            {
+                FirstName = model.FirstName,
+                LastName = model.LastName,
+                ProfilePictureUrl = newImageUrl
+            };
+            var (success, message) = await _apiClient.UpdateProfileAsync(dto);
+
+            if (success)
+            {
+                // ===== THIS IS THE NEW SESSION REFRESH LOGIC =====
+
+                // 1. Fetch the user's complete, updated profile from the API.
+                var updatedProfile = await _apiClient.GetMyProfileAsync();
+                if (updatedProfile != null)
+                {
+                    // 2. Create a new set of claims based on the fresh data.
+                    var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.NameIdentifier, updatedProfile.Id.ToString()),
+                new Claim(ClaimTypes.Name, updatedProfile.Email),
+                new Claim(ClaimTypes.Email, updatedProfile.Email),
+                new Claim(ClaimTypes.GivenName, updatedProfile.FirstName),
+                new Claim(ClaimTypes.Surname, updatedProfile.LastName),
+                new Claim("profile_picture", updatedProfile.ProfilePictureUrl ?? "")
+            };
+                    foreach (var role in updatedProfile.Roles)
+                    {
+                        claims.Add(new Claim(ClaimTypes.Role, role));
+                    }
+                    var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                    var authProperties = new AuthenticationProperties { IsPersistent = true };
+
+                    // 3. Sign the user in again. This replaces their old cookie with the new one.
+                    await HttpContext.SignInAsync(
+                        CookieAuthenticationDefaults.AuthenticationScheme,
+                        new ClaimsPrincipal(claimsIdentity),
+                        authProperties);
+                }
+
+                TempData["SuccessMessage"] = "Your profile has been updated.";
+                return RedirectToAction("Index");
+            }
+
+            ModelState.AddModelError(string.Empty, message);
+            return View(model);
+        }
+
+        [HttpGet("change-password")]
+        public IActionResult ChangePassword()
+        {
+            return View(new ChangePasswordViewModel());
+        }
+
+        [HttpPost("change-password")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ChangePassword(ChangePasswordViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            var (success, message) = await _apiClient.ChangePasswordAsync(model);
+            if (success)
+            {
+                ModelState.Clear();
+                TempData["SuccessMessage"] = "Your password has been changed successfully.";
+                return RedirectToAction("Index");
+            }
+
+            ModelState.AddModelError(string.Empty, "Failed to change password. Please check your current password and try again.");
+            return View(model);
+        }
+    }
+}
+````
+
+## File: CondoSphere.Web/Models/AssignResidentViewModel.cs
+````csharp
+using Microsoft.AspNetCore.Mvc.Rendering;
+using System.ComponentModel.DataAnnotations;
+
+namespace CondoSphere.Web.Models
+{
+    public class AssignResidentViewModel
+    {
+        [Required]
+        public int UnitId { get; set; }
+        [Required]
+        public int CondominiumId { get; set; }
+
+        [Required(ErrorMessage = "Please select a resident to assign.")]
+        [Display(Name = "Select an Existing Resident")]
+        public int SelectedResidentId { get; set; }
+
+        public IEnumerable<SelectListItem> AvailableResidents { get; set; } = new List<SelectListItem>();
+    }
+}
+````
+
+## File: CondoSphere.Web/Models/ChangePasswordViewModel.cs
+````csharp
+using System.ComponentModel.DataAnnotations;
+
+namespace CondoSphere.Web.Models
+{
+    public class ChangePasswordViewModel
+    {
+        [Required]
+        [DataType(DataType.Password)]
+        [Display(Name = "Current Password")]
+        public string CurrentPassword { get; set; } = string.Empty;
+
+        [Required]
+        [StringLength(100, MinimumLength = 6, ErrorMessage = "The new password must be at least 6 characters long.")]
+        [DataType(DataType.Password)]
+        [Display(Name = "New Password")]
+        public string NewPassword { get; set; } = string.Empty;
+
+        [DataType(DataType.Password)]
+        [Display(Name = "Confirm New Password")]
+        [Compare("NewPassword", ErrorMessage = "The new password and confirmation password do not match.")]
+        public string ConfirmPassword { get; set; } = string.Empty;
+    }
+}
+````
+
+## File: CondoSphere.Web/Models/ForgotPasswordViewModel.cs
+````csharp
+using System.ComponentModel.DataAnnotations;
+
+namespace CondoSphere.Web.Models
+{
+    public class ForgotPasswordViewModel
+    {
+        [Required]
+        [EmailAddress]
+        [Display(Name = "Email Address")]
+        public string Email { get; set; } = string.Empty;
+    }
+}
+````
+
+## File: CondoSphere.Web/Models/MyProfileViewModel.cs
+````csharp
+using System.ComponentModel.DataAnnotations;
+
+namespace CondoSphere.Web.Models
+{
+    public class MyProfileViewModel
+    {
+        [Required]
+        [Display(Name = "First Name")]
+        [StringLength(100, MinimumLength = 2)]
+        public string FirstName { get; set; } = string.Empty;
+
+        [Required]
+        [Display(Name = "Last Name")]
+        [StringLength(100, MinimumLength = 2)]
+        public string LastName { get; set; } = string.Empty;
+
+        public string? CurrentProfileImageUrl { get; set; }
+
+        [Display(Name = "Upload New Profile Image")]
+        public IFormFile? ProfileImage { get; set; }
+    }
+}
+````
+
+## File: CondoSphere.Web/Models/PortalDashboardViewModel.cs
+````csharp
+using CondoSphere.Core.DTOs.Occurrences;
+
+namespace CondoSphere.Web.Models
+{
+    public class PortalDashboardViewModel
+    {
+        public IEnumerable<OccurrenceDto> Occurrences { get; set; } = new List<OccurrenceDto>();
+    }
+}
+````
+
+## File: CondoSphere.Web/Services/IImageService.cs
+````csharp
+namespace CondoSphere.Web.Services
+{
+    public interface IImageService
+    {
+        Task<string> SaveImageAsync(IFormFile imageFile, string folder, string? currentImagePath = null);
+    }
+}
+````
+
+## File: CondoSphere.Web/Services/ImageService.cs
+````csharp
+namespace CondoSphere.Web.Services
+{
+    public class ImageService : IImageService
+    {
+        private readonly IWebHostEnvironment _env;
+
+        public ImageService(IWebHostEnvironment env)
+        {
+            _env = env;
+        }
+
+        public async Task<string> SaveImageAsync(IFormFile imageFile, string folder, string? currentImagePath = null)
+        {
+            if (!string.IsNullOrEmpty(currentImagePath))
+            {
+                var oldFullPath = Path.Combine(_env.WebRootPath, currentImagePath.TrimStart('/'));
+                if (File.Exists(oldFullPath))
+                {
+                    File.Delete(oldFullPath);
+                }
+            }
+
+            var uploadsFolder = Path.Combine(_env.WebRootPath, "images", folder);
+            if (!Directory.Exists(uploadsFolder)) Directory.CreateDirectory(uploadsFolder);
+
+            var uniqueFileName = $"{Guid.NewGuid()}_{Path.GetFileName(imageFile.FileName)}";
+            var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await imageFile.CopyToAsync(stream);
+            }
+
+            return $"/images/{folder}/{uniqueFileName}";
+        }
+    }
+}
+````
+
+## File: CondoSphere.Web/Views/Account/ForgotPassword.cshtml
+````
+@model CondoSphere.Web.Models.ForgotPasswordViewModel
+
+@{
+    ViewData["Title"] = "Forgot Your Password?";
+}
+
+<h1>@ViewData["Title"]</h1>
+<p>Enter your email address and we will send you a link to reset your password.</p>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="ForgotPassword" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-floating mb-3">
+                <input asp-for="Email" class="form-control" autocomplete="username" aria-required="true" />
+                <label asp-for="Email" class="form-label"></label>
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+            <button type="submit" class="w-100 btn btn-primary">Send Reset Link</button>
+        </form>
+    </div>
+</div>
+````
+
+## File: CondoSphere.Web/Views/Account/ForgotPasswordConfirmation.cshtml
+````
+@{
+    ViewData["Title"] = "Forgot Password Confirmation";
+}
+
+<div class="text-center">
+    <h1>@ViewData["Title"]</h1>
+    <hr />
+    <p>
+        @ViewData["Message"]
+    </p>
+</div>
+````
+
+## File: CondoSphere.Web/Views/Account/Register.cshtml
+````
+@model CondoSphere.Core.DTOs.Account.RegisterDto
+
+@{
+    ViewData["Title"] = "Register a New Company";
+}
+
+<h1>@ViewData["Title"]</h1>
+<p class="text-muted">Sign up to start managing your condominiums with CondoSphere.</p>
+<hr />
+
+<div class="row">
+    <div class="col-md-6">
+        <form asp-action="Register" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <h4>Company Information</h4>
+            <div class="form-floating mb-3">
+                <input asp-for="CompanyName" class="form-control" placeholder="Your Company LLC" />
+                <label asp-for="CompanyName"></label>
+                <span asp-validation-for="CompanyName" class="text-danger"></span>
+            </div>
+
+            <h4 class="mt-4">Your Administrator Account</h4>
+            <div class="form-floating mb-3">
+                <input asp-for="FirstName" class="form-control" placeholder="John" />
+                <label asp-for="FirstName"></label>
+                <span asp-validation-for="FirstName" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="LastName" class="form-control" placeholder="Doe" />
+                <label asp-for="LastName"></label>
+                <span asp-validation-for="LastName" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Email" class="form-control" placeholder="you@example.com" />
+                <label asp-for="Email"></label>
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Password" type="password" class="form-control" />
+                <label asp-for="Password"></label>
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="ConfirmPassword" type="password" class="form-control" />
+                <label asp-for="ConfirmPassword"></label>
+                <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+            </div>
+
+            <button type="submit" class="w-100 btn btn-lg btn-primary">Register</button>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+````
+
+## File: CondoSphere.Web/Views/Account/RegistrationComplete.cshtml
+````
+@{
+    ViewData["Title"] = "Registration Complete";
+}
+
+<div class="text-center">
+    <h1 class="display-4"><i class="bi bi-check-circle-fill text-success"></i> Thank You!</h1>
+    <p class="lead">Your company and administrator account have been created successfully.</p>
+    <hr />
+    <p class="h5">
+        <strong>A confirmation email has been sent to your address.</strong>
+    </p>
+    <p>
+        Please click the link in the email to activate your account before you can log in.
+    </p>
+    <div class="mt-4">
+        <a class="btn btn-primary" asp-action="Login">Proceed to Login Page</a>
+    </div>
+</div>
+````
+
+## File: CondoSphere.Web/Views/CondoManagement/AssignResident.cshtml
+````
+@model CondoSphere.Web.Models.AssignResidentViewModel
+
+@{
+    ViewData["Title"] = "Assign Resident to Unit";
+}
+
+<h1>@ViewData["Title"]</h1>
+<p>You are assigning a resident to <strong>Unit ID @Model.UnitId</strong>.</p>
+<hr />
+
+<div class="row">
+    <div class="col-md-6">
+        @* We can add a tabbed interface here later to include the "Register New" form *@
+        <form asp-action="AssignResident" method="post">
+            <input type="hidden" asp-for="UnitId" />
+            <input type="hidden" asp-for="CondominiumId" />
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="form-group mb-3">
+                <label asp-for="SelectedResidentId" class="form-label"></label>
+                <select asp-for="SelectedResidentId" asp-items="Model.AvailableResidents" class="form-control">
+                    <option value="">-- Please select a resident --</option>
+                </select>
+                <span asp-validation-for="SelectedResidentId" class="text-danger"></span>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Assign Resident</button>
+            <a asp-action="Details" asp-route-id="@Model.CondominiumId" class="btn btn-secondary">Cancel</a>
+        </form>
+    </div>
+</div>
+````
+
+## File: CondoSphere.Web/Views/Portal/CreateOccurrence.cshtml
+````
+@model CondoSphere.Core.DTOs.Occurrences.CreateOccurrenceDto
+
+@{
+    ViewData["Title"] = "Report New Occurrence";
+}
+
+<h1>@ViewData["Title"]</h1>
+<p>Please provide a clear title and a detailed description of the issue.</p>
+<hr />
+
+<div class="row">
+    <div class="col-md-8">
+        <form asp-action="CreateOccurrence" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="form-floating mb-3">
+                <input asp-for="Title" class="form-control" placeholder="e.g., Leaky faucet in kitchen" />
+                <label asp-for="Title"></label>
+                <span asp-validation-for="Title" class="text-danger"></span>
+            </div>
+
+            <div class="form-floating mb-3">
+                <textarea asp-for="Description" class="form-control" placeholder="Describe the issue in detail..." style="height: 150px"></textarea>
+                <label asp-for="Description"></label>
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+
+            <button type="submit" class="btn btn-success">Submit Report</button>
+            <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+````
+
+## File: CondoSphere.Web/Views/Portal/Index.cshtml
+````
+@model CondoSphere.Web.Models.PortalDashboardViewModel
+
+@{
+    ViewData["Title"] = "My Portal";
+}
+
+<h1>Welcome to your Resident Portal</h1>
+<p class="text-muted">Here you can view documents, report issues, and manage your account.</p>
+<hr />
+
+<div class="row">
+    <div class="col-md-8">
+        <h4>My Reported Occurrences</h4>
+
+        @if (Model.Occurrences.Any())
+        {
+            <div class="table-responsive border rounded">
+                <table class="table table-hover mb-0 align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th scope="col">Title</th>
+                            <th scope="col">Date Reported</th>
+                            <th scope="col">Status</th>
+                            <th scope="col" class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var occurrence in Model.Occurrences)
+                        {
+                            <tr>
+                                <td><strong>@occurrence.Title</strong></td>
+                                <td>@occurrence.ReportedDate.ToLocalTime().ToString("yyyy-MM-dd HH:mm")</td>
+                                <td>
+                                    @* We can use a switch to show different colored badges for status *@
+                                    <span class="badge @(occurrence.Status == CondoSphere.Core.Enums.OccurrenceStatus.Open ? "bg-danger" : "bg-secondary")">
+                                        @occurrence.Status
+                                    </span>
+                                </td>
+                                <td class="text-end">
+                                    <a href="#" class="btn btn-sm btn-outline-primary">View Details</a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="text-center p-4 border rounded">
+                <p class="text-muted mb-0">You have not reported any occurrences yet.</p>
+            </div>
+        }
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Have an issue?</h5>
+                <p class="card-text">Report a maintenance issue or other problem in your unit or common areas.</p>
+                <a asp-action="CreateOccurrence" class="btn btn-primary w-100">
+                    <i class="bi bi-flag-fill me-1"></i> Report New Occurrence
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+````
+
+## File: CondoSphere.Web/Views/Profile/ChangePassword.cshtml
+````
+@model ChangePasswordViewModel
+@{
+    ViewData["Title"] = "Change Password";
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-6">
+        <div class="card shadow-lg border-0 mt-4">
+            <div class="card-header bg-secondary text-white py-3">
+                <h2 class="mb-0 text-center"><i class="bi bi-shield-lock me-2"></i>@ViewData["Title"]</h2>
+            </div>
+            <div class="card-body p-4">
+                <form asp-action="ChangePassword" method="post">
+                    <div asp-validation-summary="All" class="text-danger"></div>
+                    <div class="form-floating mb-3">
+                        <input asp-for="CurrentPassword" class="form-control" type="password" />
+                        <label asp-for="CurrentPassword"></label>
+                        <span asp-validation-for="CurrentPassword" class="text-danger"></span>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input asp-for="NewPassword" class="form-control" type="password" />
+                        <label asp-for="NewPassword"></label>
+                        <span asp-validation-for="NewPassword" class="text-danger"></span>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input asp-for="ConfirmPassword" class="form-control" type="password" />
+                        <label asp-for="ConfirmPassword"></label>
+                        <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                    </div>
+                    <button type="submit" class="w-100 btn btn-primary">Update Password</button>
+                    <div class="text-center mt-3">
+                        <a asp-controller="Profile" asp-action="Index">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+````
+
+## File: CondoSphere.Web/Views/Profile/Index.cshtml
+````
+@model MyProfileViewModel
+@{
+    ViewData["Title"] = "My Profile";
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card shadow-lg border-0 mt-4">
+            <div class="card-header bg-primary text-white py-3">
+                <h2 class="mb-0 text-center"><i class="bi bi-person-gear me-2"></i>@ViewData["Title"]</h2>
+            </div>
+            <div class="card-body p-4 p-md-5">
+                <form method="post" enctype="multipart/form-data" id="profileForm">
+                    <input type="hidden" asp-for="CurrentProfileImageUrl" />
+                    <div asp-validation-summary="All" class="text-danger"></div>
+                    <div asp-validation-summary="All" class="text-danger"></div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="FirstName" class="form-label"></label>
+                            <input asp-for="FirstName" class="form-control" />
+                            <span asp-validation-for="FirstName" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="LastName" class="form-label"></label>
+                            <input asp-for="LastName" class="form-control" />
+                            <span asp-validation-for="LastName" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <hr class="my-4" />
+
+                    <div class="row align-items-center">
+                        <div class="col-md-4 text-center">
+                            <img src="@(Model.CurrentProfileImageUrl ?? "/images/user-photos/default-profile.png")"
+                                 alt="Current Profile Image" class="img-thumbnail rounded-circle mb-2"
+                                 style="width: 150px; height: 150px; object-fit: cover;" />
+                            <small class="text-muted d-block">Current Image</small>
+                        </div>
+                        <div class="col-md-8">
+                            <label asp-for="ProfileImage" class="form-label"></label>
+                            <input asp-for="ProfileImage" class="form-control" type="file" accept="image/*" />
+                            <span asp-validation-for="ProfileImage" class="text-danger small"></span>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="card-footer bg-light p-3">
+                <div class="d-flex justify-content-end align-items-center gap-2">
+                    <a asp-controller="Profile" asp-action="ChangePassword" class="btn btn-secondary">Change Password</a>
+                    <button type="submit" form="profileForm" class="btn btn-primary">Save Changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+````
+
+## File: repomix-error.md
+````markdown
+This file is a merged representation of a subset of the codebase, containing specifically included files, combined into a single document by Repomix.
+
+# File Summary
+
+## Purpose
+This file contains a packed representation of a subset of the repository's contents that is considered the most important context.
+It is designed to be easily consumable by AI systems for analysis, code review,
+or other automated processes.
+
+## File Format
+The content is organized as follows:
+1. This summary section
+2. Repository information
+3. Directory structure
+4. Repository files (if enabled)
+5. Multiple file entries, each consisting of:
+  a. A header with the file path (## File: path/to/file)
+  b. The full contents of the file in a code block
+
+## Usage Guidelines
+- This file should be treated as read-only. Any changes should be made to the
+  original repository files, not this packed version.
+- When processing this file, use the file path to distinguish
+  between different files in the repository.
+- Be aware that this file may contain sensitive information. Handle it with
+  the same level of security as you would the original repository.
+
+## Notes
+- Some files may have been excluded based on .gitignore rules and Repomix's configuration
+- Binary files are not included in this packed representation. Please refer to the Repository Structure section for a complete list of file paths, including binary files
+- Only files matching these patterns are included: CondoSphere.Web/Views/Profile/Index.cshtml, CondoSphere.Web/Controllers/ProfileController.cs, CondoSphere.Web/Services/ImageService.cs, CondoSphere.Web/Services/ApiClient.cs, CondoSphere.API/Controllers/ProfileController.cs, CondoSphere.Application/Services/User/UserService.cs, CondoSphere.Web/Models/MyProfileViewModel.cs, CondoSphere.Core/DTOs/Account/UpdateProfileDto.cs
+- Files matching patterns in .gitignore are excluded
+- Files matching default ignore patterns are excluded
+- Files are sorted by Git change count (files with more changes are at the bottom)
+
+# Directory Structure
+```
+CondoSphere.API/Controllers/ProfileController.cs
+CondoSphere.Application/Services/User/UserService.cs
+CondoSphere.Core/DTOs/Account/UpdateProfileDto.cs
+CondoSphere.Web/Controllers/ProfileController.cs
+CondoSphere.Web/Models/MyProfileViewModel.cs
+CondoSphere.Web/Services/ApiClient.cs
+CondoSphere.Web/Services/ImageService.cs
+CondoSphere.Web/Views/Profile/Index.cshtml
+```
+
+# Files
+
+## File: CondoSphere.API/Controllers/ProfileController.cs
+```csharp
+using CondoSphere.Application.Interfaces;
+using CondoSphere.Application.Services.User;
+using CondoSphere.Core.DTOs.Account;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
+
+namespace CondoSphere.API.Controllers
+{
+    [ApiController]
+    [Route("api/[controller]")]
+    [Authorize]
+    public class ProfileController : ControllerBase
+    {
+        private readonly IUserService _userService;
+        private readonly ICurrentUserService _currentUserService;
+
+        public ProfileController(IUserService userService, ICurrentUserService currentUserService)
+        {
+            _userService = userService;
+            _currentUserService = currentUserService;
+        }
+
+        [HttpPut] // This endpoint now only accepts JSON.
+        public async Task<IActionResult> UpdateProfile([FromBody] UpdateProfileDto dto)
+        {
+            var userId = _currentUserService.UserId;
+            if (userId == null) return Unauthorized();
+
+            var (success, errors) = await _userService.UpdateProfileAsync(userId.Value, dto);
+
+            if (success) return Ok(new { message = "Profile updated successfully." });
+            return BadRequest(errors);
+        }
+
+        [HttpPost("change-password")]
+        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDto dto)
+        {
+            var userId = _currentUserService.UserId;
+            if (userId == null) return Unauthorized();
+
+            var (success, errors) = await _userService.ChangePasswordAsync(userId.Value, dto);
+
+            if (success) return Ok(new { message = "Password changed successfully." });
+            return BadRequest(errors);
+        }
+
+        [HttpGet] // Route will be GET /api/profile
+        public async Task<IActionResult> GetProfile()
+        {
+            var userId = _currentUserService.UserId;
+            if (userId == null) return Unauthorized();
+
+            var profile = await _userService.GetUserProfileAsync(userId.Value);
+            if (profile == null) return NotFound();
+
+            return Ok(profile);
+        }
+    }
+}
+```
+
+## File: CondoSphere.Core/DTOs/Account/UpdateProfileDto.cs
+```csharp
+using System.ComponentModel.DataAnnotations;
+
+namespace CondoSphere.Core.DTOs.Account
+{
+    public class UpdateProfileDto
+    {
+        [Required]
+        [StringLength(100, MinimumLength = 2)]
+        public string FirstName { get; set; } = string.Empty;
+
+        [Required]
+        [StringLength(100, MinimumLength = 2)]
+        public string LastName { get; set; } = string.Empty;
+        public string? ProfilePictureUrl { get; set; }
+    }
+}
+```
+
+## File: CondoSphere.Web/Controllers/ProfileController.cs
+```csharp
+using CondoSphere.Core.DTOs.Account;
+using CondoSphere.Web.Models;
+using CondoSphere.Web.Services;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
+
+namespace CondoSphere.Web.Controllers
+{
+    [Authorize]
+    [Route("profile")]
+    public class ProfileController : Controller
+    {
+        private readonly ApiClient _apiClient;
+        private readonly IImageService _imageService;
+
+        public ProfileController(ApiClient apiClient, IImageService imageService)
+        {
+            _apiClient = apiClient;
+            _imageService = imageService;
+        }
+
+        [HttpGet("")]
+        public IActionResult Index()
+        {
+            var model = new MyProfileViewModel
+            {
+                FirstName = User.FindFirstValue(ClaimTypes.GivenName) ?? "",
+                LastName = User.FindFirstValue(ClaimTypes.Surname) ?? "",
+                CurrentProfileImageUrl = User.FindFirstValue("profile_picture")
+            };
+            return View(model);
+        }
+
+        [HttpPost("")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Index(MyProfileViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            // This part remains the same: save the image and update the database via the API.
+            string? newImageUrl = model.CurrentProfileImageUrl;
+            if (model.ProfileImage != null && model.ProfileImage.Length > 0)
+            {
+                newImageUrl = await _imageService.SaveImageAsync(model.ProfileImage, "user-photos", model.CurrentProfileImageUrl);
+            }
+            var dto = new UpdateProfileDto
+            {
+                FirstName = model.FirstName,
+                LastName = model.LastName,
+                ProfilePictureUrl = newImageUrl
+            };
+            var (success, message) = await _apiClient.UpdateProfileAsync(dto);
+
+            if (success)
+            {
+                // ===== THIS IS THE NEW SESSION REFRESH LOGIC =====
+
+                // 1. Fetch the user's complete, updated profile from the API.
+                var updatedProfile = await _apiClient.GetMyProfileAsync();
+                if (updatedProfile != null)
+                {
+                    // 2. Create a new set of claims based on the fresh data.
+                    var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.NameIdentifier, updatedProfile.Id.ToString()),
+                new Claim(ClaimTypes.Name, updatedProfile.Email),
+                new Claim(ClaimTypes.Email, updatedProfile.Email),
+                new Claim(ClaimTypes.GivenName, updatedProfile.FirstName),
+                new Claim(ClaimTypes.Surname, updatedProfile.LastName),
+                new Claim("profile_picture", updatedProfile.ProfilePictureUrl ?? "")
+            };
+                    foreach (var role in updatedProfile.Roles)
+                    {
+                        claims.Add(new Claim(ClaimTypes.Role, role));
+                    }
+                    var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                    var authProperties = new AuthenticationProperties { IsPersistent = true };
+
+                    // 3. Sign the user in again. This replaces their old cookie with the new one.
+                    await HttpContext.SignInAsync(
+                        CookieAuthenticationDefaults.AuthenticationScheme,
+                        new ClaimsPrincipal(claimsIdentity),
+                        authProperties);
+                }
+
+                TempData["SuccessMessage"] = "Your profile has been updated.";
+                return RedirectToAction("Index");
+            }
+
+            ModelState.AddModelError(string.Empty, message);
+            return View(model);
+        }
+
+        [HttpGet("change-password")]
+        public IActionResult ChangePassword()
+        {
+            return View(new ChangePasswordViewModel());
+        }
+
+        [HttpPost("change-password")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ChangePassword(ChangePasswordViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            var (success, message) = await _apiClient.ChangePasswordAsync(model);
+            if (success)
+            {
+                ModelState.Clear();
+                TempData["SuccessMessage"] = "Your password has been changed successfully.";
+                return RedirectToAction("Index");
+            }
+
+            ModelState.AddModelError(string.Empty, "Failed to change password. Please check your current password and try again.");
+            return View(model);
+        }
+    }
+}
+```
+
+## File: CondoSphere.Web/Models/MyProfileViewModel.cs
+```csharp
+using System.ComponentModel.DataAnnotations;
+
+namespace CondoSphere.Web.Models
+{
+    public class MyProfileViewModel
+    {
+        [Required]
+        [Display(Name = "First Name")]
+        [StringLength(100, MinimumLength = 2)]
+        public string FirstName { get; set; } = string.Empty;
+
+        [Required]
+        [Display(Name = "Last Name")]
+        [StringLength(100, MinimumLength = 2)]
+        public string LastName { get; set; } = string.Empty;
+
+        public string? CurrentProfileImageUrl { get; set; }
+
+        [Display(Name = "Upload New Profile Image")]
+        public IFormFile? ProfileImage { get; set; }
+    }
+}
+```
+
+## File: CondoSphere.Web/Services/ImageService.cs
+```csharp
+namespace CondoSphere.Web.Services
+{
+    public class ImageService : IImageService
+    {
+        private readonly IWebHostEnvironment _env;
+
+        public ImageService(IWebHostEnvironment env)
+        {
+            _env = env;
+        }
+
+        public async Task<string> SaveImageAsync(IFormFile imageFile, string folder, string? currentImagePath = null)
+        {
+            if (!string.IsNullOrEmpty(currentImagePath))
+            {
+                var oldFullPath = Path.Combine(_env.WebRootPath, currentImagePath.TrimStart('/'));
+                if (File.Exists(oldFullPath))
+                {
+                    File.Delete(oldFullPath);
+                }
+            }
+
+            var uploadsFolder = Path.Combine(_env.WebRootPath, "images", folder);
+            if (!Directory.Exists(uploadsFolder)) Directory.CreateDirectory(uploadsFolder);
+
+            var uniqueFileName = $"{Guid.NewGuid()}_{Path.GetFileName(imageFile.FileName)}";
+            var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await imageFile.CopyToAsync(stream);
+            }
+
+            return $"/images/{folder}/{uniqueFileName}";
+        }
+    }
+}
+```
+
+## File: CondoSphere.Web/Views/Profile/Index.cshtml
+```
+@model MyProfileViewModel
+@{
+    ViewData["Title"] = "My Profile";
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card shadow-lg border-0 mt-4">
+            <div class="card-header bg-primary text-white py-3">
+                <h2 class="mb-0 text-center"><i class="bi bi-person-gear me-2"></i>@ViewData["Title"]</h2>
+            </div>
+            <div class="card-body p-4 p-md-5">
+                <form method="post" enctype="multipart/form-data" id="profileForm">
+                    <input type="hidden" asp-for="CurrentProfileImageUrl" />
+                    <div asp-validation-summary="All" class="text-danger"></div>
+                    <div asp-validation-summary="All" class="text-danger"></div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="FirstName" class="form-label"></label>
+                            <input asp-for="FirstName" class="form-control" />
+                            <span asp-validation-for="FirstName" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="LastName" class="form-label"></label>
+                            <input asp-for="LastName" class="form-control" />
+                            <span asp-validation-for="LastName" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <hr class="my-4" />
+
+                    <div class="row align-items-center">
+                        <div class="col-md-4 text-center">
+                            <img src="@(Model.CurrentProfileImageUrl ?? "/images/user-photos/default-profile.png")"
+                                 alt="Current Profile Image" class="img-thumbnail rounded-circle mb-2"
+                                 style="width: 150px; height: 150px; object-fit: cover;" />
+                            <small class="text-muted d-block">Current Image</small>
+                        </div>
+                        <div class="col-md-8">
+                            <label asp-for="ProfileImage" class="form-label"></label>
+                            <input asp-for="ProfileImage" class="form-control" type="file" accept="image/*" />
+                            <span asp-validation-for="ProfileImage" class="text-danger small"></span>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="card-footer bg-light p-3">
+                <div class="d-flex justify-content-end align-items-center gap-2">
+                    <a asp-controller="Profile" asp-action="ChangePassword" class="btn btn-secondary">Change Password</a>
+                    <button type="submit" form="profileForm" class="btn btn-primary">Save Changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+```
+
+## File: CondoSphere.Application/Services/User/UserService.cs
+```csharp
+using CondoSphere.Application.Interfaces;
+using CondoSphere.Application.Services.Token;
+using CondoSphere.Core;
+using CondoSphere.Core.DTOs.Account;
+using CondoSphere.Core.Entities.Users;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using System.Net;
+using CoreUser = CondoSphere.Core.Entities.Users.User;
+
+namespace CondoSphere.Application.Services.User
+{
+    public class UserService : IUserService
+    {
+        private readonly UserManager<CoreUser> _userManager;
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly ITokenService _tokenService;
+        private readonly IMailService _mailService;
+        private readonly IConfiguration _configuration;
+        private readonly ICurrentUserService _currentUserService;
+
+        public UserService(
+            UserManager<CoreUser> userManager,
+            IUnitOfWork unitOfWork,
+            ITokenService tokenService,
+            IMailService mailService,
+            IConfiguration configuration,
+            ICurrentUserService currentUserService)
+        {
+            _userManager = userManager;
+            _unitOfWork = unitOfWork;
+            _tokenService = tokenService;
+            _mailService = mailService;
+            _configuration = configuration;
+            _currentUserService = currentUserService;
+        }
+
+        public async Task<UserDto?> LoginAsync(LoginDto loginDto)
+        {
+            var user = await _userManager.FindByEmailAsync(loginDto.Email);
+
+            if (user == null || !await _userManager.CheckPasswordAsync(user, loginDto.Password))
+            {
+                return null;
+            }
+
+            return new UserDto
+            {
+                FirstName = user.FirstName ?? string.Empty,
+                Email = user.Email,
+                Token = await _tokenService.CreateToken(user)
+            };
+        }
+
+        public async Task<IdentityResult> RegisterCompanyAdminAsync(RegisterDto registerDto)
+        {
+            var existingUser = await _userManager.FindByEmailAsync(registerDto.Email);
+            if (existingUser != null)
+            {
+                return IdentityResult.Failed(new IdentityError { Description = "An account with this email address already exists." });
+            }
+
+            var newCompany = new Company { Name = registerDto.CompanyName, IsActive = true };
+            await _unitOfWork.Companies.AddAsync(newCompany);
+            await _unitOfWork.CompleteAsync();
+
+            var newUser = new CoreUser
+            {
+                FirstName = registerDto.FirstName,
+                LastName = registerDto.LastName,
+                Email = registerDto.Email,
+                UserName = registerDto.Email,
+                CompanyId = newCompany.Id,
+                IsActive = true
+            };
+
+            var result = await _userManager.CreateAsync(newUser, registerDto.Password);
+            if (!result.Succeeded)
+            {
+                // If user creation fails, we should remove the company we just created.
+                _unitOfWork.Companies.Remove(newCompany);
+                await _unitOfWork.CompleteAsync();
+                return result;
+            }
+
+            await _userManager.AddToRoleAsync(newUser, RoleConstants.CompanyAdmin);
+
+            var token = await _userManager.GenerateEmailConfirmationTokenAsync(newUser);
+            var encodedToken = WebUtility.UrlEncode(token);
+            var webAppBaseUrl = _configuration["ClientSettings:WebAppBaseUrl"];
+            var confirmationLink = $"{webAppBaseUrl}/Account/ConfirmEmail?userId={newUser.Id}&token={encodedToken}";
+
+            await _mailService.SendEmailAsync(
+                newUser.Email,
+                "Confirm your CondoSphere Account",
+                $"<h1>Welcome to CondoSphere!</h1><p>Please confirm your account by <a href='{confirmationLink}'>clicking here</a>.</p>");
+
+            return IdentityResult.Success;
+        }
+
+        public async Task<IdentityResult> RegisterManagerAsync(RegisterManagerDto registerDto, int companyId)
+        {
+            var existingUser = await _userManager.FindByEmailAsync(registerDto.Email);
+            if (existingUser != null)
+            {
+                return IdentityResult.Failed(new IdentityError { Description = "An account with this email address already exists." });
+            }
+
+            var newUser = new CoreUser
+            {
+                FirstName = registerDto.FirstName,
+                LastName = registerDto.LastName,
+                Email = registerDto.Email,
+                UserName = registerDto.Email,
+                CompanyId = companyId,
+                IsActive = true,
+                EmailConfirmed = false
+            };
+
+            var result = await _userManager.CreateAsync(newUser);
+            if (!result.Succeeded)
+            {
+                return result;
+            }
+
+            await _userManager.AddToRoleAsync(newUser, RoleConstants.CondoManager);
+
+            var token = await _userManager.GeneratePasswordResetTokenAsync(newUser);
+            var encodedToken = WebUtility.UrlEncode(token);
+            var setPasswordLink = $"{_configuration["ClientSettings:WebAppBaseUrl"]}/Account/SetPassword?userId={newUser.Id}&token={encodedToken}";
+
+            await _mailService.SendEmailAsync(
+                newUser.Email,
+                "You've been invited to CondoSphere - Set Your Password",
+                $"<h1>Welcome, Manager!</h1>" +
+                $"<p>You have been registered as a Condominium Manager. Please complete your account setup by setting a password.</p>" +
+                $"<p><a href='{setPasswordLink}'>Set Your Password</a></p>");
+
+            return IdentityResult.Success;
+        }
+
+        public async Task<IEnumerable<UserListDto>> GetCompanyUsersWithRolesAsync(int companyId)
+        {
+            // Access repositories through the UnitOfWork
+            return await _unitOfWork.Users.GetCompanyUsersWithRolesAsync(companyId);
+        }
+
+        public async Task<IdentityResult> RegisterResidentAsync(RegisterResidentDto dto, int companyId, int condominiumId)
+        {
+            // This method now saves changes across both database contexts in a coordinated way.
+            var unit = await _unitOfWork.Units.GetByIdAsync(dto.UnitId);
+            if (unit == null || unit.CondominiumId != condominiumId)
+            {
+                return IdentityResult.Failed(new IdentityError { Code = "UnitNotFound", Description = "Unit not found in this condominium." });
+            }
+            if (unit.ResidentId.HasValue)
+            {
+                return IdentityResult.Failed(new IdentityError { Code = "UnitOccupied", Description = "This unit already has an assigned resident." });
+            }
+
+            var existingUser = await _userManager.FindByEmailAsync(dto.Email);
+            if (existingUser != null)
+            {
+                return IdentityResult.Failed(new IdentityError { Code = "DuplicateEmail", Description = "An account with this email address already exists." });
+            }
+
+            var newUser = new CoreUser
+            {
+                FirstName = dto.FirstName,
+                LastName = dto.LastName,
+                Email = dto.Email,
+                UserName = dto.Email,
+                CompanyId = companyId,
+                IsActive = true,
+                EmailConfirmed = false
+            };
+
+            var result = await _userManager.CreateAsync(newUser);
+            if (!result.Succeeded)
+            {
+                return result;
+            }
+
+            await _userManager.AddToRoleAsync(newUser, RoleConstants.CondoResident);
+
+            unit.ResidentId = newUser.Id;
+            _unitOfWork.Units.Update(unit);
+            await _unitOfWork.CompleteAsync();
+
+            var token = await _userManager.GeneratePasswordResetTokenAsync(newUser);
+            var encodedToken = WebUtility.UrlEncode(token);
+            var setPasswordLink = $"{_configuration["ClientSettings:WebAppBaseUrl"]}/Account/SetPassword?userId={newUser.Id}&token={encodedToken}";
+
+            await _mailService.SendEmailAsync(
+                newUser.Email,
+                "Welcome to CondoSphere - Set Your Password",
+                $"<h1>Welcome to CondoSphere!</h1>" +
+                $"<p>An account has been created for you by your condominium management.</p>" +
+                $"<p>Please complete your registration by setting your password. Click the link below to get started:</p>" +
+                $"<p><a href='{setPasswordLink}'>Set Your Password</a></p>");
+
+            return IdentityResult.Success;
+        }
+
+        public async Task<IEnumerable<UserListDto>> GetAvailableManagersAsync(int companyId)
+        {
+            // Access repositories through the UnitOfWork
+            return await _unitOfWork.Users.GetUsersInRoleAsync(RoleConstants.CondoManager, companyId);
+        }
+
+        public async Task<IEnumerable<UserListDto>> GetAvailableResidentsAsync(int companyId)
+        {
+            // Access repositories through the UnitOfWork
+            var allCompanyResidents = await _unitOfWork.Users.GetUsersInRoleAsync(RoleConstants.CondoResident, companyId);
+            var occupiedUnitResidentIds = await _unitOfWork.Units.GetOccupiedUnitResidentIdsAsync(companyId);
+
+            var availableResidents = allCompanyResidents
+                .Where(resident => !occupiedUnitResidentIds.Contains(resident.Id))
+                .ToList();
+
+            return availableResidents;
+        }
+
+        public async Task<bool> DeactivateUserAsync(int userIdToDeactivate, int adminCompanyId)
+        {
+            var userToDeactivate = await _userManager.FindByIdAsync(userIdToDeactivate.ToString());
+            if (userToDeactivate == null || userToDeactivate.CompanyId != adminCompanyId)
+            {
+                return false;
+            }
+            if (userToDeactivate.Id == _currentUserService.UserId)
+            {
+                return false; // Cannot deactivate self
+            }
+
+            userToDeactivate.IsActive = false;
+            var result = await _userManager.UpdateAsync(userToDeactivate);
+            if (!result.Succeeded)
+            {
+                return false;
+            }
+
+            // Unassign from unit if they were a resident
+            var unit = await _unitOfWork.Units.GetUnitByResidentIdAsync(userIdToDeactivate);
+            if (unit != null)
+            {
+                unit.ResidentId = null;
+                _unitOfWork.Units.Update(unit);
+                await _unitOfWork.CompleteAsync();
+            }
+
+            return true;
+        }
+
+        public async Task<bool> ActivateUserAsync(int userIdToActivate, int adminCompanyId)
+        {
+            var userToActivate = await _userManager.Users
+                .IgnoreQueryFilters()
+                .FirstOrDefaultAsync(u => u.Id == userIdToActivate);
+
+            if (userToActivate == null || userToActivate.CompanyId != adminCompanyId)
+            {
+                return false;
+            }
+
+            userToActivate.IsActive = true;
+            var result = await _userManager.UpdateAsync(userToActivate);
+            return result.Succeeded;
+        }
+
+        public async Task<bool> ForgotPasswordAsync(string email)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null || !user.EmailConfirmed)
+            {
+                return true;
+            }
+
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+            var encodedToken = WebUtility.UrlEncode(token);
+
+            var resetLink = $"{_configuration["ClientSettings:WebAppBaseUrl"]}/Account/SetPassword?userId={user.Id}&token={encodedToken}";
+
+            await _mailService.SendEmailAsync(
+                email,
+                "Reset Your CondoSphere Password",
+                $"<h1>Password Reset Request</h1>" +
+                $"<p>Please reset your password by <a href='{resetLink}'>clicking here</a>.</p>" +
+                $"<p>If you did not request a password reset, please ignore this email.</p>");
+
+            return true;
+        }
+
+        public async Task<(bool Success, IEnumerable<IdentityError>? Errors)> UpdateProfileAsync(int userId, UpdateProfileDto dto)
+        {
+            var user = await _userManager.FindByIdAsync(userId.ToString());
+            if (user == null)
+                return (false, new[] { new IdentityError { Description = "User not found." } });
+
+            user.FirstName = dto.FirstName;
+            user.LastName = dto.LastName;
+            user.ProfilePictureUrl = dto.ProfilePictureUrl;
+
+            var result = await _userManager.UpdateAsync(user);
+            return (result.Succeeded, result.Errors);
+        }
+
+        public async Task<(bool Success, IEnumerable<IdentityError>? Errors)> ChangePasswordAsync(int userId, ChangePasswordDto dto)
+        {
+            var user = await _userManager.FindByIdAsync(userId.ToString());
+            if (user == null)
+                return (false, new[] { new IdentityError { Description = "User not found." } });
+
+            var result = await _userManager.ChangePasswordAsync(user, dto.CurrentPassword, dto.NewPassword);
+            return (result.Succeeded, result.Errors);
+        }
+
+        public async Task<UserProfileDto?> GetUserProfileAsync(int userId)
+        {
+            var user = await _userManager.FindByIdAsync(userId.ToString());
+            if (user == null) return null;
+
+            var roles = await _userManager.GetRolesAsync(user);
+
+            return new UserProfileDto
+            {
+                Id = user.Id,
+                FirstName = user.FirstName ?? "",
+                LastName = user.LastName ?? "",
+                Email = user.Email,
+                ProfilePictureUrl = user.ProfilePictureUrl,
+                CompanyId = user.CompanyId,
+                Roles = roles
+            };
+        }
+    }
+}
+```
+
+## File: CondoSphere.Web/Services/ApiClient.cs
+```csharp
+using CondoSphere.Core.DTOs.Account;
+using CondoSphere.Core.DTOs.Condominiums;
+using CondoSphere.Core.DTOs.Occurrences;
+using CondoSphere.Web.Models;
+using Microsoft.AspNetCore.WebUtilities;
+using System.Text.Json;
+
+namespace CondoSphere.Web.Services
+{
+    public class ApiClient
+    {
+        private readonly HttpClient _httpClient;
+
+        public ApiClient(HttpClient httpClient)
+        {
+            _httpClient = httpClient;
+        }
+
+        public async Task<UserDto?> LoginAsync(LoginDto loginDto)
+        {
+            var response = await _httpClient.PostAsJsonAsync("/api/accounts/login", loginDto);
+
+            if (response.IsSuccessStatusCode)
+            {
+                return await response.Content.ReadFromJsonAsync<UserDto>();
+            }
+
+            return null;
+        }
+
+        public async Task<bool> RegisterManagerAsync(RegisterManagerDto registerDto)
+        {
+            // We need to send the token with this request. This is the next major step.
+            var response = await _httpClient.PostAsJsonAsync("/api/accounts/register-manager", registerDto);
+            return response.IsSuccessStatusCode;
+        }
+
+        // --- ADD THESE NEW METHODS ---
+        public async Task<IEnumerable<CondominiumDto>> GetCondominiumsAsync()
+        {
+            // TODO: Add paging parameters
+            return await _httpClient.GetFromJsonAsync<IEnumerable<CondominiumDto>>("/api/condominiums");
+        }
+
+        public async Task<IEnumerable<UserListDto>> GetUsersAsync()
+        {
+            // TODO: We need to create this API endpoint next.
+            return await _httpClient.GetFromJsonAsync<IEnumerable<UserListDto>>("/api/accounts/company-users");
+        }
+
+        public async Task<IEnumerable<CondominiumDto>> GetMyManagedCondominiumsAsync()
+        {
+            return await _httpClient.GetFromJsonAsync<IEnumerable<CondominiumDto>>("/api/condominiums/my-managed");
+        }
+
+        public async Task<CondominiumDto> GetCondominiumDetailsAsync(int id)
+        {
+            return await _httpClient.GetFromJsonAsync<CondominiumDto>($"/api/condominiums/{id}");
+        }
+
+        public async Task<IEnumerable<UnitDto>> GetUnitsForCondominiumAsync(int condominiumId)
+        {
+            return await _httpClient.GetFromJsonAsync<IEnumerable<UnitDto>>($"/api/condominiums/{condominiumId}/units");
+        }
+
+        public async Task<bool> RegisterResidentAsync(int condominiumId, RegisterResidentDto dto)
+        {
+            var response = await _httpClient.PostAsJsonAsync($"/api/condominiums/{condominiumId}/residents", dto);
+            return response.IsSuccessStatusCode;
+        }
+
+        public async Task<(bool Success, string Message)> SetPasswordAsync(SetPasswordDto dto)
+        {
+            var response = await _httpClient.PostAsJsonAsync("/api/accounts/set-password", dto);
+            var responseContent = await response.Content.ReadFromJsonAsync<object>(); // Or a specific response DTO
+
+            if (response.IsSuccessStatusCode)
+            {
+                // A simple way to get the message back
+                var message = responseContent?.GetType().GetProperty("message")?.GetValue(responseContent)?.ToString();
+                return (true, message ?? "Password set successfully.");
+            }
+
+            // Handle error messages if the API returns them in a structured way
+            return (false, "Failed to set password. The link may have expired or the password may not meet complexity requirements.");
+        }
+
+        public async Task<bool> CreateCondominiumAsync(CreateUpdateCondominiumDto dto)
+        {
+            var response = await _httpClient.PostAsJsonAsync("/api/condominiums", dto);
+            return response.IsSuccessStatusCode;
+        }
+
+        public async Task<IEnumerable<UserListDto>> GetAvailableManagersAsync()
+        {
+            return await _httpClient.GetFromJsonAsync<IEnumerable<UserListDto>>("/api/accounts/managers");
+        }
+
+        public async Task<bool> AssignManagerAsync(int condominiumId, AssignManagerDto dto)
+        {
+            var response = await _httpClient.PatchAsJsonAsync($"/api/condominiums/{condominiumId}/assign-manager", dto);
+            return response.IsSuccessStatusCode;
+        }
+        public async Task<bool> CreateUnitAsync(int condominiumId, CreateUpdateUnitDto dto)
+        {
+            var response = await _httpClient.PostAsJsonAsync($"/api/condominiums/{condominiumId}/units", dto);
+            return response.IsSuccessStatusCode;
+        }
+
+        public async Task<bool> UnassignResidentAsync(int condominiumId, int unitId)
+        {
+            var response = await _httpClient.PatchAsync($"/api/condominiums/{condominiumId}/units/{unitId}/unassign-resident", null);
+            return response.IsSuccessStatusCode;
+        }
+
+        public async Task<(bool Success, string Message)> RegisterCompanyAdminAsync(RegisterDto dto)
+        {
+            var response = await _httpClient.PostAsJsonAsync("/api/accounts/register-admin", dto);
+
+            var responseContent = await response.Content.ReadFromJsonAsync<object>();
+
+            if (response.IsSuccessStatusCode)
+            {
+                var message = responseContent?.GetType().GetProperty("message")?.GetValue(responseContent)?.ToString();
+                return (true, message ?? "Registration successful! Please check your email to confirm your account.");
+            }
+            else
+            {
+                return (false, "Registration failed. The email address may already be in use.");
+            }
+        }
+
+        public async Task<(bool Success, string Message)> ConfirmEmailAsync(string userId, string token)
+        {
+            var path = "/api/accounts/confirm-email";
+
+            // 2. Create a dictionary of query parameters.
+            var queryParams = new Dictionary<string, string>
+            {
+                { "userId", userId },
+                { "token", token }
+            };
+
+            var uri = QueryHelpers.AddQueryString(path, queryParams);
+
+            var response = await _httpClient.GetAsync(uri);
+
+            if (response.IsSuccessStatusCode)
+            {
+                return (true, "Your email has been successfully confirmed! You can now log in.");
+            }
+            else
+            {
+                return (false, "Email could not be confirmed. The link may be invalid or have expired.");
+            }
+        }
+
+        public async Task<IEnumerable<UserListDto>> GetAvailableResidentsAsync()
+        {
+            return await _httpClient.GetFromJsonAsync<IEnumerable<UserListDto>>("/api/accounts/available-residents");
+        }
+
+        public async Task<bool> AssignResidentAsync(int condominiumId, int unitId, AssignResidentDto dto)
+        {
+            var response = await _httpClient.PatchAsJsonAsync($"/api/condominiums/{condominiumId}/units/{unitId}/assign-resident", dto);
+            return response.IsSuccessStatusCode;
+        }
+
+        public async Task<bool> DeactivateUserAsync(int userId)
+        {
+            var response = await _httpClient.PostAsync($"/api/accounts/users/{userId}/deactivate", null);
+            return response.IsSuccessStatusCode;
+        }
+
+        public async Task<bool> ActivateUserAsync(int userId)
+        {
+            var response = await _httpClient.PostAsync($"/api/accounts/users/{userId}/activate", null);
+            return response.IsSuccessStatusCode;
+        }
+
+        public async Task<IEnumerable<OccurrenceDto>> GetOccurrencesForCondominiumAsync(int condominiumId)
+        {
+            return await _httpClient.GetFromJsonAsync<IEnumerable<OccurrenceDto>>($"/api/condominiums/{condominiumId}/occurrences");
+        }
+
+        public async Task<IEnumerable<OccurrenceDto>> GetMyOccurrencesAsync()
+        {
+            return await _httpClient.GetFromJsonAsync<IEnumerable<OccurrenceDto>>("/api/occurrences/my-occurrences") ?? new List<OccurrenceDto>();
+        }
+
+        public async Task<OccurrenceDto?> CreateOccurrenceAsync(CreateOccurrenceDto dto)
+        {
+            var response = await _httpClient.PostAsJsonAsync("/api/occurrences", dto);
+            if (response.IsSuccessStatusCode)
+            {
+                return await response.Content.ReadFromJsonAsync<OccurrenceDto>();
+            }
+            return null;
+        }
+
+        public async Task<(bool Success, string Message)> ForgotPasswordAsync(string email)
+        {
+            var requestDto = new ForgotPasswordDto { Email = email };
+            var response = await _httpClient.PostAsJsonAsync("/api/accounts/forgot-password", requestDto);
+            var message = await response.Content.ReadAsStringAsync();
+            return (response.IsSuccessStatusCode, message);
+        }
+
+        public async Task<(bool Success, string Message)> UpdateProfileAsync(UpdateProfileDto dto)
+        {
+            var response = await _httpClient.PutAsJsonAsync("/api/profile", dto);
+            var message = await response.Content.ReadAsStringAsync();
+            return (response.IsSuccessStatusCode, message);
+        }
+
+        public async Task<(bool Success, string Message)> ChangePasswordAsync(ChangePasswordViewModel model)
+        {
+            var response = await _httpClient.PostAsJsonAsync("/api/profile/change-password", model);
+            var message = await response.Content.ReadAsStringAsync();
+            return (response.IsSuccessStatusCode, message);
+        }
+
+        public async Task<UserProfileDto?> GetMyProfileAsync()
+        {
+            return await _httpClient.GetFromJsonAsync<UserProfileDto>("/api/profile");
+        }
+    }
+}
+```
+````
+
 ## File: CondoSphere.API/appsettings.json
-```json
+````json
 {
   "Logging": {
     "LogLevel": {
@@ -157,10 +2473,10 @@ CondoSphere.Web/wwwroot/js/site.js
   },
   "AllowedHosts": "*"
 }
-```
+````
 
 ## File: CondoSphere.API/Controllers/ResidentsController.cs
-```csharp
+````csharp
 using CondoSphere.Application.Interfaces;
 using CondoSphere.Application.Services.User;
 using CondoSphere.Core;
@@ -210,10 +2526,10 @@ namespace CondoSphere.API.Controllers
         }
     }
 }
-```
+````
 
 ## File: CondoSphere.API/Properties/launchSettings.json
-```json
+````json
 {
   "$schema": "http://json.schemastore.org/launchsettings.json",
   "iisSettings": {
@@ -255,10 +2571,10 @@ namespace CondoSphere.API.Controllers
     }
   }
 }
-```
+````
 
 ## File: CondoSphere.Application/Authorization/IsCondoManagerRequirement.cs
-```csharp
+````csharp
 using Microsoft.AspNetCore.Authorization;
 
 namespace CondoSphere.Application.Authorization
@@ -271,29 +2587,28 @@ namespace CondoSphere.Application.Authorization
     {
     }
 }
-```
+````
 
 ## File: CondoSphere.Application/Interfaces/ICompanyRepository.cs
-```csharp
+````csharp
 using CondoSphere.Core.Entities.Users;
-using System.Threading.Tasks;
 
 namespace CondoSphere.Application.Interfaces
 {
     /// <summary>
     /// Defines the contract for a repository that manages Company data.
+    /// The responsibility for saving changes is handled by the IUnitOfWork.
     /// </summary>
     public interface ICompanyRepository
     {
         Task AddAsync(Company company);
         void Remove(Company company);
-        Task<int> SaveChangesAsync();
     }
 }
-```
+````
 
 ## File: CondoSphere.Application/Interfaces/IMailService.cs
-```csharp
+````csharp
 namespace CondoSphere.Application.Interfaces
 {
     public interface IMailService
@@ -301,29 +2616,42 @@ namespace CondoSphere.Application.Interfaces
         Task SendEmailAsync(string toEmail, string subject, string content);
     }
 }
-```
+````
 
 ## File: CondoSphere.Application/Interfaces/IUnitOfWork.cs
-```csharp
+````csharp
+//namespace CondoSphere.Application.Interfaces
+//{
+//    /// <summary>
+//    /// Defines a unit of work that can coordinate transactions across multiple repositories.
+//    /// </summary>
+//    public interface IUnitOfWork : IAsyncDisposable
+//    {
+//        ICompanyRepository Companies { get; }
+//        // TODO: We can add other repositories here later, e.g., IUserRepository
+//        Task BeginTransactionAsync();
+//        Task CommitAsync();
+//        Task RollbackAsync();
+//        Task<int> CompleteAsync();
+//    }
+//}
+
 namespace CondoSphere.Application.Interfaces
 {
-    /// <summary>
-    /// Defines a unit of work that can coordinate transactions across multiple repositories.
-    /// </summary>
     public interface IUnitOfWork : IAsyncDisposable
     {
         ICompanyRepository Companies { get; }
-        // TODO: We can add other repositories here later, e.g., IUserRepository
-        Task BeginTransactionAsync();
-        Task CommitAsync();
-        Task RollbackAsync();
+        IUserRepository Users { get; }
+        ICondominiumRepository Condominiums { get; }
+        IUnitRepository Units { get; }
+        IOccurrenceRepository Occurrences { get; }
         Task<int> CompleteAsync();
     }
 }
-```
+````
 
 ## File: CondoSphere.Application/Interfaces/IUnitRepository.cs
-```csharp
+````csharp
 using CondoSphere.Core.Entities.Condominiums;
 
 namespace CondoSphere.Application.Interfaces
@@ -335,13 +2663,14 @@ namespace CondoSphere.Application.Interfaces
         void Remove(Unit unit);
         Task<Unit?> GetByIdAsync(int unitId);
         Task<IEnumerable<Unit>> GetAllAsync(int condominiumId);
-        Task<int> SaveChangesAsync();
+        Task<IEnumerable<int>> GetOccupiedUnitResidentIdsAsync(int companyId);
+        Task<Unit?> GetUnitByResidentIdAsync(int residentId);
     }
 }
-```
+````
 
 ## File: CondoSphere.Application/Mappings/CondominiumProfile.cs
-```csharp
+````csharp
 using AutoMapper;
 using CondoSphere.Core.DTOs.Condominiums;
 using CondoSphere.Core.Entities.Condominiums;
@@ -362,10 +2691,10 @@ namespace CondoSphere.Application.Mappings
         }
     }
 }
-```
+````
 
 ## File: CondoSphere.Application/Mappings/UnitProfile.cs
-```csharp
+````csharp
 using AutoMapper;
 using CondoSphere.Core.DTOs.Condominiums;
 using CondoSphere.Core.Entities.Condominiums;
@@ -381,10 +2710,10 @@ namespace CondoSphere.Application.Mappings
         }
     }
 }
-```
+````
 
 ## File: CondoSphere.Application/Services/Token/ITokenService.cs
-```csharp
+````csharp
 using CoreUser = CondoSphere.Core.Entities.Users.User;
 
 namespace CondoSphere.Application.Services.Token
@@ -394,10 +2723,10 @@ namespace CondoSphere.Application.Services.Token
         Task<string> CreateToken(CoreUser user);
     }
 }
-```
+````
 
 ## File: CondoSphere.Application/Services/Token/TokenService.cs
-```csharp
+````csharp
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
@@ -425,12 +2754,15 @@ namespace CondoSphere.Application.Services.Token
         {
             var claims = new List<Claim>
             {
-                new Claim(ClaimTypes.Name, user.UserName),
-            
                 new Claim(JwtRegisteredClaimNames.NameId, user.Id.ToString()),
                 new Claim(JwtRegisteredClaimNames.Email, user.Email),
-                new Claim(JwtRegisteredClaimNames.GivenName, user.FirstName ?? string.Empty),
-                new Claim("companyId", user.CompanyId.ToString() ?? string.Empty)
+                
+                new Claim(ClaimTypes.Name, user.UserName),
+                new Claim(ClaimTypes.GivenName, user.FirstName ?? string.Empty),
+                new Claim(ClaimTypes.Surname, user.LastName ?? string.Empty),
+
+                new Claim("companyId", user.CompanyId.ToString() ?? string.Empty),
+                new Claim("profile_picture", user.ProfilePictureUrl ?? string.Empty)
             };
 
             var roles = await _userManager.GetRolesAsync(user);
@@ -457,10 +2789,10 @@ namespace CondoSphere.Application.Services.Token
         }
     }
 }
-```
+````
 
 ## File: CondoSphere.Application/Validators/Condominiums/CreateUpdateCondominiumDtoValidator.cs
-```csharp
+````csharp
 using CondoSphere.Core.DTOs.Condominiums;
 using FluentValidation;
 
@@ -480,10 +2812,10 @@ namespace CondoSphere.Application.Validators.Condominiums
         }
     }
 }
-```
+````
 
 ## File: CondoSphere.Application/Validators/Condominiums/CreateUpdateUnitDtoValidator.cs
-```csharp
+````csharp
 using CondoSphere.Core.DTOs.Condominiums;
 using FluentValidation;
 
@@ -499,10 +2831,10 @@ namespace CondoSphere.Application.Validators.Condominiums
         }
     }
 }
-```
+````
 
 ## File: CondoSphere.Core/DTOs/Account/AssignManagerDto.cs
-```csharp
+````csharp
 using System.ComponentModel.DataAnnotations;
 
 namespace CondoSphere.Core.DTOs.Account
@@ -519,10 +2851,10 @@ namespace CondoSphere.Core.DTOs.Account
         public int ManagerId { get; set; }
     }
 }
-```
+````
 
 ## File: CondoSphere.Core/DTOs/Account/LoginDto.cs
-```csharp
+````csharp
 using System.ComponentModel.DataAnnotations;
 
 namespace CondoSphere.Core.DTOs.Account
@@ -537,10 +2869,10 @@ namespace CondoSphere.Core.DTOs.Account
         public string Password { get; set; } = string.Empty;
     }
 }
-```
+````
 
 ## File: CondoSphere.Core/DTOs/Account/RegisterDto.cs
-```csharp
+````csharp
 using System.ComponentModel.DataAnnotations;
 
 namespace CondoSphere.Core.DTOs.Account
@@ -575,10 +2907,10 @@ namespace CondoSphere.Core.DTOs.Account
         public string ConfirmPassword { get; set; } = string.Empty;
     }
 }
-```
+````
 
 ## File: CondoSphere.Core/DTOs/Account/RegisterResidentDto.cs
-```csharp
+````csharp
 using System.ComponentModel.DataAnnotations;
 
 namespace CondoSphere.Core.DTOs.Account
@@ -601,10 +2933,10 @@ namespace CondoSphere.Core.DTOs.Account
         public int UnitId { get; set; }
     }
 }
-```
+````
 
 ## File: CondoSphere.Core/DTOs/Account/SetPasswordDto.cs
-```csharp
+````csharp
 using System.ComponentModel.DataAnnotations;
 
 namespace CondoSphere.Core.DTOs.Account
@@ -626,10 +2958,10 @@ namespace CondoSphere.Core.DTOs.Account
         public string ConfirmPassword { get; set; } = string.Empty;
     }
 }
-```
+````
 
 ## File: CondoSphere.Core/DTOs/Account/UserDto.cs
-```csharp
+````csharp
 namespace CondoSphere.Core.DTOs.Account
 {
     /// <summary>
@@ -642,10 +2974,10 @@ namespace CondoSphere.Core.DTOs.Account
         public string Token { get; set; } = string.Empty;
     }
 }
-```
+````
 
 ## File: CondoSphere.Core/DTOs/Account/UserListDto.cs
-```csharp
+````csharp
 namespace CondoSphere.Core.DTOs.Account
 {
     public class UserListDto
@@ -655,12 +2987,14 @@ namespace CondoSphere.Core.DTOs.Account
         public string LastName { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;
         public string Role { get; set; } = string.Empty;
+
+        public bool IsActive { get; set; }
     }
 }
-```
+````
 
 ## File: CondoSphere.Core/DTOs/Condominiums/CreateUpdateCondominiumDto.cs
-```csharp
+````csharp
 using System.ComponentModel.DataAnnotations;
 
 namespace CondoSphere.Core.DTOs.Condominiums
@@ -679,10 +3013,10 @@ namespace CondoSphere.Core.DTOs.Condominiums
         public string Address { get; set; } = string.Empty;
     }
 }
-```
+````
 
 ## File: CondoSphere.Core/DTOs/Condominiums/CreateUpdateUnitDto.cs
-```csharp
+````csharp
 namespace CondoSphere.Core.DTOs.Condominiums
 {
     /// <summary>
@@ -693,10 +3027,10 @@ namespace CondoSphere.Core.DTOs.Condominiums
         public string Identifier { get; set; } = string.Empty;
     }
 }
-```
+````
 
 ## File: CondoSphere.Core/Entities/Condominiums/Assembly.cs
-```csharp
+````csharp
 using CondoSphere.Core;
 
 namespace CondoSphere.Core.Entities.Condominiums
@@ -711,10 +3045,10 @@ namespace CondoSphere.Core.Entities.Condominiums
         public int CompanyId { get; set; }
     }
 }
-```
+````
 
 ## File: CondoSphere.Core/Entities/Condominiums/Document.cs
-```csharp
+````csharp
 using CondoSphere.Core;
 
 namespace CondoSphere.Core.Entities.Condominiums
@@ -772,10 +3106,10 @@ namespace CondoSphere.Core.Entities.Condominiums
         public DateTime UploadDate { get; set; } = DateTime.UtcNow;
     }
 }
-```
+````
 
 ## File: CondoSphere.Core/Entities/Condominiums/Intervention.cs
-```csharp
+````csharp
 using CondoSphere.Core;
 using CondoSphere.Core.Enums;
 
@@ -794,10 +3128,10 @@ namespace CondoSphere.Core.Entities.Condominiums
         public int CondominiumId { get; set; }
     }
 }
-```
+````
 
 ## File: CondoSphere.Core/Entities/Condominiums/Occurrence.cs
-```csharp
+````csharp
 using CondoSphere.Core;
 using CondoSphere.Core.Enums;
 
@@ -817,10 +3151,10 @@ namespace CondoSphere.Core.Entities.Condominiums
         public int? AssignedToUserId { get; set; }
     }
 }
-```
+````
 
 ## File: CondoSphere.Core/Entities/Financials/Expense.cs
-```csharp
+````csharp
 using CondoSphere.Core;
 
 namespace CondoSphere.Core.Entities.Financials
@@ -881,10 +3215,10 @@ namespace CondoSphere.Core.Entities.Financials
         public string Category { get; set; } = string.Empty;
     }
 }
-```
+````
 
 ## File: CondoSphere.Core/Entities/Financials/QuotaPayment.cs
-```csharp
+````csharp
 using CondoSphere.Core;
 
 namespace CondoSphere.Core.Entities.Financials
@@ -901,10 +3235,10 @@ namespace CondoSphere.Core.Entities.Financials
         public int CompanyId { get; set; }
     }
 }
-```
+````
 
 ## File: CondoSphere.Core/Entities/Financials/Receipt.cs
-```csharp
+````csharp
 using CondoSphere.Core;
 
 namespace CondoSphere.Core.Entities.Financials
@@ -920,10 +3254,10 @@ namespace CondoSphere.Core.Entities.Financials
         public int CondominiumId { get; set; }
     }
 }
-```
+````
 
 ## File: CondoSphere.Core/Entities/Financials/UnitQuota.cs
-```csharp
+````csharp
 using CondoSphere.Core;
 using CondoSphere.Core.Enums;
 
@@ -991,10 +3325,10 @@ namespace CondoSphere.Core.Entities.Financials
         public string? ReferenceNumber { get; set; }
     }
 }
-```
+````
 
 ## File: CondoSphere.Core/Entities/Users/Company.cs
-```csharp
+````csharp
 using CondoSphere.Core;
 
 namespace CondoSphere.Core.Entities.Users
@@ -1010,10 +3344,10 @@ namespace CondoSphere.Core.Entities.Users
         public bool IsActive { get; set; } = true;
     }
 }
-```
+````
 
 ## File: CondoSphere.Core/Entities/Users/Notification.cs
-```csharp
+````csharp
 using CondoSphere.Core;
 
 namespace CondoSphere.Core.Entities.Users
@@ -1031,10 +3365,10 @@ namespace CondoSphere.Core.Entities.Users
         public DateTime? ReadDate { get; set; }
     }
 }
-```
+````
 
 ## File: CondoSphere.Core/Entities/Users/User.cs
-```csharp
+````csharp
 using CondoSphere.Core;
 using Microsoft.AspNetCore.Identity;
 
@@ -1052,12 +3386,13 @@ namespace CondoSphere.Core.Entities.Users
         public string? FirstName { get; set; }
         public string? LastName { get; set; }
         public bool IsActive { get; set; } = true;
+        public string? ProfilePictureUrl { get; set; }
     }
 }
-```
+````
 
 ## File: CondoSphere.Core/Enums/InterventionStatus.cs
-```csharp
+````csharp
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -1092,10 +3427,10 @@ namespace CondoSphere.Core.Enums
         Cancelled = 4
     }
 }
-```
+````
 
 ## File: CondoSphere.Core/Enums/OccurrenceStatus.cs
-```csharp
+````csharp
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -1132,10 +3467,10 @@ namespace CondoSphere.Core.Enums
         Closed = 5
     }
 }
-```
+````
 
 ## File: CondoSphere.Core/Enums/SystemRole.cs
-```csharp
+````csharp
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -1157,10 +3492,10 @@ namespace CondoSphere.Core.Enums
         PlatformSuperAdmin = 5
     }
 }
-```
+````
 
 ## File: CondoSphere.Core/Enums/UnitQuotaStatus.cs
-```csharp
+````csharp
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -1200,10 +3535,10 @@ namespace CondoSphere.Core.Enums
         Cancelled = 5
     }
 }
-```
+````
 
 ## File: CondoSphere.Core/IEntity.cs
-```csharp
+````csharp
 namespace CondoSphere.Core
 {
     public interface IEntity
@@ -1211,10 +3546,10 @@ namespace CondoSphere.Core
         public int Id { get; set; }
     }
 }
-```
+````
 
 ## File: CondoSphere.Core/RoleConstants.cs
-```csharp
+````csharp
 namespace CondoSphere.Core
 {
     /// <summary>
@@ -1229,10 +3564,10 @@ namespace CondoSphere.Core
         public const string PlatformSuperAdmin = "PlatformSuperAdmin";
     }
 }
-```
+````
 
 ## File: CondoSphere.Infrastructure/Data/CondominiumDbContext.cs
-```csharp
+````csharp
 using CondoSphere.Core.Entities.Condominiums;
 using Microsoft.EntityFrameworkCore;
 
@@ -1265,10 +3600,10 @@ namespace CondoSphere.Infrastructure.Data
         }
     }
 }
-```
+````
 
 ## File: CondoSphere.Infrastructure/Repositories/CompanyRepository.cs
-```csharp
+````csharp
 using CondoSphere.Application.Interfaces;
 using CondoSphere.Core.Entities.Users;
 using CondoSphere.Infrastructure.Data;
@@ -1277,6 +3612,7 @@ namespace CondoSphere.Infrastructure.Repositories
 {
     /// <summary>
     /// Implements the ICompanyRepository using Entity Framework Core.
+    /// This repository modifies the change tracker but does not save to the database.
     /// </summary>
     public class CompanyRepository : ICompanyRepository
     {
@@ -1289,89 +3625,135 @@ namespace CondoSphere.Infrastructure.Repositories
 
         public async Task AddAsync(Company company)
         {
+            // This adds the entity to EF Core's change tracker.
             await _context.Companies.AddAsync(company);
         }
 
         public void Remove(Company company)
         {
+            // This marks the entity for deletion in EF Core's change tracker.
             _context.Companies.Remove(company);
-        }
-
-        public async Task<int> SaveChangesAsync()
-        {
-            return await _context.SaveChangesAsync();
         }
     }
 }
-```
+````
 
 ## File: CondoSphere.Infrastructure/Repositories/UnitOfWork.cs
-```csharp
+````csharp
+//using CondoSphere.Application.Interfaces;
+//using CondoSphere.Infrastructure.Data;
+//using Microsoft.EntityFrameworkCore.Storage;
+
+//namespace CondoSphere.Infrastructure.Repositories
+//{
+//    public class UnitOfWork : IUnitOfWork
+//    {
+//        private readonly UserManagementDbContext _context;
+//        private IDbContextTransaction? _transaction;
+
+//        public ICompanyRepository Companies { get; }
+
+//        public UnitOfWork(UserManagementDbContext context)
+//        {
+//            _context = context;
+//            Companies = new CompanyRepository(_context);
+//        }
+
+//        public async Task BeginTransactionAsync()
+//        {
+//            _transaction = await _context.Database.BeginTransactionAsync();
+//        }
+
+//        public async Task CommitAsync()
+//        {
+//            if (_transaction != null)
+//            {
+//                await _transaction.CommitAsync();
+//            }
+//        }
+
+//        public async Task RollbackAsync()
+//        {
+//            if (_transaction != null)
+//            {
+//                await _transaction.RollbackAsync();
+//            }
+//        }
+
+//        public async Task<int> CompleteAsync()
+//        {
+//            SaveChangesAsync will automatically participate in the active transaction.
+//            return await _context.SaveChangesAsync();
+//        }
+
+//        public async ValueTask DisposeAsync()
+//        {
+//            Ensure the transaction is disposed of properly.
+//            if (_transaction != null)
+//            {
+//                await _transaction.DisposeAsync();
+//            }
+//            await _context.DisposeAsync();
+//        }
+//    }
+//}
+
 using CondoSphere.Application.Interfaces;
 using CondoSphere.Infrastructure.Data;
-using Microsoft.EntityFrameworkCore.Storage;
 
 namespace CondoSphere.Infrastructure.Repositories
 {
     public class UnitOfWork : IUnitOfWork
     {
-        private readonly UserManagementDbContext _context;
-        private IDbContextTransaction? _transaction;
+        private readonly UserManagementDbContext _userContext;
+        private readonly CondominiumDbContext _condoContext;
 
-        public ICompanyRepository Companies { get; }
+        // Implement all properties from the interface
+        public ICompanyRepository Companies { get; private set; }
+        public IUserRepository Users { get; private set; }
+        public ICondominiumRepository Condominiums { get; private set; }
+        public IUnitRepository Units { get; private set; }
+        public IOccurrenceRepository Occurrences { get; private set; }
 
-        public UnitOfWork(UserManagementDbContext context)
+        public UnitOfWork(UserManagementDbContext userContext, CondominiumDbContext condoContext)
         {
-            _context = context;
-            Companies = new CompanyRepository(_context);
-        }
+            _userContext = userContext;
+            _condoContext = condoContext;
 
-        public async Task BeginTransactionAsync()
-        {
-            _transaction = await _context.Database.BeginTransactionAsync();
-        }
-
-        public async Task CommitAsync()
-        {
-            if (_transaction != null)
-            {
-                await _transaction.CommitAsync();
-            }
-        }
-
-        public async Task RollbackAsync()
-        {
-            if (_transaction != null)
-            {
-                await _transaction.RollbackAsync();
-            }
+            // Instantiate all repositories with their respective DbContexts
+            Companies = new CompanyRepository(_userContext);
+            Users = new UserRepository(_userContext);
+            Condominiums = new CondominiumRepository(_condoContext);
+            Units = new UnitRepository(_condoContext);
+            Occurrences = new OccurrenceRepository(_condoContext);
         }
 
         public async Task<int> CompleteAsync()
         {
-            // SaveChangesAsync will automatically participate in the active transaction.
-            return await _context.SaveChangesAsync();
+            // Save changes for both contexts. The sum of records affected is returned.
+            var userDbResult = await _userContext.SaveChangesAsync();
+            var condoDbResult = await _condoContext.SaveChangesAsync();
+            return userDbResult + condoDbResult;
         }
 
         public async ValueTask DisposeAsync()
         {
-            // Ensure the transaction is disposed of properly.
-            if (_transaction != null)
-            {
-                await _transaction.DisposeAsync();
-            }
-            await _context.DisposeAsync();
+            await _userContext.DisposeAsync();
+            await _condoContext.DisposeAsync();
         }
     }
 }
-```
+````
 
 ## File: CondoSphere.Infrastructure/Repositories/UnitRepository.cs
-```csharp
+````csharp
 using CondoSphere.Application.Interfaces;
 using CondoSphere.Core.Entities.Condominiums;
 using CondoSphere.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace CondoSphere.Infrastructure.Repositories
 {
@@ -1389,6 +3771,16 @@ namespace CondoSphere.Infrastructure.Repositories
             await _context.Units.AddAsync(unit);
         }
 
+        public void Update(Unit unit)
+        {
+            _context.Entry(unit).State = EntityState.Modified;
+        }
+
+        public void Remove(Unit unit)
+        {
+            _context.Units.Remove(unit);
+        }
+
         public async Task<IEnumerable<Unit>> GetAllAsync(int condominiumId)
         {
             return await _context.Units
@@ -1402,26 +3794,26 @@ namespace CondoSphere.Infrastructure.Repositories
             return await _context.Units.FindAsync(unitId);
         }
 
-        public void Remove(Unit unit)
+        public async Task<IEnumerable<int>> GetOccupiedUnitResidentIdsAsync(int companyId)
         {
-            _context.Units.Remove(unit);
+            return await _context.Units
+                .Where(u => u.CompanyId == companyId && u.ResidentId.HasValue)
+                .Select(u => u.ResidentId.Value)
+                .Distinct()
+                .ToListAsync();
         }
 
-        public async Task<int> SaveChangesAsync()
+        public async Task<Unit?> GetUnitByResidentIdAsync(int residentId)
         {
-            return await _context.SaveChangesAsync();
-        }
-
-        public void Update(Unit unit)
-        {
-            _context.Entry(unit).State = EntityState.Modified;
+            return await _context.Units
+                .FirstOrDefaultAsync(u => u.ResidentId == residentId);
         }
     }
 }
-```
+````
 
 ## File: CondoSphere.Infrastructure/Services/MailService.cs
-```csharp
+````csharp
 using CondoSphere.Application.Interfaces;
 using Microsoft.Extensions.Configuration;
 using System.Net;
@@ -1471,10 +3863,10 @@ namespace CondoSphere.Infrastructure.Services
         }
     }
 }
-```
+````
 
 ## File: CondoSphere.Web/appsettings.json
-```json
+````json
 {
   "Logging": {
     "LogLevel": {
@@ -1484,10 +3876,10 @@ namespace CondoSphere.Infrastructure.Services
   },
   "AllowedHosts": "*"
 }
-```
+````
 
 ## File: CondoSphere.Web/Controllers/AdministrationController.cs
-```csharp
+````csharp
 using CondoSphere.Core;
 using CondoSphere.Core.DTOs.Account;
 using CondoSphere.Core.DTOs.Condominiums;
@@ -1500,7 +3892,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 namespace CondoSphere.Web.Controllers
 {
     [Authorize(Roles = RoleConstants.CompanyAdmin)]
-    [Route("administration")] // Optional: You can add a base route for the entire controller
+    [Route("administration")]
     public class AdministrationController : Controller
     {
         private readonly ApiClient _apiClient;
@@ -1510,7 +3902,7 @@ namespace CondoSphere.Web.Controllers
             _apiClient = apiClient;
         }
 
-        [HttpGet("")] // This will now map to "/administration"
+        [HttpGet("")]
         public async Task<IActionResult> Index()
         {
             var users = await _apiClient.GetUsersAsync();
@@ -1522,10 +3914,14 @@ namespace CondoSphere.Web.Controllers
                 Condominiums = condominiums ?? new List<CondominiumDto>()
             };
 
+            var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            int.TryParse(userIdClaim, out var currentUserId);
+            ViewData["CurrentUserId"] = currentUserId;
+
             return View(viewModel);
         }
 
-        [HttpGet("register-manager")] // Maps to "/administration/register-manager"
+        [HttpGet("register-manager")]
         public IActionResult RegisterManager()
         {
             return View();
@@ -1552,7 +3948,7 @@ namespace CondoSphere.Web.Controllers
             return View(model);
         }
 
-        [HttpGet("create-condominium")] // Maps to "/administration/create-condominium"
+        [HttpGet("create-condominium")]
         public IActionResult CreateCondominium()
         {
             return View();
@@ -1579,7 +3975,6 @@ namespace CondoSphere.Web.Controllers
             return View(model);
         }
 
-        // ===== CORRECTED ROUTES BELOW =====
         [HttpGet("condominiums/{condominiumId}/assign-manager")]
         public async Task<IActionResult> AssignManager(int condominiumId)
         {
@@ -1637,12 +4032,44 @@ namespace CondoSphere.Web.Controllers
                 Value = m.Id.ToString()
             });
         }
+
+        [HttpPost("users/{userId}/deactivate")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeactivateUser(int userId)
+        {
+            var success = await _apiClient.DeactivateUserAsync(userId);
+            if (success)
+            {
+                TempData["SuccessMessage"] = "User successfully deactivated.";
+            }
+            else
+            {
+                TempData["ErrorMessage"] = "Failed to deactivate user.";
+            }
+            return RedirectToAction(nameof(Index));
+        }
+
+        [HttpPost("users/{userId}/activate")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ActivateUser(int userId)
+        {
+            var success = await _apiClient.ActivateUserAsync(userId);
+            if (success)
+            {
+                TempData["SuccessMessage"] = "User successfully activated.";
+            }
+            else
+            {
+                TempData["ErrorMessage"] = "Failed to activate user.";
+            }
+            return RedirectToAction(nameof(Index));
+        }
     }
 }
-```
+````
 
 ## File: CondoSphere.Web/Controllers/CondoManagementController.cs
-```csharp
+````csharp
 using CondoSphere.Core;
 using CondoSphere.Core.DTOs.Account;
 using CondoSphere.Core.DTOs.Condominiums;
@@ -1650,6 +4077,7 @@ using CondoSphere.Web.Models;
 using CondoSphere.Web.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace CondoSphere.Web.Controllers
 {
@@ -1678,6 +4106,7 @@ namespace CondoSphere.Web.Controllers
             var units = await _apiClient.GetUnitsForCondominiumAsync(id);
             var users = await _apiClient.GetUsersAsync();
             var userLookup = users.ToDictionary(u => u.Id, u => $"{u.FirstName} {u.LastName}");
+            var occurrences = await _apiClient.GetOccurrencesForCondominiumAsync(id);
 
             var unitViewModels = units.Select(unit => new UnitDetailViewModel
             {
@@ -1692,7 +4121,8 @@ namespace CondoSphere.Web.Controllers
             var viewModel = new CondominiumDetailsViewModel
             {
                 Condominium = condo,
-                Units = unitViewModels
+                Units = unitViewModels,
+                Occurrences = occurrences
             };
 
             return View(viewModel);
@@ -1788,12 +4218,66 @@ namespace CondoSphere.Web.Controllers
 
             return RedirectToAction(nameof(Details), new { id = condominiumId });
         }
+
+        [HttpGet("units/{unitId}/assign-resident")]
+        public async Task<IActionResult> AssignResident(int unitId, int condominiumId)
+        {
+            var availableResidents = await _apiClient.GetAvailableResidentsAsync();
+
+            var viewModel = new AssignResidentViewModel
+            {
+                UnitId = unitId,
+                CondominiumId = condominiumId,
+                AvailableResidents = availableResidents.Select(r => new SelectListItem
+                {
+                    Text = $"{r.FirstName} {r.LastName} ({r.Email})",
+                    Value = r.Id.ToString()
+                })
+            };
+
+            return View(viewModel);
+        }
+
+        [HttpPost("units/{unitId}/assign-resident")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AssignResident(AssignResidentViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                var availableResidents = await _apiClient.GetAvailableResidentsAsync();
+                model.AvailableResidents = availableResidents.Select(r => new SelectListItem
+                {
+                    Text = $"{r.FirstName} {r.LastName} ({r.Email})",
+                    Value = r.Id.ToString()
+                });
+                return View(model);
+            }
+
+            var dto = new AssignResidentDto { ResidentId = model.SelectedResidentId };
+            var success = await _apiClient.AssignResidentAsync(model.CondominiumId, model.UnitId, dto);
+
+            if (success)
+            {
+                TempData["SuccessMessage"] = "Resident assigned successfully!";
+                return RedirectToAction(nameof(Details), new { id = model.CondominiumId });
+            }
+
+            ModelState.AddModelError(string.Empty, "Failed to assign resident. Please ensure the resident is valid and the unit is vacant.");
+
+            var residents = await _apiClient.GetAvailableResidentsAsync();
+            model.AvailableResidents = residents.Select(r => new SelectListItem
+            {
+                Text = $"{r.FirstName} {r.LastName} ({r.Email})",
+                Value = r.Id.ToString()
+            });
+            return View(model);
+        }
     }
 }
-```
+````
 
 ## File: CondoSphere.Web/Controllers/HomeController.cs
-```csharp
+````csharp
 using CondoSphere.Web.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
@@ -1826,10 +4310,10 @@ namespace CondoSphere.Web.Controllers
         }
     }
 }
-```
+````
 
 ## File: CondoSphere.Web/Models/AssignManagerViewModel.cs
-```csharp
+````csharp
 using CondoSphere.Core.DTOs.Condominiums;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.ComponentModel.DataAnnotations;
@@ -1843,11 +4327,12 @@ namespace CondoSphere.Web.Models
         public int SelectedManagerId { get; set; }
     }
 }
-```
+````
 
 ## File: CondoSphere.Web/Models/CondominiumDetailsViewModel.cs
-```csharp
+````csharp
 using CondoSphere.Core.DTOs.Condominiums;
+using CondoSphere.Core.DTOs.Occurrences;
 
 namespace CondoSphere.Web.Models
 {
@@ -1863,14 +4348,14 @@ namespace CondoSphere.Web.Models
     public class CondominiumDetailsViewModel
     {
         public CondominiumDto Condominium { get; set; }
-        // The list now uses our new, richer view model
         public IEnumerable<UnitDetailViewModel> Units { get; set; } = new List<UnitDetailViewModel>();
+        public IEnumerable<OccurrenceDto> Occurrences { get; set; } = new List<OccurrenceDto>();
     }
 }
-```
+````
 
 ## File: CondoSphere.Web/Models/ErrorViewModel.cs
-```csharp
+````csharp
 namespace CondoSphere.Web.Models
 {
     public class ErrorViewModel
@@ -1880,10 +4365,10 @@ namespace CondoSphere.Web.Models
         public bool ShowRequestId => !string.IsNullOrEmpty(RequestId);
     }
 }
-```
+````
 
 ## File: CondoSphere.Web/Models/ManagementDashboardViewModel.cs
-```csharp
+````csharp
 using CondoSphere.Core.DTOs.Account;
 using CondoSphere.Core.DTOs.Condominiums;
 
@@ -1895,10 +4380,10 @@ namespace CondoSphere.Web.Models
         public IEnumerable<CondominiumDto> Condominiums { get; set; } = new List<CondominiumDto>();
     }
 }
-```
+````
 
 ## File: CondoSphere.Web/Models/RegisterResidentViewModel.cs
-```csharp
+````csharp
 using System.ComponentModel.DataAnnotations;
 
 namespace CondoSphere.Web.Models
@@ -1924,10 +4409,10 @@ namespace CondoSphere.Web.Models
         public string Email { get; set; } = string.Empty;
     }
 }
-```
+````
 
 ## File: CondoSphere.Web/Properties/launchSettings.json
-```json
+````json
 {
   "$schema": "http://json.schemastore.org/launchsettings.json",
   "iisSettings": {
@@ -1966,10 +4451,10 @@ namespace CondoSphere.Web.Models
     }
   }
 }
-```
+````
 
 ## File: CondoSphere.Web/Services/JwtForwardingDelegatingHandler.cs
-```csharp
+````csharp
 using System.Net.Http.Headers;
 
 namespace CondoSphere.Web.Services
@@ -1998,24 +4483,24 @@ namespace CondoSphere.Web.Services
         }
     }
 }
-```
+````
 
 ## File: CondoSphere.Web/Views/_ViewImports.cshtml
-```
+````
 @using CondoSphere.Web
 @using CondoSphere.Web.Models
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
-```
+````
 
 ## File: CondoSphere.Web/Views/_ViewStart.cshtml
-```
+````
 @{
     Layout = "_Layout";
 }
-```
+````
 
 ## File: CondoSphere.Web/Views/Account/Login.cshtml
-```
+````
 @model CondoSphere.Core.DTOs.Account.LoginDto
 
 @{
@@ -2043,6 +4528,11 @@ namespace CondoSphere.Web.Services
                 <div>
                     <button id="login-submit" type="submit" class="w-100 btn btn-lg btn-primary">Log in</button>
                 </div>
+                <div class="mt-3 text-center">
+                    <p>
+                        <a asp-action="ForgotPassword">Forgot your password?</a>
+                    </p>
+                </div>
             </form>
         </section>
     </div>
@@ -2051,10 +4541,10 @@ namespace CondoSphere.Web.Services
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
 }
-```
+````
 
 ## File: CondoSphere.Web/Views/Account/SetPassword.cshtml
-```
+````
 @model CondoSphere.Core.DTOs.Account.SetPasswordDto
 
 @{
@@ -2093,10 +4583,10 @@ namespace CondoSphere.Web.Services
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
 }
-```
+````
 
 ## File: CondoSphere.Web/Views/Administration/AssignManager.cshtml
-```
+````
 @model AssignManagerViewModel
 @{
     ViewData["Title"] = "Assign Manager";
@@ -2128,10 +4618,10 @@ namespace CondoSphere.Web.Services
         </form>
     </div>
 </div>
-```
+````
 
 ## File: CondoSphere.Web/Views/Administration/CreateCondominium.cshtml
-```
+````
 @model CondoSphere.Core.DTOs.Condominiums.CreateUpdateCondominiumDto
 
 @{
@@ -2167,20 +4657,22 @@ namespace CondoSphere.Web.Services
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
 }
-```
+````
 
 ## File: CondoSphere.Web/Views/Administration/Index.cshtml
-```
+````
 @model ManagementDashboardViewModel
+@using CondoSphere.Core
 
 @{
     ViewData["Title"] = "Admin Dashboard";
+    var currentUserId = (int)ViewData["CurrentUserId"];
 }
 
 <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
         <h1>@ViewData["Title"]</h1>
-        <p class="text-muted">Manage your company's users and condominiums.</p>
+        <p class="text-muted">Manage your company's condominiums and users.</p>
     </div>
     <div>
         <a class="btn btn-primary" asp-action="RegisterManager">
@@ -2193,7 +4685,7 @@ namespace CondoSphere.Web.Services
 </div>
 
 <div class="row">
-    <div class="col-lg-8">
+    <div class="col-lg-7">
         <div class="card shadow-sm mb-4">
             <div class="card-header">
                 <h5 class="mb-0">Managed Condominiums</h5>
@@ -2202,12 +4694,12 @@ namespace CondoSphere.Web.Services
                 @if (Model.Condominiums.Any())
                 {
                     <div class="table-responsive">
-                        <table class="table table-hover mb-0">
+                        <table class="table table-hover mb-0 align-middle">
                             <thead>
                                 <tr>
                                     <th scope="col">Name</th>
                                     <th scope="col">Address</th>
-                                    <th scope="col">Assigned Manager</th> @* <-- ADD THIS HEADER *@
+                                    <th scope="col">Assigned Manager</th>
                                     <th scope="col" class="text-end">Actions</th>
                                 </tr>
                             </thead>
@@ -2217,15 +4709,12 @@ namespace CondoSphere.Web.Services
                                     <tr>
                                         <td>@condo.Name</td>
                                         <td>@condo.Address</td>
-
-                                        @* ===== NEW LOGIC FOR MANAGER COLUMN ===== *@
                                         <td>
                                             @if (!string.IsNullOrEmpty(condo.ManagerName))
                                             {
                                                 <span class="text-muted">@condo.ManagerName</span>
                                             }
                                         </td>
-
                                         <td class="text-end">
                                             @if (string.IsNullOrEmpty(condo.ManagerName))
                                             {
@@ -2235,7 +4724,6 @@ namespace CondoSphere.Web.Services
                                             {
                                                 <a asp-action="AssignManager" asp-route-condominiumId="@condo.Id" class="btn btn-sm btn-outline-secondary">Re-assign</a>
                                             }
-                                            @* <a href="#" class="btn btn-sm btn-outline-primary">Edit</a> *@
                                         </td>
                                     </tr>
                                 }
@@ -2253,7 +4741,7 @@ namespace CondoSphere.Web.Services
         </div>
     </div>
 
-    <div class="col-lg-4">
+    <div class="col-lg-5">
         <div class="card shadow-sm mb-4">
             <div class="card-header">
                 <h5 class="mb-0">Company Users</h5>
@@ -2262,11 +4750,13 @@ namespace CondoSphere.Web.Services
                 @if (Model.Users.Any())
                 {
                     <div class="table-responsive">
-                        <table class="table table-hover mb-0">
+                        <table class="table table-hover mb-0 align-middle">
                             <thead>
                                 <tr>
                                     <th scope="col">Name</th>
                                     <th scope="col">Role</th>
+                                    <th scope="col">Status</th>
+                                    <th scope="col">Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -2275,6 +4765,35 @@ namespace CondoSphere.Web.Services
                                     <tr>
                                         <td>@user.FirstName @user.LastName<br /><small class="text-muted">@user.Email</small></td>
                                         <td><span class="badge bg-secondary">@user.Role</span></td>
+                                        <td>
+                                            @if (user.IsActive)
+                                            {
+                                                <span class="badge bg-success">Active</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-danger">Inactive</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            @if (user.Id != currentUserId)
+                                            {
+                                                if (user.IsActive)
+                                                {
+                                                    <form asp-action="DeactivateUser" asp-route-userId="@user.Id" method="post" onsubmit="return confirm('Are you sure you want to deactivate this user?');">
+                                                        @Html.AntiForgeryToken()
+                                                        <button type="submit" class="btn btn-sm btn-outline-warning">Deactivate</button>
+                                                    </form>
+                                                }
+                                                else
+                                                {
+                                                    <form asp-action="ActivateUser" asp-route-userId="@user.Id" method="post">
+                                                        @Html.AntiForgeryToken()
+                                                        <button type="submit" class="btn btn-sm btn-outline-success">Activate</button>
+                                                    </form>
+                                                }
+                                            }
+                                        </td>
                                     </tr>
                                 }
                             </tbody>
@@ -2291,10 +4810,10 @@ namespace CondoSphere.Web.Services
         </div>
     </div>
 </div>
-```
+````
 
 ## File: CondoSphere.Web/Views/Administration/RegisterManager.cshtml
-```
+````
 @model CondoSphere.Core.DTOs.Account.RegisterManagerDto
 
 @{
@@ -2336,10 +4855,10 @@ namespace CondoSphere.Web.Services
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
 }
-```
+````
 
 ## File: CondoSphere.Web/Views/CondoManagement/CreateUnit.cshtml
-```
+````
 @model CondoSphere.Core.DTOs.Condominiums.CreateUpdateUnitDto
 
 @{
@@ -2370,10 +4889,10 @@ namespace CondoSphere.Web.Services
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
 }
-```
+````
 
 ## File: CondoSphere.Web/Views/CondoManagement/Details.cshtml
-```
+````
 @model CondoSphere.Web.Models.CondominiumDetailsViewModel
 
 @{
@@ -2421,7 +4940,10 @@ namespace CondoSphere.Web.Services
                                     }
                                     else
                                     {
-                                        <span class="badge bg-success">Vacant</span>
+                                        <a asp-action="AssignResident"
+                                           asp-route-unitId="@unit.Id"
+                                           asp-route-condominiumId="@Model.Condominium.Id"
+                                           class="btn btn-sm btn-primary">Assign Resident</a>
                                     }
                                 </td>
                                 <td class="text-end">
@@ -2460,10 +4982,58 @@ namespace CondoSphere.Web.Services
         <i class="bi bi-arrow-left me-1"></i> Back to My Condos
     </a>
 </div>
-```
+<hr class="my-4" />
+
+<div class="card shadow-sm">
+    <div class="card-header">
+        <h5 class="mb-0">Reported Occurrences</h5>
+    </div>
+    <div class="card-body p-0">
+        @if (Model.Occurrences.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-hover mb-0 align-middle">
+                    <thead>
+                        <tr>
+                            <th scope="col">Title</th>
+                            <th scope="col">Reported By</th>
+                            <th scope="col">Date</th>
+                            <th scope="col">Status</th>
+                            <th scope="col" class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var occurrence in Model.Occurrences)
+                        {
+                            <tr>
+                                <td><strong>@occurrence.Title</strong></td>
+                                <td>@occurrence.ReportedByUserName</td>
+                                <td>@occurrence.ReportedDate.ToString("yyyy-MM-dd HH:mm")</td>
+                                <td>
+                                    @* We can make these badges dynamic later based on status *@
+                                    <span class="badge bg-danger">@occurrence.Status</span>
+                                </td>
+                                <td class="text-end">
+                                    <a href="#" class="btn btn-sm btn-outline-primary">View Details</a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="text-center p-4">
+                <p class="text-muted mb-0">No occurrences have been reported for this condominium yet.</p>
+            </div>
+        }
+    </div>
+</div>
+````
 
 ## File: CondoSphere.Web/Views/CondoManagement/Index.cshtml
-```
+````
 @model IEnumerable<CondoSphere.Core.DTOs.Condominiums.CondominiumDto>
 
 @{
@@ -2505,10 +5075,10 @@ else
         <p>You have not been assigned to manage any condominiums yet. Please contact your company administrator.</p>
     </div>
 }
-```
+````
 
 ## File: CondoSphere.Web/Views/CondoManagement/RegisterResident.cshtml
-```
+````
 @model CondoSphere.Web.Models.RegisterResidentViewModel
 
 @{
@@ -2555,10 +5125,10 @@ else
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
 }
-```
+````
 
 ## File: CondoSphere.Web/Views/Home/Index.cshtml
-```
+````
 @{
     ViewData["Title"] = "Home Page";
 }
@@ -2567,20 +5137,20 @@ else
     <h1 class="display-4">Welcome</h1>
     <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
 </div>
-```
+````
 
 ## File: CondoSphere.Web/Views/Home/Privacy.cshtml
-```
+````
 @{
     ViewData["Title"] = "Privacy Policy";
 }
 <h1>@ViewData["Title"]</h1>
 
 <p>Use this page to detail your site's privacy policy.</p>
-```
+````
 
 ## File: CondoSphere.Web/Views/Shared/_Layout.cshtml.css
-```css
+````css
 /* Please see documentation at https://learn.microsoft.com/aspnet/core/client-side/bundling-and-minification
 for details on configuring this project to bundle and minify static web assets. */
 
@@ -2629,19 +5199,29 @@ button.accept-policy {
   white-space: nowrap;
   line-height: 60px;
 }
-```
+````
 
 ## File: CondoSphere.Web/Views/Shared/_LoginPartial.cshtml
-```
-@using Microsoft.AspNetCore.Identity
-@using CondoSphere.Core.Entities.Users
+````
+@using System.Security.Claims
 
 <ul class="navbar-nav">
     @if (User.Identity?.IsAuthenticated == true)
     {
         <li class="nav-item">
-            @* We can access the user's name (which is their email in our case) from the ClaimsPrincipal *@
-            <a class="nav-link text-dark" href="#" title="Manage">Hello, @User.Identity.Name!</a>
+            <a class="nav-link text-dark d-flex align-items-center" asp-controller="Profile" asp-action="Index" title="Manage Your Account">
+
+                @{
+                    var profilePictureUrl = User.FindFirstValue("profile_picture");
+                }
+
+                <img src="@(string.IsNullOrEmpty(profilePictureUrl) ? "/images/user-photos/default-profile.png" : profilePictureUrl)"
+                     alt="Profile Picture"
+                     class="rounded-circle"
+                     style="width: 30px; height: 30px; object-fit: cover; margin-right: 8px;" />
+
+                Hello, @User.Identity.Name!
+            </a>
         </li>
         <li class="nav-item">
             <form class="form-inline" asp-controller="Account" asp-action="Logout" method="post">
@@ -2653,21 +5233,23 @@ button.accept-policy {
     else
     {
         <li class="nav-item">
+            <a class="nav-link text-dark" asp-controller="Account" asp-action="Register">Register</a>
+        </li>
+        <li class="nav-item">
             <a class="nav-link text-dark" asp-controller="Account" asp-action="Login">Login</a>
         </li>
-        @* We can add a Register link here later if needed *@
     }
 </ul>
-```
+````
 
 ## File: CondoSphere.Web/Views/Shared/_ValidationScriptsPartial.cshtml
-```
+````
 <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
 <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
-```
+````
 
 ## File: CondoSphere.Web/Views/Shared/Error.cshtml
-```
+````
 @model ErrorViewModel
 @{
     ViewData["Title"] = "Error";
@@ -2693,10 +5275,10 @@ button.accept-policy {
     For local debugging, enable the <strong>Development</strong> environment by setting the <strong>ASPNETCORE_ENVIRONMENT</strong> environment variable to <strong>Development</strong>
     and restarting the app.
 </p>
-```
+````
 
 ## File: CondoSphere.Web/wwwroot/css/site.css
-```css
+````css
 html {
   font-size: 14px;
 }
@@ -2719,37 +5301,18 @@ html {
 body {
   margin-bottom: 60px;
 }
-```
+````
 
 ## File: CondoSphere.Web/wwwroot/js/site.js
-```javascript
+````javascript
 // Please see documentation at https://learn.microsoft.com/aspnet/core/client-side/bundling-and-minification
 // for details on configuring this project to bundle and minify static web assets.
 
 // Write your JavaScript code.
-```
-
-## File: CondoSphere.API/CondoSphere.API.http
-```
-@CondoSphere.API_HostAddress = https://localhost:7177
-
-### REGISTER A NEW COMPANY AND ADMIN ###
-
-POST {{CondoSphere.API_HostAddress}}/api/accounts/register-admin
-Content-Type: application/json
-
-{
-  "companyName": "My New Test Company",
-  "firstName": "Test",
-  "lastName": "Admin",
-  "email": "test.admin@mynewcompany.com",
-  "password": "123456",
-  "confirmPassword": "123456!"
-}
-```
+````
 
 ## File: CondoSphere.Application/Interfaces/ICurrentUserService.cs
-```csharp
+````csharp
 namespace CondoSphere.Application.Interfaces
 {
     public interface ICurrentUserService
@@ -2761,11 +5324,13 @@ namespace CondoSphere.Application.Interfaces
         Task<(bool IsAuthorized, int? CompanyId)> CanManageCondominium(int condominiumId);
     }
 }
-```
+````
 
 ## File: CondoSphere.Application/Interfaces/IUserRepository.cs
-```csharp
+````csharp
 using CondoSphere.Core.DTOs.Account;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace CondoSphere.Application.Interfaces
 {
@@ -2775,10 +5340,10 @@ namespace CondoSphere.Application.Interfaces
         Task<IEnumerable<UserListDto>> GetUsersInRoleAsync(string roleName, int companyId);
     }
 }
-```
+````
 
 ## File: CondoSphere.Application/Services/Condominium/ICondominiumService.cs
-```csharp
+````csharp
 using CondoSphere.Core.DTOs.Condominiums;
 
 namespace CondoSphere.Application.Services.Condominium
@@ -2794,10 +5359,10 @@ namespace CondoSphere.Application.Services.Condominium
         Task<IEnumerable<CondominiumDto>> GetCondominiumsByManagerIdAsync(int managerId);
     }
 }
-```
+````
 
 ## File: CondoSphere.Application/Services/Condominium/IUnitService.cs
-```csharp
+````csharp
 using CondoSphere.Core.DTOs.Condominiums;
 
 namespace CondoSphere.Application.Services.Condominium
@@ -2810,14 +5375,16 @@ namespace CondoSphere.Application.Services.Condominium
         Task<bool> UpdateUnitAsync(int unitId, CreateUpdateUnitDto unitDto);
         Task<bool> DeleteUnitAsync(int unitId);
         Task<bool> UnassignResidentAsync(int unitId);
+        Task<bool> AssignExistingResidentAsync(int unitId, int residentId, int companyId);
     }
 }
-```
+````
 
 ## File: CondoSphere.Application/Services/Condominium/UnitService.cs
-```csharp
+````csharp
 using AutoMapper;
 using CondoSphere.Application.Interfaces;
+using CondoSphere.Core;
 using CondoSphere.Core.DTOs.Condominiums;
 using Microsoft.AspNetCore.Identity;
 using CoreUnit = CondoSphere.Core.Entities.Condominiums.Unit;
@@ -2827,13 +5394,13 @@ namespace CondoSphere.Application.Services.Condominium
 {
     public class UnitService : IUnitService
     {
-        private readonly IUnitRepository _unitRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly UserManager<CoreUser> _userManager;
 
-        public UnitService(IUnitRepository unitRepository, IMapper mapper, UserManager<CoreUser> userManager)
+        public UnitService(IUnitOfWork unitOfWork, IMapper mapper, UserManager<CoreUser> userManager)
         {
-            _unitRepository = unitRepository;
+            _unitOfWork = unitOfWork;
             _mapper = mapper;
             _userManager = userManager;
         }
@@ -2844,71 +5411,96 @@ namespace CondoSphere.Application.Services.Condominium
             unit.CondominiumId = condominiumId;
             unit.CompanyId = companyId;
 
-            await _unitRepository.AddAsync(unit);
-            await _unitRepository.SaveChangesAsync();
+            await _unitOfWork.Units.AddAsync(unit);
+            await _unitOfWork.CompleteAsync();
 
             return _mapper.Map<UnitDto>(unit);
         }
 
         public async Task<bool> DeleteUnitAsync(int unitId)
         {
-            var unit = await _unitRepository.GetByIdAsync(unitId);
+            var unit = await _unitOfWork.Units.GetByIdAsync(unitId);
             if (unit == null) return false;
 
-            _unitRepository.Remove(unit);
-            return await _unitRepository.SaveChangesAsync() > 0;
+            _unitOfWork.Units.Remove(unit);
+            await _unitOfWork.CompleteAsync();
+            return true;
         }
 
         public async Task<UnitDto?> GetUnitByIdAsync(int unitId)
         {
-            var unit = await _unitRepository.GetByIdAsync(unitId);
+            var unit = await _unitOfWork.Units.GetByIdAsync(unitId);
             return _mapper.Map<UnitDto>(unit);
         }
 
         public async Task<IEnumerable<UnitDto>> GetUnitsForCondominiumAsync(int condominiumId)
         {
-            var units = await _unitRepository.GetAllAsync(condominiumId);
+            var units = await _unitOfWork.Units.GetAllAsync(condominiumId);
             return _mapper.Map<IEnumerable<UnitDto>>(units);
         }
 
         public async Task<bool> UpdateUnitAsync(int unitId, CreateUpdateUnitDto unitDto)
         {
-            var unit = await _unitRepository.GetByIdAsync(unitId);
+            var unit = await _unitOfWork.Units.GetByIdAsync(unitId);
             if (unit == null) return false;
 
             _mapper.Map(unitDto, unit);
-            _unitRepository.Update(unit);
-            return await _unitRepository.SaveChangesAsync() > 0;
+            _unitOfWork.Units.Update(unit);
+            await _unitOfWork.CompleteAsync();
+            return true;
         }
 
         public async Task<bool> UnassignResidentAsync(int unitId)
         {
-            var unit = await _unitRepository.GetByIdAsync(unitId);
+            var unit = await _unitOfWork.Units.GetByIdAsync(unitId);
             if (unit?.ResidentId == null)
             {
                 return false;
             }
-
-            var residentId = unit.ResidentId.Value;
-
             unit.ResidentId = null;
-            _unitRepository.Update(unit);
+            _unitOfWork.Units.Update(unit);
+            await _unitOfWork.CompleteAsync();
+            return true;
+        }
 
-            var formerResident = await _userManager.FindByIdAsync(residentId.ToString());
-            if (formerResident != null)
+        public async Task<bool> AssignExistingResidentAsync(int unitId, int residentId, int companyId)
+        {
+            var unit = await _unitOfWork.Units.GetByIdAsync(unitId);
+            if (unit == null || unit.CompanyId != companyId || unit.ResidentId.HasValue)
             {
-                formerResident.IsActive = false;
-                await _userManager.UpdateAsync(formerResident);
+                return false;
             }
 
-            return await _unitRepository.SaveChangesAsync() > 0;
+            var resident = await _userManager.FindByIdAsync(residentId.ToString());
+            if (resident == null || resident.CompanyId != companyId)
+            {
+                return false;
+            }
+
+            if (!await _userManager.IsInRoleAsync(resident, RoleConstants.CondoResident))
+            {
+                return false;
+            }
+
+            unit.ResidentId = residentId;
+            _unitOfWork.Units.Update(unit);
+
+            // If a resident is assigned, ensure their account is active.
+            if (!resident.IsActive)
+            {
+                resident.IsActive = true;
+                await _userManager.UpdateAsync(resident);
+            }
+
+            await _unitOfWork.CompleteAsync();
+            return true;
         }
     }
 }
-```
+````
 
 ## File: CondoSphere.Core/DTOs/Account/RegisterManagerDto.cs
-```csharp
+````csharp
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -2936,10 +5528,10 @@ namespace CondoSphere.Core.DTOs.Account
         public string Email { get; set; } = string.Empty;
     }
 }
-```
+````
 
 ## File: CondoSphere.Core/DTOs/Condominiums/CondominiumDto.cs
-```csharp
+````csharp
 namespace CondoSphere.Core.DTOs.Condominiums
 {
     /// <summary>
@@ -2954,10 +5546,10 @@ namespace CondoSphere.Core.DTOs.Condominiums
         public string? ManagerName { get; set; }
     }
 }
-```
+````
 
 ## File: CondoSphere.Core/DTOs/Condominiums/UnitDto.cs
-```csharp
+````csharp
 namespace CondoSphere.Core.DTOs.Condominiums
 {
     /// <summary>
@@ -2971,10 +5563,10 @@ namespace CondoSphere.Core.DTOs.Condominiums
         public int? ResidentId { get; set; }
     }
 }
-```
+````
 
 ## File: CondoSphere.Core/Entities/Condominiums/Condominium.cs
-```csharp
+````csharp
 using CondoSphere.Core;
 
 namespace CondoSphere.Core.Entities.Condominiums
@@ -2988,10 +5580,10 @@ namespace CondoSphere.Core.Entities.Condominiums
         public int? ManagerId { get; set; }
     }
 }
-```
+````
 
 ## File: CondoSphere.Infrastructure/Authorization/IsCondoManagerHandler.cs
-```csharp
+````csharp
 using CondoSphere.Application.Authorization;
 using CondoSphere.Core;
 using CondoSphere.Infrastructure.Data;
@@ -3069,10 +5661,10 @@ namespace CondoSphere.Infrastructure.Authorization
         }
     }
 }
-```
+````
 
 ## File: CondoSphere.Infrastructure/Data/SeedDb.cs
-```csharp
+````csharp
 using CondoSphere.Core;
 using CondoSphere.Core.Entities.Users;
 using Microsoft.AspNetCore.Identity;
@@ -3116,10 +5708,10 @@ namespace CondoSphere.Infrastructure.Data
         }
     }
 }
-```
+````
 
 ## File: CondoSphere.Infrastructure/Data/UserManagementDbContext.cs
-```csharp
+````csharp
 using CondoSphere.Core.Entities.Users;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -3158,14 +5750,17 @@ namespace CondoSphere.Infrastructure.Data
         }
     }
 }
-```
+````
 
 ## File: CondoSphere.Infrastructure/Repositories/UserRepository.cs
-```csharp
+````csharp
 using CondoSphere.Application.Interfaces;
 using CondoSphere.Core.DTOs.Account;
 using CondoSphere.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace CondoSphere.Infrastructure.Repositories
 {
@@ -3180,7 +5775,9 @@ namespace CondoSphere.Infrastructure.Repositories
 
         public async Task<IEnumerable<UserListDto>> GetCompanyUsersWithRolesAsync(int companyId)
         {
+            // This query is correct and should remain.
             var usersWithRoles = await _context.Users
+                .IgnoreQueryFilters()
                 .Where(u => u.CompanyId == companyId)
                 .Select(u => new UserListDto
                 {
@@ -3188,6 +5785,7 @@ namespace CondoSphere.Infrastructure.Repositories
                     FirstName = u.FirstName,
                     LastName = u.LastName,
                     Email = u.Email,
+                    IsActive = u.IsActive,
                     Role = (from userRole in _context.UserRoles
                             join role in _context.Roles on userRole.RoleId equals role.Id
                             where userRole.UserId == u.Id
@@ -3201,6 +5799,7 @@ namespace CondoSphere.Infrastructure.Repositories
 
         public async Task<IEnumerable<UserListDto>> GetUsersInRoleAsync(string roleName, int companyId)
         {
+            // This query is also correct and should remain.
             var usersInRole = await _context.Users
                 .Where(u => u.CompanyId == companyId && _context.UserRoles.Any(ur => ur.UserId == u.Id && _context.Roles.Any(r => r.Id == ur.RoleId && r.Name == roleName)))
                 .Select(u => new UserListDto
@@ -3209,6 +5808,7 @@ namespace CondoSphere.Infrastructure.Repositories
                     FirstName = u.FirstName,
                     LastName = u.LastName,
                     Email = u.Email,
+                    IsActive = u.IsActive,
                     Role = roleName
                 })
                 .AsNoTracking()
@@ -3218,10 +5818,10 @@ namespace CondoSphere.Infrastructure.Repositories
         }
     }
 }
-```
+````
 
 ## File: CondoSphere.Infrastructure/Services/CurrentUserService.cs
-```csharp
+````csharp
 using CondoSphere.Application.Interfaces;
 using CondoSphere.Infrastructure.Data;
 using Microsoft.AspNetCore.Http;
@@ -3283,10 +5883,10 @@ namespace CondoSphere.Infrastructure.Services
         }
     }
 }
-```
+````
 
 ## File: CondoSphere.Web/appsettings.Development.json
-```json
+````json
 {
   "Logging": {
     "LogLevel": {
@@ -3296,10 +5896,10 @@ namespace CondoSphere.Infrastructure.Services
   },
   "AllowedHosts": "*"
 }
-```
+````
 
 ## File: CondoSphere.API/appsettings.Development.json
-```json
+````json
 {
   "Logging": {
     "LogLevel": {
@@ -3319,10 +5919,29 @@ namespace CondoSphere.Infrastructure.Services
     "Username": "condosphere.geral@gmail.com"
   }
 }
-```
+````
+
+## File: CondoSphere.API/CondoSphere.API.http
+````
+@CondoSphere.API_HostAddress = https://localhost:7177
+
+### REGISTER A NEW COMPANY AND ADMIN ###
+
+POST {{CondoSphere.API_HostAddress}}/api/accounts/register-admin
+Content-Type: application/json
+
+{
+  "companyName": "My New Test Company",
+  "firstName": "Test",
+  "lastName": "Admin",
+  "email": "admin@admin.com",
+  "password": "123456",
+  "confirmPassword": "123456"
+}
+````
 
 ## File: CondoSphere.API/Controllers/AccountsController.cs
-```csharp
+````csharp
 using CondoSphere.Application.Interfaces;
 using CondoSphere.Application.Services.User;
 using CondoSphere.Core;
@@ -3441,23 +6060,15 @@ namespace CondoSphere.API.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> ConfirmEmail(int userId, string token)
         {
-            if (string.IsNullOrWhiteSpace(token))
-            {
-                return BadRequest("A valid token is required.");
-            }
-
             var user = await _userManager.FindByIdAsync(userId.ToString());
             if (user == null)
-            {
                 return NotFound("User not found.");
-            }
 
-            var decodedToken = System.Net.WebUtility.UrlDecode(token);
-            var result = await _userManager.ConfirmEmailAsync(user, decodedToken);
+            var result = await _userManager.ConfirmEmailAsync(user, token);
 
             if (result.Succeeded)
             {
-                return Content("<h1>Email confirmed successfully!</h1><p>You can now log in.</p>", "text/html");
+                return Ok(new { Message = "Email confirmed successfully." });
             }
 
             return BadRequest("Email could not be confirmed. The link may have expired.");
@@ -3475,8 +6086,6 @@ namespace CondoSphere.API.Controllers
             var user = await _userManager.FindByIdAsync(setPasswordDto.UserId);
             if (user == null)
             {
-                // Do not reveal that the user does not exist.
-                // Return a generic success message to prevent user enumeration attacks.
                 return Ok(new { Message = "If a matching account was found, a password has been set." });
             }
 
@@ -3511,180 +6120,63 @@ namespace CondoSphere.API.Controllers
             var managers = await _userService.GetAvailableManagersAsync(companyId.Value);
             return Ok(managers);
         }
-    }
-}
-```
 
-## File: CondoSphere.API/Controllers/CondominiumsController.cs
-```csharp
-using CondoSphere.Application.Interfaces;
-using CondoSphere.Application.Services.Condominium;
-using CondoSphere.Core;
-using CondoSphere.Core.DTOs.Account;
-using CondoSphere.Core.DTOs.Condominiums;
-using FluentValidation;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-
-namespace CondoSphere.API.Controllers
-{
-    [ApiController]
-    [Route("api/[controller]")]
-    [Authorize]
-    public class CondominiumsController : ControllerBase
-    {
-        private readonly ICondominiumService _condominiumService;
-        private readonly ICurrentUserService _currentUserService;
-        private readonly IValidator<CreateUpdateCondominiumDto> _validator;
-
-        public CondominiumsController(
-            ICondominiumService condominiumService,
-            ICurrentUserService currentUserService,
-             IValidator<CreateUpdateCondominiumDto> validator)
-        {
-            _condominiumService = condominiumService;
-            _currentUserService = currentUserService;
-            _validator = validator;
-        }
-
-        [HttpGet]
-        [Authorize(Roles = RoleConstants.CompanyAdmin)]
-        public async Task<IActionResult> GetAll([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 20)
-        {
-            var companyId = _currentUserService.CompanyId;
-            if (companyId == null)
-            {
-                return Unauthorized("Company information is missing from the token.");
-            }
-
-            var condominiums = await _condominiumService.GetAllCondominiumsAsync(companyId.Value, pageNumber, pageSize);
-            return Ok(condominiums);
-        }
-
-        [HttpGet("{id}")]
-        [Authorize(Roles = RoleConstants.CondoManager, Policy = "IsCondoManagerPolicy")]
-        public async Task<IActionResult> GetById(int id)
-        {
-            var companyId = _currentUserService.CompanyId;
-            if (companyId == null)
-            {
-                return Unauthorized("Company information is missing from the token.");
-            }
-
-            var condominium = await _condominiumService.GetCondominiumByIdAsync(id, companyId.Value);
-
-            if (condominium == null)
-            {
-                return NotFound();
-            }
-            return Ok(condominium);
-        }
-
-        [HttpPost]
-        [Authorize(Roles = RoleConstants.CompanyAdmin)]
-        public async Task<IActionResult> Create([FromBody] CreateUpdateCondominiumDto condominiumDto)
-        {
-            var validationResult = await _validator.ValidateAsync(condominiumDto);
-
-            if (!validationResult.IsValid)
-            {
-                return BadRequest(validationResult.Errors);
-            }
-
-            var companyId = _currentUserService.CompanyId;
-            if (companyId == null)
-            {
-                return Unauthorized("Company information is missing from the token.");
-            }
-
-            var newCondominium = await _condominiumService.CreateCondominiumAsync(condominiumDto, companyId.Value);
-
-            return CreatedAtAction(nameof(GetById), new { id = newCondominium.Id }, newCondominium);
-        }
-
-        [HttpPut("{id}")]
-        [Authorize(Roles = RoleConstants.CompanyAdmin)]
-        public async Task<IActionResult> Update(int id, [FromBody] CreateUpdateCondominiumDto condominiumDto)
-        {
-            var validationResult = await _validator.ValidateAsync(condominiumDto);
-            if (!validationResult.IsValid)
-            {
-                return BadRequest(validationResult.Errors);
-            }
-
-            var companyId = _currentUserService.CompanyId;
-            if (companyId == null)
-            {
-                return Unauthorized("Company information is missing from the token.");
-            }
-
-            var success = await _condominiumService.UpdateCondominiumAsync(id, condominiumDto, companyId.Value);
-            if (!success)
-            {
-                return NotFound();
-            }
-
-            return NoContent();
-        }
-
-        [HttpDelete("{id}")]
-        [Authorize(Roles = RoleConstants.CompanyAdmin)]
-        public async Task<IActionResult> Delete(int id)
-        {
-            var companyId = _currentUserService.CompanyId;
-            if (companyId == null)
-            {
-                return Unauthorized("Company information is missing from the token.");
-            }
-
-            var success = await _condominiumService.DeleteCondominiumAsync(id, companyId.Value);
-            if (!success)
-            {
-                return NotFound();
-            }
-
-            return NoContent();
-        }
-
-        [HttpPatch("{condominiumId}/assign-manager")]
-        [Authorize(Roles = RoleConstants.CompanyAdmin)]
-        public async Task<IActionResult> AssignManager(int condominiumId, [FromBody] AssignManagerDto dto)
+        [HttpGet("available-residents")]
+        [Authorize(Roles = RoleConstants.CondoManager)]
+        public async Task<IActionResult> GetAvailableResidents()
         {
             var companyId = _currentUserService.CompanyId;
             if (companyId == null) return Unauthorized();
 
-            // We use the manager ID from the request body (dto.ManagerId)
-            var success = await _condominiumService.AssignManagerAsync(condominiumId, dto.ManagerId, companyId.Value);
-
-            if (!success)
-            {
-                return BadRequest("Failed to assign manager. Verify condominium and manager IDs are valid for your company.");
-            }
-
-            return NoContent();
+            var residents = await _userService.GetAvailableResidentsAsync(companyId.Value);
+            return Ok(residents);
         }
 
-        [HttpGet("my-managed")]
-        [Authorize(Roles = RoleConstants.CondoManager)]
-        public async Task<IActionResult> GetMyManagedCondominiums()
+        [HttpPost("users/{userId}/deactivate")]
+        [Authorize(Roles = RoleConstants.CompanyAdmin)]
+        public async Task<IActionResult> DeactivateUser(int userId)
         {
-            var managerId = _currentUserService.UserId;
-            if (managerId == null)
+            var adminCompanyId = _currentUserService.CompanyId;
+            if (adminCompanyId == null) return Unauthorized();
+
+            var success = await _userService.DeactivateUserAsync(userId, adminCompanyId.Value);
+            if (success) return NoContent();
+
+            return BadRequest("Failed to deactivate user.");
+        }
+
+        [HttpPost("users/{userId}/activate")]
+        [Authorize(Roles = RoleConstants.CompanyAdmin)]
+        public async Task<IActionResult> ActivateUser(int userId)
+        {
+            var adminCompanyId = _currentUserService.CompanyId;
+            if (adminCompanyId == null) return Unauthorized();
+
+            var success = await _userService.ActivateUserAsync(userId, adminCompanyId.Value);
+            if (success) return NoContent();
+
+            return BadRequest("Failed to activate user.");
+        }
+
+        [HttpPost("forgot-password")]
+        [AllowAnonymous]
+        public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordDto dto)
+        {
+            if (!ModelState.IsValid)
             {
-                return Unauthorized("User ID is missing from the token.");
+                return BadRequest(ModelState);
             }
 
-            // We need a new service method for this. Let's add it.
-            var condominiums = await _condominiumService.GetCondominiumsByManagerIdAsync(managerId.Value);
+            await _userService.ForgotPasswordAsync(dto.Email);
 
-            return Ok(condominiums);
+            return Ok(new { Message = "If an account with that email exists, a password reset link has been sent." });
         }
     }
 }
-```
+````
 
 ## File: CondoSphere.API/Controllers/UnitsController.cs
-```csharp
+````csharp
 using CondoSphere.Application.Interfaces;
 using CondoSphere.Application.Services.Condominium;
 using CondoSphere.Core;
@@ -3820,18 +6312,36 @@ namespace CondoSphere.API.Controllers
 
             return BadRequest(new { Message = "Failed to unassign resident. The unit might already be vacant." });
         }
+
+        [HttpPatch("{unitId}/assign-resident")]
+        [Authorize(Roles = RoleConstants.CondoManager, Policy = "IsCondoManagerPolicy")]
+        public async Task<IActionResult> AssignResident(int condominiumId, int unitId, [FromBody] AssignResidentDto dto)
+        {
+            var companyId = _currentUserService.CompanyId;
+            if (companyId == null) return Forbid();
+
+            var success = await _unitService.AssignExistingResidentAsync(unitId, dto.ResidentId, companyId.Value);
+
+            if (success)
+            {
+                return NoContent();
+            }
+
+            return BadRequest(new { Message = "Failed to assign resident. The unit may be occupied or the resident invalid." });
+        }
     }
 }
-```
+````
 
 ## File: CondoSphere.Application/Interfaces/ICondominiumRepository.cs
-```csharp
+````csharp
 using CondoSphere.Core.Entities.Condominiums;
 
 namespace CondoSphere.Application.Interfaces
 {
     /// <summary>
     /// Defines the contract for data operations related to Condominiums.
+    /// The responsibility for saving changes is handled by the IUnitOfWork.
     /// </summary>
     public interface ICondominiumRepository
     {
@@ -3840,14 +6350,13 @@ namespace CondoSphere.Application.Interfaces
         void Remove(Condominium condominium);
         Task<Condominium?> GetByIdAsync(int id, int companyId);
         Task<IEnumerable<Condominium>> GetAllAsync(int companyId, int pageNumber, int pageSize);
-        Task<int> SaveChangesAsync();
         Task<IEnumerable<Condominium>> GetByManagerIdAsync(int managerId);
     }
 }
-```
+````
 
 ## File: CondoSphere.Application/Services/Condominium/CondominiumService.cs
-```csharp
+````csharp
 using AutoMapper;
 using CondoSphere.Application.Interfaces;
 using CondoSphere.Core;
@@ -3861,16 +6370,16 @@ namespace CondoSphere.Application.Services.Condominium
 {
     public class CondominiumService : ICondominiumService
     {
-        private readonly ICondominiumRepository _condominiumRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly UserManager<CoreUser> _userManager;
         private readonly IMapper _mapper;
 
         public CondominiumService(
-            ICondominiumRepository condominiumRepository,
+            IUnitOfWork unitOfWork,
             UserManager<CoreUser> userManager,
             IMapper mapper)
         {
-            _condominiumRepository = condominiumRepository;
+            _unitOfWork = unitOfWork;
             _userManager = userManager;
             _mapper = mapper;
         }
@@ -3880,16 +6389,17 @@ namespace CondoSphere.Application.Services.Condominium
             var condominium = _mapper.Map<CoreCondominium>(condominiumDto);
             condominium.CompanyId = companyId;
 
-            await _condominiumRepository.AddAsync(condominium);
-            await _condominiumRepository.SaveChangesAsync();
+            await _unitOfWork.Condominiums.AddAsync(condominium);
+
+            await _unitOfWork.CompleteAsync();
 
             return _mapper.Map<CondominiumDto>(condominium);
         }
 
         public async Task<IEnumerable<CondominiumDto>> GetAllCondominiumsAsync(int companyId, int pageNumber, int pageSize)
         {
-            // 1. Fetch the raw condominium data from the repository
-            var condominiums = await _condominiumRepository.GetAllAsync(companyId, pageNumber, pageSize);
+            // 1. Fetch the raw condominium data from the repository via UnitOfWork
+            var condominiums = await _unitOfWork.Condominiums.GetAllAsync(companyId, pageNumber, pageSize);
             if (!condominiums.Any())
             {
                 return Enumerable.Empty<CondominiumDto>();
@@ -3911,7 +6421,6 @@ namespace CondoSphere.Application.Services.Condominium
                     .Where(u => managerIds.Contains(u.Id))
                     .ToDictionaryAsync(u => u.Id, u => $"{u.FirstName} {u.LastName}");
 
-                // 4. Stitch the manager names onto the DTOs
                 foreach (var dto in condominiumDtos)
                 {
                     var condo = condominiums.First(c => c.Id == dto.Id);
@@ -3927,13 +6436,13 @@ namespace CondoSphere.Application.Services.Condominium
 
         public async Task<CondominiumDto?> GetCondominiumByIdAsync(int id, int companyId)
         {
-            var condominium = await _condominiumRepository.GetByIdAsync(id, companyId);
+            var condominium = await _unitOfWork.Condominiums.GetByIdAsync(id, companyId);
             return _mapper.Map<CondominiumDto>(condominium);
         }
 
         public async Task<bool> UpdateCondominiumAsync(int id, CreateUpdateCondominiumDto condominiumDto, int companyId)
         {
-            var condominium = await _condominiumRepository.GetByIdAsync(id, companyId);
+            var condominium = await _unitOfWork.Condominiums.GetByIdAsync(id, companyId);
             if (condominium == null)
             {
                 return false;
@@ -3941,25 +6450,27 @@ namespace CondoSphere.Application.Services.Condominium
 
             _mapper.Map(condominiumDto, condominium);
 
-            _condominiumRepository.Update(condominium);
-            return await _condominiumRepository.SaveChangesAsync() > 0;
+            _unitOfWork.Condominiums.Update(condominium);
+            await _unitOfWork.CompleteAsync();
+            return true;
         }
 
         public async Task<bool> DeleteCondominiumAsync(int id, int companyId)
         {
-            var condominium = await _condominiumRepository.GetByIdAsync(id, companyId);
+            var condominium = await _unitOfWork.Condominiums.GetByIdAsync(id, companyId);
             if (condominium == null)
             {
                 return false;
             }
 
-            _condominiumRepository.Remove(condominium);
-            return await _condominiumRepository.SaveChangesAsync() > 0;
+            _unitOfWork.Condominiums.Remove(condominium);
+            await _unitOfWork.CompleteAsync();
+            return true;
         }
 
         public async Task<bool> AssignManagerAsync(int condominiumId, int managerId, int companyId)
         {
-            var condominium = await _condominiumRepository.GetByIdAsync(condominiumId, companyId);
+            var condominium = await _unitOfWork.Condominiums.GetByIdAsync(condominiumId, companyId);
             if (condominium == null) return false;
 
             var manager = await _userManager.FindByIdAsync(managerId.ToString());
@@ -3969,21 +6480,23 @@ namespace CondoSphere.Application.Services.Condominium
             if (!roles.Contains(RoleConstants.CondoManager)) return false;
 
             condominium.ManagerId = managerId;
-            _condominiumRepository.Update(condominium);
-            return await _condominiumRepository.SaveChangesAsync() > 0;
+            _unitOfWork.Condominiums.Update(condominium);
+
+            await _unitOfWork.CompleteAsync();
+            return true;
         }
 
         public async Task<IEnumerable<CondominiumDto>> GetCondominiumsByManagerIdAsync(int managerId)
         {
-            var condominiums = await _condominiumRepository.GetByManagerIdAsync(managerId);
+            var condominiums = await _unitOfWork.Condominiums.GetByManagerIdAsync(managerId);
             return _mapper.Map<IEnumerable<CondominiumDto>>(condominiums);
         }
     }
 }
-```
+````
 
 ## File: CondoSphere.Application/Services/User/IUserService.cs
-```csharp
+````csharp
 using CondoSphere.Core.DTOs.Account;
 using Microsoft.AspNetCore.Identity;
 
@@ -4000,18 +6513,26 @@ namespace CondoSphere.Application.Services.User
         Task<IEnumerable<UserListDto>> GetCompanyUsersWithRolesAsync(int companyId);
         Task<IdentityResult> RegisterResidentAsync(RegisterResidentDto dto, int companyId, int condominiumId);
         Task<IEnumerable<UserListDto>> GetAvailableManagersAsync(int companyId);
+        Task<IEnumerable<UserListDto>> GetAvailableResidentsAsync(int companyId);
+        Task<bool> DeactivateUserAsync(int userIdToDeactivate, int adminCompanyId);
+        Task<bool> ActivateUserAsync(int userIdToActivate, int adminCompanyId);
+        Task<bool> ForgotPasswordAsync(string email);
+        Task<(bool Success, IEnumerable<IdentityError>? Errors)> UpdateProfileAsync(int userId, UpdateProfileDto dto);
+        Task<(bool Success, IEnumerable<IdentityError>? Errors)> ChangePasswordAsync(int userId, ChangePasswordDto dto);
+        Task<UserProfileDto?> GetUserProfileAsync(int userId);
     }
 }
-```
+````
 
 ## File: CondoSphere.Application/Services/User/UserService.cs
-```csharp
+````csharp
 using CondoSphere.Application.Interfaces;
 using CondoSphere.Application.Services.Token;
 using CondoSphere.Core;
 using CondoSphere.Core.DTOs.Account;
 using CondoSphere.Core.Entities.Users;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using System.Net;
 using CoreUser = CondoSphere.Core.Entities.Users.User;
@@ -4025,8 +6546,7 @@ namespace CondoSphere.Application.Services.User
         private readonly ITokenService _tokenService;
         private readonly IMailService _mailService;
         private readonly IConfiguration _configuration;
-        private readonly IUserRepository _userRepository;
-        private readonly IUnitRepository _unitRepository; // Dependency for resident registration
+        private readonly ICurrentUserService _currentUserService;
 
         public UserService(
             UserManager<CoreUser> userManager,
@@ -4034,16 +6554,14 @@ namespace CondoSphere.Application.Services.User
             ITokenService tokenService,
             IMailService mailService,
             IConfiguration configuration,
-            IUserRepository userRepository,
-            IUnitRepository unitRepository) // Inject the new dependency
+            ICurrentUserService currentUserService)
         {
             _userManager = userManager;
             _unitOfWork = unitOfWork;
             _tokenService = tokenService;
             _mailService = mailService;
             _configuration = configuration;
-            _userRepository = userRepository;
-            _unitRepository = unitRepository; // Assign the new dependency
+            _currentUserService = currentUserService;
         }
 
         public async Task<UserDto?> LoginAsync(LoginDto loginDto)
@@ -4071,51 +6589,42 @@ namespace CondoSphere.Application.Services.User
                 return IdentityResult.Failed(new IdentityError { Description = "An account with this email address already exists." });
             }
 
-            await _unitOfWork.BeginTransactionAsync();
-            try
+            var newCompany = new Company { Name = registerDto.CompanyName, IsActive = true };
+            await _unitOfWork.Companies.AddAsync(newCompany);
+            await _unitOfWork.CompleteAsync();
+
+            var newUser = new CoreUser
             {
-                var newCompany = new Company { Name = registerDto.CompanyName, IsActive = true };
-                await _unitOfWork.Companies.AddAsync(newCompany);
+                FirstName = registerDto.FirstName,
+                LastName = registerDto.LastName,
+                Email = registerDto.Email,
+                UserName = registerDto.Email,
+                CompanyId = newCompany.Id,
+                IsActive = true
+            };
+
+            var result = await _userManager.CreateAsync(newUser, registerDto.Password);
+            if (!result.Succeeded)
+            {
+                // If user creation fails, we should remove the company we just created.
+                _unitOfWork.Companies.Remove(newCompany);
                 await _unitOfWork.CompleteAsync();
-
-                var newUser = new CoreUser
-                {
-                    FirstName = registerDto.FirstName,
-                    LastName = registerDto.LastName,
-                    Email = registerDto.Email,
-                    UserName = registerDto.Email,
-                    CompanyId = newCompany.Id,
-                    IsActive = true
-                };
-
-                var result = await _userManager.CreateAsync(newUser, registerDto.Password);
-                if (!result.Succeeded)
-                {
-                    await _unitOfWork.RollbackAsync();
-                    return result;
-                }
-
-                await _userManager.AddToRoleAsync(newUser, RoleConstants.CompanyAdmin);
-
-                var token = await _userManager.GenerateEmailConfirmationTokenAsync(newUser);
-                var encodedToken = WebUtility.UrlEncode(token);
-                var webAppBaseUrl = _configuration["ClientSettings:WebAppBaseUrl"];
-                var confirmationLink = $"{webAppBaseUrl}/Account/ConfirmEmail?userId={newUser.Id}&token={encodedToken}";
-
-                await _mailService.SendEmailAsync(
-                    newUser.Email,
-                    "Confirm your CondoSphere Account",
-                    $"<h1>Welcome to CondoSphere!</h1><p>Please confirm your account by <a href='{confirmationLink}'>clicking here</a>.</p>");
-
-                await _unitOfWork.CommitAsync();
-
-                return IdentityResult.Success;
+                return result;
             }
-            catch
-            {
-                await _unitOfWork.RollbackAsync();
-                throw;
-            }
+
+            await _userManager.AddToRoleAsync(newUser, RoleConstants.CompanyAdmin);
+
+            var token = await _userManager.GenerateEmailConfirmationTokenAsync(newUser);
+            var encodedToken = WebUtility.UrlEncode(token);
+            var webAppBaseUrl = _configuration["ClientSettings:WebAppBaseUrl"];
+            var confirmationLink = $"{webAppBaseUrl}/Account/ConfirmEmail?userId={newUser.Id}&token={encodedToken}";
+
+            await _mailService.SendEmailAsync(
+                newUser.Email,
+                "Confirm your CondoSphere Account",
+                $"<h1>Welcome to CondoSphere!</h1><p>Please confirm your account by <a href='{confirmationLink}'>clicking here</a>.</p>");
+
+            return IdentityResult.Success;
         }
 
         public async Task<IdentityResult> RegisterManagerAsync(RegisterManagerDto registerDto, int companyId)
@@ -4134,10 +6643,10 @@ namespace CondoSphere.Application.Services.User
                 UserName = registerDto.Email,
                 CompanyId = companyId,
                 IsActive = true,
-                EmailConfirmed = false // Email is not confirmed until they set the password
+                EmailConfirmed = false
             };
 
-            var result = await _userManager.CreateAsync(newUser); // Create user without password
+            var result = await _userManager.CreateAsync(newUser);
             if (!result.Succeeded)
             {
                 return result;
@@ -4145,7 +6654,6 @@ namespace CondoSphere.Application.Services.User
 
             await _userManager.AddToRoleAsync(newUser, RoleConstants.CondoManager);
 
-            // Generate and send the "Set Password" link
             var token = await _userManager.GeneratePasswordResetTokenAsync(newUser);
             var encodedToken = WebUtility.UrlEncode(token);
             var setPasswordLink = $"{_configuration["ClientSettings:WebAppBaseUrl"]}/Account/SetPassword?userId={newUser.Id}&token={encodedToken}";
@@ -4162,32 +6670,29 @@ namespace CondoSphere.Application.Services.User
 
         public async Task<IEnumerable<UserListDto>> GetCompanyUsersWithRolesAsync(int companyId)
         {
-            return await _userRepository.GetCompanyUsersWithRolesAsync(companyId);
+            // Access repositories through the UnitOfWork
+            return await _unitOfWork.Users.GetCompanyUsersWithRolesAsync(companyId);
         }
 
         public async Task<IdentityResult> RegisterResidentAsync(RegisterResidentDto dto, int companyId, int condominiumId)
         {
-            // 1. Validate that the Unit exists, belongs to the correct condominium, and is available
-            var unit = await _unitRepository.GetByIdAsync(dto.UnitId);
+            // This method now saves changes across both database contexts in a coordinated way.
+            var unit = await _unitOfWork.Units.GetByIdAsync(dto.UnitId);
             if (unit == null || unit.CondominiumId != condominiumId)
             {
                 return IdentityResult.Failed(new IdentityError { Code = "UnitNotFound", Description = "Unit not found in this condominium." });
             }
-
             if (unit.ResidentId.HasValue)
             {
                 return IdentityResult.Failed(new IdentityError { Code = "UnitOccupied", Description = "This unit already has an assigned resident." });
             }
 
-            // 2. Check if user email already exists
             var existingUser = await _userManager.FindByEmailAsync(dto.Email);
             if (existingUser != null)
             {
                 return IdentityResult.Failed(new IdentityError { Code = "DuplicateEmail", Description = "An account with this email address already exists." });
             }
 
-            // 3. Create the new user WITHOUT a password.
-            // The account is created but is effectively 'locked' until a password is set.
             var newUser = new CoreUser
             {
                 FirstName = dto.FirstName,
@@ -4199,25 +6704,20 @@ namespace CondoSphere.Application.Services.User
                 EmailConfirmed = false
             };
 
-            var result = await _userManager.CreateAsync(newUser); // This overload does not require a password.
+            var result = await _userManager.CreateAsync(newUser);
             if (!result.Succeeded)
             {
                 return result;
             }
 
-            // 4. Assign the correct role
             await _userManager.AddToRoleAsync(newUser, RoleConstants.CondoResident);
 
-            // 5. Link the new user to the unit and save
             unit.ResidentId = newUser.Id;
-            _unitRepository.Update(unit);
-            await _unitRepository.SaveChangesAsync();
+            _unitOfWork.Units.Update(unit);
+            await _unitOfWork.CompleteAsync();
 
-            // 6. Generate a "Set Password" token and send the welcome email
             var token = await _userManager.GeneratePasswordResetTokenAsync(newUser);
             var encodedToken = WebUtility.UrlEncode(token);
-
-            // This URL will point to a new page we need to create in the Web project
             var setPasswordLink = $"{_configuration["ClientSettings:WebAppBaseUrl"]}/Account/SetPassword?userId={newUser.Id}&token={encodedToken}";
 
             await _mailService.SendEmailAsync(
@@ -4233,14 +6733,141 @@ namespace CondoSphere.Application.Services.User
 
         public async Task<IEnumerable<UserListDto>> GetAvailableManagersAsync(int companyId)
         {
-            return await _userRepository.GetUsersInRoleAsync(RoleConstants.CondoManager, companyId);
+            // Access repositories through the UnitOfWork
+            return await _unitOfWork.Users.GetUsersInRoleAsync(RoleConstants.CondoManager, companyId);
+        }
+
+        public async Task<IEnumerable<UserListDto>> GetAvailableResidentsAsync(int companyId)
+        {
+            // Access repositories through the UnitOfWork
+            var allCompanyResidents = await _unitOfWork.Users.GetUsersInRoleAsync(RoleConstants.CondoResident, companyId);
+            var occupiedUnitResidentIds = await _unitOfWork.Units.GetOccupiedUnitResidentIdsAsync(companyId);
+
+            var availableResidents = allCompanyResidents
+                .Where(resident => !occupiedUnitResidentIds.Contains(resident.Id))
+                .ToList();
+
+            return availableResidents;
+        }
+
+        public async Task<bool> DeactivateUserAsync(int userIdToDeactivate, int adminCompanyId)
+        {
+            var userToDeactivate = await _userManager.FindByIdAsync(userIdToDeactivate.ToString());
+            if (userToDeactivate == null || userToDeactivate.CompanyId != adminCompanyId)
+            {
+                return false;
+            }
+            if (userToDeactivate.Id == _currentUserService.UserId)
+            {
+                return false; // Cannot deactivate self
+            }
+
+            userToDeactivate.IsActive = false;
+            var result = await _userManager.UpdateAsync(userToDeactivate);
+            if (!result.Succeeded)
+            {
+                return false;
+            }
+
+            // Unassign from unit if they were a resident
+            var unit = await _unitOfWork.Units.GetUnitByResidentIdAsync(userIdToDeactivate);
+            if (unit != null)
+            {
+                unit.ResidentId = null;
+                _unitOfWork.Units.Update(unit);
+                await _unitOfWork.CompleteAsync();
+            }
+
+            return true;
+        }
+
+        public async Task<bool> ActivateUserAsync(int userIdToActivate, int adminCompanyId)
+        {
+            var userToActivate = await _userManager.Users
+                .IgnoreQueryFilters()
+                .FirstOrDefaultAsync(u => u.Id == userIdToActivate);
+
+            if (userToActivate == null || userToActivate.CompanyId != adminCompanyId)
+            {
+                return false;
+            }
+
+            userToActivate.IsActive = true;
+            var result = await _userManager.UpdateAsync(userToActivate);
+            return result.Succeeded;
+        }
+
+        public async Task<bool> ForgotPasswordAsync(string email)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null || !user.EmailConfirmed)
+            {
+                return true;
+            }
+
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+            var encodedToken = WebUtility.UrlEncode(token);
+
+            var resetLink = $"{_configuration["ClientSettings:WebAppBaseUrl"]}/Account/SetPassword?userId={user.Id}&token={encodedToken}";
+
+            await _mailService.SendEmailAsync(
+                email,
+                "Reset Your CondoSphere Password",
+                $"<h1>Password Reset Request</h1>" +
+                $"<p>Please reset your password by <a href='{resetLink}'>clicking here</a>.</p>" +
+                $"<p>If you did not request a password reset, please ignore this email.</p>");
+
+            return true;
+        }
+
+        public async Task<(bool Success, IEnumerable<IdentityError>? Errors)> UpdateProfileAsync(int userId, UpdateProfileDto dto)
+        {
+            var user = await _userManager.FindByIdAsync(userId.ToString());
+            if (user == null)
+                return (false, new[] { new IdentityError { Description = "User not found." } });
+
+            user.FirstName = dto.FirstName;
+            user.LastName = dto.LastName;
+            user.ProfilePictureUrl = dto.ProfilePictureUrl;
+
+            var result = await _userManager.UpdateAsync(user);
+            return (result.Succeeded, result.Errors);
+        }
+
+        public async Task<(bool Success, IEnumerable<IdentityError>? Errors)> ChangePasswordAsync(int userId, ChangePasswordDto dto)
+        {
+            var user = await _userManager.FindByIdAsync(userId.ToString());
+            if (user == null)
+                return (false, new[] { new IdentityError { Description = "User not found." } });
+
+            var result = await _userManager.ChangePasswordAsync(user, dto.CurrentPassword, dto.NewPassword);
+            return (result.Succeeded, result.Errors);
+        }
+
+        public async Task<UserProfileDto?> GetUserProfileAsync(int userId)
+        {
+            var user = await _userManager.FindByIdAsync(userId.ToString());
+            if (user == null) return null;
+
+            var roles = await _userManager.GetRolesAsync(user);
+
+            return new UserProfileDto
+            {
+                Id = user.Id,
+                FirstName = user.FirstName ?? "",
+                LastName = user.LastName ?? "",
+                Email = user.Email,
+                ProfilePictureUrl = user.ProfilePictureUrl,
+                CompanyId = user.CompanyId,
+                Roles = roles
+            };
         }
     }
 }
-```
+````
 
 ## File: CondoSphere.Core/Entities/Condominiums/Unit.cs
-```csharp
+````csharp
 namespace CondoSphere.Core.Entities.Condominiums
 {
     /// <summary>
@@ -4280,10 +6907,10 @@ namespace CondoSphere.Core.Entities.Condominiums
         public int? ResidentId { get; set; }
     }
 }
-```
+````
 
 ## File: CondoSphere.Infrastructure/Repositories/CondominiumRepository.cs
-```csharp
+````csharp
 using CondoSphere.Application.Interfaces;
 using CondoSphere.Core.Entities.Condominiums;
 using CondoSphere.Infrastructure.Data;
@@ -4291,6 +6918,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CondoSphere.Infrastructure.Repositories
 {
+    /// <summary>
+    /// Implements the ICondominiumRepository using Entity Framework Core.
+    /// This repository modifies the change tracker but does not save to the database.
+    /// </summary>
     public class CondominiumRepository : ICondominiumRepository
     {
         private readonly CondominiumDbContext _context;
@@ -4326,15 +6957,12 @@ namespace CondoSphere.Infrastructure.Repositories
             _context.Condominiums.Remove(condominium);
         }
 
-        public async Task<int> SaveChangesAsync()
-        {
-            return await _context.SaveChangesAsync();
-        }
-
         public void Update(Condominium condominium)
         {
+            // This marks the entity for update in EF Core's change tracker.
             _context.Entry(condominium).State = EntityState.Modified;
         }
+
         public async Task<IEnumerable<Condominium>> GetByManagerIdAsync(int managerId)
         {
             return await _context.Condominiums
@@ -4344,12 +6972,13 @@ namespace CondoSphere.Infrastructure.Repositories
         }
     }
 }
-```
+````
 
 ## File: CondoSphere.Web/Controllers/AccountController.cs
-```csharp
+````csharp
 using CondoSphere.Core;
 using CondoSphere.Core.DTOs.Account;
+using CondoSphere.Web.Models;
 using CondoSphere.Web.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -4359,6 +6988,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using System.Text.Json;
 
 namespace CondoSphere.Web.Controllers
 {
@@ -4494,12 +7124,102 @@ namespace CondoSphere.Web.Controllers
             ModelState.AddModelError(string.Empty, message);
             return View(model);
         }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult Register()
+        {
+            return View(new RegisterDto());
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Register(RegisterDto model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            var (success, message) = await _apiClient.RegisterCompanyAdminAsync(model);
+
+            if (success)
+            {
+                TempData["SuccessMessage"] = message;
+                return RedirectToAction("RegistrationComplete");
+            }
+
+            ModelState.AddModelError(string.Empty, message);
+            return View(model);
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult RegistrationComplete()
+        {
+            return View();
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public async Task<IActionResult> ConfirmEmail(string userId, string token)
+        {
+            if (string.IsNullOrWhiteSpace(userId) || string.IsNullOrWhiteSpace(token))
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            var (success, message) = await _apiClient.ConfirmEmailAsync(userId, token);
+
+            if (success)
+            {
+                TempData["SuccessMessage"] = message;
+                return RedirectToAction("Login");
+            }
+            else
+            {
+                TempData["ErrorMessage"] = message;
+                return RedirectToAction("Login");
+            }
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult ForgotPassword()
+        {
+            return View(new ForgotPasswordViewModel());
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+            var (success, rawMessage) = await _apiClient.ForgotPasswordAsync(model.Email);
+
+            string displayMessage = JsonDocument.Parse(rawMessage).RootElement.GetProperty("message").GetString();
+
+            return RedirectToAction("ForgotPasswordConfirmation", new { message = displayMessage });
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult ForgotPasswordConfirmation(string message)
+        {
+            ViewData["Message"] = message;
+            return View();
+        }
     }
 }
-```
+````
 
 ## File: CondoSphere.Web/Program.cs
-```csharp
+````csharp
 using CondoSphere.Web.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -4508,7 +7228,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // 1. Configure standard MVC services.
 builder.Services.AddControllersWithViews();
-builder.Services.AddHttpContextAccessor(); // Required for the handler to access the current HttpContext
+builder.Services.AddHttpContextAccessor();
 
 // 2. Register the handler. It's transient because handlers can have state.
 builder.Services.AddTransient<JwtForwardingDelegatingHandler>();
@@ -4536,6 +7256,7 @@ builder.Services.AddHttpClient<ApiClient>(client =>
     client.BaseAddress = new Uri(builder.Configuration["ApiSettings:BaseUrl"]);
 })
 .AddHttpMessageHandler<JwtForwardingDelegatingHandler>(); // Attach the handler to the HttpClient pipeline
+builder.Services.AddScoped<IImageService, ImageService>();
 
 var app = builder.Build();
 
@@ -4563,12 +7284,16 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.Run();
-```
+````
 
 ## File: CondoSphere.Web/Services/ApiClient.cs
-```csharp
+````csharp
 using CondoSphere.Core.DTOs.Account;
 using CondoSphere.Core.DTOs.Condominiums;
+using CondoSphere.Core.DTOs.Occurrences;
+using CondoSphere.Web.Models;
+using Microsoft.AspNetCore.WebUtilities;
+using System.Text.Json;
 
 namespace CondoSphere.Web.Services
 {
@@ -4677,12 +7402,124 @@ namespace CondoSphere.Web.Services
             var response = await _httpClient.PatchAsync($"/api/condominiums/{condominiumId}/units/{unitId}/unassign-resident", null);
             return response.IsSuccessStatusCode;
         }
+
+        public async Task<(bool Success, string Message)> RegisterCompanyAdminAsync(RegisterDto dto)
+        {
+            var response = await _httpClient.PostAsJsonAsync("/api/accounts/register-admin", dto);
+
+            var responseContent = await response.Content.ReadFromJsonAsync<object>();
+
+            if (response.IsSuccessStatusCode)
+            {
+                var message = responseContent?.GetType().GetProperty("message")?.GetValue(responseContent)?.ToString();
+                return (true, message ?? "Registration successful! Please check your email to confirm your account.");
+            }
+            else
+            {
+                return (false, "Registration failed. The email address may already be in use.");
+            }
+        }
+
+        public async Task<(bool Success, string Message)> ConfirmEmailAsync(string userId, string token)
+        {
+            var path = "/api/accounts/confirm-email";
+
+            // 2. Create a dictionary of query parameters.
+            var queryParams = new Dictionary<string, string>
+            {
+                { "userId", userId },
+                { "token", token }
+            };
+
+            var uri = QueryHelpers.AddQueryString(path, queryParams);
+
+            var response = await _httpClient.GetAsync(uri);
+
+            if (response.IsSuccessStatusCode)
+            {
+                return (true, "Your email has been successfully confirmed! You can now log in.");
+            }
+            else
+            {
+                return (false, "Email could not be confirmed. The link may be invalid or have expired.");
+            }
+        }
+
+        public async Task<IEnumerable<UserListDto>> GetAvailableResidentsAsync()
+        {
+            return await _httpClient.GetFromJsonAsync<IEnumerable<UserListDto>>("/api/accounts/available-residents");
+        }
+
+        public async Task<bool> AssignResidentAsync(int condominiumId, int unitId, AssignResidentDto dto)
+        {
+            var response = await _httpClient.PatchAsJsonAsync($"/api/condominiums/{condominiumId}/units/{unitId}/assign-resident", dto);
+            return response.IsSuccessStatusCode;
+        }
+
+        public async Task<bool> DeactivateUserAsync(int userId)
+        {
+            var response = await _httpClient.PostAsync($"/api/accounts/users/{userId}/deactivate", null);
+            return response.IsSuccessStatusCode;
+        }
+
+        public async Task<bool> ActivateUserAsync(int userId)
+        {
+            var response = await _httpClient.PostAsync($"/api/accounts/users/{userId}/activate", null);
+            return response.IsSuccessStatusCode;
+        }
+
+        public async Task<IEnumerable<OccurrenceDto>> GetOccurrencesForCondominiumAsync(int condominiumId)
+        {
+            return await _httpClient.GetFromJsonAsync<IEnumerable<OccurrenceDto>>($"/api/condominiums/{condominiumId}/occurrences");
+        }
+
+        public async Task<IEnumerable<OccurrenceDto>> GetMyOccurrencesAsync()
+        {
+            return await _httpClient.GetFromJsonAsync<IEnumerable<OccurrenceDto>>("/api/occurrences/my-occurrences") ?? new List<OccurrenceDto>();
+        }
+
+        public async Task<OccurrenceDto?> CreateOccurrenceAsync(CreateOccurrenceDto dto)
+        {
+            var response = await _httpClient.PostAsJsonAsync("/api/occurrences", dto);
+            if (response.IsSuccessStatusCode)
+            {
+                return await response.Content.ReadFromJsonAsync<OccurrenceDto>();
+            }
+            return null;
+        }
+
+        public async Task<(bool Success, string Message)> ForgotPasswordAsync(string email)
+        {
+            var requestDto = new ForgotPasswordDto { Email = email };
+            var response = await _httpClient.PostAsJsonAsync("/api/accounts/forgot-password", requestDto);
+            var message = await response.Content.ReadAsStringAsync();
+            return (response.IsSuccessStatusCode, message);
+        }
+
+        public async Task<(bool Success, string Message)> UpdateProfileAsync(UpdateProfileDto dto)
+        {
+            var response = await _httpClient.PutAsJsonAsync("/api/profile", dto);
+            var message = await response.Content.ReadAsStringAsync();
+            return (response.IsSuccessStatusCode, message);
+        }
+
+        public async Task<(bool Success, string Message)> ChangePasswordAsync(ChangePasswordViewModel model)
+        {
+            var response = await _httpClient.PostAsJsonAsync("/api/profile/change-password", model);
+            var message = await response.Content.ReadAsStringAsync();
+            return (response.IsSuccessStatusCode, message);
+        }
+
+        public async Task<UserProfileDto?> GetMyProfileAsync()
+        {
+            return await _httpClient.GetFromJsonAsync<UserProfileDto>("/api/profile");
+        }
     }
 }
-```
+````
 
 ## File: CondoSphere.Web/Views/Shared/_Layout.cshtml
-```
+````
 @using CondoSphere.Core
 @using Microsoft.AspNetCore.Identity
 
@@ -4695,6 +7532,7 @@ namespace CondoSphere.Web.Services
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/CondoSphere.Web.styles.css" asp-append-version="true" />
+    @* Added reference for Bootstrap Icons used in some views *@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 </head>
 <body>
@@ -4712,7 +7550,7 @@ namespace CondoSphere.Web.Services
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
 
-                        @* ===== START OF NEW ROLE-AWARE NAVIGATION ===== *@
+                        @* ===== START OF ROLE-AWARE NAVIGATION ===== *@
                         @if (User.Identity != null && User.Identity.IsAuthenticated)
                         {
                             if (User.IsInRole(RoleConstants.CompanyAdmin))
@@ -4730,11 +7568,12 @@ namespace CondoSphere.Web.Services
                             if (User.IsInRole(RoleConstants.CondoResident))
                             {
                                 <li class="nav-item">
+                                    @* This is a placeholder for a future feature *@
                                     <a class="nav-link text-dark" asp-controller="Portal" asp-action="Index">My Portal</a>
                                 </li>
                             }
                         }
-                        @* ===== END OF NEW ROLE-AWARE NAVIGATION ===== *@
+                        @* ===== END OF ROLE-AWARE NAVIGATION ===== *@
 
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
@@ -4749,13 +7588,21 @@ namespace CondoSphere.Web.Services
     </header>
     <div class="container">
         <main role="main" class="pb-3">
-            @* Add support for TempData success messages *@
             @if (TempData["SuccessMessage"] != null)
             {
-                <div class="alert alert-success" role="alert">
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
                     @TempData["SuccessMessage"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
             }
+            @if (TempData["ErrorMessage"] != null)
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    @TempData["ErrorMessage"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+
             @RenderBody()
         </main>
     </div>
@@ -4771,28 +7618,197 @@ namespace CondoSphere.Web.Services
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
-```
+````
 
-## File: CondoSphere.API/Program.cs
-```csharp
+## File: CondoSphere.API/Controllers/CondominiumsController.cs
+````csharp
 using CondoSphere.Application.Interfaces;
 using CondoSphere.Application.Services.Condominium;
+using CondoSphere.Core;
+using CondoSphere.Core.DTOs.Account;
+using CondoSphere.Core.DTOs.Condominiums;
+using FluentValidation;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+
+namespace CondoSphere.API.Controllers
+{
+    [ApiController]
+    [Route("api/[controller]")]
+    [Authorize]
+    public class CondominiumsController : ControllerBase
+    {
+        private readonly ICondominiumService _condominiumService;
+        private readonly ICurrentUserService _currentUserService;
+        private readonly IValidator<CreateUpdateCondominiumDto> _validator;
+
+        public CondominiumsController(
+            ICondominiumService condominiumService,
+            ICurrentUserService currentUserService,
+             IValidator<CreateUpdateCondominiumDto> validator)
+        {
+            _condominiumService = condominiumService;
+            _currentUserService = currentUserService;
+            _validator = validator;
+        }
+
+        [HttpGet]
+        [Authorize(Roles = RoleConstants.CompanyAdmin)]
+        public async Task<IActionResult> GetAll([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 20)
+        {
+            var companyId = _currentUserService.CompanyId;
+            if (companyId == null)
+            {
+                return Unauthorized("Company information is missing from the token.");
+            }
+
+            var condominiums = await _condominiumService.GetAllCondominiumsAsync(companyId.Value, pageNumber, pageSize);
+            return Ok(condominiums);
+        }
+
+        [HttpGet("{id}")]
+        [Authorize(Policy = "IsCondoManagerPolicy")]
+        public async Task<IActionResult> GetById(int id)
+        {
+            var companyId = _currentUserService.CompanyId;
+            if (companyId == null)
+            {
+                return Unauthorized("Company information is missing from the token.");
+            }
+
+            var condominium = await _condominiumService.GetCondominiumByIdAsync(id, companyId.Value);
+
+            if (condominium == null)
+            {
+                return NotFound();
+            }
+            return Ok(condominium);
+        }
+
+        [HttpPost]
+        [Authorize(Roles = RoleConstants.CompanyAdmin)]
+        public async Task<IActionResult> Create([FromBody] CreateUpdateCondominiumDto condominiumDto)
+        {
+            var validationResult = await _validator.ValidateAsync(condominiumDto);
+
+            if (!validationResult.IsValid)
+            {
+                return BadRequest(validationResult.Errors);
+            }
+
+            var companyId = _currentUserService.CompanyId;
+            if (companyId == null)
+            {
+                return Unauthorized("Company information is missing from the token.");
+            }
+
+            var newCondominium = await _condominiumService.CreateCondominiumAsync(condominiumDto, companyId.Value);
+
+            return CreatedAtAction(nameof(GetById), new { id = newCondominium.Id }, newCondominium);
+        }
+
+        [HttpPut("{id}")]
+        [Authorize(Roles = RoleConstants.CompanyAdmin)]
+        public async Task<IActionResult> Update(int id, [FromBody] CreateUpdateCondominiumDto condominiumDto)
+        {
+            var validationResult = await _validator.ValidateAsync(condominiumDto);
+            if (!validationResult.IsValid)
+            {
+                return BadRequest(validationResult.Errors);
+            }
+
+            var companyId = _currentUserService.CompanyId;
+            if (companyId == null)
+            {
+                return Unauthorized("Company information is missing from the token.");
+            }
+
+            var success = await _condominiumService.UpdateCondominiumAsync(id, condominiumDto, companyId.Value);
+            if (!success)
+            {
+                return NotFound();
+            }
+
+            return NoContent();
+        }
+
+        [HttpDelete("{id}")]
+        [Authorize(Roles = RoleConstants.CompanyAdmin)]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var companyId = _currentUserService.CompanyId;
+            if (companyId == null)
+            {
+                return Unauthorized("Company information is missing from the token.");
+            }
+
+            var success = await _condominiumService.DeleteCondominiumAsync(id, companyId.Value);
+            if (!success)
+            {
+                return NotFound();
+            }
+
+            return NoContent();
+        }
+
+        [HttpPatch("{condominiumId}/assign-manager")]
+        [Authorize(Roles = RoleConstants.CompanyAdmin)]
+        public async Task<IActionResult> AssignManager(int condominiumId, [FromBody] AssignManagerDto dto)
+        {
+            var companyId = _currentUserService.CompanyId;
+            if (companyId == null) return Unauthorized();
+
+            // We use the manager ID from the request body (dto.ManagerId)
+            var success = await _condominiumService.AssignManagerAsync(condominiumId, dto.ManagerId, companyId.Value);
+
+            if (!success)
+            {
+                return BadRequest("Failed to assign manager. Verify condominium and manager IDs are valid for your company.");
+            }
+
+            return NoContent();
+        }
+
+        [HttpGet("my-managed")]
+        [Authorize(Roles = RoleConstants.CondoManager)]
+        public async Task<IActionResult> GetMyManagedCondominiums()
+        {
+            var managerId = _currentUserService.UserId;
+            if (managerId == null)
+            {
+                return Unauthorized("User ID is missing from the token.");
+            }
+
+            // We need a new service method for this. Let's add it.
+            var condominiums = await _condominiumService.GetCondominiumsByManagerIdAsync(managerId.Value);
+
+            return Ok(condominiums);
+        }
+    }
+}
+````
+
+## File: CondoSphere.API/Program.cs
+````csharp
+using CondoSphere.Application.Authorization;
+using CondoSphere.Application.Interfaces;
+using CondoSphere.Application.Services.Condominium;
+using CondoSphere.Application.Services.Occurrence;
 using CondoSphere.Application.Services.Token;
 using CondoSphere.Application.Services.User;
 using CondoSphere.Core.Entities.Users;
+using CondoSphere.Infrastructure.Authorization;
 using CondoSphere.Infrastructure.Data;
 using CondoSphere.Infrastructure.Repositories;
 using CondoSphere.Infrastructure.Services;
+using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
-using FluentValidation;
-using CondoSphere.Application.Authorization;
-using CondoSphere.Infrastructure.Authorization;
-using Microsoft.AspNetCore.Authorization;
 
 namespace CondoSphere.API
 {
@@ -4842,7 +7858,6 @@ namespace CondoSphere.API
                 };
             });
 
-
             //Services-----------------------------------------------------------------------------------
 
             builder.Services.AddTransient<SeedDb>();
@@ -4856,14 +7871,27 @@ namespace CondoSphere.API
             builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
             builder.Services.AddScoped<IMailService, MailService>();
+            builder.Services.AddScoped<IOccurrenceRepository, OccurrenceRepository>();
+            builder.Services.AddScoped<IOccurrenceService, OccurrenceService>();
+            builder.Services.AddScoped<IAuthorizationHandler, CanAccessOccurrenceHandler>();
             builder.Services.AddAutoMapper(cfg =>
             {
                 cfg.AddMaps(typeof(CondoSphere.Application.Mappings.CondominiumProfile).Assembly);
+                cfg.AddMaps(typeof(CondoSphere.Application.Mappings.OccurrenceProfile).Assembly);
             });
             builder.Services.AddAuthorization(options =>
             {
                 options.AddPolicy("IsCondoManagerPolicy", policy =>
                     policy.AddRequirements(new IsCondoManagerRequirement()));
+            });
+
+            builder.Services.AddAuthorization(options =>
+            {
+                options.AddPolicy("IsCondoManagerPolicy", policy =>
+                    policy.AddRequirements(new IsCondoManagerRequirement()));
+
+                options.AddPolicy("CanAccessOccurrence", policy =>
+                    policy.AddRequirements(new CanAccessOccurrenceRequirement()));
             });
 
             builder.Services.AddScoped<IAuthorizationHandler, IsCondoManagerHandler>();
@@ -4935,4 +7963,4 @@ namespace CondoSphere.API
         }
     }
 }
-```
+````

@@ -1,0 +1,31 @@
+﻿@model CondoSphere.Web.Models.AssignResidentViewModel
+
+@{
+    ViewData["Title"] = "Assign Resident to Unit";
+}
+
+<h1>@ViewData["Title"]</h1>
+<p>You are assigning a resident to <strong>Unit ID @Model.UnitId</strong>.</p>
+<hr />
+
+<div class="row">
+    <div class="col-md-6">
+        @* We can add a tabbed interface here later to include the "Register New" form *@
+        <form asp-action="AssignResident" method="post">
+            <input type="hidden" asp-for="UnitId" />
+            <input type="hidden" asp-for="CondominiumId" />
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="form-group mb-3">
+                <label asp-for="SelectedResidentId" class="form-label"></label>
+                <select asp-for="SelectedResidentId" asp-items="Model.AvailableResidents" class="form-control">
+                    <option value="">-- Please select a resident --</option>
+                </select>
+                <span asp-validation-for="SelectedResidentId" class="text-danger"></span>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Assign Resident</button>
+            <a asp-action="Details" asp-route-id="@Model.CondominiumId" class="btn btn-secondary">Cancel</a>
+        </form>
+    </div>
+</div>

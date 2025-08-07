@@ -1,21 +1,22 @@
+using CondoSphere.Application.Authorization;
 using CondoSphere.Application.Interfaces;
 using CondoSphere.Application.Services.Condominium;
+using CondoSphere.Application.Services.Occurrence;
 using CondoSphere.Application.Services.Token;
 using CondoSphere.Application.Services.User;
 using CondoSphere.Core.Entities.Users;
+using CondoSphere.Infrastructure.Authorization;
 using CondoSphere.Infrastructure.Data;
 using CondoSphere.Infrastructure.Repositories;
 using CondoSphere.Infrastructure.Services;
+using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
-using FluentValidation;
-using CondoSphere.Application.Authorization;
-using CondoSphere.Infrastructure.Authorization;
-using Microsoft.AspNetCore.Authorization;
 
 namespace CondoSphere.API
 {
@@ -65,7 +66,6 @@ namespace CondoSphere.API
                 };
             });
 
-
             //Services-----------------------------------------------------------------------------------
 
             builder.Services.AddTransient<SeedDb>();
@@ -79,14 +79,27 @@ namespace CondoSphere.API
             builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
             builder.Services.AddScoped<IMailService, MailService>();
+            builder.Services.AddScoped<IOccurrenceRepository, OccurrenceRepository>();
+            builder.Services.AddScoped<IOccurrenceService, OccurrenceService>();
+            builder.Services.AddScoped<IAuthorizationHandler, CanAccessOccurrenceHandler>();
             builder.Services.AddAutoMapper(cfg =>
             {
                 cfg.AddMaps(typeof(CondoSphere.Application.Mappings.CondominiumProfile).Assembly);
+                cfg.AddMaps(typeof(CondoSphere.Application.Mappings.OccurrenceProfile).Assembly);
             });
             builder.Services.AddAuthorization(options =>
             {
                 options.AddPolicy("IsCondoManagerPolicy", policy =>
                     policy.AddRequirements(new IsCondoManagerRequirement()));
+            });
+
+            builder.Services.AddAuthorization(options =>
+            {
+                options.AddPolicy("IsCondoManagerPolicy", policy =>
+                    policy.AddRequirements(new IsCondoManagerRequirement()));
+
+                options.AddPolicy("CanAccessOccurrence", policy =>
+                    policy.AddRequirements(new CanAccessOccurrenceRequirement()));
             });
 
             builder.Services.AddScoped<IAuthorizationHandler, IsCondoManagerHandler>();

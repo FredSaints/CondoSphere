@@ -5,6 +5,7 @@ using CondoSphere.Web.Models;
 using CondoSphere.Web.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace CondoSphere.Web.Controllers
 {
@@ -33,6 +34,7 @@ namespace CondoSphere.Web.Controllers
             var units = await _apiClient.GetUnitsForCondominiumAsync(id);
             var users = await _apiClient.GetUsersAsync();
             var userLookup = users.ToDictionary(u => u.Id, u => $"{u.FirstName} {u.LastName}");
+            var occurrences = await _apiClient.GetOccurrencesForCondominiumAsync(id);
 
             var unitViewModels = units.Select(unit => new UnitDetailViewModel
             {
@@ -47,7 +49,8 @@ namespace CondoSphere.Web.Controllers
             var viewModel = new CondominiumDetailsViewModel
             {
                 Condominium = condo,
-                Units = unitViewModels
+                Units = unitViewModels,
+                Occurrences = occurrences
             };
 
             return View(viewModel);
@@ -142,6 +145,60 @@ namespace CondoSphere.Web.Controllers
             }
 
             return RedirectToAction(nameof(Details), new { id = condominiumId });
+        }
+
+        [HttpGet("units/{unitId}/assign-resident")]
+        public async Task<IActionResult> AssignResident(int unitId, int condominiumId)
+        {
+            var availableResidents = await _apiClient.GetAvailableResidentsAsync();
+
+            var viewModel = new AssignResidentViewModel
+            {
+                UnitId = unitId,
+                CondominiumId = condominiumId,
+                AvailableResidents = availableResidents.Select(r => new SelectListItem
+                {
+                    Text = $"{r.FirstName} {r.LastName} ({r.Email})",
+                    Value = r.Id.ToString()
+                })
+            };
+
+            return View(viewModel);
+        }
+
+        [HttpPost("units/{unitId}/assign-resident")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AssignResident(AssignResidentViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                var availableResidents = await _apiClient.GetAvailableResidentsAsync();
+                model.AvailableResidents = availableResidents.Select(r => new SelectListItem
+                {
+                    Text = $"{r.FirstName} {r.LastName} ({r.Email})",
+                    Value = r.Id.ToString()
+                });
+                return View(model);
+            }
+
+            var dto = new AssignResidentDto { ResidentId = model.SelectedResidentId };
+            var success = await _apiClient.AssignResidentAsync(model.CondominiumId, model.UnitId, dto);
+
+            if (success)
+            {
+                TempData["SuccessMessage"] = "Resident assigned successfully!";
+                return RedirectToAction(nameof(Details), new { id = model.CondominiumId });
+            }
+
+            ModelState.AddModelError(string.Empty, "Failed to assign resident. Please ensure the resident is valid and the unit is vacant.");
+
+            var residents = await _apiClient.GetAvailableResidentsAsync();
+            model.AvailableResidents = residents.Select(r => new SelectListItem
+            {
+                Text = $"{r.FirstName} {r.LastName} ({r.Email})",
+                Value = r.Id.ToString()
+            });
+            return View(model);
         }
     }
 }

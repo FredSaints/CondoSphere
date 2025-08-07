@@ -1,12 +1,22 @@
-﻿@using Microsoft.AspNetCore.Identity
-@using CondoSphere.Core.Entities.Users
+﻿@using System.Security.Claims
 
 <ul class="navbar-nav">
     @if (User.Identity?.IsAuthenticated == true)
     {
         <li class="nav-item">
-            @* We can access the user's name (which is their email in our case) from the ClaimsPrincipal *@
-            <a class="nav-link text-dark" href="#" title="Manage">Hello, @User.Identity.Name!</a>
+            <a class="nav-link text-dark d-flex align-items-center" asp-controller="Profile" asp-action="Index" title="Manage Your Account">
+
+                @{
+                    var profilePictureUrl = User.FindFirstValue("profile_picture");
+                }
+
+                <img src="@(string.IsNullOrEmpty(profilePictureUrl) ? "/images/user-photos/default-profile.png" : profilePictureUrl)"
+                     alt="Profile Picture"
+                     class="rounded-circle"
+                     style="width: 30px; height: 30px; object-fit: cover; margin-right: 8px;" />
+
+                Hello, @User.Identity.Name!
+            </a>
         </li>
         <li class="nav-item">
             <form class="form-inline" asp-controller="Account" asp-action="Logout" method="post">
@@ -18,8 +28,10 @@
     else
     {
         <li class="nav-item">
+            <a class="nav-link text-dark" asp-controller="Account" asp-action="Register">Register</a>
+        </li>
+        <li class="nav-item">
             <a class="nav-link text-dark" asp-controller="Account" asp-action="Login">Login</a>
         </li>
-        @* We can add a Register link here later if needed *@
     }
 </ul>
