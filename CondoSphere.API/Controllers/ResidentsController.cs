@@ -40,7 +40,7 @@ namespace CondoSphere.API.Controllers
 
             if (result.Succeeded)
             {
-                return StatusCode(201, new { Message = "Resident registered successfully. A welcome email has been sent for them to set their password." });
+                return StatusCode(201, new { message = "Resident registered successfully. A welcome email has been sent for them to set their password." });
             }
 
             return BadRequest(result.Errors);

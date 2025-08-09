@@ -31,13 +31,28 @@
                                 <td><strong>@occurrence.Title</strong></td>
                                 <td>@occurrence.ReportedDate.ToLocalTime().ToString("yyyy-MM-dd HH:mm")</td>
                                 <td>
-                                    @* We can use a switch to show different colored badges for status *@
-                                    <span class="badge @(occurrence.Status == CondoSphere.Core.Enums.OccurrenceStatus.Open ? "bg-danger" : "bg-secondary")">
-                                        @occurrence.Status
-                                    </span>
+                                    @{
+                                        var statusClass = "bg-secondary";
+                                        switch (occurrence.Status)
+                                        {
+                                            case CondoSphere.Core.Enums.OccurrenceStatus.Open:
+                                                statusClass = "bg-danger";
+                                                break;
+                                            case CondoSphere.Core.Enums.OccurrenceStatus.InProgress:
+                                                statusClass = "bg-warning text-dark";
+                                                break;
+                                            case CondoSphere.Core.Enums.OccurrenceStatus.Resolved:
+                                                statusClass = "bg-info";
+                                                break;
+                                            case CondoSphere.Core.Enums.OccurrenceStatus.Closed:
+                                                statusClass = "bg-success";
+                                                break;
+                                        }
+                                    }
+                                    <span class="badge @statusClass">@occurrence.Status</span>
                                 </td>
                                 <td class="text-end">
-                                    <a href="#" class="btn btn-sm btn-outline-primary">View Details</a>
+                                    <a asp-action="Details" asp-route-id="@occurrence.Id" class="btn btn-sm btn-outline-primary">View Details</a>
                                 </td>
                             </tr>
                         }

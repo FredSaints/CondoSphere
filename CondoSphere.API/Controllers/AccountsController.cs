@@ -53,7 +53,7 @@ namespace CondoSphere.API.Controllers
 
             if (result.Succeeded)
             {
-                return StatusCode(201, new { Message = "Company and administrator registered successfully." });
+                return StatusCode(201, new { message = "Company and administrator registered successfully." });
             }
 
             foreach (var error in result.Errors)
@@ -101,7 +101,7 @@ namespace CondoSphere.API.Controllers
 
             if (result.Succeeded)
             {
-                return StatusCode(201, new { Message = "Condominium Manager registered successfully." });
+                return StatusCode(201, new { message = "Condominium Manager registered successfully." });
             }
 
             foreach (var error in result.Errors)
@@ -124,7 +124,7 @@ namespace CondoSphere.API.Controllers
 
             if (result.Succeeded)
             {
-                return Ok(new { Message = "Email confirmed successfully." });
+                return Ok(new { message = "Email confirmed successfully." });
             }
 
             return BadRequest("Email could not be confirmed. The link may have expired.");
@@ -142,7 +142,7 @@ namespace CondoSphere.API.Controllers
             var user = await _userManager.FindByIdAsync(setPasswordDto.UserId);
             if (user == null)
             {
-                return Ok(new { Message = "If a matching account was found, a password has been set." });
+                return Ok(new { message = "If a matching account was found, a password has been set." });
             }
 
             var result = await _userManager.ResetPasswordAsync(user, setPasswordDto.Token, setPasswordDto.Password);
@@ -156,7 +156,7 @@ namespace CondoSphere.API.Controllers
                     user.EmailConfirmed = true;
                     await _userManager.UpdateAsync(user);
                 }
-                return Ok(new { Message = "Your password has been set successfully. You can now log in." });
+                return Ok(new { message = "Your password has been set successfully. You can now log in." });
             }
 
             // If token is invalid, passwords don't match criteria, etc.
@@ -225,7 +225,46 @@ namespace CondoSphere.API.Controllers
 
             await _userService.ForgotPasswordAsync(dto.Email);
 
-            return Ok(new { Message = "If an account with that email exists, a password reset link has been sent." });
+            return Ok(new { message = "If an account with that email exists, a password reset link has been sent." });
+        }
+
+        [HttpGet("employees")]
+        [Authorize(Roles = RoleConstants.CompanyAdmin + "," + RoleConstants.CondoManager)]
+        public async Task<IActionResult> GetAvailableEmployees()
+        {
+            var companyId = _currentUserService.CompanyId;
+            if (companyId == null)
+            {
+                return Unauthorized("Company information is missing from the token.");
+            }
+
+            var employees = await _userService.GetAvailableEmployeesAsync(companyId.Value);
+            return Ok(employees);
+        }
+
+        [HttpPost("register-employee")]
+        [Authorize(Roles = RoleConstants.CompanyAdmin)]
+        public async Task<IActionResult> RegisterEmployee([FromBody] RegisterManagerDto registerDto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var companyId = _currentUserService.CompanyId;
+            if (companyId == null)
+            {
+                return Unauthorized("Company information is missing from the token.");
+            }
+
+            var result = await _userService.RegisterEmployeeAsync(registerDto, companyId.Value);
+
+            if (result.Succeeded)
+            {
+                return StatusCode(201, new { message = "Employee registered successfully." });
+            }
+
+            return BadRequest(result.Errors);
         }
     }
 }

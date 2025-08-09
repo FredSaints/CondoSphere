@@ -42,5 +42,10 @@ namespace CondoSphere.Infrastructure.Repositories
                 .AsNoTracking()
                 .ToListAsync();
         }
+
+        public void Update(Occurrence occurrence)
+        {
+            _context.Entry(occurrence).State = EntityState.Modified;
+        }
     }
 }

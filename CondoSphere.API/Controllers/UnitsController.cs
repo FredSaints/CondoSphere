@@ -131,7 +131,7 @@ namespace CondoSphere.API.Controllers
                 return NoContent();
             }
 
-            return BadRequest(new { Message = "Failed to unassign resident. The unit might already be vacant." });
+            return BadRequest(new { message = "Failed to unassign resident. The unit might already be vacant." });
         }
 
         [HttpPatch("{unitId}/assign-resident")]
@@ -148,7 +148,7 @@ namespace CondoSphere.API.Controllers
                 return NoContent();
             }
 
-            return BadRequest(new { Message = "Failed to assign resident. The unit may be occupied or the resident invalid." });
+            return BadRequest(new { message = "Failed to assign resident. The unit may be occupied or the resident invalid." });
         }
     }
 }

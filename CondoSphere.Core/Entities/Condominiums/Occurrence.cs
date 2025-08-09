@@ -15,5 +15,6 @@ namespace CondoSphere.Core.Entities.Condominiums
         public int CompanyId { get; set; }
         public int ReportedByUserId { get; set; }
         public int? AssignedToUserId { get; set; }
+        public string? ImageUrl { get; set; }
     }
 }

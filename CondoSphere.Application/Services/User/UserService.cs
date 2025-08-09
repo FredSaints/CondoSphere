@@ -339,5 +339,52 @@ namespace CondoSphere.Application.Services.User
                 Roles = roles
             };
         }
+
+        public async Task<IEnumerable<UserListDto>> GetAvailableEmployeesAsync(int companyId)
+        {
+            return await _unitOfWork.Users.GetUsersInRoleAsync(RoleConstants.Employee, companyId);
+        }
+
+        public async Task<IdentityResult> RegisterEmployeeAsync(RegisterManagerDto registerDto, int companyId)
+        {
+            var existingUser = await _userManager.FindByEmailAsync(registerDto.Email);
+            if (existingUser != null)
+
+            {
+                return IdentityResult.Failed(new IdentityError { Description = "An account with this email address already exists." });
+            }
+
+            var newUser = new CoreUser
+            {
+                FirstName = registerDto.FirstName,
+                LastName = registerDto.LastName,
+                Email = registerDto.Email,
+                UserName = registerDto.Email,
+                CompanyId = companyId,
+                IsActive = true,
+                EmailConfirmed = false
+            };
+
+            var result = await _userManager.CreateAsync(newUser);
+            if (!result.Succeeded)
+            {
+                return result;
+            }
+
+            await _userManager.AddToRoleAsync(newUser, RoleConstants.Employee);
+
+            var token = await _userManager.GeneratePasswordResetTokenAsync(newUser);
+            var encodedToken = WebUtility.UrlEncode(token);
+            var setPasswordLink = $"{_configuration["ClientSettings:WebAppBaseUrl"]}/Account/SetPassword?userId={newUser.Id}&token={encodedToken}";
+
+            await _mailService.SendEmailAsync(
+                newUser.Email,
+                "You've been invited to CondoSphere - Set Your Password",
+                $"<h1>Welcome to the Team!</h1>" +
+                $"<p>You have been registered as an Employee. Please complete your account setup by setting a password.</p>" +
+                $"<p><a href='{setPasswordLink}'>Set Your Password</a></p>");
+
+            return IdentityResult.Success;
+        }
     }
 }

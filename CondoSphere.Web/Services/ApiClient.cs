@@ -1,5 +1,6 @@
 ﻿using CondoSphere.Core.DTOs.Account;
 using CondoSphere.Core.DTOs.Condominiums;
+using CondoSphere.Core.DTOs.Interventions;
 using CondoSphere.Core.DTOs.Occurrences;
 using CondoSphere.Web.Models;
 using Microsoft.AspNetCore.WebUtilities;
@@ -188,14 +189,31 @@ namespace CondoSphere.Web.Services
             return await _httpClient.GetFromJsonAsync<IEnumerable<OccurrenceDto>>("/api/occurrences/my-occurrences") ?? new List<OccurrenceDto>();
         }
 
-        public async Task<OccurrenceDto?> CreateOccurrenceAsync(CreateOccurrenceDto dto)
+        public async Task<OccurrenceDto?> CreateOccurrenceAsync(CreateOccurrenceDto dto, IFormFile? imageFile)
         {
-            var response = await _httpClient.PostAsJsonAsync("/api/occurrences", dto);
+            using var formData = new MultipartFormDataContent();
+            formData.Add(new StringContent(dto.Title), name: nameof(CreateOccurrenceDto.Title));
+            formData.Add(new StringContent(dto.Description), name: nameof(CreateOccurrenceDto.Description));
+
+            if (imageFile != null && imageFile.Length > 0)
+            {
+                var fileContent = new StreamContent(imageFile.OpenReadStream());
+                fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(imageFile.ContentType);
+                formData.Add(fileContent, name: "imageFile", fileName: imageFile.FileName);
+            }
+
+            var response = await _httpClient.PostAsync("/api/occurrences", formData);
+
             if (response.IsSuccessStatusCode)
             {
                 return await response.Content.ReadFromJsonAsync<OccurrenceDto>();
             }
             return null;
+        }
+
+        public async Task<OccurrenceDto?> GetOccurrenceDetailsAsync(int occurrenceId)
+        {
+            return await _httpClient.GetFromJsonAsync<OccurrenceDto>($"/api/occurrences/{occurrenceId}");
         }
 
         public async Task<(bool Success, string Message)> ForgotPasswordAsync(string email)
@@ -235,6 +253,48 @@ namespace CondoSphere.Web.Services
         public async Task<UserProfileDto?> GetMyProfileAsync()
         {
             return await _httpClient.GetFromJsonAsync<UserProfileDto>("/api/profile");
+        }
+
+        public async Task<bool> UpdateOccurrenceStatusAsync(int occurrenceId, UpdateOccurrenceStatusDto dto)
+        {
+            var response = await _httpClient.PatchAsJsonAsync($"/api/occurrences/{occurrenceId}/status", dto);
+            return response.IsSuccessStatusCode;
+        }
+
+        public async Task<IEnumerable<InterventionDto>> GetInterventionsForOccurrenceAsync(int occurrenceId)
+        {
+            var response = await _httpClient.GetAsync($"/api/occurrences/{occurrenceId}/interventions");
+            if (!response.IsSuccessStatusCode)
+            {
+                return new List<InterventionDto>();
+            }
+            return await response.Content.ReadFromJsonAsync<IEnumerable<InterventionDto>>() ?? new List<InterventionDto>();
+        }
+
+        public async Task<InterventionDto?> CreateInterventionAsync(CreateInterventionDto dto)
+        {
+            var response = await _httpClient.PostAsJsonAsync("/api/interventions", dto);
+            if (response.IsSuccessStatusCode)
+            {
+                return await response.Content.ReadFromJsonAsync<InterventionDto>();
+            }
+            return null;
+        }
+
+        public async Task<bool> RegisterEmployeeAsync(RegisterManagerDto registerDto)
+        {
+            var response = await _httpClient.PostAsJsonAsync("/api/accounts/register-employee", registerDto);
+            return response.IsSuccessStatusCode;
+        }
+
+        public async Task<IEnumerable<UserListDto>> GetAvailableEmployeesAsync()
+        {
+            return await _httpClient.GetFromJsonAsync<IEnumerable<UserListDto>>("/api/accounts/employees") ?? new List<UserListDto>();
+        }
+
+        public async Task<IEnumerable<InterventionDto>> GetMyInterventionsAsync()
+        {
+            return await _httpClient.GetFromJsonAsync<IEnumerable<InterventionDto>>("/api/interventions/my-tasks") ?? new List<InterventionDto>();
         }
     }
 }

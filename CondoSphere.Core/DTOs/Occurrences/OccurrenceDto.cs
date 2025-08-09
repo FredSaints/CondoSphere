@@ -11,5 +11,7 @@ namespace CondoSphere.Core.DTOs.Occurrences
         public OccurrenceStatus Status { get; set; }
         public string ReportedByUserName { get; set; } = string.Empty;
         public int? UnitId { get; set; }
+        public int CondominiumId { get; set; }
+        public string? ImageUrl { get; set; }
     }
 }
