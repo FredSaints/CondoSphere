@@ -9,7 +9,7 @@ Content-Type: application/json
   "companyName": "My New Test Company",
   "firstName": "Test",
   "lastName": "Admin",
-  "email": "admin@admin.com",
+  "email": "rafaalexandrecosta26@gmail.com",
   "password": "123456",
   "confirmPassword": "123456"
 }

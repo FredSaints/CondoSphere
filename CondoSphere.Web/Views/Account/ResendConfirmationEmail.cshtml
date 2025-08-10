@@ -1,0 +1,30 @@
+﻿@model CondoSphere.Web.Models.ResendConfirmationEmailViewModel
+@{
+    ViewData["Title"] = "Reenviar Confirmação de Email";
+}
+
+<h2>Reenviar Confirmação de Email</h2>
+
+@if (ViewData["Mensagem"] is string msg && !string.IsNullOrWhiteSpace(msg))
+
+{
+    <div class="alert alert-info">@msg</div>
+}
+
+<form asp-action="ResendConfirmationEmail" method="post">
+    @Html.AntiForgeryToken()
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    <div class="form-group">
+        <label asp-for="Email"></label>
+        <input asp-for="Email" class="form-control" />
+        <span asp-validation-for="Email" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary mt-2">Reenviar Email</button>
+    <a asp-action="Login" class="btn btn-secondary mt-2">Voltar</a>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

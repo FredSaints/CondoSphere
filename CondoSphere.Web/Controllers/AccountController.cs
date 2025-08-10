@@ -40,6 +40,12 @@ namespace CondoSphere.Web.Controllers
                 return View(model);
             }
 
+            var (isConfirmed, raw) = await _apiClient.IsEmailConfirmedAsync(model.Email);
+            if (!isConfirmed)
+            {
+                return RedirectToAction("ResendConfirmationEmail", "Account", new { email = model.Email });
+            }
+
             var userDto = await _apiClient.LoginAsync(model);
 
             if (userDto == null || string.IsNullOrWhiteSpace(userDto.Token))
@@ -236,5 +242,29 @@ namespace CondoSphere.Web.Controllers
             ViewData["Message"] = message;
             return View();
         }
+
+
+        [AllowAnonymous]
+        public IActionResult ResendConfirmationEmail(string? email = null)
+        {
+            return View(new ResendConfirmationEmailViewModel { Email = email ?? "" });
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ResendConfirmationEmail(ResendConfirmationEmailViewModel model)
+        {
+            if (!ModelState.IsValid) return View(model);
+
+            var (success, _) = await _apiClient.ResendConfirmationEmailAsync(model.Email);
+
+            ViewData["Mensagem"] = success
+                ? "Se existir uma conta com esse email, o link de confirmação foi reenviado."
+                : "Ocorreu um erro ao tentar reenviar o email de confirmação.";
+
+            return View(model);
+        }
+
     }
 }

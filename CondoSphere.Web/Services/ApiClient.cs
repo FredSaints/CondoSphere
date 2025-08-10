@@ -236,5 +236,35 @@ namespace CondoSphere.Web.Services
         {
             return await _httpClient.GetFromJsonAsync<UserProfileDto>("/api/profile");
         }
+
+        public async Task<(bool Confirmed, string RawMessage)> IsEmailConfirmedAsync(string email)
+        {
+            var payload = new { Email = email };
+            var response = await _httpClient.PostAsJsonAsync("/api/accounts/IsEmailConfirmed", payload);
+            var body = await response.Content.ReadAsStringAsync();
+
+            if (!response.IsSuccessStatusCode)
+                return (false, body);
+
+            try
+            {
+                using var json = JsonDocument.Parse(body);
+                bool confirmed = json.RootElement.GetProperty("confirmed").GetBoolean();
+                return (confirmed, body);
+            }
+            catch
+            {
+                return (false, body);
+            }
+        }
+
+        public async Task<(bool Success, string RawMessage)> ResendConfirmationEmailAsync(string email)
+        {
+            var payload = new { Email = email };
+            var response = await _httpClient.PostAsJsonAsync("/api/accounts/ResendConfirmationEmail", payload);
+            var body = await response.Content.ReadAsStringAsync();
+            return (response.IsSuccessStatusCode, body);
+        }
+
     }
 }

@@ -6,6 +6,7 @@ using CondoSphere.Core.Entities.Users;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using System.ComponentModel.Design;
 using System.Net;
 using CoreUser = CondoSphere.Core.Entities.Users.User;
 
@@ -103,6 +104,8 @@ namespace CondoSphere.Application.Services.User
 
             return IdentityResult.Success;
         }
+
+
 
         public async Task<IdentityResult> RegisterManagerAsync(RegisterManagerDto registerDto, int companyId)
         {
@@ -338,6 +341,38 @@ namespace CondoSphere.Application.Services.User
                 CompanyId = user.CompanyId,
                 Roles = roles
             };
+        }
+
+        public async Task<CoreUser?> GetUserByEmailAsync(string email)
+        {
+            return await _userManager.FindByEmailAsync(email);
+        }
+
+        public async Task<bool> IsEmailConfirmedAsync(CoreUser user)
+        {
+            return await _userManager.IsEmailConfirmedAsync(user);
+        }
+
+        public async Task<IdentityResult> ResendConfirmationEmailAsync(EmailDto dto)
+        {
+            var user = await _userManager.FindByEmailAsync(dto.Email);
+
+            if (user == null)
+            {
+                return IdentityResult.Failed(new IdentityError { Description = "User not found." });
+            }
+
+            var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            var encodedToken = WebUtility.UrlEncode(token);
+            var webAppBaseUrl = _configuration["ClientSettings:WebAppBaseUrl"];
+            var confirmationLink = $"{webAppBaseUrl}/Account/ConfirmEmail?userId={user.Id}&token={encodedToken}";
+
+            await _mailService.SendEmailAsync(
+                user.Email,
+                "Confirm your CondoSphere Account",
+                $"<h1>Welcome to CondoSphere!</h1><p>Please confirm your account by <a href='{confirmationLink}'>clicking here</a>.</p>");
+
+            return IdentityResult.Success;
         }
     }
 }

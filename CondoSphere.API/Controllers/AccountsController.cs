@@ -72,6 +72,17 @@ namespace CondoSphere.API.Controllers
                 return BadRequest(ModelState);
             }
 
+            var user = await _userService.GetUserByEmailAsync(loginDto.Email);
+            if (user != null) 
+            {
+                var isConfirmed = await _userService.IsEmailConfirmedAsync(user);
+
+                if (!isConfirmed)
+                {
+                    return Unauthorized(new { Message = "Not confirmed email" });
+                }  
+            }
+          
             var userDto = await _userService.LoginAsync(loginDto);
 
             if (userDto == null)
@@ -80,6 +91,20 @@ namespace CondoSphere.API.Controllers
             }
 
             return Ok(userDto);
+        }
+
+        [HttpPost("IsEmailConfirmed")]
+        [AllowAnonymous]
+        public async Task<IActionResult> IsEmailConfirmed([FromBody] EmailDto dto)
+        {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+
+            var user = await _userService.GetUserByEmailAsync(dto.Email);
+            if (user == null)
+                return Ok(new { confirmed = false }); // não revelar se existe ou não
+
+            var confirmed = await _userService.IsEmailConfirmedAsync(user);
+            return Ok(new { confirmed });
         }
 
         [HttpPost("register-manager")]
@@ -226,6 +251,19 @@ namespace CondoSphere.API.Controllers
             await _userService.ForgotPasswordAsync(dto.Email);
 
             return Ok(new { Message = "If an account with that email exists, a password reset link has been sent." });
+        }
+
+        [HttpPost("ResendConfirmationEmail")]
+        [AllowAnonymous]
+        public async Task<IActionResult> ResendConfirmationEmail([FromBody] EmailDto dto)
+        {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+
+            var result = await _userService.ResendConfirmationEmailAsync(dto);
+            if (result.Succeeded)
+                return Ok(new { message = "Confirmation Email Resent" });
+
+            return BadRequest(result.Errors);
         }
     }
 }
