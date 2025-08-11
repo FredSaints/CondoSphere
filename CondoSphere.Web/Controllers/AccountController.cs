@@ -98,6 +98,10 @@ namespace CondoSphere.Web.Controllers
             {
                 return RedirectToAction("Index", "Portal");
             }
+            if (User.IsInRole(RoleConstants.Employee))
+            {
+                return RedirectToAction("Index", "Employee");
+            }
 
             return RedirectToAction("Index", "Home"); // Fallback for any other case
         }
@@ -111,7 +115,7 @@ namespace CondoSphere.Web.Controllers
             return RedirectToAction("Index", "Home");
         }
 
-        // Optional: An Access Denied page for users who are logged in but not authorized for a specific page.
+        // TODO: An Access Denied page for users who are logged in but not authorized for a specific page.
         [HttpGet]
         public IActionResult AccessDenied()
         {

@@ -8,11 +8,9 @@ using CoreUser = CondoSphere.Core.Entities.Users.User;
 
 namespace CondoSphere.Infrastructure.Authorization
 {
-    // Use the 'CoreOccurrence' alias for the resource type
     public class CanAccessOccurrenceHandler : AuthorizationHandler<CanAccessOccurrenceRequirement, CoreOccurrence>
     {
         private readonly ICurrentUserService _currentUserService;
-        // Use the 'CoreUser' alias here
         private readonly UserManager<CoreUser> _userManager;
 
         public CanAccessOccurrenceHandler(ICurrentUserService currentUserService, UserManager<CoreUser> userManager)
@@ -22,9 +20,9 @@ namespace CondoSphere.Infrastructure.Authorization
         }
 
         protected override async Task HandleRequirementAsync(
-            AuthorizationHandlerContext context,
-            CanAccessOccurrenceRequirement requirement,
-            CoreOccurrence resource) // And use the alias for the resource parameter
+                                 AuthorizationHandlerContext context,
+                                 CanAccessOccurrenceRequirement requirement,
+                                 CoreOccurrence resource)
         {
             var userId = _currentUserService.UserId;
             if (userId == null)
@@ -40,7 +38,14 @@ namespace CondoSphere.Infrastructure.Authorization
                 return;
             }
 
-            // Rule 2 & 3: Allow if the user is a CompanyAdmin or CondoManager for that company.
+            // Rule2: Allow if the user is the employee assigned to the occurrence
+            if (resource.AssignedToUserId.HasValue && resource.AssignedToUserId.Value == userId.Value)
+            {
+                context.Succeed(requirement);
+                return;
+            }
+
+            // Rule 3: Allow if the user is a CompanyAdmin or CondoManager for that company.
             var user = await _userManager.FindByIdAsync(userId.Value.ToString());
             if (user?.CompanyId == resource.CompanyId)
             {

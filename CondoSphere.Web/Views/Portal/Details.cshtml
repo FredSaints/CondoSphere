@@ -1,0 +1,77 @@
+﻿@model CondoSphere.Core.DTOs.Occurrences.OccurrenceDto
+
+@{
+    ViewData["Title"] = "Occurrence Details";
+}
+
+<h1>@Model.Title</h1>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                Details
+            </div>
+            <div class="card-body">
+                <dl class="row">
+                    <dt class="col-sm-3">Status</dt>
+                    <dd class="col-sm-9">
+                        @{
+                            var statusClass = "bg-secondary";
+                            switch (Model.Status)
+                            {
+                                case CondoSphere.Core.Enums.OccurrenceStatus.Open:
+                                    statusClass = "bg-danger";
+                                    break;
+                                case CondoSphere.Core.Enums.OccurrenceStatus.InProgress:
+                                    statusClass = "bg-warning text-dark";
+                                    break;
+                                case CondoSphere.Core.Enums.OccurrenceStatus.Resolved:
+                                    statusClass = "bg-info";
+                                    break;
+                                case CondoSphere.Core.Enums.OccurrenceStatus.Closed:
+                                    statusClass = "bg-success";
+                                    break;
+                            }
+                        }
+                        <span class="badge @statusClass fs-6">@Model.Status</span>
+                    </dd>
+
+                    <dt class="col-sm-3">Reported On</dt>
+                    <dd class="col-sm-9">@Model.ReportedDate.ToLocalTime().ToString("f")</dd>
+
+                    <dt class="col-sm-3">Reported By</dt>
+                    <dd class="col-sm-9">@Model.ReportedByUserName</dd>
+                </dl>
+                <hr />
+                <h5>Description</h5>
+                <p>@Model.Description</p>
+            </div>
+        </div>
+        <div class="mt-3">
+            <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+        </div>
+    </div>
+    <div class="col-md-4">
+        @if (!string.IsNullOrEmpty(Model.ImageUrl))
+        {
+            <div class="card">
+                <div class="card-header">
+                    Attached Image
+                </div>
+                <div class="card-body p-1">
+                    <img src="@Model.ImageUrl" alt="Occurrence Image" class="img-fluid rounded" />
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="card bg-light">
+                <div class="card-body text-center text-muted">
+                    <i class="bi bi-image-alt fs-1"></i>
+                    <p>No image was provided.</p>
+                </div>
+            </div>
+        }
+    </div>
+</div>

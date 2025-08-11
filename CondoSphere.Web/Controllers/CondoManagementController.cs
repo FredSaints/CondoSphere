@@ -1,6 +1,8 @@
 ﻿using CondoSphere.Core;
 using CondoSphere.Core.DTOs.Account;
 using CondoSphere.Core.DTOs.Condominiums;
+using CondoSphere.Core.DTOs.Interventions;
+using CondoSphere.Core.DTOs.Occurrences;
 using CondoSphere.Web.Models;
 using CondoSphere.Web.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -199,6 +201,88 @@ namespace CondoSphere.Web.Controllers
                 Value = r.Id.ToString()
             });
             return View(model);
+        }
+
+        [HttpGet("{condominiumId}/occurrences/{occurrenceId}")]
+        public async Task<IActionResult> OccurrenceDetails(int condominiumId, int occurrenceId)
+        {
+            var occurrenceTask = _apiClient.GetOccurrenceDetailsAsync(occurrenceId);
+            var interventionsTask = _apiClient.GetInterventionsForOccurrenceAsync(occurrenceId);
+            var employeesTask = _apiClient.GetAvailableEmployeesAsync();
+
+            await Task.WhenAll(occurrenceTask, interventionsTask, employeesTask);
+
+            var occurrence = await occurrenceTask;
+            var interventions = await interventionsTask;
+            var employees = await employeesTask;
+
+            if (occurrence == null)
+            {
+                return NotFound();
+            }
+            if (occurrence.CondominiumId != condominiumId)
+            {
+                return Forbid();
+            }
+
+            ViewData["AvailableEmployees"] = new SelectList(employees, "Id", "FullName");
+
+            var viewModel = new OccurrenceDetailsViewModel
+            {
+                Occurrence = occurrence,
+                Interventions = interventions,
+                NewIntervention = new CreateInterventionDto { OccurrenceId = occurrenceId }
+            };
+
+            return View(viewModel);
+        }
+
+        [HttpPost("{condominiumId}/occurrences/{occurrenceId}/update-status")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdateOccurrenceStatus(int condominiumId, int occurrenceId, UpdateOccurrenceStatusDto dto)
+        {
+            if (!ModelState.IsValid)
+            {
+                TempData["ErrorMessage"] = "Invalid status selected.";
+                return RedirectToAction("OccurrenceDetails", new { condominiumId, occurrenceId });
+            }
+
+            var success = await _apiClient.UpdateOccurrenceStatusAsync(occurrenceId, dto);
+            if (success)
+            {
+                TempData["SuccessMessage"] = "Occurrence status has been updated.";
+            }
+            else
+            {
+                TempData["ErrorMessage"] = "Failed to update status.";
+            }
+
+            return RedirectToAction("OccurrenceDetails", new { condominiumId, occurrenceId });
+        }
+
+        [HttpPost("{condominiumId}/occurrences/{occurrenceId}/create-intervention")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateIntervention(int condominiumId, int occurrenceId, OccurrenceDetailsViewModel model)
+        {
+            // We only care about the NewIntervention part of the model
+            if (ModelState.IsValid)
+            {
+                var result = await _apiClient.CreateInterventionAsync(model.NewIntervention);
+                if (result != null)
+                {
+                    TempData["SuccessMessage"] = "Intervention successfully created.";
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = "Failed to create intervention.";
+                }
+            }
+            else
+            {
+                TempData["ErrorMessage"] = "Invalid data submitted for intervention.";
+            }
+
+            return RedirectToAction("OccurrenceDetails", new { condominiumId, occurrenceId });
         }
     }
 }

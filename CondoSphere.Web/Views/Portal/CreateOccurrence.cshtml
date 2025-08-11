@@ -5,12 +5,12 @@
 }
 
 <h1>@ViewData["Title"]</h1>
-<p>Please provide a clear title and a detailed description of the issue.</p>
+<p>Please provide a clear title, a detailed description of the issue, and an optional photo.</p>
 <hr />
 
 <div class="row">
     <div class="col-md-8">
-        <form asp-action="CreateOccurrence" method="post">
+        <form asp-action="CreateOccurrence" method="post" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
             <div class="form-floating mb-3">
@@ -25,6 +25,15 @@
                 <span asp-validation-for="Description" class="text-danger"></span>
             </div>
 
+            <div class="mb-3">
+                <label for="imageFile" class="form-label">Upload an Image (Optional)</label>
+                <input name="imageFile" id="imageFile" class="form-control" type="file" accept="image/*" />
+            </div>
+
+            <div class="mb-3">
+                <img id="imagePreview" src="#" alt="Image Preview" class="img-fluid rounded" style="display: none; max-height: 300px;" />
+            </div>
+
             <button type="submit" class="btn btn-success">Submit Report</button>
             <a asp-action="Index" class="btn btn-secondary">Cancel</a>
         </form>
@@ -33,4 +42,26 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const imageFileInput = document.getElementById('imageFile');
+            const imagePreview = document.getElementById('imagePreview');
+
+            imageFileInput.addEventListener('change', function () {
+                const file = this.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        imagePreview.src = e.target.result;
+                        imagePreview.style.display = 'block';
+                    }
+                    reader.readAsDataURL(file);
+                } else {
+                    imagePreview.src = '#';
+                    imagePreview.style.display = 'none';
+                }
+            });
+        });
+    </script>
 }

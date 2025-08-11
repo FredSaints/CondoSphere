@@ -8,5 +8,6 @@ namespace CondoSphere.Application.Interfaces
         Task<Occurrence?> GetByIdAsync(int occurrenceId);
         Task AddAsync(Occurrence occurrence);
         Task<IEnumerable<Occurrence>> GetAllForResidentAsync(int residentUserId);
+        void Update(Occurrence occurrence);
     }
 }

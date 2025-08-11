@@ -139,7 +139,7 @@ namespace CondoSphere.API.Controllers
 
             if (!success)
             {
-                return BadRequest("Failed to assign manager. Verify condominium and manager IDs are valid for your company.");
+                return BadRequest(new { message = "Failed to assign manager. Verify condominium and manager IDs are valid for your company." });
             }
 
             return NoContent();

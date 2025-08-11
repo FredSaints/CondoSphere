@@ -30,55 +30,42 @@ namespace CondoSphere.API.Controllers
             _occurrenceRepository = occurrenceRepository;
         }
 
+
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
-            // First, get the raw entity from the repository to check authorization against.
-            CoreOccurrence? occurrence = await _occurrenceRepository.GetByIdAsync(id);
-            if (occurrence == null)
-            {
-                return NotFound();
-            }
+            var occurrence = await _occurrenceRepository.GetByIdAsync(id);
+            if (occurrence == null) return NotFound();
 
-            // Check if the current user is authorized to view this specific occurrence resource.
             var authorizationResult = await _authorizationService.AuthorizeAsync(User, occurrence, "CanAccessOccurrence");
-            if (!authorizationResult.Succeeded)
-            {
-                // Return 403 Forbidden if the policy check fails.
-                return Forbid();
-            }
+            if (!authorizationResult.Succeeded) return Forbid();
 
-            // If authorized, get the rich DTO from the service to return to the client.
             var occurrenceDto = await _occurrenceService.GetOccurrenceByIdAsync(id);
             return Ok(occurrenceDto);
         }
 
         [HttpPost]
         [Authorize(Roles = RoleConstants.CondoResident)]
-        public async Task<IActionResult> CreateOccurrence([FromBody] CreateOccurrenceDto dto)
+        public async Task<IActionResult> CreateOccurrence([FromForm] CreateOccurrenceDto dto, IFormFile? imageFile)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            // The controller's job is to get the user ID from the security context.
             var residentUserId = _currentUserService.UserId;
             if (residentUserId == null)
             {
                 return Unauthorized("User ID could not be determined from token.");
             }
 
-            // The controller passes the clean ID to the service layer.
-            var newOccurrenceDto = await _occurrenceService.CreateOccurrenceAsync(dto, residentUserId.Value);
+            var newOccurrenceDto = await _occurrenceService.CreateOccurrenceAsync(dto, residentUserId.Value, imageFile);
 
             if (newOccurrenceDto == null)
             {
-                // The service returned null, meaning the business rule failed (user not in a unit).
-                return BadRequest(new { Message = "Could not create occurrence. The user may not be assigned to a unit." });
+                return BadRequest(new { message = "Could not create occurrence. The user may not be assigned to a unit." });
             }
 
-            // Return a 201 Created status with a Location header pointing to the new resource.
             return CreatedAtAction(
                 nameof(GetById),
                 new { id = newOccurrenceDto.Id },
@@ -106,6 +93,42 @@ namespace CondoSphere.API.Controllers
             var occurrences = await _occurrenceService.GetOccurrencesForResidentAsync(residentUserId.Value);
 
             return Ok(occurrences);
+        }
+
+        [HttpPatch("{id}/status")]
+        public async Task<IActionResult> UpdateStatus(int id, [FromBody] UpdateOccurrenceStatusDto dto)
+        {
+            var occurrence = await _occurrenceRepository.GetByIdAsync(id);
+            if (occurrence == null)
+            {
+                return NotFound();
+            }
+
+            var authorizationResult = await _authorizationService.AuthorizeAsync(User, occurrence, "CanAccessOccurrence");
+            if (!authorizationResult.Succeeded)
+            {
+                return Forbid();
+            }
+
+            if (User.IsInRole(RoleConstants.CondoResident))
+            {
+                return Forbid();
+            }
+
+            var companyId = _currentUserService.CompanyId;
+            if (companyId == null)
+            {
+                return Unauthorized();
+            }
+
+            var success = await _occurrenceService.UpdateOccurrenceStatusAsync(id, dto.Status, companyId.Value);
+
+            if (success)
+            {
+                return NoContent();
+            }
+
+            return BadRequest("Failed to update status.");
         }
     }
 }

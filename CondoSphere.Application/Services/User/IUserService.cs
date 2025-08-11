@@ -23,6 +23,8 @@ namespace CondoSphere.Application.Services.User
         Task<(bool Success, IEnumerable<IdentityError>? Errors)> ChangePasswordAsync(int userId, ChangePasswordDto dto);
         Task<UserProfileDto?> GetUserProfileAsync(int userId);
         Task<CoreUser?> GetUserByIdAsync(int userId);
+        Task<IEnumerable<UserListDto>> GetAvailableEmployeesAsync(int companyId);
+        Task<IdentityResult> RegisterEmployeeAsync(RegisterManagerDto registerDto, int companyId);
         Task<bool> IsEmailConfirmedAsync(CoreUser user);
         Task<CoreUser?> GetUserByEmailAsync(string email);
         Task<IdentityResult> ResendConfirmationEmailAsync(EmailDto dto);

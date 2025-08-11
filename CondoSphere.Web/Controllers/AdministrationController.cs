@@ -182,5 +182,32 @@ namespace CondoSphere.Web.Controllers
             }
             return RedirectToAction(nameof(Index));
         }
+
+        [HttpGet("register-employee")]
+        public IActionResult RegisterEmployee()
+        {
+            return View();
+        }
+
+        [HttpPost("register-employee")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> RegisterEmployee(RegisterManagerDto model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            var success = await _apiClient.RegisterEmployeeAsync(model);
+
+            if (success)
+            {
+                TempData["SuccessMessage"] = "Employee registration initiated. They will receive an email to set their password.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            ModelState.AddModelError(string.Empty, "Failed to register employee. The email may already be in use.");
+            return View(model);
+        }
     }
 }

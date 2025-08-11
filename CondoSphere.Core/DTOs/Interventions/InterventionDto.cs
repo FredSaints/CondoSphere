@@ -1,8 +1,8 @@
 ﻿using CondoSphere.Core.Enums;
 
-namespace CondoSphere.Core.Entities.Condominiums
+namespace CondoSphere.Core.DTOs.Interventions
 {
-    public class Intervention : IEntity
+    public class InterventionDto
     {
         public int Id { get; set; }
         public string Description { get; set; } = string.Empty;
@@ -10,9 +10,7 @@ namespace CondoSphere.Core.Entities.Condominiums
         public DateTime? EndDate { get; set; }
         public InterventionStatus Status { get; set; }
         public int OccurrenceId { get; set; }
-        public int CompanyId { get; set; }
-        public int? UnitId { get; set; }
-        public int CondominiumId { get; set; }
         public int? AssignedToUserId { get; set; }
+        public string? AssignedToUserName { get; set; }
     }
 }

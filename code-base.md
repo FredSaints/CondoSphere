@@ -90,6 +90,7 @@ CondoSphere.Core/DTOs/Condominiums/CreateUpdateUnitDto.cs
 CondoSphere.Core/DTOs/Condominiums/UnitDto.cs
 CondoSphere.Core/DTOs/Occurrences/CreateOccurrenceDto.cs
 CondoSphere.Core/DTOs/Occurrences/OccurrenceDto.cs
+CondoSphere.Core/DTOs/Occurrences/UpdateOccurrenceStatusDto.cs
 CondoSphere.Core/Entities/Condominiums/Assembly.cs
 CondoSphere.Core/Entities/Condominiums/Condominium.cs
 CondoSphere.Core/Entities/Condominiums/Document.cs
@@ -140,7 +141,6 @@ CondoSphere.Web/Models/ManagementDashboardViewModel.cs
 CondoSphere.Web/Models/MyProfileViewModel.cs
 CondoSphere.Web/Models/PortalDashboardViewModel.cs
 CondoSphere.Web/Models/RegisterResidentViewModel.cs
-CondoSphere.Web/Models/ResendConfirmationEmailViewModel.cs
 CondoSphere.Web/Program.cs
 CondoSphere.Web/Properties/launchSettings.json
 CondoSphere.Web/Services/ApiClient.cs
@@ -154,7 +154,6 @@ CondoSphere.Web/Views/Account/ForgotPasswordConfirmation.cshtml
 CondoSphere.Web/Views/Account/Login.cshtml
 CondoSphere.Web/Views/Account/Register.cshtml
 CondoSphere.Web/Views/Account/RegistrationComplete.cshtml
-CondoSphere.Web/Views/Account/ResendConfirmationEmail.cshtml
 CondoSphere.Web/Views/Account/SetPassword.cshtml
 CondoSphere.Web/Views/Administration/AssignManager.cshtml
 CondoSphere.Web/Views/Administration/CreateCondominium.cshtml
@@ -164,10 +163,12 @@ CondoSphere.Web/Views/CondoManagement/AssignResident.cshtml
 CondoSphere.Web/Views/CondoManagement/CreateUnit.cshtml
 CondoSphere.Web/Views/CondoManagement/Details.cshtml
 CondoSphere.Web/Views/CondoManagement/Index.cshtml
+CondoSphere.Web/Views/CondoManagement/OccurrenceDetails.cshtml
 CondoSphere.Web/Views/CondoManagement/RegisterResident.cshtml
 CondoSphere.Web/Views/Home/Index.cshtml
 CondoSphere.Web/Views/Home/Privacy.cshtml
 CondoSphere.Web/Views/Portal/CreateOccurrence.cshtml
+CondoSphere.Web/Views/Portal/Details.cshtml
 CondoSphere.Web/Views/Portal/Index.cshtml
 CondoSphere.Web/Views/Profile/ChangePassword.cshtml
 CondoSphere.Web/Views/Profile/Index.cshtml
@@ -182,49 +183,163 @@ CondoSphere.Web/wwwroot/js/site.js
 
 # Files
 
-## File: CondoSphere.Web/Models/ResendConfirmationEmailViewModel.cs
+## File: CondoSphere.Core/DTOs/Occurrences/UpdateOccurrenceStatusDto.cs
 ```csharp
+using CondoSphere.Core.Enums;
 using System.ComponentModel.DataAnnotations;
 
-namespace CondoSphere.Web.Models
+namespace CondoSphere.Core.DTOs.Occurrences
 {
-    public class ResendConfirmationEmailViewModel
+    public class UpdateOccurrenceStatusDto
     {
         [Required]
-        [EmailAddress]
-        [Display(Name = "Email")]
-        public string Email { get; set; }
+        [EnumDataType(typeof(OccurrenceStatus))]
+        public OccurrenceStatus Status { get; set; }
     }
 }
 ```
 
-## File: CondoSphere.Web/Views/Account/ResendConfirmationEmail.cshtml
+## File: CondoSphere.Web/Views/CondoManagement/OccurrenceDetails.cshtml
 ```
-@model CondoSphere.Web.Models.ResendConfirmationEmailViewModel
+@using CondoSphere.Core.Enums
+@using CondoSphere.Core.DTOs.Occurrences
+
 @{
-    ViewData["Title"] = "Reenviar Confirmação de Email";
+    ViewData["Title"] = "Occurrence Details";
 }
 
-<h2>Reenviar Confirmação de Email</h2>
+<h1>@Model.Title</h1>
+<p class="text-muted">Details for occurrence reported on @Model.ReportedDate.ToLocalTime().ToString("f")</p>
+<hr />
 
-<form method="post">
-    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                Details
+                <form asp-action="UpdateOccurrenceStatus"
+                      asp-route-condominiumId="@Model.CondominiumId"
+                      asp-route-occurrenceId="@Model.Id"
+                      method="post" class="d-flex align-items-center gap-2">
+                    @Html.AntiForgeryToken()
+                    <select name="Status" class="form-select form-select-sm"
+                            asp-items="Html.GetEnumSelectList<OccurrenceStatus>()">
+                    </select>
+                    <button type="submit" class="btn btn-primary btn-sm">Update Status</button>
+                </form>
+            </div>
+            <div class="card-body">
+                <dl class="row">
+                    <dt class="col-sm-3">Status</dt>
+                    <dd class="col-sm-9">
+                        <span class="badge @(Model.Status == CondoSphere.Core.Enums.OccurrenceStatus.Open ? "bg-danger" : "bg-secondary")">
+                            @Model.Status
+                        </span>
+                    </dd>
 
-    <div class="form-group">
-        <label asp-for="Email"></label>
-        <input asp-for="Email" class="form-control" />
-        <span asp-validation-for="Email" class="text-danger"></span>
+                    <dt class="col-sm-3">Reported On</dt>
+                    <dd class="col-sm-9">@Model.ReportedDate.ToLocalTime().ToString("f")</dd>
+
+                    <dt class="col-sm-3">Reported By</dt>
+                    <dd class="col-sm-9">@Model.ReportedByUserName</dd>
+                </dl>
+                <hr />
+                <h5>Description</h5>
+                <p>@Model.Description</p>
+            </div>
+        </div>
+        <div class="mt-3">
+            <a asp-action="Details" asp-route-id="@Model.CondominiumId" class="btn btn-secondary">Back to Condominium Details</a>
+        </div>
     </div>
+    <div class="col-md-4">
+        @if (!string.IsNullOrEmpty(Model.ImageUrl))
+        {
+            <div class="card">
+                <div class="card-header">
+                    Attached Image
+                </div>
+                <div class="card-body p-1">
+                    <img src="@Model.ImageUrl" alt="Occurrence Image" class="img-fluid rounded" />
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="card bg-light">
+                <div class="card-body text-center text-muted">
+                    <i class="bi bi-image-alt fs-1"></i>
+                    <p>No image was provided.</p>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+```
 
-    <button type="submit" class="btn btn-primary mt-2">Reenviar Email</button>
-    <a asp-action="Login" class="btn btn-secondary mt-2">Voltar</a>
-</form>
+## File: CondoSphere.Web/Views/Portal/Details.cshtml
+```
+@model CondoSphere.Core.DTOs.Occurrences.OccurrenceDto
 
-@section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
+@{
+    ViewData["Title"] = "Occurrence Details";
 }
+
+<h1>@Model.Title</h1>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                Details
+            </div>
+            <div class="card-body">
+                <dl class="row">
+                    <dt class="col-sm-3">Status</dt>
+                    <dd class="col-sm-9">
+                        <span class="badge @(Model.Status == CondoSphere.Core.Enums.OccurrenceStatus.Open ? "bg-danger" : "bg-secondary")">
+                            @Model.Status
+                        </span>
+                    </dd>
+
+                    <dt class="col-sm-3">Reported On</dt>
+                    <dd class="col-sm-9">@Model.ReportedDate.ToLocalTime().ToString("f")</dd>
+
+                    <dt class="col-sm-3">Reported By</dt>
+                    <dd class="col-sm-9">@Model.ReportedByUserName</dd>
+                </dl>
+                <hr />
+                <h5>Description</h5>
+                <p>@Model.Description</p>
+            </div>
+        </div>
+        <div class="mt-3">
+            <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+        </div>
+    </div>
+    <div class="col-md-4">
+        @if (!string.IsNullOrEmpty(Model.ImageUrl))
+        {
+            <div class="card">
+                <div class="card-header">
+                    Attached Image
+                </div>
+                <div class="card-body">
+                    <img src="@Model.ImageUrl" alt="Occurrence Image" class="img-fluid rounded" />
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="card bg-light">
+                <div class="card-body text-center text-muted">
+                    <i class="bi bi-image-alt fs-1"></i>
+                    <p>No image was provided.</p>
+                </div>
+            </div>
+        }
+    </div>
+</div>
 ```
 
 ## File: CondoSphere.API/appsettings.json
@@ -274,55 +389,42 @@ namespace CondoSphere.API.Controllers
             _occurrenceRepository = occurrenceRepository;
         }
 
+
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
-            // First, get the raw entity from the repository to check authorization against.
-            CoreOccurrence? occurrence = await _occurrenceRepository.GetByIdAsync(id);
-            if (occurrence == null)
-            {
-                return NotFound();
-            }
+            var occurrence = await _occurrenceRepository.GetByIdAsync(id);
+            if (occurrence == null) return NotFound();
 
-            // Check if the current user is authorized to view this specific occurrence resource.
             var authorizationResult = await _authorizationService.AuthorizeAsync(User, occurrence, "CanAccessOccurrence");
-            if (!authorizationResult.Succeeded)
-            {
-                // Return 403 Forbidden if the policy check fails.
-                return Forbid();
-            }
+            if (!authorizationResult.Succeeded) return Forbid();
 
-            // If authorized, get the rich DTO from the service to return to the client.
             var occurrenceDto = await _occurrenceService.GetOccurrenceByIdAsync(id);
             return Ok(occurrenceDto);
         }
 
         [HttpPost]
         [Authorize(Roles = RoleConstants.CondoResident)]
-        public async Task<IActionResult> CreateOccurrence([FromBody] CreateOccurrenceDto dto)
+        public async Task<IActionResult> CreateOccurrence([FromForm] CreateOccurrenceDto dto, IFormFile? imageFile)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            // The controller's job is to get the user ID from the security context.
             var residentUserId = _currentUserService.UserId;
             if (residentUserId == null)
             {
                 return Unauthorized("User ID could not be determined from token.");
             }
 
-            // The controller passes the clean ID to the service layer.
-            var newOccurrenceDto = await _occurrenceService.CreateOccurrenceAsync(dto, residentUserId.Value);
+            var newOccurrenceDto = await _occurrenceService.CreateOccurrenceAsync(dto, residentUserId.Value, imageFile);
 
             if (newOccurrenceDto == null)
             {
-                // The service returned null, meaning the business rule failed (user not in a unit).
-                return BadRequest(new { Message = "Could not create occurrence. The user may not be assigned to a unit." });
+                return BadRequest(new { message = "Could not create occurrence. The user may not be assigned to a unit." });
             }
 
-            // Return a 201 Created status with a Location header pointing to the new resource.
             return CreatedAtAction(
                 nameof(GetById),
                 new { id = newOccurrenceDto.Id },
@@ -350,6 +452,42 @@ namespace CondoSphere.API.Controllers
             var occurrences = await _occurrenceService.GetOccurrencesForResidentAsync(residentUserId.Value);
 
             return Ok(occurrences);
+        }
+
+        [HttpPatch("{id}/status")]
+        public async Task<IActionResult> UpdateStatus(int id, [FromBody] UpdateOccurrenceStatusDto dto)
+        {
+            var occurrence = await _occurrenceRepository.GetByIdAsync(id);
+            if (occurrence == null)
+            {
+                return NotFound();
+            }
+
+            var authorizationResult = await _authorizationService.AuthorizeAsync(User, occurrence, "CanAccessOccurrence");
+            if (!authorizationResult.Succeeded)
+            {
+                return Forbid();
+            }
+
+            if (User.IsInRole(RoleConstants.CondoResident))
+            {
+                return Forbid();
+            }
+
+            var companyId = _currentUserService.CompanyId;
+            if (companyId == null)
+            {
+                return Unauthorized();
+            }
+
+            var success = await _occurrenceService.UpdateOccurrenceStatusAsync(id, dto.Status, companyId.Value);
+
+            if (success)
+            {
+                return NoContent();
+            }
+
+            return BadRequest("Failed to update status.");
         }
     }
 }
@@ -476,7 +614,7 @@ namespace CondoSphere.API.Controllers
 
             if (result.Succeeded)
             {
-                return StatusCode(201, new { Message = "Resident registered successfully. A welcome email has been sent for them to set their password." });
+                return StatusCode(201, new { message = "Resident registered successfully. A welcome email has been sent for them to set their password." });
             }
 
             return BadRequest(result.Errors);
@@ -579,6 +717,7 @@ namespace CondoSphere.Application.Interfaces
         Task<Occurrence?> GetByIdAsync(int occurrenceId);
         Task AddAsync(Occurrence occurrence);
         Task<IEnumerable<Occurrence>> GetAllForResidentAsync(int residentUserId);
+        void Update(Occurrence occurrence);
     }
 }
 ```
@@ -648,15 +787,18 @@ namespace CondoSphere.Application.Mappings
 ## File: CondoSphere.Application/Services/Occurrence/IOccurrenceService.cs
 ```csharp
 using CondoSphere.Core.DTOs.Occurrences;
+using CondoSphere.Core.Enums;
+using Microsoft.AspNetCore.Http;
 
 namespace CondoSphere.Application.Services.Occurrence
 {
     public interface IOccurrenceService
     {
         Task<IEnumerable<OccurrenceDto>> GetOccurrencesForCondominiumAsync(int condominiumId);
-        Task<OccurrenceDto?> CreateOccurrenceAsync(CreateOccurrenceDto dto, int residentUserId);
+        Task<OccurrenceDto?> CreateOccurrenceAsync(CreateOccurrenceDto dto, int residentUserId, IFormFile? imageFile);
         Task<OccurrenceDto?> GetOccurrenceByIdAsync(int occurrenceId);
         Task<IEnumerable<OccurrenceDto>> GetOccurrencesForResidentAsync(int residentUserId);
+        Task<bool> UpdateOccurrenceStatusAsync(int occurrenceId, OccurrenceStatus newStatus, int companyId);
     }
 }
 ```
@@ -667,10 +809,12 @@ using AutoMapper;
 using CondoSphere.Application.Interfaces;
 using CondoSphere.Core.DTOs.Occurrences;
 using CondoSphere.Core.Enums;
-using CoreOccurrence = CondoSphere.Core.Entities.Condominiums.Occurrence;
-using CoreUser = CondoSphere.Core.Entities.Users.User;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using CoreOccurrence = CondoSphere.Core.Entities.Condominiums.Occurrence;
+using CoreUser = CondoSphere.Core.Entities.Users.User;
 
 namespace CondoSphere.Application.Services.Occurrence
 {
@@ -679,15 +823,21 @@ namespace CondoSphere.Application.Services.Occurrence
         private readonly IUnitOfWork _unitOfWork;
         private readonly UserManager<CoreUser> _userManager;
         private readonly IMapper _mapper;
+        private readonly IConfiguration _configuration;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
         public OccurrenceService(
             IUnitOfWork unitOfWork,
             UserManager<CoreUser> userManager,
-            IMapper mapper)
+            IMapper mapper,
+            IConfiguration configuration,
+             IHttpContextAccessor httpContextAccessor)
         {
             _unitOfWork = unitOfWork;
             _userManager = userManager;
             _mapper = mapper;
+            _configuration = configuration;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public async Task<IEnumerable<OccurrenceDto>> GetOccurrencesForCondominiumAsync(int condominiumId)
@@ -717,20 +867,46 @@ namespace CondoSphere.Application.Services.Occurrence
             return occurrenceDtos;
         }
 
-        public async Task<OccurrenceDto?> CreateOccurrenceAsync(CreateOccurrenceDto dto, int residentUserId)
+        public async Task<OccurrenceDto?> CreateOccurrenceAsync(CreateOccurrenceDto dto, int residentUserId, IFormFile? imageFile)
         {
-            // 1. Find the unit associated with the logged-in resident using the Unit of Work.
+            // 1. Find the unit associated with the logged-in resident to get context.
             var unit = await _unitOfWork.Units.GetUnitByResidentIdAsync(residentUserId);
             if (unit == null)
             {
-                // SECURITY: This resident is not assigned to a unit, so they cannot create an occurrence.
+                // Fail because this user is not an active resident of any unit.
                 return null;
             }
 
-            // 2. Create the new Occurrence entity from the DTO using AutoMapper.
+            // 2. Map the incoming data (Title, Description) to our database entity.
             var newOccurrence = _mapper.Map<CoreOccurrence>(dto);
 
-            // 3. Populate all system-managed properties.
+            // 3. Handle the optional image upload.
+            if (imageFile != null && imageFile.Length > 0)
+            {
+                var uploadPath = _configuration["FileUpload:Path"];
+                if (string.IsNullOrEmpty(uploadPath))
+                {
+                    return null;
+                }
+
+                // Create a unique, random filename to prevent name collisions and obscure the original filename.
+                var uniqueFileName = $"{Guid.NewGuid()}{Path.GetExtension(imageFile.FileName)}";
+                var filePath = Path.Combine(uploadPath, uniqueFileName);
+
+                // Save the file stream to the configured physical path on the server's disk.
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await imageFile.CopyToAsync(stream);
+                }
+                // Get the current HTTP request context to build the base URL (e.g., https://localhost:7177)
+                var request = _httpContextAccessor.HttpContext.Request;
+                var baseUrl = $"{request.Scheme}://{request.Host}";
+
+                // Combine the base URL with the public path to the file.
+                newOccurrence.ImageUrl = $"{baseUrl}/uploads/{uniqueFileName}";
+            }
+
+            // 4. Populate the system-managed properties for the new occurrence.
             newOccurrence.ReportedDate = DateTime.UtcNow;
             newOccurrence.Status = OccurrenceStatus.Open;
             newOccurrence.ReportedByUserId = residentUserId;
@@ -738,11 +914,11 @@ namespace CondoSphere.Application.Services.Occurrence
             newOccurrence.CondominiumId = unit.CondominiumId;
             newOccurrence.CompanyId = unit.CompanyId;
 
-            // 4. Add the new entity to the database via the repository and save all changes.
+            // 5. Add the new entity to the repository and save the changes via the Unit of Work.
             await _unitOfWork.Occurrences.AddAsync(newOccurrence);
             await _unitOfWork.CompleteAsync();
 
-            // 5. Map the newly created entity (which now has an ID) back to a DTO to return.
+            // 6. Map the fully populated entity (with its new ID and absolute ImageUrl) back to a DTO to return.
             return _mapper.Map<OccurrenceDto>(newOccurrence);
         }
 
@@ -754,7 +930,15 @@ namespace CondoSphere.Application.Services.Occurrence
                 return null;
             }
 
-            return _mapper.Map<OccurrenceDto>(occurrence);
+            var dto = _mapper.Map<OccurrenceDto>(occurrence);
+
+            var reporter = await _userManager.FindByIdAsync(occurrence.ReportedByUserId.ToString());
+            if (reporter != null)
+            {
+                dto.ReportedByUserName = $"{reporter.FirstName} {reporter.LastName}";
+            }
+
+            return dto;
         }
 
         public async Task<IEnumerable<OccurrenceDto>> GetOccurrencesForResidentAsync(int residentUserId)
@@ -762,6 +946,24 @@ namespace CondoSphere.Application.Services.Occurrence
             var occurrences = await _unitOfWork.Occurrences.GetAllForResidentAsync(residentUserId);
 
             return _mapper.Map<IEnumerable<OccurrenceDto>>(occurrences);
+        }
+
+        public async Task<bool> UpdateOccurrenceStatusAsync(int occurrenceId, OccurrenceStatus newStatus, int companyId)
+        {
+            var occurrence = await _unitOfWork.Occurrences.GetByIdAsync(occurrenceId);
+
+            if (occurrence == null || occurrence.CompanyId != companyId)
+            {
+                return false;
+            }
+
+            occurrence.Status = newStatus;
+
+            _unitOfWork.Occurrences.Update(occurrence);
+
+            await _unitOfWork.CompleteAsync();
+
+            return true;
         }
     }
 }
@@ -1126,6 +1328,8 @@ namespace CondoSphere.Core.DTOs.Occurrences
         public OccurrenceStatus Status { get; set; }
         public string ReportedByUserName { get; set; } = string.Empty;
         public int? UnitId { get; set; }
+        public int CondominiumId { get; set; }
+        public string? ImageUrl { get; set; }
     }
 }
 ```
@@ -1250,6 +1454,7 @@ namespace CondoSphere.Core.Entities.Condominiums
         public int CompanyId { get; set; }
         public int ReportedByUserId { get; set; }
         public int? AssignedToUserId { get; set; }
+        public string? ImageUrl { get; set; }
     }
 }
 ```
@@ -1655,11 +1860,9 @@ using CoreUser = CondoSphere.Core.Entities.Users.User;
 
 namespace CondoSphere.Infrastructure.Authorization
 {
-    // Use the 'CoreOccurrence' alias for the resource type
     public class CanAccessOccurrenceHandler : AuthorizationHandler<CanAccessOccurrenceRequirement, CoreOccurrence>
     {
         private readonly ICurrentUserService _currentUserService;
-        // Use the 'CoreUser' alias here
         private readonly UserManager<CoreUser> _userManager;
 
         public CanAccessOccurrenceHandler(ICurrentUserService currentUserService, UserManager<CoreUser> userManager)
@@ -1669,9 +1872,9 @@ namespace CondoSphere.Infrastructure.Authorization
         }
 
         protected override async Task HandleRequirementAsync(
-            AuthorizationHandlerContext context,
-            CanAccessOccurrenceRequirement requirement,
-            CoreOccurrence resource) // And use the alias for the resource parameter
+                                 AuthorizationHandlerContext context,
+                                 CanAccessOccurrenceRequirement requirement,
+                                 CoreOccurrence resource)
         {
             var userId = _currentUserService.UserId;
             if (userId == null)
@@ -1687,7 +1890,14 @@ namespace CondoSphere.Infrastructure.Authorization
                 return;
             }
 
-            // Rule 2 & 3: Allow if the user is a CompanyAdmin or CondoManager for that company.
+            // Rule2: Allow if the user is the employee assigned to the occurrence
+            if (resource.AssignedToUserId.HasValue && resource.AssignedToUserId.Value == userId.Value)
+            {
+                context.Succeed(requirement);
+                return;
+            }
+
+            // Rule 3: Allow if the user is a CompanyAdmin or CondoManager for that company.
             var user = await _userManager.FindByIdAsync(userId.Value.ToString());
             if (user?.CompanyId == resource.CompanyId)
             {
@@ -1785,6 +1995,11 @@ namespace CondoSphere.Infrastructure.Repositories
                 .OrderByDescending(o => o.ReportedDate)
                 .AsNoTracking()
                 .ToListAsync();
+        }
+
+        public void Update(Occurrence occurrence)
+        {
+            _context.Entry(occurrence).State = EntityState.Modified;
         }
     }
 }
@@ -1938,14 +2153,14 @@ namespace CondoSphere.Web.Controllers
 
         [HttpPost("create-occurrence")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateOccurrence(CreateOccurrenceDto model)
+        public async Task<IActionResult> CreateOccurrence(CreateOccurrenceDto model, IFormFile? imageFile)
         {
             if (!ModelState.IsValid)
             {
                 return View(model);
             }
 
-            var result = await _apiClient.CreateOccurrenceAsync(model);
+            var result = await _apiClient.CreateOccurrenceAsync(model, imageFile);
 
             if (result != null)
             {
@@ -1956,199 +2171,23 @@ namespace CondoSphere.Web.Controllers
             ModelState.AddModelError(string.Empty, "An error occurred while reporting the occurrence. Please try again.");
             return View(model);
         }
+
+        [HttpGet("occurrences/{id}")]
+        public async Task<IActionResult> Details(int id)
+        {
+            var occurrence = await _apiClient.GetOccurrenceDetailsAsync(id);
+            if (occurrence == null)
+            {
+                return NotFound();
+            }
+            return View(occurrence);
+        }
     }
 }
 ```
 
 ## File: CondoSphere.Web/Controllers/ProfileController.cs
 ```csharp
-//using CondoSphere.Core.DTOs.Account;
-//using CondoSphere.Core.Entities.Users;
-//using CondoSphere.Web.Models;
-//using CondoSphere.Web.Services;
-//using Microsoft.AspNetCore.Authorization;
-//using Microsoft.AspNetCore.Identity;
-//using Microsoft.AspNetCore.Mvc;
-//using System.Security.Claims;
-
-//namespace CondoSphere.Web.Controllers
-//{
-//    [Authorize]
-//    [Route("profile")]
-//    public class ProfileController : Controller
-//    {
-//        private readonly ApiClient _apiClient;
-//        private readonly IImageService _imageService;
-//        private readonly UserManager<User> _userManager;
-//        private readonly SignInManager<User> _signInManager;
-
-//        public ProfileController(ApiClient apiClient, IImageService imageService, UserManager<User> userManager, SignInManager<User> signInManager)
-//        {
-//            _apiClient = apiClient;
-//            _imageService = imageService;
-//            _userManager = userManager;
-//            _signInManager = signInManager;
-//        }
-
-//        [HttpGet("")]
-//        public IActionResult Index()
-//        {
-//            var model = new MyProfileViewModel
-//            {
-//                FirstName = User.FindFirstValue(ClaimTypes.GivenName) ?? "",
-//                LastName = User.FindFirstValue(ClaimTypes.Surname) ?? "",
-//                CurrentProfileImageUrl = User.FindFirstValue("profile_picture")
-//            };
-//            return View(model);
-//        }
-
-//        //[HttpPost("")]
-//        //[ValidateAntiForgeryToken]
-//        //public async Task<IActionResult> Index(MyProfileViewModel model)
-//        //{
-//        //    if (!ModelState.IsValid)
-//        //    {
-//        //        return View(model);
-//        //    }
-
-//        //    // This part remains the same: save the image and update the database via the API.
-//        //    string? newImageUrl = model.CurrentProfileImageUrl;
-//        //    if (model.ProfileImage != null && model.ProfileImage.Length > 0)
-//        //    {
-//        //        newImageUrl = await _imageService.SaveImageAsync(model.ProfileImage, "user-photos", model.CurrentProfileImageUrl);
-//        //    }
-//        //    var dto = new UpdateProfileDto
-//        //    {
-//        //        FirstName = model.FirstName,
-//        //        LastName = model.LastName,
-//        //        ProfilePictureUrl = newImageUrl
-//        //    };
-//        //    var (success, message) = await _apiClient.UpdateProfileAsync(dto);
-
-//        //    if (success)
-//        //    {
-//        //        // ===== THIS IS THE NEW SESSION REFRESH LOGIC =====
-
-//        //        // 1. Fetch the user's complete, updated profile from the API.
-//        //        var updatedProfile = await _apiClient.GetMyProfileAsync();
-//        //        if (updatedProfile != null)
-//        //        {
-//        //            // 2. Create a new set of claims based on the fresh data.
-//        //            var claims = new List<Claim>
-//        //    {
-//        //        new Claim(ClaimTypes.NameIdentifier, updatedProfile.Id.ToString()),
-//        //        new Claim(ClaimTypes.Name, updatedProfile.Email),
-//        //        new Claim(ClaimTypes.Email, updatedProfile.Email),
-//        //        new Claim(ClaimTypes.GivenName, updatedProfile.FirstName),
-//        //        new Claim(ClaimTypes.Surname, updatedProfile.LastName),
-//        //        new Claim("profile_picture", updatedProfile.ProfilePictureUrl ?? "")
-//        //    };
-//        //            foreach (var role in updatedProfile.Roles)
-//        //            {
-//        //                claims.Add(new Claim(ClaimTypes.Role, role));
-//        //            }
-//        //            var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-//        //            var authProperties = new AuthenticationProperties { IsPersistent = true };
-
-//        //            // 3. Sign the user in again. This replaces their old cookie with the new one.
-//        //            await HttpContext.SignInAsync(
-//        //                CookieAuthenticationDefaults.AuthenticationScheme,
-//        //                new ClaimsPrincipal(claimsIdentity),
-//        //                authProperties);
-//        //        }
-
-//        //        TempData["SuccessMessage"] = "Your profile has been updated.";
-//        //        return RedirectToAction("Index");
-//        //    }
-
-//        //    ModelState.AddModelError(string.Empty, message);
-//        //    return View(model);
-//        //}
-
-//        [HttpPost("")]
-//        [ValidateAntiForgeryToken]
-//        public async Task<IActionResult> Index(MyProfileViewModel model)
-//        {
-//            if (!ModelState.IsValid)
-//            {
-//                return View(model);
-//            }
-
-//            string? newImageUrl = model.CurrentProfileImageUrl;
-//            if (model.ProfileImage != null && model.ProfileImage.Length > 0)
-//            {
-//                newImageUrl = await _imageService.SaveImageAsync(model.ProfileImage, "user-photos", model.CurrentProfileImageUrl);
-//            }
-
-//            var dto = new UpdateProfileDto
-//            {
-//                FirstName = model.FirstName,
-//                LastName = model.LastName,
-//                ProfilePictureUrl = newImageUrl
-//            };
-
-//            var (success, message) = await _apiClient.UpdateProfileAsync(dto);
-
-//            if (success)
-//            {
-//                var updatedProfile = await _apiClient.GetMyProfileAsync();
-//                if (updatedProfile != null)
-//                {
-//                    // Use the user ID from the updated profile, not from claims
-//                    var userId = updatedProfile.Id.ToString();
-
-//                    var identityUser = await _userManager.FindByIdAsync(userId);
-
-//                    // LOG: Show old and new info for diagnostics
-//                    Console.WriteLine("BEFORE SIGN-IN:");
-//                    Console.WriteLine("Current User ID: " + User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value);
-//                    Console.WriteLine("Current User Name: " + User.Identity.Name);
-
-//                    await _signInManager.SignOutAsync();
-//                    await _signInManager.SignInAsync(identityUser, isPersistent: false);
-
-//                    Console.WriteLine("AFTER SIGN-IN (same request):");
-//                    Console.WriteLine("Current User ID: " + User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value);
-//                    Console.WriteLine("Current User Name: " + User.Identity.Name);
-//                    Console.WriteLine("Expected New Name: " + identityUser.FirstName + " " + identityUser.LastName);
-//                }
-//                TempData["SuccessMessage"] = "Your profile has been updated.";
-//                return RedirectToAction("Index");
-//            }
-
-//            ModelState.AddModelError(string.Empty, message);
-//            return View(model);
-//        }
-
-//        [HttpGet("change-password")]
-//        public IActionResult ChangePassword()
-//        {
-//            return View(new ChangePasswordViewModel());
-//        }
-
-//        [HttpPost("change-password")]
-//        [ValidateAntiForgeryToken]
-//        public async Task<IActionResult> ChangePassword(ChangePasswordViewModel model)
-//        {
-//            if (!ModelState.IsValid)
-//            {
-//                return View(model);
-//            }
-
-//            var (success, message) = await _apiClient.ChangePasswordAsync(model);
-//            if (success)
-//            {
-//                ModelState.Clear();
-//                TempData["SuccessMessage"] = "Your password has been changed successfully.";
-//                return RedirectToAction("Index");
-//            }
-
-//            ModelState.AddModelError(string.Empty, "Failed to change password. Please check your current password and try again.");
-//            return View(model);
-//        }
-//    }
-//}
-
 using CondoSphere.Core.DTOs.Account;
 using CondoSphere.Web.Models;
 using CondoSphere.Web.Services;
@@ -2157,12 +2196,9 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
-using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 using System.Security.Claims;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace CondoSphere.Web.Controllers
 {
@@ -2172,7 +2208,7 @@ namespace CondoSphere.Web.Controllers
     {
         private readonly ApiClient _apiClient;
         private readonly IImageService _imageService;
-        private readonly IConfiguration _configuration; // Added for token validation
+        private readonly IConfiguration _configuration;
 
         public ProfileController(ApiClient apiClient, IImageService imageService, IConfiguration configuration)
         {
@@ -3086,12 +3122,12 @@ else
 }
 
 <h1>@ViewData["Title"]</h1>
-<p>Please provide a clear title and a detailed description of the issue.</p>
+<p>Please provide a clear title, a detailed description of the issue, and an optional photo.</p>
 <hr />
 
 <div class="row">
     <div class="col-md-8">
-        <form asp-action="CreateOccurrence" method="post">
+        <form asp-action="CreateOccurrence" method="post" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
             <div class="form-floating mb-3">
@@ -3106,6 +3142,15 @@ else
                 <span asp-validation-for="Description" class="text-danger"></span>
             </div>
 
+            <div class="mb-3">
+                <label for="imageFile" class="form-label">Upload an Image (Optional)</label>
+                <input name="imageFile" id="imageFile" class="form-control" type="file" accept="image/*" />
+            </div>
+
+            <div class="mb-3">
+                <img id="imagePreview" src="#" alt="Image Preview" class="img-fluid rounded" style="display: none; max-height: 300px;" />
+            </div>
+
             <button type="submit" class="btn btn-success">Submit Report</button>
             <a asp-action="Index" class="btn btn-secondary">Cancel</a>
         </form>
@@ -3114,6 +3159,28 @@ else
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const imageFileInput = document.getElementById('imageFile');
+            const imagePreview = document.getElementById('imagePreview');
+
+            imageFileInput.addEventListener('change', function () {
+                const file = this.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        imagePreview.src = e.target.result;
+                        imagePreview.style.display = 'block';
+                    }
+                    reader.readAsDataURL(file);
+                } else {
+                    imagePreview.src = '#';
+                    imagePreview.style.display = 'none';
+                }
+            });
+        });
+    </script>
 }
 ```
 
@@ -3158,7 +3225,7 @@ else
                                     </span>
                                 </td>
                                 <td class="text-end">
-                                    <a href="#" class="btn btn-sm btn-outline-primary">View Details</a>
+                                    <a asp-action="Details" asp-route-id="@occurrence.Id" class="btn btn-sm btn-outline-primary">View Details</a>
                                 </td>
                             </tr>
                         }
@@ -4356,6 +4423,7 @@ namespace CondoSphere.Web.Controllers
 using CondoSphere.Core;
 using CondoSphere.Core.DTOs.Account;
 using CondoSphere.Core.DTOs.Condominiums;
+using CondoSphere.Core.DTOs.Occurrences;
 using CondoSphere.Web.Models;
 using CondoSphere.Web.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -4554,6 +4622,45 @@ namespace CondoSphere.Web.Controllers
                 Value = r.Id.ToString()
             });
             return View(model);
+        }
+
+        [HttpGet("{condominiumId}/occurrences/{occurrenceId}")]
+        public async Task<IActionResult> OccurrenceDetails(int condominiumId, int occurrenceId)
+        {
+            var occurrence = await _apiClient.GetOccurrenceDetailsAsync(occurrenceId);
+            if (occurrence == null)
+            {
+                return NotFound();
+            }
+
+            if (occurrence.CondominiumId != condominiumId)
+            {
+                return Forbid();
+            }
+            return View(occurrence);
+        }
+
+        [HttpPost("{condominiumId}/occurrences/{occurrenceId}/update-status")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdateOccurrenceStatus(int condominiumId, int occurrenceId, UpdateOccurrenceStatusDto dto)
+        {
+            if (!ModelState.IsValid)
+            {
+                TempData["ErrorMessage"] = "Invalid status selected.";
+                return RedirectToAction("OccurrenceDetails", new { condominiumId, occurrenceId });
+            }
+
+            var success = await _apiClient.UpdateOccurrenceStatusAsync(occurrenceId, dto);
+            if (success)
+            {
+                TempData["SuccessMessage"] = "Occurrence status has been updated.";
+            }
+            else
+            {
+                TempData["ErrorMessage"] = "Failed to update status.";
+            }
+
+            return RedirectToAction("OccurrenceDetails", new { condominiumId, occurrenceId });
         }
     }
 }
@@ -4900,11 +5007,14 @@ namespace CondoSphere.Web.Models
                                 <td>@occurrence.ReportedByUserName</td>
                                 <td>@occurrence.ReportedDate.ToString("yyyy-MM-dd HH:mm")</td>
                                 <td>
-                                    @* We can make these badges dynamic later based on status *@
                                     <span class="badge bg-danger">@occurrence.Status</span>
                                 </td>
                                 <td class="text-end">
-                                    <a href="#" class="btn btn-sm btn-outline-primary">View Details</a>
+                                    @* ===== REPLACE THIS LINK ===== *@
+                                    <a asp-action="OccurrenceDetails"
+                                       asp-route-condominiumId="@Model.Condominium.Id"
+                                       asp-route-occurrenceId="@occurrence.Id"
+                                       class="btn btn-sm btn-outline-primary">View Details</a>
                                 </td>
                             </tr>
                         }
@@ -4982,6 +5092,9 @@ namespace CondoSphere.Web.Models
     "Smtp": "smtp.gmail.com",
     "Port": 587,
     "Username": "condosphere.geral@gmail.com"
+  },
+  "FileUpload": {
+    "Path": "C:\\Projectos\\CondoSphere\\CondoSphere_Uploads\\"
   }
 }
 ```
@@ -4999,7 +5112,7 @@ Content-Type: application/json
   "companyName": "My New Test Company",
   "firstName": "Test",
   "lastName": "Admin",
-  "email": "rafaalexandrecosta26@gmail.com",
+  "email": "admin@admin.com",
   "password": "123456",
   "confirmPassword": "123456"
 }
@@ -5327,7 +5440,7 @@ namespace CondoSphere.API.Controllers
 
             if (result.Succeeded)
             {
-                return StatusCode(201, new { Message = "Company and administrator registered successfully." });
+                return StatusCode(201, new { message = "Company and administrator registered successfully." });
             }
 
             foreach (var error in result.Errors)
@@ -5346,17 +5459,6 @@ namespace CondoSphere.API.Controllers
                 return BadRequest(ModelState);
             }
 
-            var user = await _userService.GetUserByEmailAsync(loginDto.Email);
-            if (user != null) 
-            {
-                var isConfirmed = await _userService.IsEmailConfirmedAsync(user);
-
-                if (!isConfirmed)
-                {
-                    return Unauthorized(new { Message = "Not confirmed email" });
-                }  
-            }
-          
             var userDto = await _userService.LoginAsync(loginDto);
 
             if (userDto == null)
@@ -5367,22 +5469,7 @@ namespace CondoSphere.API.Controllers
             return Ok(userDto);
         }
 
-        [HttpPost("IsEmailConfirmed")]
-        [AllowAnonymous]
-        public async Task<string> IsEmailConfirmed(string email)
-        {
-            var result = await _userService.IsEmailConfirmedAsync(await _userManager.FindByEmailAsync(email));
-            if (result == false)
-            {
-                return "Email Not Confirmed";
-            }
-            else
-            {
-                return "Email Confirmed";
-            }
-        }
-
-            [HttpPost("register-manager")]
+        [HttpPost("register-manager")]
         [Authorize(Roles = RoleConstants.CompanyAdmin)]
         public async Task<IActionResult> RegisterManager([FromBody] RegisterManagerDto registerDto)
         {
@@ -5401,7 +5488,7 @@ namespace CondoSphere.API.Controllers
 
             if (result.Succeeded)
             {
-                return StatusCode(201, new { Message = "Condominium Manager registered successfully." });
+                return StatusCode(201, new { message = "Condominium Manager registered successfully." });
             }
 
             foreach (var error in result.Errors)
@@ -5424,7 +5511,7 @@ namespace CondoSphere.API.Controllers
 
             if (result.Succeeded)
             {
-                return Ok(new { Message = "Email confirmed successfully." });
+                return Ok(new { message = "Email confirmed successfully." });
             }
 
             return BadRequest("Email could not be confirmed. The link may have expired.");
@@ -5442,7 +5529,7 @@ namespace CondoSphere.API.Controllers
             var user = await _userManager.FindByIdAsync(setPasswordDto.UserId);
             if (user == null)
             {
-                return Ok(new { Message = "If a matching account was found, a password has been set." });
+                return Ok(new { message = "If a matching account was found, a password has been set." });
             }
 
             var result = await _userManager.ResetPasswordAsync(user, setPasswordDto.Token, setPasswordDto.Password);
@@ -5456,7 +5543,7 @@ namespace CondoSphere.API.Controllers
                     user.EmailConfirmed = true;
                     await _userManager.UpdateAsync(user);
                 }
-                return Ok(new { Message = "Your password has been set successfully. You can now log in." });
+                return Ok(new { message = "Your password has been set successfully. You can now log in." });
             }
 
             // If token is invalid, passwords don't match criteria, etc.
@@ -5525,21 +5612,7 @@ namespace CondoSphere.API.Controllers
 
             await _userService.ForgotPasswordAsync(dto.Email);
 
-            return Ok(new { Message = "If an account with that email exists, a password reset link has been sent." });
-        }
-
-        [HttpPost("ResendConfirmationEmail")]
-        [AllowAnonymous]
-        public async Task<IActionResult> ResendConfirmationEmail (string email)
-        {
-            var result = await _userService.ResendConfirmationEmailAsync(email);
-            if (result.Succeeded)
-            {
-                return Ok(new { Message = "Confirmation Email Resent" });
-            }
-
-            return BadRequest( result.Errors.ToString() );
-
+            return Ok(new { message = "If an account with that email exists, a password reset link has been sent." });
         }
     }
 }
@@ -5688,7 +5761,7 @@ namespace CondoSphere.API.Controllers
 
             if (!success)
             {
-                return BadRequest("Failed to assign manager. Verify condominium and manager IDs are valid for your company.");
+                return BadRequest(new { message = "Failed to assign manager. Verify condominium and manager IDs are valid for your company." });
             }
 
             return NoContent();
@@ -5848,7 +5921,7 @@ namespace CondoSphere.API.Controllers
                 return NoContent();
             }
 
-            return BadRequest(new { Message = "Failed to unassign resident. The unit might already be vacant." });
+            return BadRequest(new { message = "Failed to unassign resident. The unit might already be vacant." });
         }
 
         [HttpPatch("{unitId}/assign-resident")]
@@ -5865,7 +5938,7 @@ namespace CondoSphere.API.Controllers
                 return NoContent();
             }
 
-            return BadRequest(new { Message = "Failed to assign resident. The unit may be occupied or the resident invalid." });
+            return BadRequest(new { message = "Failed to assign resident. The unit may be occupied or the resident invalid." });
         }
     }
 }
@@ -6060,10 +6133,6 @@ namespace CondoSphere.Application.Services.User
         Task<(bool Success, IEnumerable<IdentityError>? Errors)> ChangePasswordAsync(int userId, ChangePasswordDto dto);
         Task<UserProfileDto?> GetUserProfileAsync(int userId);
         Task<CoreUser?> GetUserByIdAsync(int userId);
-        Task<bool> IsEmailConfirmedAsync(CoreUser user);
-        Task<CoreUser?> GetUserByEmailAsync(string email);
-        Task<IdentityResult> ResendConfirmationEmailAsync(string email);
-
     }
 }
 ```
@@ -6078,7 +6147,6 @@ using CondoSphere.Core.Entities.Users;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using System.ComponentModel.Design;
 using System.Net;
 using CoreUser = CondoSphere.Core.Entities.Users.User;
 
@@ -6176,8 +6244,6 @@ namespace CondoSphere.Application.Services.User
 
             return IdentityResult.Success;
         }
-
-
 
         public async Task<IdentityResult> RegisterManagerAsync(RegisterManagerDto registerDto, int companyId)
         {
@@ -6414,38 +6480,6 @@ namespace CondoSphere.Application.Services.User
                 Roles = roles
             };
         }
-
-        public async Task<CoreUser?> GetUserByEmailAsync(string email)
-        {
-            return await _userManager.FindByEmailAsync(email);
-        }
-
-        public async Task<bool> IsEmailConfirmedAsync(CoreUser user)
-        {
-            return await _userManager.IsEmailConfirmedAsync(user);
-        }
-
-        public async Task<IdentityResult> ResendConfirmationEmailAsync(string email)
-        {
-            var user = await _userManager.FindByEmailAsync(email);
-
-            if (user == null)
-            {
-                return IdentityResult.Failed(new IdentityError { Description = "User not found." });
-            }
-
-            var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-            var encodedToken = WebUtility.UrlEncode(token);
-            var webAppBaseUrl = _configuration["ClientSettings:WebAppBaseUrl"];
-            var confirmationLink = $"{webAppBaseUrl}/Account/ConfirmEmail?userId={user.Id}&token={encodedToken}";
-
-            await _mailService.SendEmailAsync(
-                user.Email,
-                "Confirm your CondoSphere Account",
-                $"<h1>Welcome to CondoSphere!</h1><p>Please confirm your account by <a href='{confirmationLink}'>clicking here</a>.</p>");
-
-            return IdentityResult.Success;
-        }
     }
 }
 ```
@@ -6557,13 +6591,6 @@ namespace CondoSphere.Web.Controllers
             if (!ModelState.IsValid)
             {
                 return View(model);
-            }
-
-            var (isConfirmed,mesage) = await _apiClient.IsEmailConfirmedAsync(model.Email);
-
-            if (!isConfirmed)
-            {
-                return RedirectToAction("ResendConfirmationEmail", "Account", new { email = model.Email });
             }
 
             var userDto = await _apiClient.LoginAsync(model);
@@ -6762,35 +6789,6 @@ namespace CondoSphere.Web.Controllers
             ViewData["Message"] = message;
             return View();
         }
-
-
-        [AllowAnonymous]
-        public IActionResult ResendConfirmationEmail() => View();
-
-        [HttpPost]
-        [AllowAnonymous]
-        public async Task<IActionResult> ResendConfirmationEmail(string email)
-        {
-            if (string.IsNullOrWhiteSpace(email))
-            {
-                ViewData["Mensagem"] = "Email inválido.";
-                return View();
-            }
-
-            var (success, message) = await _apiClient.ResendConfirmationEmailAsync(email);
-
-            if (success)
-            {
-                ViewData["Mensagem"] = "Se existir uma conta com esse email, o link de confirmação foi reenviado.";
-            }
-            else
-            {
-                ViewData["Mensagem"] = "Ocorreu um erro ao tentar reenviar o email de confirmação.";
-            }
-
-            return View();
-        }
-
     }
 }
 ```
@@ -7055,14 +7053,31 @@ namespace CondoSphere.Web.Services
             return await _httpClient.GetFromJsonAsync<IEnumerable<OccurrenceDto>>("/api/occurrences/my-occurrences") ?? new List<OccurrenceDto>();
         }
 
-        public async Task<OccurrenceDto?> CreateOccurrenceAsync(CreateOccurrenceDto dto)
+        public async Task<OccurrenceDto?> CreateOccurrenceAsync(CreateOccurrenceDto dto, IFormFile? imageFile)
         {
-            var response = await _httpClient.PostAsJsonAsync("/api/occurrences", dto);
+            using var formData = new MultipartFormDataContent();
+            formData.Add(new StringContent(dto.Title), name: nameof(CreateOccurrenceDto.Title));
+            formData.Add(new StringContent(dto.Description), name: nameof(CreateOccurrenceDto.Description));
+
+            if (imageFile != null && imageFile.Length > 0)
+            {
+                var fileContent = new StreamContent(imageFile.OpenReadStream());
+                fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(imageFile.ContentType);
+                formData.Add(fileContent, name: "imageFile", fileName: imageFile.FileName);
+            }
+
+            var response = await _httpClient.PostAsync("/api/occurrences", formData);
+
             if (response.IsSuccessStatusCode)
             {
                 return await response.Content.ReadFromJsonAsync<OccurrenceDto>();
             }
             return null;
+        }
+
+        public async Task<OccurrenceDto?> GetOccurrenceDetailsAsync(int occurrenceId)
+        {
+            return await _httpClient.GetFromJsonAsync<OccurrenceDto>($"/api/occurrences/{occurrenceId}");
         }
 
         public async Task<(bool Success, string Message)> ForgotPasswordAsync(string email)
@@ -7104,21 +7119,11 @@ namespace CondoSphere.Web.Services
             return await _httpClient.GetFromJsonAsync<UserProfileDto>("/api/profile");
         }
 
-        //TODO: nao esta a reenviar o email erro 405 nao alouwd
-        public async Task<(bool Success, string Messagel)> ResendConfirmationEmailAsync(string email)
+        public async Task<bool> UpdateOccurrenceStatusAsync(int occurrenceId, UpdateOccurrenceStatusDto dto)
         {
-            var response = await _httpClient.PutAsJsonAsync("/api/accounts/ResendConfirmationEmail", email);
-            var message = await response.Content.ReadAsStringAsync();
-            return (response.IsSuccessStatusCode, message);
+            var response = await _httpClient.PatchAsJsonAsync($"/api/occurrences/{occurrenceId}/status", dto);
+            return response.IsSuccessStatusCode;
         }
-
-        public async Task<(bool Success, string Messagel)> IsEmailConfirmedAsync(string email)
-        {
-            var response = await _httpClient.PutAsJsonAsync("/api/accounts/IsEmailConfirmed", email);
-            var message = await response.Content.ReadAsStringAsync();
-            return (response.IsSuccessStatusCode, message);
-        } 
-
     }
 }
 ```
@@ -7243,6 +7248,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
@@ -7392,6 +7398,18 @@ namespace CondoSphere.API
             app.UseHttpsRedirection();
             app.UseAuthentication();
             app.UseAuthorization();
+
+            var uploadPath = builder.Configuration["FileUpload:Path"];
+            if (!Directory.Exists(uploadPath))
+            {
+                Directory.CreateDirectory(uploadPath);
+            }
+
+            app.UseStaticFiles(new StaticFileOptions
+            {
+                FileProvider = new PhysicalFileProvider(uploadPath),
+                RequestPath = "/uploads"
+            });
 
 
             app.MapControllers();

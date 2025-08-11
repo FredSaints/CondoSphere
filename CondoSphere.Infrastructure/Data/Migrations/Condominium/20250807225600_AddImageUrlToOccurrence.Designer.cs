@@ -4,6 +4,7 @@ using CondoSphere.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CondoSphere.Infrastructure.Data.Migrations.Condominium
 {
     [DbContext(typeof(CondominiumDbContext))]
-    partial class CondominiumDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250807225600_AddImageUrlToOccurrence")]
+    partial class AddImageUrlToOccurrence
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -131,9 +134,6 @@ namespace CondoSphere.Infrastructure.Data.Migrations.Condominium
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("AssignedToUserId")
-                        .HasColumnType("int");
-
                     b.Property<int>("CompanyId")
                         .HasColumnType("int");
 
@@ -147,7 +147,7 @@ namespace CondoSphere.Infrastructure.Data.Migrations.Condominium
                     b.Property<DateTime?>("EndDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("OccurrenceId")
+                    b.Property<int?>("OccurrenceId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("StartDate")

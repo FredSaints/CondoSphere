@@ -1,6 +1,7 @@
 using CondoSphere.Application.Authorization;
 using CondoSphere.Application.Interfaces;
 using CondoSphere.Application.Services.Condominium;
+using CondoSphere.Application.Services.Intervention;
 using CondoSphere.Application.Services.Occurrence;
 using CondoSphere.Application.Services.Token;
 using CondoSphere.Application.Services.User;
@@ -14,6 +15,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
@@ -81,11 +83,16 @@ namespace CondoSphere.API
             builder.Services.AddScoped<IMailService, MailService>();
             builder.Services.AddScoped<IOccurrenceRepository, OccurrenceRepository>();
             builder.Services.AddScoped<IOccurrenceService, OccurrenceService>();
+            builder.Services.AddScoped<IInterventionRepository, InterventionRepository>();
+            builder.Services.AddScoped<IInterventionService, InterventionService>();
             builder.Services.AddScoped<IAuthorizationHandler, CanAccessOccurrenceHandler>();
+            builder.Services.AddScoped<IAuthorizationHandler, CanManageInterventionHandler>();
+
             builder.Services.AddAutoMapper(cfg =>
             {
                 cfg.AddMaps(typeof(CondoSphere.Application.Mappings.CondominiumProfile).Assembly);
                 cfg.AddMaps(typeof(CondoSphere.Application.Mappings.OccurrenceProfile).Assembly);
+                cfg.AddMaps(typeof(CondoSphere.Application.Mappings.InterventionProfile).Assembly);
             });
             builder.Services.AddAuthorization(options =>
             {
@@ -100,6 +107,10 @@ namespace CondoSphere.API
 
                 options.AddPolicy("CanAccessOccurrence", policy =>
                     policy.AddRequirements(new CanAccessOccurrenceRequirement()));
+
+                options.AddPolicy("CanManageIntervention", policy =>
+                    policy.AddRequirements(new CanManageInterventionRequirement()));
+
             });
 
             builder.Services.AddScoped<IAuthorizationHandler, IsCondoManagerHandler>();
@@ -163,6 +174,18 @@ namespace CondoSphere.API
             app.UseHttpsRedirection();
             app.UseAuthentication();
             app.UseAuthorization();
+
+            var uploadPath = builder.Configuration["FileUpload:Path"];
+            if (!Directory.Exists(uploadPath))
+            {
+                Directory.CreateDirectory(uploadPath);
+            }
+
+            app.UseStaticFiles(new StaticFileOptions
+            {
+                FileProvider = new PhysicalFileProvider(uploadPath),
+                RequestPath = "/uploads"
+            });
 
 
             app.MapControllers();
