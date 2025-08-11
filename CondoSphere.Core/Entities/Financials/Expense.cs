@@ -61,5 +61,10 @@ namespace CondoSphere.Core.Entities.Financials
         /// The foreign key to the occurrence this expense is associated with, if applicable.
         /// </summary>
         public int? OccurrenceId { get; set; }
+
+        /// <summary>
+        /// The list of attachments related to this expense, such as invoices or receipts.
+        /// </summary>
+        public ICollection<ExpenseAttachment> Attachments { get; set; } = new List<ExpenseAttachment>();
     }
 }
