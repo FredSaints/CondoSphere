@@ -56,5 +56,10 @@ namespace CondoSphere.Core.Entities.Financials
         /// The category of the expense for reporting (e.g., "Maintenance", "Utilities", "Cleaning").
         /// </summary>
         public string Category { get; set; } = string.Empty;
+
+        /// <summary>
+        /// The foreign key to the occurrence this expense is associated with, if applicable.
+        /// </summary>
+        public int? OccurrenceId { get; set; }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using CondoSphere.Core.DTOs.Account;
 using CondoSphere.Core.DTOs.Condominiums;
+using CondoSphere.Core.DTOs.Financials;
 using CondoSphere.Core.DTOs.Interventions;
 using CondoSphere.Core.DTOs.Occurrences;
 using CondoSphere.Web.Models;
@@ -295,6 +296,37 @@ namespace CondoSphere.Web.Services
         public async Task<IEnumerable<InterventionDto>> GetMyInterventionsAsync()
         {
             return await _httpClient.GetFromJsonAsync<IEnumerable<InterventionDto>>("/api/interventions/my-tasks") ?? new List<InterventionDto>();
+        }
+
+        public async Task<bool> UpdateInterventionStatusAsync(int interventionId, UpdateInterventionStatusDto dto)
+        {
+            var response = await _httpClient.PatchAsJsonAsync($"/api/interventions/{interventionId}/status", dto);
+            return response.IsSuccessStatusCode;
+        }
+
+        public async Task<InterventionDto?> GetInterventionDetailsAsync(int interventionId)
+        {
+            var response = await _httpClient.GetAsync($"/api/interventions/{interventionId}");
+            if (response.IsSuccessStatusCode)
+            {
+                return await response.Content.ReadFromJsonAsync<InterventionDto>();
+            }
+            return null;
+        }
+
+        public async Task<IEnumerable<ExpenseDto>> GetExpensesForOccurrenceAsync(int occurrenceId)
+        {
+            return await _httpClient.GetFromJsonAsync<IEnumerable<ExpenseDto>>($"/api/occurrences/{occurrenceId}/expenses") ?? new List<ExpenseDto>();
+        }
+
+        public async Task<ExpenseDto?> CreateExpenseAsync(CreateExpenseDto dto)
+        {
+            var response = await _httpClient.PostAsJsonAsync("/api/expenses", dto);
+            if (response.IsSuccessStatusCode)
+            {
+                return await response.Content.ReadFromJsonAsync<ExpenseDto>();
+            }
+            return null;
         }
     }
 }

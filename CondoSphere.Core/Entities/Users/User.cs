@@ -1,5 +1,4 @@
-﻿using CondoSphere.Core;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 
 namespace CondoSphere.Core.Entities.Users
 {

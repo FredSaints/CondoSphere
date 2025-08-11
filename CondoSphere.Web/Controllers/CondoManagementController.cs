@@ -1,8 +1,10 @@
 ﻿using CondoSphere.Core;
 using CondoSphere.Core.DTOs.Account;
 using CondoSphere.Core.DTOs.Condominiums;
+using CondoSphere.Core.DTOs.Financials;
 using CondoSphere.Core.DTOs.Interventions;
 using CondoSphere.Core.DTOs.Occurrences;
+using CondoSphere.Core.Enums;
 using CondoSphere.Web.Models;
 using CondoSphere.Web.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -209,12 +211,14 @@ namespace CondoSphere.Web.Controllers
             var occurrenceTask = _apiClient.GetOccurrenceDetailsAsync(occurrenceId);
             var interventionsTask = _apiClient.GetInterventionsForOccurrenceAsync(occurrenceId);
             var employeesTask = _apiClient.GetAvailableEmployeesAsync();
+            var expensesTask = _apiClient.GetExpensesForOccurrenceAsync(occurrenceId);
 
-            await Task.WhenAll(occurrenceTask, interventionsTask, employeesTask);
+            await Task.WhenAll(occurrenceTask, interventionsTask, employeesTask, expensesTask);
 
             var occurrence = await occurrenceTask;
             var interventions = await interventionsTask;
             var employees = await employeesTask;
+            var expenses = await expensesTask;
 
             if (occurrence == null)
             {
@@ -231,9 +235,19 @@ namespace CondoSphere.Web.Controllers
             {
                 Occurrence = occurrence,
                 Interventions = interventions,
-                NewIntervention = new CreateInterventionDto { OccurrenceId = occurrenceId }
+                LinkedExpenses = expenses,
+                NewIntervention = new CreateInterventionDto
+                {
+                    OccurrenceId = occurrenceId,
+                    StartDate = DateTime.Now
+                },
+                NewExpense = new CreateExpenseDto
+                {
+                    OccurrenceId = occurrenceId,
+                    CondominiumId = condominiumId,
+                    ExpenseDate = DateTime.Now
+                }
             };
-
             return View(viewModel);
         }
 
@@ -262,24 +276,97 @@ namespace CondoSphere.Web.Controllers
 
         [HttpPost("{condominiumId}/occurrences/{occurrenceId}/create-intervention")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateIntervention(int condominiumId, int occurrenceId, OccurrenceDetailsViewModel model)
+        public async Task<IActionResult> CreateIntervention(int condominiumId, int occurrenceId, [Bind(Prefix = "NewIntervention")] CreateInterventionDto interventionDto)
         {
-            // We only care about the NewIntervention part of the model
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                var result = await _apiClient.CreateInterventionAsync(model.NewIntervention);
-                if (result != null)
+                var occurrenceTask = _apiClient.GetOccurrenceDetailsAsync(occurrenceId);
+                var interventionsTask = _apiClient.GetInterventionsForOccurrenceAsync(occurrenceId);
+                var employeesTask = _apiClient.GetAvailableEmployeesAsync();
+                await Task.WhenAll(occurrenceTask, interventionsTask, employeesTask);
+
+                var occurrence = await occurrenceTask;
+                var interventions = await interventionsTask;
+                var employees = await employeesTask;
+
+                ViewData["AvailableEmployees"] = new SelectList(employees, "Id", "FullName");
+
+                var viewModel = new OccurrenceDetailsViewModel
                 {
-                    TempData["SuccessMessage"] = "Intervention successfully created.";
-                }
-                else
-                {
-                    TempData["ErrorMessage"] = "Failed to create intervention.";
-                }
+                    Occurrence = occurrence,
+                    Interventions = interventions,
+                    NewIntervention = interventionDto
+                };
+                return View("OccurrenceDetails", viewModel);
+            }
+            var result = await _apiClient.CreateInterventionAsync(interventionDto);
+            if (result != null)
+            {
+                TempData["SuccessMessage"] = "Intervention successfully created.";
             }
             else
             {
-                TempData["ErrorMessage"] = "Invalid data submitted for intervention.";
+                TempData["ErrorMessage"] = "Failed to create intervention.";
+            }
+
+            return RedirectToAction("OccurrenceDetails", new { condominiumId, occurrenceId });
+        }
+
+        [HttpPost("{condominiumId}/occurrences/{occurrenceId}/update-intervention-status")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdateInterventionStatus(int condominiumId, int occurrenceId, int interventionId, InterventionStatus status)
+        {
+            var dto = new UpdateInterventionStatusDto { Status = status };
+
+            var success = await _apiClient.UpdateInterventionStatusAsync(interventionId, dto);
+
+            if (success)
+            {
+                TempData["SuccessMessage"] = "Intervention status has been updated.";
+            }
+            else
+            {
+                TempData["ErrorMessage"] = "Failed to update intervention status.";
+            }
+
+            return RedirectToAction("OccurrenceDetails", new { condominiumId, occurrenceId });
+        }
+
+        [HttpPost("{condominiumId}/occurrences/{occurrenceId}/record-expense")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> RecordExpense(int condominiumId, int occurrenceId, [Bind(Prefix = "NewExpense")] CreateExpenseDto expenseDto)
+        {
+            if (!ModelState.IsValid)
+            {
+                TempData["ErrorMessage"] = "Please correct the errors in the expense form and try again.";
+
+                var occurrenceTask = _apiClient.GetOccurrenceDetailsAsync(occurrenceId);
+                var interventionsTask = _apiClient.GetInterventionsForOccurrenceAsync(occurrenceId);
+                var employeesTask = _apiClient.GetAvailableEmployeesAsync();
+                var expensesTask = _apiClient.GetExpensesForOccurrenceAsync(occurrenceId);
+                await Task.WhenAll(occurrenceTask, interventionsTask, employeesTask, expensesTask);
+
+                var viewModel = new OccurrenceDetailsViewModel
+                {
+                    Occurrence = await occurrenceTask,
+                    Interventions = await interventionsTask,
+                    LinkedExpenses = await expensesTask,
+                    NewExpense = expenseDto,
+                    NewIntervention = new CreateInterventionDto { OccurrenceId = occurrenceId, StartDate = DateTime.Now }
+                };
+
+                ViewData["AvailableEmployees"] = new SelectList(await employeesTask, "Id", "FullName");
+                return View("OccurrenceDetails", viewModel);
+            }
+
+            var result = await _apiClient.CreateExpenseAsync(expenseDto);
+            if (result != null)
+            {
+                TempData["SuccessMessage"] = "Expense recorded successfully.";
+            }
+            else
+            {
+                TempData["ErrorMessage"] = "Failed to record expense.";
             }
 
             return RedirectToAction("OccurrenceDetails", new { condominiumId, occurrenceId });

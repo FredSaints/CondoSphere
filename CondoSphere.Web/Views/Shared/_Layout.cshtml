@@ -50,6 +50,12 @@
                                     <a class="nav-link text-dark" asp-controller="Portal" asp-action="Index">My Portal</a>
                                 </li>
                             }
+                            if(User.IsInRole(RoleConstants.Employee))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-controller="Employee" asp-action="Index">My Tasks</a>
+                                </li>
+                            }
                         }
                         @* ===== END OF ROLE-AWARE NAVIGATION ===== *@
 

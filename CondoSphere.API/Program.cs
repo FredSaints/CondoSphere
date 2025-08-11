@@ -1,6 +1,7 @@
 using CondoSphere.Application.Authorization;
 using CondoSphere.Application.Interfaces;
 using CondoSphere.Application.Services.Condominium;
+using CondoSphere.Application.Services.Financials;
 using CondoSphere.Application.Services.Intervention;
 using CondoSphere.Application.Services.Occurrence;
 using CondoSphere.Application.Services.Token;
@@ -32,9 +33,11 @@ namespace CondoSphere.API
 
             var userManagementConnectionString = builder.Configuration.GetConnectionString("UserManagementConnection");
             var condominiumConnectionString = builder.Configuration.GetConnectionString("CondominiumConnection");
+            var financialsConnectionString = builder.Configuration.GetConnectionString("FinancialsConnection");
 
             builder.Services.AddDbContext<UserManagementDbContext>(options =>options.UseSqlServer(userManagementConnectionString));
             builder.Services.AddDbContext<CondominiumDbContext>(options =>options.UseSqlServer(condominiumConnectionString));
+            builder.Services.AddDbContext<FinancialsDbContext>(options => options.UseSqlServer(financialsConnectionString));
 
             builder.Services.AddIdentity<User, IdentityRole<int>>(options =>
             {
@@ -85,6 +88,8 @@ namespace CondoSphere.API
             builder.Services.AddScoped<IOccurrenceService, OccurrenceService>();
             builder.Services.AddScoped<IInterventionRepository, InterventionRepository>();
             builder.Services.AddScoped<IInterventionService, InterventionService>();
+            builder.Services.AddScoped<IExpenseRepository, ExpenseRepository>();
+            builder.Services.AddScoped<IExpenseService, ExpenseService>();
             builder.Services.AddScoped<IAuthorizationHandler, CanAccessOccurrenceHandler>();
             builder.Services.AddScoped<IAuthorizationHandler, CanManageInterventionHandler>();
 
@@ -93,6 +98,7 @@ namespace CondoSphere.API
                 cfg.AddMaps(typeof(CondoSphere.Application.Mappings.CondominiumProfile).Assembly);
                 cfg.AddMaps(typeof(CondoSphere.Application.Mappings.OccurrenceProfile).Assembly);
                 cfg.AddMaps(typeof(CondoSphere.Application.Mappings.InterventionProfile).Assembly);
+                cfg.AddMaps(typeof(CondoSphere.Application.Mappings.FinancialsProfile).Assembly);
             });
             builder.Services.AddAuthorization(options =>
             {

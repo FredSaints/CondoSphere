@@ -47,6 +47,12 @@ namespace CondoSphere.Application.Services.Intervention
             newIntervention.CondominiumId = parentOccurrence.CondominiumId;
             newIntervention.UnitId = parentOccurrence.UnitId;
 
+            if (!parentOccurrence.AssignedToUserId.HasValue && newIntervention.AssignedToUserId.HasValue)
+            {
+                parentOccurrence.AssignedToUserId = newIntervention.AssignedToUserId;
+                _unitOfWork.Occurrences.Update(parentOccurrence);
+            }
+
             await _unitOfWork.Interventions.AddAsync(newIntervention);
             await _unitOfWork.CompleteAsync();
 
@@ -100,10 +106,37 @@ namespace CondoSphere.Application.Services.Intervention
                 return false;
             }
 
+            if (intervention.Status == InterventionStatus.Completed || intervention.Status == InterventionStatus.Cancelled)
+            {
+                return false;
+            }
+
             intervention.Status = newStatus;
             _unitOfWork.Interventions.Update(intervention);
             await _unitOfWork.CompleteAsync();
             return true;
+        }
+
+        public async Task<InterventionDto?> GetInterventionByIdAsync(int interventionId)
+        {
+            var intervention = await _unitOfWork.Interventions.GetByIdAsync(interventionId);
+            if (intervention == null)
+            {
+                return null;
+            }
+
+            var interventionDto = _mapper.Map<InterventionDto>(intervention);
+
+            if (intervention.AssignedToUserId.HasValue)
+            {
+                var assignee = await _userManager.FindByIdAsync(intervention.AssignedToUserId.Value.ToString());
+                if (assignee != null)
+                {
+                    interventionDto.AssignedToUserName = $"{assignee.FirstName} {assignee.LastName}";
+                }
+            }
+
+            return interventionDto;
         }
     }
 }
