@@ -99,5 +99,23 @@ namespace CondoSphere.API.Controllers
             }
             return BadRequest("Failed to update status.");
         }
+
+        [HttpGet("api/interventions/{id}")]
+        public async Task<IActionResult> GetInterventionById(int id)
+        {
+            var intervention = await _unitOfWork.Interventions.GetByIdAsync(id);
+            if (intervention == null)
+            {
+                return NotFound();
+            }
+
+            var authorizationResult = await _authorizationService.AuthorizeAsync(User, intervention, "CanManageIntervention");
+            if (!authorizationResult.Succeeded)
+            {
+                return Forbid();
+            }
+            var interventionDto = await _interventionService.GetInterventionByIdAsync(id);
+            return Ok(interventionDto);
+        }
     }
 }

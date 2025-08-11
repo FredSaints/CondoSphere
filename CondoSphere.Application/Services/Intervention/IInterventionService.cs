@@ -10,5 +10,6 @@ namespace CondoSphere.Application.Services.Intervention
         Task<IEnumerable<InterventionDto>> GetInterventionsForOccurrenceAsync(int occurrenceId);
         Task<IEnumerable<InterventionDto>> GetMyInterventionsAsync(int employeeId);
         Task<bool> UpdateInterventionStatusAsync(int interventionId, InterventionStatus newStatus);
+        Task<InterventionDto?> GetInterventionByIdAsync(int interventionId);
     }
 }

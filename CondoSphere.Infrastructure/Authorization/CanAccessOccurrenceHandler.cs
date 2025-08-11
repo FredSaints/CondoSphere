@@ -8,21 +8,24 @@ using CoreUser = CondoSphere.Core.Entities.Users.User;
 
 namespace CondoSphere.Infrastructure.Authorization
 {
-    public class CanAccessOccurrenceHandler : AuthorizationHandler<CanAccessOccurrenceRequirement, CoreOccurrence>
+    public class CanAccessOccurrenceHandler
+        : AuthorizationHandler<CanAccessOccurrenceRequirement, CoreOccurrence>
     {
         private readonly ICurrentUserService _currentUserService;
         private readonly UserManager<CoreUser> _userManager;
 
-        public CanAccessOccurrenceHandler(ICurrentUserService currentUserService, UserManager<CoreUser> userManager)
+        public CanAccessOccurrenceHandler(
+            ICurrentUserService currentUserService,
+            UserManager<CoreUser> userManager)
         {
             _currentUserService = currentUserService;
             _userManager = userManager;
         }
 
         protected override async Task HandleRequirementAsync(
-                                 AuthorizationHandlerContext context,
-                                 CanAccessOccurrenceRequirement requirement,
-                                 CoreOccurrence resource)
+            AuthorizationHandlerContext context,
+            CanAccessOccurrenceRequirement requirement,
+            CoreOccurrence resource)
         {
             var userId = _currentUserService.UserId;
             if (userId == null)
@@ -38,8 +41,9 @@ namespace CondoSphere.Infrastructure.Authorization
                 return;
             }
 
-            // Rule2: Allow if the user is the employee assigned to the occurrence
-            if (resource.AssignedToUserId.HasValue && resource.AssignedToUserId.Value == userId.Value)
+            // Eule 2: Allow if the user is the employee assigned to the OCCURRENCE.
+            if (resource.AssignedToUserId.HasValue &&
+                resource.AssignedToUserId.Value == userId.Value)
             {
                 context.Succeed(requirement);
                 return;
@@ -49,7 +53,8 @@ namespace CondoSphere.Infrastructure.Authorization
             var user = await _userManager.FindByIdAsync(userId.Value.ToString());
             if (user?.CompanyId == resource.CompanyId)
             {
-                if (context.User.IsInRole(RoleConstants.CompanyAdmin) || context.User.IsInRole(RoleConstants.CondoManager))
+                if (context.User.IsInRole(RoleConstants.CompanyAdmin) ||
+                    context.User.IsInRole(RoleConstants.CondoManager))
                 {
                     context.Succeed(requirement);
                     return;
