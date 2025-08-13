@@ -1,5 +1,8 @@
 ﻿using CondoSphere.Core.DTOs.Account;
+using CondoSphere.Core.DTOs.Condominiums;
 using Microsoft.AspNetCore.Identity;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using CoreUser = CondoSphere.Core.Entities.Users.User;
 
 namespace CondoSphere.Application.Services.User
@@ -28,6 +31,11 @@ namespace CondoSphere.Application.Services.User
         Task<bool> IsEmailConfirmedAsync(CoreUser user);
         Task<CoreUser?> GetUserByEmailAsync(string email);
         Task<IdentityResult> ResendConfirmationEmailAsync(EmailDto dto);
-
+        Task<bool> AssignResidentToUnitAsync(int residentId, int unitId, int companyId);
+        Task<bool> UnassignResidentFromUnitAsync(int residentId, int unitId, int companyId);
+        Task<IEnumerable<UserListDto>> GetResidentsForCondominiumAsync(int condominiumId);
+        Task<IEnumerable<UserListDto>> GetUsersByIdsAsync(List<int> userIds);
+        Task<IdentityResult> ConfirmEmailAsync(int userId, string token);
+        Task<IdentityResult> SetPasswordAsync(SetPasswordDto dto);
     }
 }

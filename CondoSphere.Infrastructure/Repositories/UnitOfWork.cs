@@ -9,7 +9,6 @@ namespace CondoSphere.Infrastructure.Repositories
         private readonly CondominiumDbContext _condoContext;
         private readonly FinancialsDbContext _financialsContext;
 
-        // Implement all properties from the interface
         public ICompanyRepository Companies { get; private set; }
         public IUserRepository Users { get; private set; }
         public ICondominiumRepository Condominiums { get; private set; }
@@ -24,7 +23,6 @@ namespace CondoSphere.Infrastructure.Repositories
             _condoContext = condoContext;
             _financialsContext = financialsContext;
 
-            // Instantiate all repositories with their respective DbContexts
             Companies = new CompanyRepository(_userContext);
             Users = new UserRepository(_userContext);
             Condominiums = new CondominiumRepository(_condoContext);
@@ -36,11 +34,11 @@ namespace CondoSphere.Infrastructure.Repositories
 
         public async Task<int> CompleteAsync()
         {
-            // Save changes for both contexts. The sum of records affected is returned.
             var userDbResult = await _userContext.SaveChangesAsync();
             var condoDbResult = await _condoContext.SaveChangesAsync();
             var financialsDbResult = await _financialsContext.SaveChangesAsync();
-            return userDbResult + condoDbResult;
+
+            return userDbResult + condoDbResult + financialsDbResult;
         }
 
         public async ValueTask DisposeAsync()
@@ -49,7 +47,5 @@ namespace CondoSphere.Infrastructure.Repositories
             await _condoContext.DisposeAsync();
             await _financialsContext.DisposeAsync();
         }
-
-
     }
 }

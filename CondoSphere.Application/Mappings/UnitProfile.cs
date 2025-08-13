@@ -8,7 +8,9 @@ namespace CondoSphere.Application.Mappings
     {
         public UnitProfile()
         {
-            CreateMap<Unit, UnitDto>();
+            CreateMap<Unit, UnitDto>()
+                .ForMember(dest => dest.Resident, opt => opt.Ignore());
+
             CreateMap<CreateUpdateUnitDto, Unit>();
         }
     }

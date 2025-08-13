@@ -1,4 +1,5 @@
 ﻿@model CondoSphere.Web.Models.CondominiumDetailsViewModel
+@using CondoSphere.Core.Enums
 
 @{
     ViewData["Title"] = $"Manage: {Model.Condominium.Name}";
@@ -9,16 +10,15 @@
         <h1>@Model.Condominium.Name</h1>
         <p class="text-muted mb-0">@Model.Condominium.Address</p>
     </div>
-    <div>
-        <a asp-action="CreateUnit" asp-route-condominiumId="@Model.Condominium.Id" class="btn btn-success">
-            <i class="bi bi-plus-square-fill me-1"></i> Add New Unit
-        </a>
-    </div>
+    <a asp-action="CreateUnit" asp-route-condominiumId="@Model.Condominium.Id" class="btn btn-success">
+        <i class="bi bi-plus-square-fill me-1"></i> Add New Unit
+    </a>
 </div>
 
-<div class="card shadow-sm">
+@* ===== THE NEW, UNIFIED UNITS & RESIDENTS CARD ===== *@
+<div class="card shadow-sm mb-4">
     <div class="card-header">
-        <h5 class="mb-0">Units</h5>
+        <h5 class="mb-0">Units and Residents</h5>
     </div>
     <div class="card-body p-0">
         @if (Model.Units.Any())
@@ -27,9 +27,10 @@
                 <table class="table table-hover mb-0 align-middle">
                     <thead>
                         <tr>
-                            <th scope="col">Identifier</th>
-                            <th scope="col">Status / Resident</th>
-                            <th scope="col" class="text-end">Actions</th>
+                            <th>Unit Identifier</th>
+                            <th class="text-center">Status</th>
+                            <th>Assigned Resident</th>
+                            <th class="text-end">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -37,34 +38,51 @@
                         {
                             <tr>
                                 <td><strong>@unit.Identifier</strong></td>
-                                <td>
-                                    @if (unit.ResidentId.HasValue)
+                                <td class="text-center">
+                                    @if (unit.Resident != null)
                                     {
                                         <span class="badge bg-info">Occupied</span>
-                                        <span class="ms-2">@unit.ResidentName</span>
                                     }
                                     else
                                     {
-                                        <a asp-action="AssignResident"
-                                           asp-route-unitId="@unit.Id"
-                                           asp-route-condominiumId="@Model.Condominium.Id"
-                                           class="btn btn-sm btn-primary">Assign Resident</a>
+                                        <span class="badge bg-success">Vacant</span>
+                                    }
+                                </td>
+                                <td>
+                                    @(unit.Resident?.FullName ?? "---")
+                                    @if (unit.Resident != null)
+                                    {
+                                        <br />
+                            
+                                        <small class="text-muted">@unit.Resident.Email</small>
                                     }
                                 </td>
                                 <td class="text-end">
-                                    @if (unit.ResidentId.HasValue)
+                                    @if (unit.Resident == null)
                                     {
-                                        <form asp-action="UnassignResident" asp-route-condominiumId="@Model.Condominium.Id" asp-route-unitId="@unit.Id" method="post" onsubmit="return confirm('Are you sure you want to unassign this resident? Their account will be deactivated.');">
-                                            @Html.AntiForgeryToken()
-                                            <button type="submit" class="btn btn-sm btn-outline-danger">Unassign Resident</button>
-                                        </form>
+                                        @* If vacant, link to the simple "Assign" page *@
+                                        <a asp-action="AssignResident"
+                                           asp-route-unitId="@unit.Id"
+                                           asp-route-condominiumId="@Model.Condominium.Id"
+                                           class="btn btn-sm btn-primary">
+                                            <i class="bi bi-person-plus me-1"></i>Assign
+                                        </a>
                                     }
                                     else
                                     {
-                                        <a asp-action="RegisterResident"
-                                           asp-route-unitId="@unit.Id"
-                                           asp-route-condominiumId="@Model.Condominium.Id"
-                                           class="btn btn-sm btn-primary">Register Resident</a>
+                                        @* If occupied, provide the Unassign action *@
+                                        <form asp-action="UnassignResidentFromUnit"
+                                              asp-route-condominiumId="@Model.Condominium.Id"
+                                              asp-route-residentId="@unit.Resident.Id"
+                                              asp-route-unitId="@unit.Id"
+                                              method="post"
+                                              class="d-inline"
+                                              onsubmit="return confirm('Are you sure you want to unassign @unit.Resident.FullName from unit @unit.Identifier?');">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="btn btn-sm btn-outline-danger">
+                                                <i class="bi bi-person-dash me-1"></i>Unassign
+                                            </button>
+                                        </form>
                                     }
                                 </td>
                             </tr>
@@ -76,21 +94,19 @@
         else
         {
             <div class="text-center p-4">
+                <i class="bi bi-house-slash text-muted fs-1 mb-3"></i>
                 <p class="text-muted mb-0">No units have been created for this condominium yet.</p>
+                <p class="text-muted small">Click "Add New Unit" to get started.</p>
             </div>
         }
     </div>
 </div>
 
-<div class="mt-4">
-    <a asp-action="Index" class="btn btn-outline-secondary">
-        <i class="bi bi-arrow-left me-1"></i> Back to My Condos
-    </a>
-</div>
 <hr class="my-4" />
 
+@* Occurrences Card *@
 <div class="card shadow-sm">
-    <div class="card-header">
+    <div class="card-header d-flex justify-content-between align-items-center">
         <h5 class="mb-0">Reported Occurrences</h5>
     </div>
     <div class="card-body p-0">
@@ -115,14 +131,25 @@
                                 <td>@occurrence.ReportedByUserName</td>
                                 <td>@occurrence.ReportedDate.ToString("yyyy-MM-dd HH:mm")</td>
                                 <td>
-                                    <span class="badge bg-danger">@occurrence.Status</span>
+                                    @{
+                                        var statusClass = "bg-secondary";
+                                        switch (occurrence.Status)
+                                        {
+                                            case OccurrenceStatus.Open: statusClass = "bg-danger"; break;
+                                            case OccurrenceStatus.InProgress: statusClass = "bg-warning text-dark"; break;
+                                            case OccurrenceStatus.Resolved: statusClass = "bg-info"; break;
+                                            case OccurrenceStatus.Closed: statusClass = "bg-success"; break;
+                                        }
+                                    }
+                                    <span class="badge @statusClass">@occurrence.Status</span>
                                 </td>
                                 <td class="text-end">
-                                    @* ===== REPLACE THIS LINK ===== *@
                                     <a asp-action="OccurrenceDetails"
                                        asp-route-condominiumId="@Model.Condominium.Id"
                                        asp-route-occurrenceId="@occurrence.Id"
-                                       class="btn btn-sm btn-outline-primary">View Details</a>
+                                       class="btn btn-sm btn-outline-primary">
+                                        <i class="bi bi-eye me-1"></i>View Details
+                                    </a>
                                 </td>
                             </tr>
                         }
@@ -137,4 +164,10 @@
             </div>
         }
     </div>
+</div>
+
+<div class="mt-4">
+    <a asp-action="Index" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left me-1"></i> Back to My Condos
+    </a>
 </div>

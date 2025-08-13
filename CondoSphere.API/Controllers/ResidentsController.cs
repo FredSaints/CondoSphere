@@ -8,8 +8,9 @@ using Microsoft.AspNetCore.Mvc;
 namespace CondoSphere.API.Controllers
 {
     [ApiController]
-    [Route("api/condominiums/{condominiumId}/residents")]
-    [Authorize(Roles = RoleConstants.CondoManager, Policy = "IsCondoManagerPolicy")]
+    [Authorize]
+
+    [Route("api")]
     public class ResidentsController : ControllerBase
     {
         private readonly IUserService _userService;
@@ -21,7 +22,8 @@ namespace CondoSphere.API.Controllers
             _currentUserService = currentUserService;
         }
 
-        [HttpPost]
+        [HttpPost("condominiums/{condominiumId}/residents")]
+        [Authorize(Roles = RoleConstants.CondoManager, Policy = "IsCondoManagerPolicy")]
         public async Task<IActionResult> RegisterResident(int condominiumId, [FromBody] RegisterResidentDto dto)
         {
             if (!ModelState.IsValid)
@@ -32,7 +34,6 @@ namespace CondoSphere.API.Controllers
             var companyId = _currentUserService.CompanyId;
             if (companyId == null)
             {
-                // This should not happen due to the authorization policy, but it's a good safeguard.
                 return Unauthorized("Company information is missing from the token.");
             }
 
@@ -40,10 +41,35 @@ namespace CondoSphere.API.Controllers
 
             if (result.Succeeded)
             {
-                return StatusCode(201, new { message = "Resident registered successfully. A welcome email has been sent for them to set their password." });
+                return StatusCode(201, new { message = "Resident registered successfully." });
             }
 
             return BadRequest(result.Errors);
+        }
+
+        [HttpGet("condominiums/{condominiumId}/residents")]
+        [Authorize(Roles = RoleConstants.CondoManager, Policy = "IsCondoManagerPolicy")]
+        public async Task<IActionResult> GetResidentsForCondominium(int condominiumId)
+        {
+            var residents = await _userService.GetResidentsForCondominiumAsync(condominiumId);
+            return Ok(residents);
+        }
+
+        [HttpPost("residents/{residentId}/unassign-from/{unitId}")]
+        [Authorize(Roles = RoleConstants.CondoManager + "," + RoleConstants.CompanyAdmin)]
+        public async Task<IActionResult> UnassignResidentFromUnit(int residentId, int unitId)
+        {
+            var companyId = _currentUserService.CompanyId;
+            if (companyId == null) return Unauthorized();
+
+            var success = await _userService.UnassignResidentFromUnitAsync(residentId, unitId, companyId.Value);
+
+            if (success)
+            {
+                return NoContent();
+            }
+
+            return BadRequest("Failed to unassign resident.");
         }
     }
 }

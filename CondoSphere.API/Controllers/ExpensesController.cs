@@ -22,14 +22,15 @@ namespace CondoSphere.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateExpense([FromBody] CreateExpenseDto dto)
+        public async Task<IActionResult> CreateExpense([FromForm] CreateExpenseDto dto, List<IFormFile> attachmentFiles)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
             var companyId = _currentUserService.CompanyId;
             if (companyId == null) return Unauthorized();
 
-            var result = await _expenseService.CreateExpenseAsync(dto, companyId.Value);
+            var result = await _expenseService.CreateExpenseAsync(dto, companyId.Value, attachmentFiles);
+
             if (result == null)
             {
                 return BadRequest("Invalid Condominium ID or permission denied.");

@@ -1,10 +1,12 @@
 ﻿using AutoMapper;
 using CondoSphere.Application.Interfaces;
-using CondoSphere.Core;
+using CondoSphere.Application.Services.User;
+using CondoSphere.Core.DTOs.Account;
 using CondoSphere.Core.DTOs.Condominiums;
-using Microsoft.AspNetCore.Identity;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using CoreUnit = CondoSphere.Core.Entities.Condominiums.Unit;
-using CoreUser = CondoSphere.Core.Entities.Users.User;
 
 namespace CondoSphere.Application.Services.Condominium
 {
@@ -12,14 +14,15 @@ namespace CondoSphere.Application.Services.Condominium
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
-        private readonly UserManager<CoreUser> _userManager;
+        private readonly IUserService _userService;
 
-        public UnitService(IUnitOfWork unitOfWork, IMapper mapper, UserManager<CoreUser> userManager)
+        public UnitService(IUnitOfWork unitOfWork, IMapper mapper, IUserService userService)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
-            _userManager = userManager;
+            _userService = userService;
         }
+
 
         public async Task<UnitDto> CreateUnitAsync(CreateUpdateUnitDto unitDto, int condominiumId, int companyId)
         {
@@ -30,6 +33,7 @@ namespace CondoSphere.Application.Services.Condominium
             await _unitOfWork.Units.AddAsync(unit);
             await _unitOfWork.CompleteAsync();
 
+            // Return a DTO for the newly created, vacant unit.
             return _mapper.Map<UnitDto>(unit);
         }
 
@@ -37,6 +41,12 @@ namespace CondoSphere.Application.Services.Condominium
         {
             var unit = await _unitOfWork.Units.GetByIdAsync(unitId);
             if (unit == null) return false;
+
+            // Business Rule: A unit cannot be deleted if it is currently occupied.
+            if (unit.ResidentId.HasValue)
+            {
+                return false;
+            }
 
             _unitOfWork.Units.Remove(unit);
             await _unitOfWork.CompleteAsync();
@@ -46,13 +56,47 @@ namespace CondoSphere.Application.Services.Condominium
         public async Task<UnitDto?> GetUnitByIdAsync(int unitId)
         {
             var unit = await _unitOfWork.Units.GetByIdAsync(unitId);
+            // This will map the basic unit details. The Resident will be null.
+            // A more advanced implementation might hydrate the resident here as well.
             return _mapper.Map<UnitDto>(unit);
         }
 
         public async Task<IEnumerable<UnitDto>> GetUnitsForCondominiumAsync(int condominiumId)
         {
+            // 1. Get all unit entities for the condominium from the CondominiumDB.
             var units = await _unitOfWork.Units.GetAllAsync(condominiumId);
-            return _mapper.Map<IEnumerable<UnitDto>>(units);
+            if (!units.Any())
+            {
+                return Enumerable.Empty<UnitDto>();
+            }
+
+            // 2. Get the distinct IDs of all residents in those units.
+            var residentIds = units
+                .Where(u => u.ResidentId.HasValue)
+                .Select(u => u.ResidentId.Value)
+                .Distinct()
+                .ToList();
+
+            // 3. Fetch the full user details for those residents from the UserService in a single batch.
+            var residents = new List<UserListDto>();
+            if (residentIds.Any())
+            {
+                residents = (await _userService.GetUsersByIdsAsync(residentIds)).ToList();
+            }
+            var residentLookup = residents.ToDictionary(r => r.Id);
+
+            // 4. Map the Unit entities to DTOs and stitch in the resident data.
+            var unitDtos = _mapper.Map<List<UnitDto>>(units);
+            foreach (var unitDto in unitDtos)
+            {
+                var originalUnit = units.First(u => u.Id == unitDto.Id);
+                if (originalUnit.ResidentId.HasValue && residentLookup.TryGetValue(originalUnit.ResidentId.Value, out var resident))
+                {
+                    // Map the full UserListDto to the simpler SimpleUserDto for nesting.
+                    unitDto.Resident = _mapper.Map<SimpleUserDto>(resident);
+                }
+            }
+            return unitDtos;
         }
 
         public async Task<bool> UpdateUnitAsync(int unitId, CreateUpdateUnitDto unitDto)
@@ -66,50 +110,5 @@ namespace CondoSphere.Application.Services.Condominium
             return true;
         }
 
-        public async Task<bool> UnassignResidentAsync(int unitId)
-        {
-            var unit = await _unitOfWork.Units.GetByIdAsync(unitId);
-            if (unit?.ResidentId == null)
-            {
-                return false;
-            }
-            unit.ResidentId = null;
-            _unitOfWork.Units.Update(unit);
-            await _unitOfWork.CompleteAsync();
-            return true;
-        }
-
-        public async Task<bool> AssignExistingResidentAsync(int unitId, int residentId, int companyId)
-        {
-            var unit = await _unitOfWork.Units.GetByIdAsync(unitId);
-            if (unit == null || unit.CompanyId != companyId || unit.ResidentId.HasValue)
-            {
-                return false;
-            }
-
-            var resident = await _userManager.FindByIdAsync(residentId.ToString());
-            if (resident == null || resident.CompanyId != companyId)
-            {
-                return false;
-            }
-
-            if (!await _userManager.IsInRoleAsync(resident, RoleConstants.CondoResident))
-            {
-                return false;
-            }
-
-            unit.ResidentId = residentId;
-            _unitOfWork.Units.Update(unit);
-
-            // If a resident is assigned, ensure their account is active.
-            if (!resident.IsActive)
-            {
-                resident.IsActive = true;
-                await _userManager.UpdateAsync(resident);
-            }
-
-            await _unitOfWork.CompleteAsync();
-            return true;
-        }
     }
 }

@@ -8,8 +8,12 @@ namespace CondoSphere.Application.Mappings
     {
         public FinancialsProfile()
         {
-            CreateMap<Expense, ExpenseDto>();
             CreateMap<CreateExpenseDto, Expense>();
+            CreateMap<Expense, ExpenseDto>()
+                .ForMember(
+                    dest => dest.AttachmentUrls,
+                    opt => opt.MapFrom(src => src.Attachments.Select(a => a.AttachmentUrl).ToList())
+                );
         }
     }
 }

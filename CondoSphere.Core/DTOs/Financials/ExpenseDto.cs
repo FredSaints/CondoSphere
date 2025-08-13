@@ -7,5 +7,6 @@
         public decimal Amount { get; set; }
         public DateTime ExpenseDate { get; set; }
         public int? OccurrenceId { get; set; }
+        public List<string> AttachmentUrls { get; set; } = new List<string>();
     }
 }

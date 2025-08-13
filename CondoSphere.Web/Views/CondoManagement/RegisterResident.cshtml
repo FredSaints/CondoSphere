@@ -2,40 +2,44 @@
 
 @{
     ViewData["Title"] = "Register New Resident";
+    var unitIdentifier = ViewData["UnitIdentifier"] as string;
 }
 
 <h1>@ViewData["Title"]</h1>
-<p class="text-muted">You are registering a new resident for Unit ID: @Model.UnitId in Condominium ID: @Model.CondominiumId</p>
+<p>You are registering a new resident and assigning them to <strong>Unit @unitIdentifier</strong>.</p>
 <hr />
 
 <div class="row">
     <div class="col-md-6">
+        <div class="alert alert-info d-flex align-items-center">
+            <i class="bi bi-people-fill fs-4 me-3"></i>
+            <div>
+                Looking for an existing resident? <a asp-action="AssignResident" asp-route-unitId="@Model.UnitId" asp-route-condominiumId="@Model.CondominiumId" class="alert-link">Assign an existing resident instead</a>.
+            </div>
+        </div>
+
         <form asp-action="RegisterResident" method="post">
             <div asp-validation-summary="All" class="text-danger"></div>
-
-            @* Add hidden fields for the IDs to ensure they are posted back *@
             <input type="hidden" asp-for="UnitId" />
             <input type="hidden" asp-for="CondominiumId" />
 
-            <div class="form-floating mb-3">
+            <div class="form-floating my-3">
                 <input asp-for="FirstName" class="form-control" />
                 <label asp-for="FirstName"></label>
                 <span asp-validation-for="FirstName" class="text-danger"></span>
             </div>
-
             <div class="form-floating mb-3">
                 <input asp-for="LastName" class="form-control" />
                 <label asp-for="LastName"></label>
                 <span asp-validation-for="LastName" class="text-danger"></span>
             </div>
-
             <div class="form-floating mb-3">
                 <input asp-for="Email" class="form-control" />
                 <label asp-for="Email"></label>
                 <span asp-validation-for="Email" class="text-danger"></span>
             </div>
 
-            <button type="submit" class="btn btn-primary">Register Resident</button>
+            <button type="submit" class="btn btn-primary">Register and Assign Resident</button>
             <a asp-action="Details" asp-route-id="@Model.CondominiumId" class="btn btn-secondary">Cancel</a>
         </form>
     </div>

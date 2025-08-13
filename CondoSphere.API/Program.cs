@@ -20,6 +20,7 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
+using FluentValidation.AspNetCore;
 
 namespace CondoSphere.API
 {
@@ -99,6 +100,7 @@ namespace CondoSphere.API
                 cfg.AddMaps(typeof(CondoSphere.Application.Mappings.OccurrenceProfile).Assembly);
                 cfg.AddMaps(typeof(CondoSphere.Application.Mappings.InterventionProfile).Assembly);
                 cfg.AddMaps(typeof(CondoSphere.Application.Mappings.FinancialsProfile).Assembly);
+                cfg.AddMaps(typeof(CondoSphere.Application.Mappings.UserProfile).Assembly);
             });
             builder.Services.AddAuthorization(options =>
             {
@@ -124,6 +126,7 @@ namespace CondoSphere.API
 
             builder.Services.AddControllers();
             builder.Services.AddValidatorsFromAssemblyContaining<CondoSphere.Application.Validators.Condominiums.CreateUpdateCondominiumDtoValidator>();
+            builder.Services.AddFluentValidationAutoValidation();
             builder.Services.AddScoped<IUnitRepository, UnitRepository>();
             builder.Services.AddScoped<IUnitService, UnitService>();
 

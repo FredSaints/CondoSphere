@@ -34,35 +34,63 @@ namespace CondoSphere.Web.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> Details(int id)
         {
-            var condo = await _apiClient.GetCondominiumDetailsAsync(id);
-            var units = await _apiClient.GetUnitsForCondominiumAsync(id);
-            var users = await _apiClient.GetUsersAsync();
-            var userLookup = users.ToDictionary(u => u.Id, u => $"{u.FirstName} {u.LastName}");
-            var occurrences = await _apiClient.GetOccurrencesForCondominiumAsync(id);
+            var condoTask = _apiClient.GetCondominiumDetailsAsync(id);
+            var unitsTask = _apiClient.GetUnitsForCondominiumAsync(id);
+            var occurrencesTask = _apiClient.GetOccurrencesForCondominiumAsync(id);
 
-            var unitViewModels = units.Select(unit => new UnitDetailViewModel
+            await Task.WhenAll(condoTask, unitsTask, occurrencesTask);
+
+            var condo = await condoTask;
+            var units = await unitsTask;
+            var occurrences = await occurrencesTask;
+
+            if (condo == null)
             {
-                Id = unit.Id,
-                Identifier = unit.Identifier,
-                ResidentId = unit.ResidentId,
-                ResidentName = unit.ResidentId.HasValue && userLookup.ContainsKey(unit.ResidentId.Value)
-                    ? userLookup[unit.ResidentId.Value]
-                    : null
-            });
+                return NotFound();
+            }
 
             var viewModel = new CondominiumDetailsViewModel
             {
                 Condominium = condo,
-                Units = unitViewModels,
+                Units = units,
                 Occurrences = occurrences
             };
 
             return View(viewModel);
         }
 
-        [HttpGet("units/{unitId}/register-resident")]
-        public IActionResult RegisterResident(int unitId, int condominiumId)
+        [HttpGet("units/{unitId}/assign-resident")]
+        public async Task<IActionResult> AssignResident(int unitId, int condominiumId)
         {
+            var unit = await _apiClient.GetUnitByIdAsync(unitId);
+            if (unit == null) return NotFound();
+
+            var availableResidents = await _apiClient.GetAvailableResidentsAsync();
+
+            ViewData["UnitIdentifier"] = unit.Identifier;
+
+            var viewModel = new AssignResidentViewModel
+            {
+                UnitId = unitId,
+                CondominiumId = condominiumId,
+                AvailableResidents = availableResidents.Select(r => new SelectListItem
+                {
+                    Text = r.FullName,
+                    Value = r.Id.ToString()
+                })
+            };
+
+            return View(viewModel);
+        }
+
+        [HttpGet("units/{unitId}/register-resident")]
+        public async Task<IActionResult> RegisterResident(int unitId, int condominiumId)
+        {
+            var unit = await _apiClient.GetUnitByIdAsync(unitId);
+            if (unit == null) return NotFound();
+
+            ViewData["UnitIdentifier"] = unit.Identifier;
+
             var model = new RegisterResidentViewModel
             {
                 UnitId = unitId,
@@ -77,10 +105,11 @@ namespace CondoSphere.Web.Controllers
         {
             if (!ModelState.IsValid)
             {
+                var unit = await _apiClient.GetUnitByIdAsync(model.UnitId);
+                if (unit != null) ViewData["UnitIdentifier"] = unit.Identifier;
                 return View(model);
             }
 
-            // Create the DTO to send to the API from the ViewModel
             var dto = new RegisterResidentDto
             {
                 UnitId = model.UnitId,
@@ -89,20 +118,21 @@ namespace CondoSphere.Web.Controllers
                 Email = model.Email
             };
 
-            // ===== CORRECTED LOGIC HERE =====
-            // The ApiClient method returns a simple boolean, not a tuple.
             var success = await _apiClient.RegisterResidentAsync(model.CondominiumId, dto);
 
             if (success)
             {
-                TempData["SuccessMessage"] = "Resident registered successfully! A welcome email has been sent.";
+                TempData["SuccessMessage"] = "New resident registered and assigned successfully!";
                 return RedirectToAction(nameof(Details), new { id = model.CondominiumId });
             }
 
-            // Use a generic error message since the current ApiClient doesn't return a specific one.
-            ModelState.AddModelError(string.Empty, "Failed to register resident. The unit may be occupied or the email may be in use.");
+            ModelState.AddModelError(string.Empty, "Failed to register resident. The email may be in use or the unit may have become occupied.");
+            var finalUnit = await _apiClient.GetUnitByIdAsync(model.UnitId);
+            if (finalUnit != null) ViewData["UnitIdentifier"] = finalUnit.Identifier;
             return View(model);
         }
+
+
 
         [HttpGet("{condominiumId}/units/create")]
         public IActionResult CreateUnit(int condominiumId)
@@ -131,43 +161,6 @@ namespace CondoSphere.Web.Controllers
             ModelState.AddModelError(string.Empty, "Failed to create the unit. Please try again.");
             ViewData["CondominiumId"] = condominiumId;
             return View(dto);
-        }
-
-        [HttpPost("{condominiumId}/units/{unitId}/unassign")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> UnassignResident(int condominiumId, int unitId)
-        {
-            var success = await _apiClient.UnassignResidentAsync(condominiumId, unitId);
-
-            if (success)
-            {
-                TempData["SuccessMessage"] = "Resident has been unassigned and the unit is now vacant.";
-            }
-            else
-            {
-                TempData["ErrorMessage"] = "Failed to unassign resident."; // We'll need to display this in the layout
-            }
-
-            return RedirectToAction(nameof(Details), new { id = condominiumId });
-        }
-
-        [HttpGet("units/{unitId}/assign-resident")]
-        public async Task<IActionResult> AssignResident(int unitId, int condominiumId)
-        {
-            var availableResidents = await _apiClient.GetAvailableResidentsAsync();
-
-            var viewModel = new AssignResidentViewModel
-            {
-                UnitId = unitId,
-                CondominiumId = condominiumId,
-                AvailableResidents = availableResidents.Select(r => new SelectListItem
-                {
-                    Text = $"{r.FirstName} {r.LastName} ({r.Email})",
-                    Value = r.Id.ToString()
-                })
-            };
-
-            return View(viewModel);
         }
 
         [HttpPost("units/{unitId}/assign-resident")]
@@ -283,11 +276,19 @@ namespace CondoSphere.Web.Controllers
                 var occurrenceTask = _apiClient.GetOccurrenceDetailsAsync(occurrenceId);
                 var interventionsTask = _apiClient.GetInterventionsForOccurrenceAsync(occurrenceId);
                 var employeesTask = _apiClient.GetAvailableEmployeesAsync();
-                await Task.WhenAll(occurrenceTask, interventionsTask, employeesTask);
+                var expensesTask = _apiClient.GetExpensesForOccurrenceAsync(occurrenceId);
+                await Task.WhenAll(occurrenceTask, interventionsTask, employeesTask, expensesTask);
 
                 var occurrence = await occurrenceTask;
+
+                if (occurrence == null)
+                {
+                    return NotFound();
+                }
+
                 var interventions = await interventionsTask;
                 var employees = await employeesTask;
+                var expenses = await expensesTask;
 
                 ViewData["AvailableEmployees"] = new SelectList(employees, "Id", "FullName");
 
@@ -295,7 +296,9 @@ namespace CondoSphere.Web.Controllers
                 {
                     Occurrence = occurrence,
                     Interventions = interventions,
-                    NewIntervention = interventionDto
+                    LinkedExpenses = expenses,
+                    NewIntervention = interventionDto,
+                    NewExpense = new CreateExpenseDto { OccurrenceId = occurrenceId, CondominiumId = condominiumId, ExpenseDate = DateTime.Now }
                 };
                 return View("OccurrenceDetails", viewModel);
             }
@@ -334,42 +337,72 @@ namespace CondoSphere.Web.Controllers
 
         [HttpPost("{condominiumId}/occurrences/{occurrenceId}/record-expense")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> RecordExpense(int condominiumId, int occurrenceId, [Bind(Prefix = "NewExpense")] CreateExpenseDto expenseDto)
+        public async Task<IActionResult> RecordExpense(
+            int condominiumId,
+            int occurrenceId,
+            [Bind(Prefix = "NewExpense")] CreateExpenseDto expenseDto,
+            List<IFormFile> attachmentFiles)
         {
             if (!ModelState.IsValid)
             {
                 TempData["ErrorMessage"] = "Please correct the errors in the expense form and try again.";
-
                 var occurrenceTask = _apiClient.GetOccurrenceDetailsAsync(occurrenceId);
                 var interventionsTask = _apiClient.GetInterventionsForOccurrenceAsync(occurrenceId);
                 var employeesTask = _apiClient.GetAvailableEmployeesAsync();
                 var expensesTask = _apiClient.GetExpensesForOccurrenceAsync(occurrenceId);
                 await Task.WhenAll(occurrenceTask, interventionsTask, employeesTask, expensesTask);
 
+                var occurrence = await occurrenceTask;
+
+                if (occurrence == null)
+                {
+                    return NotFound();
+                }
+
                 var viewModel = new OccurrenceDetailsViewModel
                 {
-                    Occurrence = await occurrenceTask,
+                    Occurrence = occurrence,
                     Interventions = await interventionsTask,
                     LinkedExpenses = await expensesTask,
                     NewExpense = expenseDto,
                     NewIntervention = new CreateInterventionDto { OccurrenceId = occurrenceId, StartDate = DateTime.Now }
                 };
-
                 ViewData["AvailableEmployees"] = new SelectList(await employeesTask, "Id", "FullName");
                 return View("OccurrenceDetails", viewModel);
             }
 
-            var result = await _apiClient.CreateExpenseAsync(expenseDto);
+            var result = await _apiClient.CreateExpenseAsync(expenseDto, attachmentFiles);
             if (result != null)
             {
                 TempData["SuccessMessage"] = "Expense recorded successfully.";
             }
             else
             {
-                TempData["ErrorMessage"] = "Failed to record expense.";
+                TempData["ErrorMessage"] = "Failed to record expense. Please try again.";
             }
 
             return RedirectToAction("OccurrenceDetails", new { condominiumId, occurrenceId });
+        }
+
+        [HttpPost("unassign-resident")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UnassignResidentFromUnit(int condominiumId, int residentId, int unitId)
+        {
+            Console.WriteLine("--- [DEBUG] CondoManagementController.UnassignResidentFromUnit action hit ---");
+            Console.WriteLine($"Received: condominiumId={condominiumId}, residentId={residentId}, unitId={unitId}");
+
+            var success = await _apiClient.UnassignResidentFromUnitAsync(residentId, unitId);
+
+            if (success)
+            {
+                TempData["SuccessMessage"] = "Resident has been unassigned from the unit.";
+            }
+            else
+            {
+                TempData["ErrorMessage"] = "Failed to unassign resident.";
+            }
+
+            return RedirectToAction(nameof(Details), new { id = condominiumId });
         }
     }
 }

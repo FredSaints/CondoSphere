@@ -4,6 +4,7 @@ using CondoSphere.Web.Models;
 using CondoSphere.Web.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace CondoSphere.Web.Controllers
 {
@@ -35,21 +36,51 @@ namespace CondoSphere.Web.Controllers
         }
 
         [HttpGet("create-occurrence")]
-        public IActionResult CreateOccurrence()
+        public async Task<IActionResult> CreateOccurrence()
         {
-            return View(new CreateOccurrenceDto());
+            var myUnits = await _apiClient.GetMyUnitsAsync();
+            if (!myUnits.Any())
+            {
+                // Handle case where user has no units - maybe redirect with an error
+                TempData["ErrorMessage"] = "You are not assigned to any unit. Cannot report an occurrence.";
+                return RedirectToAction("Index");
+            }
+
+            var viewModel = new CreateOccurrenceViewModel
+            {
+                AvailableUnits = myUnits.Select(u => new SelectListItem
+                {
+                    Value = u.Id.ToString(),
+                    Text = u.Identifier
+                })
+            };
+
+            return View(viewModel);
         }
 
         [HttpPost("create-occurrence")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateOccurrence(CreateOccurrenceDto model, IFormFile? imageFile)
+        public async Task<IActionResult> CreateOccurrence(CreateOccurrenceViewModel model, IFormFile? imageFile)
         {
             if (!ModelState.IsValid)
             {
+                var myUnits = await _apiClient.GetMyUnitsAsync();
+                model.AvailableUnits = myUnits.Select(u => new SelectListItem
+                {
+                    Value = u.Id.ToString(),
+                    Text = u.Identifier
+                });
                 return View(model);
             }
 
-            var result = await _apiClient.CreateOccurrenceAsync(model, imageFile);
+            var dto = new CreateOccurrenceDto
+            {
+                Title = model.Title,
+                Description = model.Description,
+                UnitId = model.UnitId
+            };
+
+            var result = await _apiClient.CreateOccurrenceAsync(dto, imageFile);
 
             if (result != null)
             {
@@ -58,6 +89,12 @@ namespace CondoSphere.Web.Controllers
             }
 
             ModelState.AddModelError(string.Empty, "An error occurred while reporting the occurrence. Please try again.");
+            var finalUnits = await _apiClient.GetMyUnitsAsync();
+            model.AvailableUnits = finalUnits.Select(u => new SelectListItem
+            {
+                Value = u.Id.ToString(),
+                Text = u.Identifier
+            });
             return View(model);
         }
 

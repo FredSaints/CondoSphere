@@ -1,4 +1,4 @@
-﻿@model CondoSphere.Core.DTOs.Occurrences.CreateOccurrenceDto
+﻿@model CondoSphere.Web.Models.CreateOccurrenceViewModel
 
 @{
     ViewData["Title"] = "Report New Occurrence";
@@ -12,6 +12,15 @@
     <div class="col-md-8">
         <form asp-action="CreateOccurrence" method="post" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            @* ADD THIS DROPDOWN *@
+            <div class="form-floating mb-3">
+                <select asp-for="UnitId" asp-items="Model.AvailableUnits" class="form-select">
+                    <option value="">-- Select a Unit --</option>
+                </select>
+                <label asp-for="UnitId"></label>
+                <span asp-validation-for="UnitId" class="text-danger"></span>
+            </div>
 
             <div class="form-floating mb-3">
                 <input asp-for="Title" class="form-control" placeholder="e.g., Leaky faucet in kitchen" />
