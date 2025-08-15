@@ -5,9 +5,7 @@
 
 @{
     ViewData["Title"] = "Occurrence Details";
-    // This value is used to prevent selecting past dates in the calendar input.
     var minDateTime = DateTime.Now.ToString("yyyy-MM-ddTHH:mm");
-    // This flag determines if the "Add Intervention" button should be enabled.
     var employeesExist = (ViewData["AvailableEmployees"] as SelectList)?.Any() ?? false;
 }
 
@@ -189,6 +187,7 @@
                                     <th>Title</th>
                                     <th>Date</th>
                                     <th class="text-end">Amount</th>
+                                    <th></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -198,6 +197,15 @@
                                         <td>@expense.Title</td>
                                         <td>@expense.ExpenseDate.ToLocalTime().ToString("yyyy-MM-dd")</td>
                                         <td class="text-end">@expense.Amount.ToString("C")</td>
+                                        <td class="text-end">
+                                            <a asp-action="ExpenseDetails"
+                                               asp-route-expenseId="@expense.Id"
+                                               asp-route-occurrenceId="@Model.Occurrence.Id"
+                                               asp-route-condominiumId="@Model.Occurrence.CondominiumId"
+                                               class="btn btn-sm btn-outline-primary">
+                                                Details
+                                            </a>
+                                        </td>
                                     </tr>
                                 }
                             </tbody>
@@ -303,16 +311,28 @@
                 </div>
                 <div class="modal-body">
                     @Html.AntiForgeryToken()
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-2"></div>
+
                     <input type="hidden" asp-for="NewExpense.OccurrenceId" />
                     <input type="hidden" asp-for="NewExpense.CondominiumId" />
 
                     <div class="form-floating mb-3">
-                        <input asp-for="NewExpense.Title" class="form-control" placeholder="Expense Title" value="Expense for: @Model.Occurrence.Title" />
+                        <input asp-for="NewExpense.Title" class="form-control" placeholder="Expense Title" />
                         <label asp-for="NewExpense.Title"></label>
                         <span asp-validation-for="NewExpense.Title" class="text-danger"></span>
                     </div>
                     <div class="form-floating mb-3">
-                        <input asp-for="NewExpense.Amount" class="form-control" placeholder="0.00" />
+                        <textarea asp-for="NewExpense.Description"
+                                  class="form-control"
+                                  placeholder="Describe the expense"
+                                  style="height: 100px"></textarea>
+                        <label asp-for="NewExpense.Description"></label>
+                        <span asp-validation-for="NewExpense.Description" class="text-danger"></span>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input asp-for="NewExpense.Amount"
+                               class="form-control"
+                               type="number" step="0.01" inputmode="decimal" />
                         <label asp-for="NewExpense.Amount"></label>
                         <span asp-validation-for="NewExpense.Amount" class="text-danger"></span>
                     </div>
@@ -345,12 +365,10 @@
     <partial name="_ValidationScriptsPartial" />
 
     @{
-        // --- 1. PREPARE C# FLAGS IN A DEDICATED C# BLOCK ---
         var shouldOpenInterventionModal = !ViewContext.ModelState.IsValid && ViewContext.ModelState.Keys.Any(k => k.StartsWith("NewIntervention"));
         var shouldOpenExpenseModal = !ViewContext.ModelState.IsValid && ViewContext.ModelState.Keys.Any(k => k.StartsWith("NewExpense"));
     }
 
-    <!-- Store the flags as data attributes on the body or a hidden div -->
     <div id="modal-flags"
          data-open-intervention="@shouldOpenInterventionModal.ToString().ToLower()"
          data-open-expense="@shouldOpenExpenseModal.ToString().ToLower()"
@@ -359,12 +377,10 @@
     <script>
         document.addEventListener('DOMContentLoaded', function () {
 
-            // --- 2. READ FLAGS FROM DATA ATTRIBUTES ---
             const modalFlags = document.getElementById('modal-flags');
             const openInterventionModal = modalFlags.getAttribute('data-open-intervention') === 'true';
             const openExpenseModal = modalFlags.getAttribute('data-open-expense') === 'true';
 
-            // --- 3. USE THE PURE JAVASCRIPT VARIABLES IN 'if' STATEMENTS ---
             if (openInterventionModal) {
                 var interventionModal = new bootstrap.Modal(document.getElementById('addInterventionModal'));
                 interventionModal.show();
@@ -375,15 +391,11 @@
                 expenseModal.show();
             }
 
-            // --- THE REST OF THE SCRIPT IS STANDARD JAVASCRIPT ---
-
-            // Standard Bootstrap 5 script to initialize all tooltips on the page
             var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
             var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
                 return new bootstrap.Tooltip(tooltipTriggerEl)
             });
 
-            // Script for toggling the intervention status edit form
             const containers = document.querySelectorAll('.intervention-status-container');
             containers.forEach(container => {
                 const displayDiv = container.querySelector('.status-display');
@@ -410,6 +422,7 @@
             const fileInput = document.getElementById('file-upload-input');
             const fileListContainer = document.getElementById('file-list-container');
             const dataTransfer = new DataTransfer();
+            const expenseForm = document.querySelector('#addExpenseModal form');
 
             if (addFilesBtn) {
                 addFilesBtn.addEventListener('click', function() {
@@ -425,9 +438,13 @@
 
                     fileInput.files = dataTransfer.files;
 
-                    event.target.value = '';
-
                     renderFileList();
+                });
+            }
+
+            if (expenseForm) {
+                expenseForm.addEventListener('submit', function () {
+                    fileInput.files = dataTransfer.files;
                 });
             }
 

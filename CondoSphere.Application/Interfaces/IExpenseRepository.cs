@@ -6,5 +6,6 @@ namespace CondoSphere.Application.Interfaces
     {
         Task AddAsync(Expense expense);
         Task<IEnumerable<Expense>> GetByOccurrenceIdAsync(int occurrenceId);
+        Task<Expense?> GetByIdAsync(int expenseId);
     }
 }

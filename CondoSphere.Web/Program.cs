@@ -1,6 +1,7 @@
 using CondoSphere.Web.Services;
 using System.Globalization;
 using Microsoft.AspNetCore.Localization;
+using Microsoft.Extensions.FileProviders;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -63,12 +64,28 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+
+var uploadPathSetting = builder.Configuration["FileUpload:Path"];
+var resolvedUploadPath = Environment.ExpandEnvironmentVariables(
+    string.IsNullOrWhiteSpace(uploadPathSetting) ? "CondoSphere_Uploads" : uploadPathSetting);
+
+// If relative, make it absolute next to the app
+if (!Path.IsPathRooted(resolvedUploadPath))
+{
+    resolvedUploadPath = Path.GetFullPath(Path.Combine(app.Environment.ContentRootPath, resolvedUploadPath));
+}
+
+Directory.CreateDirectory(resolvedUploadPath);
+
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(resolvedUploadPath),
+    RequestPath = "/uploads"
+});
+
 app.UseRequestLocalization();
 app.UseRouting();
 
-// The correct order for authentication middleware in the pipeline:
-// 1. UseAuthentication: Identifies who the user is by reading the cookie.
-// 2. UseAuthorization: Checks if the identified user has permission to access the requested resource.
 app.UseAuthentication();
 app.UseAuthorization();
 

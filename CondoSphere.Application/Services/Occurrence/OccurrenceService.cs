@@ -80,19 +80,27 @@ namespace CondoSphere.Application.Services.Occurrence
             // 3. Map the incoming data (Title, Description, UnitId) to our database entity.
             var newOccurrence = _mapper.Map<CoreOccurrence>(dto);
 
-            // 4. Handle the optional image upload.
             if (imageFile != null && imageFile.Length > 0)
             {
-                // File size and type validation should be added here for production-grade code.
-                var uploadPath = _configuration["FileUpload:Path"];
-                if (string.IsNullOrEmpty(uploadPath))
+                var uploadRootSetting = _configuration["FileUpload:Path"];
+                var uploadRoot = Environment.ExpandEnvironmentVariables(
+                    string.IsNullOrWhiteSpace(uploadRootSetting) ? "CondoSphere_Uploads" : uploadRootSetting);
+
+                if (!Path.IsPathRooted(uploadRoot))
                 {
-                    // Log a configuration error.
-                    return null;
+                    uploadRoot = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), uploadRoot));
+                }
+
+                // >>> CHANGED: route occurrence photos to a subfolder inside CondoSphere_Uploads
+                var subfolder = "occurences-photos"; // per your requested folder name
+                var occurrenceFolder = Path.Combine(uploadRoot, subfolder);
+                if (!Directory.Exists(occurrenceFolder))
+                {
+                    Directory.CreateDirectory(occurrenceFolder);
                 }
 
                 var uniqueFileName = $"{Guid.NewGuid()}{Path.GetExtension(imageFile.FileName)}";
-                var filePath = Path.Combine(uploadPath, uniqueFileName);
+                var filePath = Path.Combine(occurrenceFolder, uniqueFileName);
 
                 using (var stream = new FileStream(filePath, FileMode.Create))
                 {
@@ -101,7 +109,9 @@ namespace CondoSphere.Application.Services.Occurrence
 
                 var request = _httpContextAccessor.HttpContext.Request;
                 var baseUrl = $"{request.Scheme}://{request.Host}";
-                newOccurrence.ImageUrl = $"{baseUrl}/uploads/{uniqueFileName}";
+
+                // >>> CHANGED: URL now includes the subfolder
+                newOccurrence.ImageUrl = $"{baseUrl}/uploads/{subfolder}/{uniqueFileName}";
             }
 
             // 5. Populate the remaining system-managed properties for the new occurrence.
@@ -163,12 +173,15 @@ namespace CondoSphere.Application.Services.Occurrence
                 return false;
             }
 
+            // NEW: once closed, never allow changing away from Closed
+            if (occurrence.Status == OccurrenceStatus.Closed && newStatus != OccurrenceStatus.Closed)
+            {
+                return false;
+            }
+
             occurrence.Status = newStatus;
-
             _unitOfWork.Occurrences.Update(occurrence);
-
             await _unitOfWork.CompleteAsync();
-
             return true;
         }
     }

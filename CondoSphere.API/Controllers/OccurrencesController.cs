@@ -2,6 +2,7 @@
 using CondoSphere.Application.Services.Occurrence;
 using CondoSphere.Core;
 using CondoSphere.Core.DTOs.Occurrences;
+using CondoSphere.Core.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using CoreOccurrence = CondoSphere.Core.Entities.Condominiums.Occurrence;
@@ -121,14 +122,28 @@ namespace CondoSphere.API.Controllers
                 return Unauthorized();
             }
 
-            var success = await _occurrenceService.UpdateOccurrenceStatusAsync(id, dto.Status, companyId.Value);
-
-            if (success)
+            // NEW: Prevent changes if already closed
+            if (occurrence.Status == OccurrenceStatus.Closed && dto.Status != OccurrenceStatus.Closed)
             {
-                return NoContent();
+                return BadRequest("This occurrence is closed and can no longer be modified.");
             }
 
-            return BadRequest("Failed to update status.");
+            // Detect if this request is closing it now (for the warning)
+            var isClosingNow = occurrence.Status != OccurrenceStatus.Closed && dto.Status == OccurrenceStatus.Closed;
+
+            var success = await _occurrenceService.UpdateOccurrenceStatusAsync(id, dto.Status, companyId.Value);
+
+            if (!success)
+            {
+                return BadRequest("Failed to update status.");
+            }
+
+            if (isClosingNow)
+            {
+                return Ok("The occurrence has been closed. You will not be able to change its status or add new expenses.");
+            }
+
+            return NoContent();
         }
     }
 }

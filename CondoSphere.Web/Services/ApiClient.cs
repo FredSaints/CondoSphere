@@ -258,10 +258,19 @@ namespace CondoSphere.Web.Services
             return await _httpClient.GetFromJsonAsync<UserProfileDto>("/api/profile");
         }
 
-        public async Task<bool> UpdateOccurrenceStatusAsync(int occurrenceId, UpdateOccurrenceStatusDto dto)
+        public async Task<(bool Success, string Message)> UpdateOccurrenceStatusAsync(int occurrenceId, UpdateOccurrenceStatusDto dto)
         {
             var response = await _httpClient.PatchAsJsonAsync($"/api/occurrences/{occurrenceId}/status", dto);
-            return response.IsSuccessStatusCode;
+            var message = await response.Content.ReadAsStringAsync();
+
+            if (!string.IsNullOrWhiteSpace(message) && message.StartsWith("\"") && message.EndsWith("\""))
+            {
+                message = message.Trim('"');
+            }
+
+            return (response.IsSuccessStatusCode, string.IsNullOrWhiteSpace(message)
+                ? (response.IsSuccessStatusCode ? "Occurrence status has been updated." : "Failed to update status.")
+                : message);
         }
 
         public async Task<IEnumerable<InterventionDto>> GetInterventionsForOccurrenceAsync(int occurrenceId)
@@ -351,15 +360,20 @@ namespace CondoSphere.Web.Services
             return await _httpClient.GetFromJsonAsync<IEnumerable<ExpenseDto>>($"/api/occurrences/{occurrenceId}/expenses") ?? new List<ExpenseDto>();
         }
 
-        public async Task<ExpenseDto?> CreateExpenseAsync(CreateExpenseDto dto, List<IFormFile> attachmentFiles)
+        public async Task<(ExpenseDto? Expense, string? Error)> CreateExpenseAsync(CreateExpenseDto dto, List<IFormFile> attachmentFiles)
         {
+            Console.WriteLine($"[WEB.ApiClient] Start CreateExpenseAsync. Files={(attachmentFiles == null ? "null" : attachmentFiles.Count.ToString())}");
+               if (attachmentFiles != null)
+                       foreach (var f in attachmentFiles)
+                Console.WriteLine($"[WEB.ApiClient] File part => FileName='{f.FileName}', Length={f.Length}, ContentType='{f.ContentType}'");
             using var formData = new MultipartFormDataContent();
 
             formData.Add(new StringContent(dto.Title), nameof(dto.Title));
-            formData.Add(new StringContent(dto.Description), nameof(dto.Description));
+            formData.Add(new StringContent(dto.Description ?? string.Empty), nameof(dto.Description));
             formData.Add(new StringContent(dto.Amount.ToString(CultureInfo.InvariantCulture)), nameof(dto.Amount));
             formData.Add(new StringContent(dto.ExpenseDate.ToString("o")), nameof(dto.ExpenseDate));
             formData.Add(new StringContent(dto.CondominiumId.ToString()), nameof(dto.CondominiumId));
+
             if (dto.OccurrenceId.HasValue)
             {
                 formData.Add(new StringContent(dto.OccurrenceId.Value.ToString()), nameof(dto.OccurrenceId));
@@ -373,18 +387,24 @@ namespace CondoSphere.Web.Services
                     {
                         var fileContent = new StreamContent(file.OpenReadStream());
                         fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(file.ContentType);
-                        formData.Add(fileContent, name: "attachmentFiles", fileName: file.FileName);
+                        formData.Add(fileContent, "attachmentFiles", file.FileName);
                     }
                 }
             }
-
+            Console.WriteLine("[WEB.ApiClient] POST /api/expenses ...");
             var response = await _httpClient.PostAsync("/api/expenses", formData);
+            Console.WriteLine($"[WEB.ApiClient] Response {(int)response.StatusCode} {response.ReasonPhrase}");
 
             if (response.IsSuccessStatusCode)
             {
-                return await response.Content.ReadFromJsonAsync<ExpenseDto>();
+                var expense = await response.Content.ReadFromJsonAsync<ExpenseDto>();
+                return (expense, null);
             }
-            return null;
+
+            // Try read detailed API error, fall back to reason phrase
+            var errorBody = await response.Content.ReadAsStringAsync();
+            var errorText = string.IsNullOrWhiteSpace(errorBody) ? response.ReasonPhrase : errorBody;
+            return (null, errorText);
         }
 
         public async Task<IEnumerable<UserListDto>> GetResidentsForCondominiumAsync(int condominiumId)
@@ -412,6 +432,16 @@ namespace CondoSphere.Web.Services
         public async Task<IEnumerable<UnitDto>> GetMyUnitsAsync()
         {
             return await _httpClient.GetFromJsonAsync<IEnumerable<UnitDto>>("/api/users/my-units") ?? new List<UnitDto>();
+        }
+
+        public async Task<ExpenseDto?> GetExpenseDetailsAsync(int expenseId)
+        {
+            var response = await _httpClient.GetAsync($"/api/expenses/{expenseId}");
+            if (response.IsSuccessStatusCode)
+            {
+                return await response.Content.ReadFromJsonAsync<ExpenseDto>();
+            }
+            return null;
         }
     }
 }

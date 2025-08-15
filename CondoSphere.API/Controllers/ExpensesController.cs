@@ -22,14 +22,22 @@ namespace CondoSphere.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateExpense([FromForm] CreateExpenseDto dto, List<IFormFile> attachmentFiles)
+        public async Task<IActionResult> CreateExpense([FromForm] CreateExpenseDto dto, [FromForm] List<IFormFile> attachmentFiles)
         {
+            Console.WriteLine($"[API] CreateExpense ContentType='{Request.ContentType}', HasFormContentType={Request.HasFormContentType}");
+            Console.WriteLine($"[API] DTO => Title='{dto.Title}', Amount={dto.Amount}, Date={dto.ExpenseDate:o}, CondoId={dto.CondominiumId}, OccurrenceId={dto.OccurrenceId}");
+            Console.WriteLine($"[API] attachmentFiles => {(attachmentFiles == null ? "null" : attachmentFiles.Count.ToString())}");
+                if (attachmentFiles != null)
+                        foreach (var f in attachmentFiles)
+                Console.WriteLine($"[API] IFormFile => Name='{f.Name}', FileName='{f.FileName}', ContentType='{f.ContentType}', Length={f.Length}");
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
             var companyId = _currentUserService.CompanyId;
+            Console.WriteLine($"[API] CurrentUserService.CompanyId={(companyId.HasValue ? companyId.Value.ToString() : "null")}");
             if (companyId == null) return Unauthorized();
 
             var result = await _expenseService.CreateExpenseAsync(dto, companyId.Value, attachmentFiles);
+            Console.WriteLine($"[API] ExpenseService.CreateExpenseAsync returned {(result == null ? "NULL" : "OK")}");
 
             if (result == null)
             {
@@ -45,6 +53,25 @@ namespace CondoSphere.API.Controllers
         {
             var expenses = await _expenseService.GetExpensesForOccurrenceAsync(occurrenceId);
             return Ok(expenses);
+        }
+
+        [HttpGet("{expenseId}")]
+        public async Task<IActionResult> GetExpenseById(int expenseId)
+        {
+            var companyId = _currentUserService.CompanyId;
+            if (companyId == null)
+            {
+                return Unauthorized();
+            }
+
+            var expense = await _expenseService.GetExpenseByIdAsync(expenseId, companyId.Value);
+
+            if (expense == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(expense);
         }
     }
 }

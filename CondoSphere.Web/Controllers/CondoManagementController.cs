@@ -241,6 +241,10 @@ namespace CondoSphere.Web.Controllers
                     ExpenseDate = DateTime.Now
                 }
             };
+            if (string.IsNullOrWhiteSpace(viewModel.NewExpense.Title))
+            {
+                viewModel.NewExpense.Title = $"Expense for: {viewModel.Occurrence.Title}";
+            }
             return View(viewModel);
         }
 
@@ -254,14 +258,15 @@ namespace CondoSphere.Web.Controllers
                 return RedirectToAction("OccurrenceDetails", new { condominiumId, occurrenceId });
             }
 
-            var success = await _apiClient.UpdateOccurrenceStatusAsync(occurrenceId, dto);
+            var (success, message) = await _apiClient.UpdateOccurrenceStatusAsync(occurrenceId, dto);
+
             if (success)
             {
-                TempData["SuccessMessage"] = "Occurrence status has been updated.";
+                TempData["SuccessMessage"] = message;
             }
             else
             {
-                TempData["ErrorMessage"] = "Failed to update status.";
+                TempData["ErrorMessage"] = message;
             }
 
             return RedirectToAction("OccurrenceDetails", new { condominiumId, occurrenceId });
@@ -338,14 +343,24 @@ namespace CondoSphere.Web.Controllers
         [HttpPost("{condominiumId}/occurrences/{occurrenceId}/record-expense")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> RecordExpense(
-            int condominiumId,
-            int occurrenceId,
-            [Bind(Prefix = "NewExpense")] CreateExpenseDto expenseDto,
-            List<IFormFile> attachmentFiles)
+    int condominiumId,
+    int occurrenceId,
+    [Bind(Prefix = "NewExpense")] CreateExpenseDto expenseDto,
+    List<IFormFile> attachmentFiles)
         {
+            if (string.IsNullOrWhiteSpace(expenseDto.Title) ||
+                string.IsNullOrWhiteSpace(expenseDto.Description) ||
+                expenseDto.Amount <= 0 ||
+                expenseDto.ExpenseDate == default ||
+                expenseDto.CondominiumId <= 0)
+            {
+                ModelState.AddModelError(string.Empty, "Preencha Título, Montante (>0), Data e Condomínio.");
+            }
+
             if (!ModelState.IsValid)
             {
                 TempData["ErrorMessage"] = "Please correct the errors in the expense form and try again.";
+
                 var occurrenceTask = _apiClient.GetOccurrenceDetailsAsync(occurrenceId);
                 var interventionsTask = _apiClient.GetInterventionsForOccurrenceAsync(occurrenceId);
                 var employeesTask = _apiClient.GetAvailableEmployeesAsync();
@@ -353,11 +368,7 @@ namespace CondoSphere.Web.Controllers
                 await Task.WhenAll(occurrenceTask, interventionsTask, employeesTask, expensesTask);
 
                 var occurrence = await occurrenceTask;
-
-                if (occurrence == null)
-                {
-                    return NotFound();
-                }
+                if (occurrence == null) return NotFound();
 
                 var viewModel = new OccurrenceDetailsViewModel
                 {
@@ -365,32 +376,37 @@ namespace CondoSphere.Web.Controllers
                     Interventions = await interventionsTask,
                     LinkedExpenses = await expensesTask,
                     NewExpense = expenseDto,
-                    NewIntervention = new CreateInterventionDto { OccurrenceId = occurrenceId, StartDate = DateTime.Now }
+                    NewIntervention = new CreateInterventionDto
+                    {
+                        OccurrenceId = occurrenceId,
+                        StartDate = DateTime.Now
+                    }
                 };
+
                 ViewData["AvailableEmployees"] = new SelectList(await employeesTask, "Id", "FullName");
                 return View("OccurrenceDetails", viewModel);
             }
 
-            var result = await _apiClient.CreateExpenseAsync(expenseDto, attachmentFiles);
-            if (result != null)
+            var (expense, apiError) = await _apiClient.CreateExpenseAsync(expenseDto, attachmentFiles);
+            if (expense != null)
             {
                 TempData["SuccessMessage"] = "Expense recorded successfully.";
             }
             else
             {
-                TempData["ErrorMessage"] = "Failed to record expense. Please try again.";
+                TempData["ErrorMessage"] = string.IsNullOrWhiteSpace(apiError)
+                    ? "Failed to record expense."
+                    : $"Failed to record expense: {apiError}";
             }
 
             return RedirectToAction("OccurrenceDetails", new { condominiumId, occurrenceId });
         }
 
+
         [HttpPost("unassign-resident")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UnassignResidentFromUnit(int condominiumId, int residentId, int unitId)
         {
-            Console.WriteLine("--- [DEBUG] CondoManagementController.UnassignResidentFromUnit action hit ---");
-            Console.WriteLine($"Received: condominiumId={condominiumId}, residentId={residentId}, unitId={unitId}");
-
             var success = await _apiClient.UnassignResidentFromUnitAsync(residentId, unitId);
 
             if (success)
@@ -403,6 +419,22 @@ namespace CondoSphere.Web.Controllers
             }
 
             return RedirectToAction(nameof(Details), new { id = condominiumId });
+        }
+
+        [HttpGet("expenses/{expenseId}")]
+        public async Task<IActionResult> ExpenseDetails(int expenseId, int occurrenceId, int condominiumId)
+        {
+            var expense = await _apiClient.GetExpenseDetailsAsync(expenseId);
+            if (expense == null)
+            {
+                return NotFound();
+            }
+
+            // Pass these IDs to the view so the "Back" button works correctly.
+            ViewData["OccurrenceId"] = occurrenceId;
+            ViewData["CondominiumId"] = condominiumId;
+
+            return View(expense);
         }
     }
 }

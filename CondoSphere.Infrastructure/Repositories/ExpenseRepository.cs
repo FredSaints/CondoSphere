@@ -23,9 +23,17 @@ namespace CondoSphere.Infrastructure.Repositories
         {
             return await _context.Expenses
                 .Where(e => e.OccurrenceId == occurrenceId)
+                .Include(e => e.Attachments)
                 .OrderBy(e => e.ExpenseDate)
                 .AsNoTracking()
                 .ToListAsync();
+        }
+
+        public async Task<Expense?> GetByIdAsync(int expenseId)
+        {
+            return await _context.Expenses
+                .Include(e => e.Attachments)
+                .FirstOrDefaultAsync(e => e.Id == expenseId);
         }
     }
 }

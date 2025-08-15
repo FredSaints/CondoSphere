@@ -36,8 +36,8 @@ namespace CondoSphere.API
             var condominiumConnectionString = builder.Configuration.GetConnectionString("CondominiumConnection");
             var financialsConnectionString = builder.Configuration.GetConnectionString("FinancialsConnection");
 
-            builder.Services.AddDbContext<UserManagementDbContext>(options =>options.UseSqlServer(userManagementConnectionString));
-            builder.Services.AddDbContext<CondominiumDbContext>(options =>options.UseSqlServer(condominiumConnectionString));
+            builder.Services.AddDbContext<UserManagementDbContext>(options => options.UseSqlServer(userManagementConnectionString));
+            builder.Services.AddDbContext<CondominiumDbContext>(options => options.UseSqlServer(condominiumConnectionString));
             builder.Services.AddDbContext<FinancialsDbContext>(options => options.UseSqlServer(financialsConnectionString));
 
             builder.Services.AddIdentity<User, IdentityRole<int>>(options =>
@@ -106,19 +106,12 @@ namespace CondoSphere.API
             {
                 options.AddPolicy("IsCondoManagerPolicy", policy =>
                     policy.AddRequirements(new IsCondoManagerRequirement()));
-            });
-
-            builder.Services.AddAuthorization(options =>
-            {
-                options.AddPolicy("IsCondoManagerPolicy", policy =>
-                    policy.AddRequirements(new IsCondoManagerRequirement()));
 
                 options.AddPolicy("CanAccessOccurrence", policy =>
                     policy.AddRequirements(new CanAccessOccurrenceRequirement()));
 
                 options.AddPolicy("CanManageIntervention", policy =>
                     policy.AddRequirements(new CanManageInterventionRequirement()));
-
             });
 
             builder.Services.AddScoped<IAuthorizationHandler, IsCondoManagerHandler>();
@@ -184,18 +177,24 @@ namespace CondoSphere.API
             app.UseAuthentication();
             app.UseAuthorization();
 
-            var uploadPath = builder.Configuration["FileUpload:Path"];
-            if (!Directory.Exists(uploadPath))
+            // --- BEGIN portable upload root resolution ---
+            var uploadPathSetting = builder.Configuration["FileUpload:Path"];
+            var resolvedUploadPath = Environment.ExpandEnvironmentVariables(
+                string.IsNullOrWhiteSpace(uploadPathSetting) ? "CondoSphere_Uploads" : uploadPathSetting);
+
+            // If the configured path is relative, make it absolute next to the app
+            if (!Path.IsPathRooted(resolvedUploadPath))
             {
-                Directory.CreateDirectory(uploadPath);
+                resolvedUploadPath = Path.GetFullPath(Path.Combine(app.Environment.ContentRootPath, resolvedUploadPath));
             }
+
+            Directory.CreateDirectory(resolvedUploadPath);
 
             app.UseStaticFiles(new StaticFileOptions
             {
-                FileProvider = new PhysicalFileProvider(uploadPath),
+                FileProvider = new PhysicalFileProvider(resolvedUploadPath),
                 RequestPath = "/uploads"
             });
-
 
             app.MapControllers();
 
