@@ -16,6 +16,7 @@ namespace CondoSphere.Infrastructure.Repositories
         public IOccurrenceRepository Occurrences { get; private set; }
         public IInterventionRepository Interventions { get; private set; }
         public IExpenseRepository Expenses { get; private set; }
+        public IUnitQuotaRepository UnitQuotas { get; private set; }
 
         public UnitOfWork(UserManagementDbContext userContext, CondominiumDbContext condoContext, FinancialsDbContext financialsContext)
         {
@@ -30,6 +31,7 @@ namespace CondoSphere.Infrastructure.Repositories
             Occurrences = new OccurrenceRepository(_condoContext);
             Interventions = new InterventionRepository(_condoContext);
             Expenses = new ExpenseRepository(_financialsContext);
+            UnitQuotas = new UnitQuotaRepository(_financialsContext);
         }
 
         public async Task<int> CompleteAsync()

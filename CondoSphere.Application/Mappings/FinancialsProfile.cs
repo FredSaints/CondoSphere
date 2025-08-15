@@ -14,8 +14,9 @@ namespace CondoSphere.Application.Mappings
                     dest => dest.AttachmentUrls,
                     opt => opt.MapFrom(src => src.Attachments.Select(a => a.AttachmentUrl).ToList())
                 );
-            CreateMap<CreateUpdateFixedExpenseDto, Expense>();
 
+            CreateMap<CreateUpdateFixedExpenseDto, Expense>();
+            CreateMap<UnitQuota, UnitQuotaDto>();
         }
     }
 }

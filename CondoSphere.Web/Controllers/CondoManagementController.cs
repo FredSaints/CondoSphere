@@ -579,5 +579,58 @@ namespace CondoSphere.Web.Controllers
             }
             return RedirectToAction("FixedExpenses", new { condominiumId });
         }
+
+        [HttpGet("{id}/generate-fees")]
+        public async Task<IActionResult> GenerateFees(int id)
+        {
+            var condo = await _apiClient.GetCondominiumDetailsAsync(id);
+            if (condo == null) return NotFound();
+            return View(condo);
+        }
+
+        [HttpPost("{id}/generate-fees")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> GenerateFees(int id, int year, int month)
+        {
+            var (success, message) = await _apiClient.GenerateMonthlyQuotasAsync(id, year, month);
+            if (success)
+            {
+                TempData["SuccessMessage"] = message;
+            }
+            else
+            {
+                TempData["ErrorMessage"] = message;
+            }
+            return RedirectToAction("Details", new { id });
+        }
+
+        [HttpGet("{condominiumId}/quotas")]
+        public async Task<IActionResult> QuotaManagement(int condominiumId)
+        {
+            var condo = await _apiClient.GetCondominiumDetailsAsync(condominiumId);
+            if (condo == null) return NotFound();
+
+            var quotas = await _apiClient.GetQuotasForCondominiumAsync(condominiumId);
+
+            ViewData["Condominium"] = condo;
+            return View(quotas);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ConfirmPayment(int quotaId, int condominiumId)
+        {
+            var (success, message) = await _apiClient.ConfirmPaymentAsync(quotaId);
+            if (success)
+            {
+                TempData["SuccessMessage"] = message;
+            }
+            else
+            {
+                TempData["ErrorMessage"] = message;
+            }
+
+            return RedirectToAction("QuotaManagement", new { condominiumId });
+        }
     }
 }

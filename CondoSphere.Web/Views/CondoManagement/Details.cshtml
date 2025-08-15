@@ -5,20 +5,21 @@
     ViewData["Title"] = $"Manage: {Model.Condominium.Name}";
 }
 
+<!-- Main Header -->
 <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
         <h1>@Model.Condominium.Name</h1>
         <p class="text-muted mb-0">@Model.Condominium.Address</p>
     </div>
-    <a asp-action="CreateUnit" asp-route-condominiumId="@Model.Condominium.Id" class="btn btn-success">
-        <i class="bi bi-plus-square-fill me-1"></i> Add New Unit
-    </a>
-    <a asp-action="FixedExpenses" asp-route-condominiumId="@Model.Condominium.Id" class="btn btn-info">
-        <i class="bi bi-arrow-repeat me-1"></i> Manage Fixed Expenses
-    </a>
+    <!-- Main action buttons can be grouped here -->
+    <div class="btn-group">
+        <a asp-action="CreateUnit" asp-route-condominiumId="@Model.Condominium.Id" class="btn btn-success">
+            <i class="bi bi-plus-square-fill me-1"></i> Add Unit
+        </a>
+    </div>
 </div>
 
-@* ===== THE NEW, UNIFIED UNITS & RESIDENTS CARD ===== *@
+<!-- Units and Residents Card (No changes needed here) -->
 <div class="card shadow-sm mb-4">
     <div class="card-header">
         <h5 class="mb-0">Units and Residents</h5>
@@ -56,14 +57,12 @@
                                     @if (unit.Resident != null)
                                     {
                                         <br />
-                            
                                         <small class="text-muted">@unit.Resident.Email</small>
                                     }
                                 </td>
                                 <td class="text-end">
                                     @if (unit.Resident == null)
                                     {
-                                        @* If vacant, link to the simple "Assign" page *@
                                         <a asp-action="AssignResident"
                                            asp-route-unitId="@unit.Id"
                                            asp-route-condominiumId="@Model.Condominium.Id"
@@ -73,7 +72,6 @@
                                     }
                                     else
                                     {
-                                        @* If occupied, provide the Unassign action *@
                                         <form asp-action="UnassignResidentFromUnit"
                                               asp-route-condominiumId="@Model.Condominium.Id"
                                               asp-route-residentId="@unit.Resident.Id"
@@ -105,9 +103,31 @@
     </div>
 </div>
 
-<hr class="my-4" />
+<!-- ======================= NEW FINANCIALS CARD ======================= -->
+<div class="card shadow-sm mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">Financial Management</h5>
+        <div class="btn-group">
+            <a asp-action="QuotaManagement" asp-route-condominiumId="@Model.Condominium.Id" class="btn btn-sm btn-outline-info">
+                <i class="bi bi-cash-stack me-1"></i> Manage Quotas
+            </a>
+            <a asp-action="FixedExpenses" asp-route-condominiumId="@Model.Condominium.Id" class="btn btn-sm btn-outline-secondary">
+                <i class="bi bi-arrow-repeat me-1"></i> Manage Fixed Expenses
+            </a>
+            <a asp-action="GenerateFees" asp-route-id="@Model.Condominium.Id" class="btn btn-sm btn-primary">
+                <i class="bi bi-calculator-fill me-1"></i> Generate Monthly Fees
+            </a>
+        </div>
+    </div>
+    <div class="card-body">
+        <p class="card-text text-muted">
+            Use this section to manage recurring costs and generate the monthly fees for all residents.
+        </p>
+        <!-- You could display a summary of recent financial activity here in the future -->
+    </div>
+</div>
 
-@* Occurrences Card *@
+<!-- Occurrences Card -->
 <div class="card shadow-sm">
     <div class="card-header d-flex justify-content-between align-items-center">
         <h5 class="mb-0">Reported Occurrences</h5>

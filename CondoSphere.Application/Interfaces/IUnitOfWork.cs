@@ -9,6 +9,7 @@
         IOccurrenceRepository Occurrences { get; }
         IInterventionRepository Interventions { get; }
         IExpenseRepository Expenses { get; }
+        IUnitQuotaRepository UnitQuotas { get; }
         Task<int> CompleteAsync();
 
     }

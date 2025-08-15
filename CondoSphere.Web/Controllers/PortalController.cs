@@ -1,4 +1,6 @@
 ﻿using CondoSphere.Core;
+using CondoSphere.Core.DTOs.Condominiums;
+using CondoSphere.Core.DTOs.Financials;
 using CondoSphere.Core.DTOs.Occurrences;
 using CondoSphere.Web.Models;
 using CondoSphere.Web.Services;
@@ -22,16 +24,19 @@ namespace CondoSphere.Web.Controllers
         [HttpGet("")]
         public async Task<IActionResult> Index()
         {
-            // 1. Call the ApiClient to get the user's occurrences.
-            var occurrences = await _apiClient.GetMyOccurrencesAsync();
+            var occurrencesTask = _apiClient.GetMyOccurrencesAsync();
+            var unitsTask = _apiClient.GetMyUnitsAsync();
+            var quotasTask = _apiClient.GetMyQuotasAsync();
 
-            // 2. Create an instance of our new ViewModel.
+            await Task.WhenAll(occurrencesTask, unitsTask, quotasTask);
+
             var viewModel = new PortalDashboardViewModel
             {
-                Occurrences = occurrences ?? new List<OccurrenceDto>()
+                Occurrences = await occurrencesTask ?? new List<OccurrenceDto>(),
+                MyUnits = await unitsTask ?? new List<UnitDto>(),
+                MyQuotas = await quotasTask ?? new List<UnitQuotaDto>()
             };
 
-            // 3. Pass the strongly-typed model to the view.
             return View(viewModel);
         }
 
@@ -107,6 +112,41 @@ namespace CondoSphere.Web.Controllers
                 return NotFound();
             }
             return View(occurrence);
+        }
+
+        [HttpGet("quotas/{id}/details")]
+        public async Task<IActionResult> QuotaDetails(int id)
+        {
+            var breakdown = await _apiClient.GetQuotaBreakdownAsync(id);
+            if (breakdown == null)
+            {
+                return NotFound();
+            }
+            return View(breakdown);
+        }
+
+        [HttpPost("quotas/{id}/details")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> SubmitProof(int id, IFormFile proofFile)
+        {
+            if (proofFile == null || proofFile.Length == 0)
+            {
+                TempData["ErrorMessage"] = "Please select a file to upload.";
+                return RedirectToAction("QuotaDetails", new { id });
+            }
+
+            var result = await _apiClient.SubmitPaymentProofAsync(id, proofFile);
+
+            if (result != null)
+            {
+                TempData["SuccessMessage"] = "Proof of payment submitted successfully. Awaiting manager confirmation.";
+            }
+            else
+            {
+                TempData["ErrorMessage"] = "There was an error submitting your proof of payment.";
+            }
+
+            return RedirectToAction("QuotaDetails", new { id });
         }
     }
 }

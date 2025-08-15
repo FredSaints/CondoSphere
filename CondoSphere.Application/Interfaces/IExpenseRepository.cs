@@ -11,5 +11,6 @@ namespace CondoSphere.Application.Interfaces
         Task<IEnumerable<Expense>> GetByOccurrenceIdAsync(int occurrenceId);
         Task<Expense?> GetByIdAsync(int expenseId);
         Task<IEnumerable<Expense>> GetFixedExpensesByCondominiumAsync(int condominiumId);
+        Task<IEnumerable<Expense>> GetOneTimeExpensesForPeriodAsync(int condominiumId, int year, int month);
     }
 }

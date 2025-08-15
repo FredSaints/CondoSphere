@@ -7,7 +7,7 @@ namespace CondoSphere.Infrastructure.Data
     {
         public DbSet<Expense> Expenses { get; set; }
         public DbSet<ExpenseAttachment> ExpenseAttachments { get; set; }
-        // We will add DbSet for UnitQuota, Receipt, etc. here later.
+        public DbSet<UnitQuota> UnitQuotas { get; set; }
 
         public FinancialsDbContext(DbContextOptions<FinancialsDbContext> options)
             : base(options)
@@ -29,6 +29,12 @@ namespace CondoSphere.Infrastructure.Data
                 .HasOne(a => a.Expense)
                 .WithMany(e => e.Attachments)
                 .HasForeignKey(a => a.ExpenseId);
+
+            modelBuilder.Entity<UnitQuota>(entity =>
+            {
+                entity.Property(e => e.AmountDue).HasColumnType("decimal(18, 2)");
+                entity.Property(e => e.AmountPaid).HasColumnType("decimal(18, 2)");
+            });
         }
     }
 }

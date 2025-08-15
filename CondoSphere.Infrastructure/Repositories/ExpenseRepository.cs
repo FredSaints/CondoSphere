@@ -54,5 +54,18 @@ namespace CondoSphere.Infrastructure.Repositories
                 .AsNoTracking()
                 .ToListAsync();
         }
+
+        public async Task<IEnumerable<Expense>> GetOneTimeExpensesForPeriodAsync(int condominiumId, int year, int month)
+        {
+            var startDate = new DateTime(year, month, 1);
+            var endDate = startDate.AddMonths(1);
+
+            return await _context.Expenses
+                .Where(e => e.CondominiumId == condominiumId &&
+                            e.Frequency == ExpenseFrequency.OneTime &&
+                            e.ExpenseDate >= startDate &&
+                            e.ExpenseDate < endDate)
+                .ToListAsync();
+        }
     }
 }

@@ -91,6 +91,8 @@ namespace CondoSphere.API
             builder.Services.AddScoped<IInterventionService, InterventionService>();
             builder.Services.AddScoped<IExpenseRepository, ExpenseRepository>();
             builder.Services.AddScoped<IExpenseService, ExpenseService>();
+            builder.Services.AddScoped<IUnitQuotaRepository, UnitQuotaRepository>();
+            builder.Services.AddScoped<IFinancialService, FinancialService>();
             builder.Services.AddScoped<IAuthorizationHandler, CanAccessOccurrenceHandler>();
             builder.Services.AddScoped<IAuthorizationHandler, CanManageInterventionHandler>();
 

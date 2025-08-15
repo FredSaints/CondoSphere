@@ -481,5 +481,71 @@ namespace CondoSphere.Web.Services
             var response = await _httpClient.DeleteAsync($"/api/condominiums/{condominiumId}/fixed-expenses/{expenseId}");
             return response.IsSuccessStatusCode;
         }
+        public async Task<IEnumerable<UnitQuotaDto>> GetMyQuotasAsync()
+        {
+            return await _httpClient.GetFromJsonAsync<IEnumerable<UnitQuotaDto>>("/api/users/my-quotas")
+                   ?? new List<UnitQuotaDto>();
+        }
+
+        public async Task<(bool Success, string Message)> GenerateMonthlyQuotasAsync(int condominiumId, int year, int month)
+        {
+            var payload = new { year, month };
+            var response = await _httpClient.PostAsJsonAsync($"/api/financials/condominiums/{condominiumId}/generate-quotas", payload);
+            var responseBody = await response.Content.ReadFromJsonAsync<JsonElement>();
+            var message = responseBody.GetProperty("message").GetString() ?? "An unknown error occurred.";
+
+            return (response.IsSuccessStatusCode, message);
+        }
+
+        public async Task<QuotaBreakdownDto?> GetQuotaBreakdownAsync(int quotaId)
+        {
+            var response = await _httpClient.GetAsync($"/api/financials/quotas/{quotaId}/breakdown");
+            if (response.IsSuccessStatusCode)
+            {
+                return await response.Content.ReadFromJsonAsync<QuotaBreakdownDto>();
+            }
+            return null;
+        }
+
+        public async Task<UnitQuotaDto?> SubmitPaymentProofAsync(int quotaId, IFormFile proofFile)
+        {
+            using var formData = new MultipartFormDataContent();
+
+            var fileContent = new StreamContent(proofFile.OpenReadStream());
+            fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(proofFile.ContentType);
+
+            // The name "proofFile" must match the parameter name in your API controller action
+            formData.Add(fileContent, name: "proofFile", fileName: proofFile.FileName);
+
+            var response = await _httpClient.PostAsync($"/api/financials/quotas/{quotaId}/submit-payment-proof", formData);
+
+            if (response.IsSuccessStatusCode)
+            {
+                return await response.Content.ReadFromJsonAsync<UnitQuotaDto>();
+            }
+            return null;
+        }
+
+        public async Task<(bool Success, string Message)> ConfirmPaymentAsync(int quotaId)
+        {
+            var response = await _httpClient.PostAsync($"/api/financials/quotas/{quotaId}/confirm-payment", null);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var responseBody = await response.Content.ReadFromJsonAsync<JsonElement>();
+                var message = responseBody.GetProperty("message").GetString() ?? "Payment confirmed.";
+                return (true, message);
+            }
+
+            var errorBody = await response.Content.ReadFromJsonAsync<JsonElement>();
+            var errorMessage = errorBody.GetProperty("message").GetString() ?? "Failed to confirm payment.";
+            return (false, errorMessage);
+        }
+
+        public async Task<IEnumerable<UnitQuotaDto>> GetQuotasForCondominiumAsync(int condominiumId)
+        {
+            return await _httpClient.GetFromJsonAsync<IEnumerable<UnitQuotaDto>>($"/api/financials/condominiums/{condominiumId}/quotas")
+                ?? new List<UnitQuotaDto>();
+        }
     }
 }

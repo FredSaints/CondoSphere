@@ -63,5 +63,9 @@ namespace CondoSphere.Core.Entities.Financials
         /// A payment reference number, if applicable (e.g., Multibanco reference).
         /// </summary>
         public string? ReferenceNumber { get; set; }
+        /// <summary>
+        /// A URL to the proof of payment, if available.
+        /// </summary>
+        public string? ProofOfPaymentUrl { get; set; }
     }
 }
