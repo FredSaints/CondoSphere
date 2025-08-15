@@ -13,6 +13,9 @@
     <a asp-action="CreateUnit" asp-route-condominiumId="@Model.Condominium.Id" class="btn btn-success">
         <i class="bi bi-plus-square-fill me-1"></i> Add New Unit
     </a>
+    <a asp-action="FixedExpenses" asp-route-condominiumId="@Model.Condominium.Id" class="btn btn-info">
+        <i class="bi bi-arrow-repeat me-1"></i> Manage Fixed Expenses
+    </a>
 </div>
 
 @* ===== THE NEW, UNIFIED UNITS & RESIDENTS CARD ===== *@

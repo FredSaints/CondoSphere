@@ -436,5 +436,148 @@ namespace CondoSphere.Web.Controllers
 
             return View(expense);
         }
+
+        [HttpGet("{condominiumId}/fixed-expenses")]
+        public async Task<IActionResult> FixedExpenses(int condominiumId)
+        {
+            var condo = await _apiClient.GetCondominiumDetailsAsync(condominiumId);
+            if (condo == null) return NotFound();
+
+            var fixedExpenses = await _apiClient.GetFixedExpensesAsync(condominiumId);
+
+            ViewData["Condominium"] = condo;
+            return View(fixedExpenses);
+        }
+
+        // GET: /condo-management/{condominiumId}/fixed-expenses/create
+        [HttpGet("{condominiumId}/fixed-expenses/create")]
+        public async Task<IActionResult> CreateFixedExpense(int condominiumId)
+        {
+            var condo = await _apiClient.GetCondominiumDetailsAsync(condominiumId);
+            if (condo == null) return NotFound();
+
+            var model = new CreateUpdateFixedExpenseDto
+            {
+                CondominiumId = condominiumId
+            };
+
+            ViewData["CondominiumName"] = condo.Name;
+            return View(model);
+        }
+
+        // POST: /condo-management/{condominiumId}/fixed-expenses/create
+        [HttpPost("{condominiumId}/fixed-expenses/create")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateFixedExpense(int condominiumId, CreateUpdateFixedExpenseDto model)
+        {
+            if (!ModelState.IsValid)
+            {
+                var condo = await _apiClient.GetCondominiumDetailsAsync(condominiumId);
+                ViewData["CondominiumName"] = condo?.Name;
+                return View(model);
+            }
+
+            var result = await _apiClient.CreateFixedExpenseAsync(condominiumId, model);
+
+            if (result != null)
+            {
+                TempData["SuccessMessage"] = "Fixed expense created successfully.";
+                return RedirectToAction("FixedExpenses", new { condominiumId = condominiumId });
+            }
+
+            ModelState.AddModelError(string.Empty, "An error occurred while creating the expense.");
+            var finalCondo = await _apiClient.GetCondominiumDetailsAsync(condominiumId);
+            ViewData["CondominiumName"] = finalCondo?.Name;
+            return View(model);
+        }
+
+        // GET: /condo-management/{condominiumId}/fixed-expenses/edit/{expenseId}
+        [HttpGet("{condominiumId}/fixed-expenses/edit/{expenseId}")]
+        public async Task<IActionResult> EditFixedExpense(int condominiumId, int expenseId)
+        {
+            var companyId = int.Parse(User.FindFirst("companyId").Value);
+            var expense = await _apiClient.GetExpenseDetailsAsync(expenseId); // Re-use the existing client method
+            if (expense == null) return NotFound();
+
+            var condo = await _apiClient.GetCondominiumDetailsAsync(condominiumId);
+            if (condo == null) return NotFound();
+
+            // Map the full ExpenseDto to the smaller DTO needed for the edit form
+            var model = new CreateUpdateFixedExpenseDto
+            {
+                Title = expense.Title,
+                Description = expense.Description,
+                Amount = expense.Amount,
+                Frequency = expense.Frequency,
+                DayOfBilling = expense.DayOfBilling,
+                CondominiumId = condominiumId
+            };
+
+            ViewData["CondominiumName"] = condo.Name;
+            ViewData["ExpenseId"] = expenseId;
+            return View(model);
+        }
+
+        // POST: /condo-management/{condominiumId}/fixed-expenses/edit/{expenseId}
+        [HttpPost("{condominiumId}/fixed-expenses/edit/{expenseId}")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditFixedExpense(int condominiumId, int expenseId, CreateUpdateFixedExpenseDto model)
+        {
+            if (!ModelState.IsValid)
+            {
+                var condo = await _apiClient.GetCondominiumDetailsAsync(condominiumId);
+                ViewData["CondominiumName"] = condo?.Name;
+                ViewData["ExpenseId"] = expenseId;
+                return View(model);
+            }
+
+            var result = await _apiClient.UpdateFixedExpenseAsync(expenseId, condominiumId, model);
+
+            if (result != null)
+            {
+                TempData["SuccessMessage"] = "Fixed expense updated successfully.";
+                return RedirectToAction("FixedExpenses", new { condominiumId = condominiumId });
+            }
+
+            ModelState.AddModelError(string.Empty, "An error occurred while updating the expense.");
+            var finalCondo = await _apiClient.GetCondominiumDetailsAsync(condominiumId);
+            ViewData["CondominiumName"] = finalCondo?.Name;
+            ViewData["ExpenseId"] = expenseId;
+            return View(model);
+        }
+
+        // POST: /condo-management/{condominiumId}/fixed-expenses/toggle/{expenseId}
+        [HttpPost("{condominiumId}/fixed-expenses/toggle/{expenseId}")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ToggleFixedExpenseStatus(int condominiumId, int expenseId)
+        {
+            var success = await _apiClient.ToggleFixedExpenseStatusAsync(expenseId, condominiumId);
+            if (success)
+            {
+                TempData["SuccessMessage"] = "Expense status updated.";
+            }
+            else
+            {
+                TempData["ErrorMessage"] = "Failed to update expense status.";
+            }
+            return RedirectToAction("FixedExpenses", new { condominiumId });
+        }
+
+        // POST: /condo-management/{condominiumId}/fixed-expenses/delete/{expenseId}
+        [HttpPost("{condominiumId}/fixed-expenses/delete/{expenseId}")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteFixedExpense(int condominiumId, int expenseId)
+        {
+            var success = await _apiClient.DeleteFixedExpenseAsync(expenseId, condominiumId);
+            if (success)
+            {
+                TempData["SuccessMessage"] = "Fixed expense has been deleted.";
+            }
+            else
+            {
+                TempData["ErrorMessage"] = "Failed to delete expense.";
+            }
+            return RedirectToAction("FixedExpenses", new { condominiumId });
+        }
     }
 }

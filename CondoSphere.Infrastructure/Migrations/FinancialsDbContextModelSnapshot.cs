@@ -43,6 +43,9 @@ namespace CondoSphere.Infrastructure.Migrations
                     b.Property<int>("CondominiumId")
                         .HasColumnType("int");
 
+                    b.Property<int>("DayOfBilling")
+                        .HasColumnType("int");
+
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -50,8 +53,14 @@ namespace CondoSphere.Infrastructure.Migrations
                     b.Property<DateTime>("ExpenseDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<int>("Frequency")
+                        .HasColumnType("int");
+
                     b.Property<string>("InvoiceNumber")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
 
                     b.Property<int?>("OccurrenceId")
                         .HasColumnType("int");

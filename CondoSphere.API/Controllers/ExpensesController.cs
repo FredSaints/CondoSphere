@@ -73,5 +73,75 @@ namespace CondoSphere.API.Controllers
 
             return Ok(expense);
         }
+
+        [HttpGet("~/api/condominiums/{condominiumId}/fixed-expenses")]
+        public async Task<IActionResult> GetFixedExpenses(int condominiumId)
+        {
+            var expenses = await _expenseService.GetFixedExpensesForCondominiumAsync(condominiumId);
+            return Ok(expenses);
+        }
+
+        [HttpPost("~/api/condominiums/{condominiumId}/fixed-expenses")]
+        public async Task<IActionResult> CreateFixedExpense(int condominiumId, [FromBody] CreateUpdateFixedExpenseDto dto)
+        {
+            if (!ModelState.IsValid || condominiumId != dto.CondominiumId) return BadRequest();
+
+            var companyId = _currentUserService.CompanyId;
+            if (companyId == null) return Unauthorized();
+
+            var newExpense = await _expenseService.CreateFixedExpenseAsync(dto, companyId.Value);
+            return CreatedAtAction(nameof(GetExpenseById), new { expenseId = newExpense.Id }, newExpense);
+        }
+
+
+        // PUT: /api/condominiums/{condominiumId}/fixed-expenses/{expenseId}
+        [HttpPut("~/api/condominiums/{condominiumId}/fixed-expenses/{expenseId}")]
+        public async Task<IActionResult> UpdateFixedExpense(int condominiumId, int expenseId, [FromBody] CreateUpdateFixedExpenseDto dto)
+        {
+            if (!ModelState.IsValid || condominiumId != dto.CondominiumId) return BadRequest();
+
+            var companyId = _currentUserService.CompanyId;
+            if (companyId == null) return Unauthorized();
+
+            var updatedExpense = await _expenseService.UpdateFixedExpenseAsync(expenseId, dto, companyId.Value);
+
+            if (updatedExpense == null) return NotFound();
+
+            return Ok(updatedExpense);
+        }
+
+        // PATCH: /api/condominiums/{condominiumId}/fixed-expenses/{expenseId}/toggle-status
+        [HttpPatch("~/api/condominiums/{condominiumId}/fixed-expenses/{expenseId}/toggle-status")]
+        public async Task<IActionResult> ToggleFixedExpenseStatus(int condominiumId, int expenseId)
+        {
+            var companyId = _currentUserService.CompanyId;
+            if (companyId == null) return Unauthorized();
+
+            // Optional: Check if the expense belongs to the condominium for added security
+            var expense = await _expenseService.GetExpenseByIdAsync(expenseId, companyId.Value);
+            if (expense == null || expense.CondominiumId != condominiumId) return Forbid();
+
+            var success = await _expenseService.ToggleFixedExpenseStatusAsync(expenseId, companyId.Value);
+            if (!success) return NotFound();
+
+            return NoContent();
+        }
+
+        // DELETE: /api/condominiums/{condominiumId}/fixed-expenses/{expenseId}
+        [HttpDelete("~/api/condominiums/{condominiumId}/fixed-expenses/{expenseId}")]
+        public async Task<IActionResult> DeleteFixedExpense(int condominiumId, int expenseId)
+        {
+            var companyId = _currentUserService.CompanyId;
+            if (companyId == null) return Unauthorized();
+
+            // Optional: Security check similar to the Patch method above
+            var expense = await _expenseService.GetExpenseByIdAsync(expenseId, companyId.Value);
+            if (expense == null || expense.CondominiumId != condominiumId) return Forbid();
+
+            var success = await _expenseService.DeleteFixedExpenseAsync(expenseId, companyId.Value);
+            if (!success) return NotFound();
+
+            return NoContent();
+        }
     }
 }

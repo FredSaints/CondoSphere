@@ -443,5 +443,43 @@ namespace CondoSphere.Web.Services
             }
             return null;
         }
+
+        public async Task<IEnumerable<ExpenseDto>> GetFixedExpensesAsync(int condominiumId)
+        {
+            return await _httpClient.GetFromJsonAsync<IEnumerable<ExpenseDto>>($"/api/condominiums/{condominiumId}/fixed-expenses")
+                   ?? new List<ExpenseDto>();
+        }
+
+        public async Task<ExpenseDto?> CreateFixedExpenseAsync(int condominiumId, CreateUpdateFixedExpenseDto dto)
+        {
+            var response = await _httpClient.PostAsJsonAsync($"/api/condominiums/{condominiumId}/fixed-expenses", dto);
+            if (response.IsSuccessStatusCode)
+            {
+                return await response.Content.ReadFromJsonAsync<ExpenseDto>();
+            }
+            return null;
+        }
+
+        public async Task<ExpenseDto?> UpdateFixedExpenseAsync(int expenseId, int condominiumId, CreateUpdateFixedExpenseDto dto)
+        {
+            var response = await _httpClient.PutAsJsonAsync($"/api/condominiums/{condominiumId}/fixed-expenses/{expenseId}", dto);
+            if (response.IsSuccessStatusCode)
+            {
+                return await response.Content.ReadFromJsonAsync<ExpenseDto>();
+            }
+            return null;
+        }
+
+        public async Task<bool> ToggleFixedExpenseStatusAsync(int expenseId, int condominiumId)
+        {
+            var response = await _httpClient.PatchAsync($"/api/condominiums/{condominiumId}/fixed-expenses/{expenseId}/toggle-status", null);
+            return response.IsSuccessStatusCode;
+        }
+
+        public async Task<bool> DeleteFixedExpenseAsync(int expenseId, int condominiumId)
+        {
+            var response = await _httpClient.DeleteAsync($"/api/condominiums/{condominiumId}/fixed-expenses/{expenseId}");
+            return response.IsSuccessStatusCode;
+        }
     }
 }

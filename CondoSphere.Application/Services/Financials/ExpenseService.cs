@@ -121,5 +121,76 @@ namespace CondoSphere.Application.Services.Financials
 
             return _mapper.Map<ExpenseDto>(expense);
         }
+
+        public async Task<IEnumerable<ExpenseDto>> GetFixedExpensesForCondominiumAsync(int condominiumId)
+        {
+            var expenses = await _unitOfWork.Expenses.GetFixedExpensesByCondominiumAsync(condominiumId);
+            return _mapper.Map<IEnumerable<ExpenseDto>>(expenses);
+        }
+
+        public async Task<ExpenseDto?> CreateFixedExpenseAsync(CreateUpdateFixedExpenseDto dto, int companyId)
+        {
+            var condo = await _unitOfWork.Condominiums.GetByIdAsync(dto.CondominiumId, companyId);
+            if (condo == null)
+            {
+                return null;
+            }
+
+            var newExpense = _mapper.Map<CoreExpense>(dto);
+            newExpense.CompanyId = companyId;
+            newExpense.IsActive = true;
+
+            await _unitOfWork.Expenses.AddAsync(newExpense);
+            await _unitOfWork.CompleteAsync();
+
+            return _mapper.Map<ExpenseDto>(newExpense);
+        }
+
+        public async Task<ExpenseDto?> UpdateFixedExpenseAsync(int expenseId, CreateUpdateFixedExpenseDto dto, int companyId)
+        {
+            var expense = await _unitOfWork.Expenses.GetByIdAsync(expenseId);
+
+            if (expense == null || expense.CompanyId != companyId)
+            {
+                return null;
+            }
+
+            _mapper.Map(dto, expense);
+
+            _unitOfWork.Expenses.Update(expense);
+            await _unitOfWork.CompleteAsync();
+
+            return _mapper.Map<ExpenseDto>(expense);
+        }
+
+        public async Task<bool> ToggleFixedExpenseStatusAsync(int expenseId, int companyId)
+        {
+            var expense = await _unitOfWork.Expenses.GetByIdAsync(expenseId);
+
+            if (expense == null || expense.CompanyId != companyId)
+            {
+                return false;
+            }
+
+            expense.IsActive = !expense.IsActive;
+
+            _unitOfWork.Expenses.Update(expense);
+            await _unitOfWork.CompleteAsync();
+            return true;
+        }
+
+        public async Task<bool> DeleteFixedExpenseAsync(int expenseId, int companyId)
+        {
+            var expense = await _unitOfWork.Expenses.GetByIdAsync(expenseId);
+
+            if (expense == null || expense.CompanyId != companyId)
+            {
+                return false;
+            }
+
+            _unitOfWork.Expenses.Remove(expense);
+            await _unitOfWork.CompleteAsync();
+            return true;
+        }
     }
 }
