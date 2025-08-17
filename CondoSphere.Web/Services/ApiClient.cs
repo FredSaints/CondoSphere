@@ -38,16 +38,13 @@ namespace CondoSphere.Web.Services
             return response.IsSuccessStatusCode;
         }
 
-        // --- ADD THESE NEW METHODS ---
         public async Task<IEnumerable<CondominiumDto>> GetCondominiumsAsync()
         {
-            // TODO: Add paging parameters
             return await _httpClient.GetFromJsonAsync<IEnumerable<CondominiumDto>>("/api/condominiums");
         }
 
         public async Task<IEnumerable<UserListDto>> GetUsersAsync()
         {
-            // TODO: We need to create this API endpoint next.
             return await _httpClient.GetFromJsonAsync<IEnumerable<UserListDto>>("/api/accounts/company-users");
         }
 
@@ -75,16 +72,14 @@ namespace CondoSphere.Web.Services
         public async Task<(bool Success, string Message)> SetPasswordAsync(SetPasswordDto dto)
         {
             var response = await _httpClient.PostAsJsonAsync("/api/accounts/set-password", dto);
-            var responseContent = await response.Content.ReadFromJsonAsync<object>(); // Or a specific response DTO
+            var responseContent = await response.Content.ReadFromJsonAsync<object>();
 
             if (response.IsSuccessStatusCode)
             {
-                // A simple way to get the message back
                 var message = responseContent?.GetType().GetProperty("message")?.GetValue(responseContent)?.ToString();
                 return (true, message ?? "Password set successfully.");
             }
 
-            // Handle error messages if the API returns them in a structured way
             return (false, "Failed to set password. The link may have expired or the password may not meet complexity requirements.");
         }
 
@@ -110,12 +105,6 @@ namespace CondoSphere.Web.Services
             return response.IsSuccessStatusCode;
         }
 
-        //public async Task<bool> UnassignResidentAsync(int condominiumId, int unitId)
-        //{
-        //    var response = await _httpClient.PatchAsync($"/api/condominiums/{condominiumId}/units/{unitId}/unassign-resident", null);
-        //    return response.IsSuccessStatusCode;
-        //}
-
         public async Task<(bool Success, string Message)> RegisterCompanyAdminAsync(RegisterDto dto)
         {
             var response = await _httpClient.PostAsJsonAsync("/api/accounts/register-admin", dto);
@@ -137,7 +126,6 @@ namespace CondoSphere.Web.Services
         {
             var path = "/api/accounts/confirm-email";
 
-            // 2. Create a dictionary of query parameters.
             var queryParams = new Dictionary<string, string>
             {
                 { "userId", userId },
@@ -401,7 +389,6 @@ namespace CondoSphere.Web.Services
                 return (expense, null);
             }
 
-            // Try read detailed API error, fall back to reason phrase
             var errorBody = await response.Content.ReadAsStringAsync();
             var errorText = string.IsNullOrWhiteSpace(errorBody) ? response.ReasonPhrase : errorBody;
             return (null, errorText);
@@ -514,7 +501,6 @@ namespace CondoSphere.Web.Services
             var fileContent = new StreamContent(proofFile.OpenReadStream());
             fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(proofFile.ContentType);
 
-            // The name "proofFile" must match the parameter name in your API controller action
             formData.Add(fileContent, name: "proofFile", fileName: proofFile.FileName);
 
             var response = await _httpClient.PostAsync($"/api/financials/quotas/{quotaId}/submit-payment-proof", formData);
@@ -546,6 +532,23 @@ namespace CondoSphere.Web.Services
         {
             return await _httpClient.GetFromJsonAsync<IEnumerable<UnitQuotaDto>>($"/api/financials/condominiums/{condominiumId}/quotas")
                 ?? new List<UnitQuotaDto>();
+        }
+
+        public async Task<string?> CreateStripeCheckoutSessionAsync(int quotaId)
+        {
+            var response = await _httpClient.PostAsync($"/api/financials/quotas/{quotaId}/create-checkout-session", null);
+            if (response.IsSuccessStatusCode)
+            {
+                var body = await response.Content.ReadFromJsonAsync<JsonElement>();
+                return body.GetProperty("sessionId").GetString();
+            }
+            return null;
+        }
+
+        public async Task<bool> MarkQuotaAsPaidAsync(int quotaId)
+        {
+            var response = await _httpClient.PostAsync($"/api/financials/quotas/{quotaId}/mark-as-paid", null);
+            return response.IsSuccessStatusCode;
         }
     }
 }

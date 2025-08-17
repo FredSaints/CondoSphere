@@ -15,10 +15,12 @@ namespace CondoSphere.Web.Controllers
     public class PortalController : Controller
     {
         private readonly ApiClient _apiClient;
+        private readonly IConfiguration _configuration;
 
-        public PortalController(ApiClient apiClient)
+        public PortalController(ApiClient apiClient, IConfiguration configuration)
         {
             _apiClient = apiClient;
+            _configuration = configuration;
         }
 
         [HttpGet("")]
@@ -147,6 +149,60 @@ namespace CondoSphere.Web.Controllers
             }
 
             return RedirectToAction("QuotaDetails", new { id });
+        }
+
+        [HttpPost("quotas/{id}/create-session")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateStripeSession(int id)
+        {
+            var sessionId = await _apiClient.CreateStripeCheckoutSessionAsync(id);
+            if (sessionId == null)
+            {
+                return BadRequest();
+            }
+            return Ok(new { sessionId });
+        }
+
+        [HttpGet("quotas/{id}/pay")]
+        public async Task<IActionResult> PayQuota(int id)
+        {
+            var breakdown = await _apiClient.GetQuotaBreakdownAsync(id);
+            if (breakdown == null)
+            {
+                return NotFound();
+            }
+
+            ViewData["StripePublishableKey"] = _configuration["Stripe:PublishableKey"];
+            return View(breakdown.QuotaDetails);
+        }
+
+        [HttpGet("payment-success")]
+        public async Task<IActionResult> PaymentSuccess(int quotaId)
+        {
+            if (quotaId <= 0)
+            {
+                TempData["ErrorMessage"] = "An invalid payment session was detected.";
+                return RedirectToAction("Index");
+            }
+            var success = await _apiClient.MarkQuotaAsPaidAsync(quotaId);
+
+            if (success)
+            {
+                TempData["SuccessMessage"] = "Your payment was successful and your account has been updated!";
+            }
+            else
+            {
+                TempData["ErrorMessage"] = "Your payment was successful, but there was an issue updating your account status. Please contact management.";
+            }
+
+            return RedirectToAction("Index");
+        }
+
+        [HttpGet("payment-cancel")]
+        public IActionResult PaymentCancel()
+        {
+            TempData["ErrorMessage"] = "Your payment was cancelled.";
+            return RedirectToAction("Index");
         }
     }
 }

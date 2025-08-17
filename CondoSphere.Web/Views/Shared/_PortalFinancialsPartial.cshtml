@@ -47,6 +47,10 @@
                             <span class="badge @statusClass">@quota.Status</span>
                         </td>
                         <td class="text-end">
+                            @if (quota.Status == UnitQuotaStatus.Pending || quota.Status == UnitQuotaStatus.Overdue)
+                            {
+                                <a asp-action="PayQuota" asp-route-id="@quota.Id" class="btn btn-sm btn-success">Pay Now</a>
+                            }
                             <a asp-controller="Portal" asp-action="QuotaDetails" asp-route-id="@quota.Id" class="btn btn-sm btn-outline-primary">
                                 <i class="bi bi-receipt"></i> Details
                             </a>

@@ -11,5 +11,7 @@ namespace CondoSphere.Application.Services.Financials
         Task<UnitQuotaDto?> SubmitPaymentProofAsync(int quotaId, int userId, IFormFile proofFile);
         Task<bool> ConfirmPaymentAsync(int quotaId, int companyId);
         Task<IEnumerable<UnitQuotaDto>> GetQuotasForCondominiumAsync(int condominiumId);
+        Task<string?> CreateStripeCheckoutSessionAsync(int quotaId, int userId);
+        Task<bool> MarkQuotaAsPaidAsync(int quotaId, int userId);
     }
 }

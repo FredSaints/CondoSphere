@@ -4,6 +4,8 @@ using CondoSphere.Core.DTOs.Financials;
 using CondoSphere.Core.Enums;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
+using Stripe;
+using Stripe.Checkout;
 
 namespace CondoSphere.Application.Services.Financials
 {
@@ -20,6 +22,7 @@ namespace CondoSphere.Application.Services.Financials
             _mapper = mapper;
             _configuration = configuration;
             _httpContextAccessor = httpContextAccessor;
+            StripeConfiguration.ApiKey = _configuration["Stripe:SecretKey"];
         }
 
         public async Task<IEnumerable<UnitQuotaDto>> GetQuotasForUserAsync(int userId)
@@ -244,6 +247,69 @@ namespace CondoSphere.Application.Services.Financials
                 }
             }
             return quotaDtos;
+        }
+
+        public async Task<string?> CreateStripeCheckoutSessionAsync(int quotaId, int userId)
+        {
+            var quota = await _unitOfWork.UnitQuotas.GetByIdAsync(quotaId);
+            if (quota == null) return null;
+
+            var unit = await _unitOfWork.Units.GetByIdAsync(quota.UnitId);
+            if (unit == null || unit.ResidentId != userId) return null;
+
+            if (quota.Status == UnitQuotaStatus.Paid || quota.Status == UnitQuotaStatus.PendingConfirmation) return null;
+
+            var webAppBaseUrl = _configuration["ClientSettings:WebAppBaseUrl"];
+
+            var options = new SessionCreateOptions
+            {
+                PaymentMethodTypes = new List<string> { "card" },
+                LineItems = new List<SessionLineItemOptions>
+            {
+                new SessionLineItemOptions
+                {
+                    PriceData = new SessionLineItemPriceDataOptions
+                    {
+                        UnitAmount = (long)(quota.AmountDue * 100),
+                        Currency = "eur",
+                        ProductData = new SessionLineItemPriceDataProductDataOptions
+                        {
+                            Name = quota.Description,
+                        },
+                    },
+                    Quantity = 1,
+                },
+            },
+                Mode = "payment",
+                SuccessUrl = $"{webAppBaseUrl}/portal/payment-success?quotaId={quotaId}",
+                CancelUrl = $"{webAppBaseUrl}/portal/quotas/{quotaId}/details",
+                Metadata = new Dictionary<string, string>
+            {
+                { "quota_id", quota.Id.ToString() }
+            }
+            };
+
+            var service = new SessionService();
+            Session session = await service.CreateAsync(options);
+
+            return session.Id;
+        }
+
+        public async Task<bool> MarkQuotaAsPaidAsync(int quotaId, int userId)
+        {
+            var quota = await _unitOfWork.UnitQuotas.GetByIdAsync(quotaId);
+            if (quota == null) return false;
+
+            var unit = await _unitOfWork.Units.GetByIdAsync(quota.UnitId);
+            if (unit == null || unit.ResidentId != userId) return false;
+
+            quota.Status = UnitQuotaStatus.Paid;
+            quota.PaymentDate = DateTime.UtcNow;
+            quota.AmountPaid = quota.AmountDue;
+            _unitOfWork.UnitQuotas.Update(quota);
+            await _unitOfWork.CompleteAsync();
+
+            return true;
         }
     }
 }

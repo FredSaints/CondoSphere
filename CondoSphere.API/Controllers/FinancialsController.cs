@@ -90,9 +90,40 @@ namespace CondoSphere.API.Controllers
         [Authorize(Roles = RoleConstants.CondoManager + "," + RoleConstants.CompanyAdmin)]
         public async Task<IActionResult> GetQuotasForCondominium(int condominiumId)
         {
-            // Requires new service & repo methods
             var quotas = await _financialService.GetQuotasForCondominiumAsync(condominiumId);
             return Ok(quotas);
+        }
+
+        [HttpPost("quotas/{quotaId}/create-checkout-session")]
+        public async Task<IActionResult> CreateCheckoutSession(int quotaId)
+        {
+            var userId = _currentUserService.UserId;
+            if (userId == null) return Unauthorized();
+
+            var sessionId = await _financialService.CreateStripeCheckoutSessionAsync(quotaId, userId.Value);
+
+            if (sessionId == null)
+            {
+                return BadRequest(new { message = "Could not create payment session." });
+            }
+
+            return Ok(new { sessionId });
+        }
+
+        [HttpPost("quotas/{quotaId}/mark-as-paid")]
+        public async Task<IActionResult> MarkAsPaid(int quotaId)
+        {
+            var userId = _currentUserService.UserId;
+            if (userId == null) return Unauthorized();
+
+            var success = await _financialService.MarkQuotaAsPaidAsync(quotaId, userId.Value);
+
+            if (!success)
+            {
+                return BadRequest(new { message = "Failed to update quota status." });
+            }
+
+            return Ok(new { message = "Quota marked as paid." });
         }
     }
 }
