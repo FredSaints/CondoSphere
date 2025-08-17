@@ -1,133 +1,60 @@
 ﻿@model CondoSphere.Web.Models.PortalDashboardViewModel
-@using CondoSphere.Core.Enums
 
 @{
     ViewData["Title"] = "My Portal";
-    bool showUnitColumn = Model.MyUnits.Count() > 1;
 }
 
+<!-- Header -->
 <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
         <h1>Welcome to your Resident Portal</h1>
-        <p class="text-muted mb-0">Here you can view your account status, documents, and report issues.</p>
+        <p class="text-muted mb-0">Use the tabs below to manage your account.</p>
     </div>
-    <div>
-        <a asp-action="CreateOccurrence" class="btn btn-primary">
-            <i class="bi bi-flag-fill me-1"></i> Report New Occurrence
-        </a>
-    </div>
+    <a asp-action="CreateOccurrence" class="btn btn-primary">
+        <i class="bi bi-flag-fill me-1"></i> Report New Occurrence
+    </a>
 </div>
-<hr />
 
-<div class="row g-4">
-    <!-- Financials Column -->
-    <div class="col-lg-8">
-        <div class="card shadow-sm h-100">
-            <div class="card-header">
-                <h5 class="mb-0"><i class="bi bi-wallet2 me-2"></i>My Account Status</h5>
-            </div>
-            <div class="card-body p-0">
-                @if (Model.MyQuotas.Any())
-                {
-                    <div class="table-responsive">
-                        <table class="table table-hover mb-0 align-middle">
-                            <thead class="table-light">
-                                <tr>
-                                    <th>Description</th>
-                                    @if (showUnitColumn)
-                                    {
-                                        <th>Unit</th>
-                                    }
-                                    <th>Due Date</th>
-                                    <th class="text-end">Amount Due</th>
-                                    <th class="text-center">Status</th>
-                                    <th class="text-end">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var quota in Model.MyQuotas)
-                                {
-                                    <tr>
-                                        <td>@quota.Description</td>
-                                        @if (showUnitColumn)
-                                        {
-                                            <td><strong>@quota.UnitIdentifier</strong></td>
-                                        }
-                                        <td>@quota.DueDate.ToString("yyyy-MM-dd")</td>
-                                        <td class="text-end">@quota.AmountDue.ToString("C")</td>
-                                        <td class="text-center">
-                                            @{
-                                                var statusClass = "bg-secondary";
-                                                switch (quota.Status)
-                                                {
-                                                    case UnitQuotaStatus.Pending: statusClass = "bg-warning text-dark"; break;
-                                                    case UnitQuotaStatus.Paid: statusClass = "bg-success"; break;
-                                                    case UnitQuotaStatus.Overdue: statusClass = "bg-danger"; break;
-                                                    case UnitQuotaStatus.PendingConfirmation: statusClass = "bg-info text-dark"; break;
-                                                }
-                                            }
-                                            <span class="badge @statusClass">@quota.Status</span>
-                                        </td>
-                                        <td class="text-end">
-                                            <a asp-action="QuotaDetails" asp-route-id="@quota.Id" class="btn btn-sm btn-outline-primary">
-                                                <i class="bi bi-receipt"></i> Details
-                                            </a>
-                                        </td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
-                    </div>
-                }
-                else
-                {
-                    <div class="text-center p-4">
-                        <p class="text-muted mb-0">No fees or quotas found for your account.</p>
-                    </div>
-                }
-            </div>
-        </div>
+<!-- Tabbed Interface -->
+<div class="card shadow-sm">
+    <div class="card-header">
+        <ul class="nav nav-tabs card-header-tabs" id="portalTab" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="account-tab" data-bs-toggle="tab" data-bs-target="#account-pane" type="button" role="tab" aria-controls="account-pane" aria-selected="true">
+                    <i class="bi bi-wallet2 me-1"></i> My Account
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="issues-tab" data-bs-toggle="tab" data-bs-target="#issues-pane" type="button" role="tab" aria-controls="issues-pane" aria-selected="false">
+                    <i class="bi bi-flag me-1"></i> My Issues
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="info-tab" data-bs-toggle="tab" data-bs-target="#info-pane" type="button" role="tab" aria-controls="info-pane" aria-selected="false">
+                    <i class="bi bi-info-circle me-1"></i> Documents & Info
+                </button>
+            </li>
+        </ul>
     </div>
 
-    <!-- My Units & Occurrences Column -->
-    <div class="col-lg-4">
-        <div class="card shadow-sm mb-4">
-            <div class="card-header"><h5 class="mb-0"><i class="bi bi-door-open me-2"></i>My Units</h5></div>
-            <ul class="list-group list-group-flush">
-                @if (Model.MyUnits.Any())
-                {
-                    @foreach (var unit in Model.MyUnits)
-                    {
-                        <li class="list-group-item">@unit.Identifier</li>
-                    }
-                }
-                else
-                {
-                    <li class="list-group-item text-muted">You are not assigned to any units.</li>
-                }
-            </ul>
-        </div>
+    <div class="card-body p-0">
+        <div class="tab-content" id="portalTabContent">
 
-        <div class="card shadow-sm">
-            <div class="card-header"><h5 class="mb-0"><i class="bi bi-flag me-2"></i>Recent Issues</h5></div>
-            <div class="card-body">
-                @if (Model.Occurrences.Any())
-                {
-                    <ul class="list-group list-group-flush">
-                        @foreach (var occurrence in Model.Occurrences.Take(5))
-                        {
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <a asp-action="Details" asp-route-id="@occurrence.Id">@occurrence.Title</a>
-                                <span class="badge bg-info rounded-pill">@occurrence.Status</span>
-                            </li>
-                        }
-                    </ul>
-                }
-                else
-                {
-                    <p class="text-muted mb-0">You have not reported any issues.</p>
-                }
+            <!-- My Account / Financials Tab Pane -->
+            <div class="tab-pane fade show active" id="account-pane" role="tabpanel" aria-labelledby="account-tab" tabindex="0">
+                @await Html.PartialAsync("_PortalFinancialsPartial", Model)
             </div>
+
+            <!-- My Issues / Occurrences Tab Pane -->
+            <div class="tab-pane fade" id="issues-pane" role="tabpanel" aria-labelledby="issues-tab" tabindex="0">
+                @await Html.PartialAsync("_PortalOccurrencesPartial", Model.Occurrences)
+            </div>
+
+            <!-- Documents & Info Tab Pane -->
+            <div class="tab-pane fade p-4" id="info-pane" role="tabpanel" aria-labelledby="info-tab" tabindex="0">
+                @await Html.PartialAsync("_PortalInfoPartial", Model)
+            </div>
+
         </div>
     </div>
 </div>

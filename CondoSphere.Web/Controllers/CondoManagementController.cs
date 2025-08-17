@@ -37,13 +37,12 @@ namespace CondoSphere.Web.Controllers
             var condoTask = _apiClient.GetCondominiumDetailsAsync(id);
             var unitsTask = _apiClient.GetUnitsForCondominiumAsync(id);
             var occurrencesTask = _apiClient.GetOccurrencesForCondominiumAsync(id);
+            var fixedExpensesTask = _apiClient.GetFixedExpensesAsync(id);
+            var quotasTask = _apiClient.GetQuotasForCondominiumAsync(id);
 
-            await Task.WhenAll(condoTask, unitsTask, occurrencesTask);
+            await Task.WhenAll(condoTask, unitsTask, occurrencesTask, fixedExpensesTask, quotasTask);
 
             var condo = await condoTask;
-            var units = await unitsTask;
-            var occurrences = await occurrencesTask;
-
             if (condo == null)
             {
                 return NotFound();
@@ -52,8 +51,10 @@ namespace CondoSphere.Web.Controllers
             var viewModel = new CondominiumDetailsViewModel
             {
                 Condominium = condo,
-                Units = units,
-                Occurrences = occurrences
+                Units = await unitsTask,
+                Occurrences = await occurrencesTask,
+                FixedExpenses = await fixedExpensesTask,
+                AllQuotas = await quotasTask
             };
 
             return View(viewModel);

@@ -1,0 +1,65 @@
+﻿@model CondoSphere.Web.Models.PortalDashboardViewModel
+@using CondoSphere.Core.Enums
+
+@{
+    bool showUnitColumn = Model.MyUnits.Count() > 1;
+}
+
+@if (Model.MyQuotas.Any())
+{
+    <div class="table-responsive">
+        <table class="table table-hover mb-0 align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th>Description</th>
+                    @if (showUnitColumn)
+                    {
+                        <th>Unit</th>
+                    }
+                    <th>Due Date</th>
+                    <th class="text-end">Amount Due</th>
+                    <th class="text-center">Status</th>
+                    <th class="text-end">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var quota in Model.MyQuotas)
+                {
+                    <tr>
+                        <td>@quota.Description</td>
+                        @if (showUnitColumn)
+                        {
+                            <td><strong>@quota.UnitIdentifier</strong></td>
+                        }
+                        <td>@quota.DueDate.ToString("yyyy-MM-dd")</td>
+                        <td class="text-end">@quota.AmountDue.ToString("C")</td>
+                        <td class="text-center">
+                            @{
+                                var statusClass = "bg-secondary";
+                                switch (quota.Status)
+                                {
+                                    case UnitQuotaStatus.Pending: statusClass = "bg-warning text-dark"; break;
+                                    case UnitQuotaStatus.Paid: statusClass = "bg-success"; break;
+                                    case UnitQuotaStatus.Overdue: statusClass = "bg-danger"; break;
+                                    case UnitQuotaStatus.PendingConfirmation: statusClass = "bg-info text-dark"; break;
+                                }
+                            }
+                            <span class="badge @statusClass">@quota.Status</span>
+                        </td>
+                        <td class="text-end">
+                            <a asp-controller="Portal" asp-action="QuotaDetails" asp-route-id="@quota.Id" class="btn btn-sm btn-outline-primary">
+                                <i class="bi bi-receipt"></i> Details
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+else
+{
+    <div class="text-center p-4">
+        <p class="text-muted mb-0">No fees or quotas found for your account.</p>
+    </div>
+}

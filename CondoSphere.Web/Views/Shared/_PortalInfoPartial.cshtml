@@ -1,0 +1,27 @@
+﻿@model CondoSphere.Web.Models.PortalDashboardViewModel
+
+<div class="row">
+    <div class="col-md-6">
+        <h5 class="mb-3">My Units</h5>
+        <ul class="list-group">
+            @if (Model.MyUnits.Any())
+            {
+                @foreach (var unit in Model.MyUnits)
+                {
+                    <li class="list-group-item">@unit.Identifier</li>
+                }
+            }
+            else
+            {
+                <li class="list-group-item text-muted">You are not assigned to any units.</li>
+            }
+        </ul>
+    </div>
+    <div class="col-md-6">
+        <h5 class="mb-3">Condominium Documents</h5>
+        <div class="text-center text-muted p-4 border rounded">
+            <i class="bi bi-file-earmark-lock fs-1"></i>
+            <p class="mt-2 mb-0">The document library is not yet available.</p>
+        </div>
+    </div>
+</div>
