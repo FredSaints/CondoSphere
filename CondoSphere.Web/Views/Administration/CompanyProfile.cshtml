@@ -1,0 +1,47 @@
+﻿@model CondoSphere.Core.DTOs.Account.CompanyProfileDto
+@{
+    ViewData["Title"] = "Company Profile";
+}
+
+<h1>@ViewData["Title"]</h1>
+<p class="text-muted">Update your company's information.</p>
+<hr />
+
+<div class="row">
+    <div class="col-md-8">
+        <form asp-action="CompanyProfile" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="form-floating mb-3">
+                <input asp-for="Name" class="form-control" />
+                <label asp-for="Name"></label>
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Email" class="form-control" />
+                <label asp-for="Email"></label>
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+            <div class="row">
+                <div class="col-md-6 form-floating mb-3">
+                    <input asp-for="PhoneNumber" class="form-control" />
+                    <label asp-for="PhoneNumber"></label>
+                    <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                </div>
+                <div class="col-md-6 form-floating mb-3">
+                    <input asp-for="VatNumber" class="form-control" />
+                    <label asp-for="VatNumber"></label>
+                    <span asp-validation-for="VatNumber" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Address" class="form-control" />
+                <label asp-for="Address"></label>
+                <span asp-validation-for="Address" class="text-danger"></span>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Save Changes</button>
+            <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+        </form>
+    </div>
+</div>

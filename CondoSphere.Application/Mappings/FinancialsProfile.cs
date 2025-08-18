@@ -17,6 +17,7 @@ namespace CondoSphere.Application.Mappings
 
             CreateMap<CreateUpdateFixedExpenseDto, Expense>();
             CreateMap<UnitQuota, UnitQuotaDto>();
+            CreateMap<Receipt, ReceiptDto>();
         }
     }
 }

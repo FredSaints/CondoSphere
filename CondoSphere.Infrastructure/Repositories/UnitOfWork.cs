@@ -17,6 +17,8 @@ namespace CondoSphere.Infrastructure.Repositories
         public IInterventionRepository Interventions { get; private set; }
         public IExpenseRepository Expenses { get; private set; }
         public IUnitQuotaRepository UnitQuotas { get; private set; }
+        public IQuotaPaymentRepository QuotaPayments { get; private set; }
+        public IReceiptRepository Receipts { get; private set; }
 
         public UnitOfWork(UserManagementDbContext userContext, CondominiumDbContext condoContext, FinancialsDbContext financialsContext)
         {
@@ -32,6 +34,8 @@ namespace CondoSphere.Infrastructure.Repositories
             Interventions = new InterventionRepository(_condoContext);
             Expenses = new ExpenseRepository(_financialsContext);
             UnitQuotas = new UnitQuotaRepository(_financialsContext);
+            QuotaPayments = new QuotaPaymentRepository(_financialsContext);
+            Receipts = new ReceiptRepository(_financialsContext);
         }
 
         public async Task<int> CompleteAsync()

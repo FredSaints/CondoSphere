@@ -19,6 +19,28 @@
                 <label asp-for="CompanyName"></label>
                 <span asp-validation-for="CompanyName" class="text-danger"></span>
             </div>
+            <div class="row">
+                <div class="col-md-6 form-floating mb-3">
+                    <input asp-for="CompanyEmail" class="form-control" placeholder="contact@company.com" />
+                    <label asp-for="CompanyEmail"></label>
+                    <span asp-validation-for="CompanyEmail" class="text-danger"></span>
+                </div>
+                <div class="col-md-6 form-floating mb-3">
+                    <input asp-for="CompanyPhoneNumber" class="form-control" placeholder="+123456789" />
+                    <label asp-for="CompanyPhoneNumber"></label>
+                    <span asp-validation-for="CompanyPhoneNumber" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Address" class="form-control" placeholder="123 Main Street, Anytown" />
+                <label asp-for="Address"></label>
+                <span asp-validation-for="Address" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="VatNumber" class="form-control" placeholder="VAT Number" />
+                <label asp-for="VatNumber"></label>
+                <span asp-validation-for="VatNumber" class="text-danger"></span>
+            </div>
 
             <h4 class="mt-4">Your Administrator Account</h4>
             <div class="form-floating mb-3">

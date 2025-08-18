@@ -18,5 +18,6 @@ namespace CondoSphere.Core.DTOs.Financials
         public UnitQuotaStatus Status { get; set; }
         public string? ProofOfPaymentUrl { get; set; }
         public string UnitIdentifier { get; set; } = string.Empty;
+        public int? ReceiptId { get; set; }
     }
 }

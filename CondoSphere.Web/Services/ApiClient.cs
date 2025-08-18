@@ -550,5 +550,36 @@ namespace CondoSphere.Web.Services
             var response = await _httpClient.PostAsync($"/api/financials/quotas/{quotaId}/mark-as-paid", null);
             return response.IsSuccessStatusCode;
         }
+
+        public async Task<ReceiptDto?> GetReceiptDetailsForResidentAsync(int receiptId)
+        {
+            var response = await _httpClient.GetAsync($"/api/financials/receipts/{receiptId}");
+            if (response.IsSuccessStatusCode)
+            {
+                return await response.Content.ReadFromJsonAsync<ReceiptDto>();
+            }
+            return null;
+        }
+
+        public async Task<ReceiptDto?> GetReceiptDetailsForManagerAsync(int receiptId)
+        {
+            var response = await _httpClient.GetAsync($"/api/financials/manager/receipts/{receiptId}");
+            if (response.IsSuccessStatusCode)
+            {
+                return await response.Content.ReadFromJsonAsync<ReceiptDto>();
+            }
+            return null;
+        }
+
+        public async Task<CompanyProfileDto?> GetCompanyProfileAsync()
+        {
+            return await _httpClient.GetFromJsonAsync<CompanyProfileDto>("/api/company/my-profile");
+        }
+
+        public async Task<bool> UpdateCompanyProfileAsync(CompanyProfileDto dto)
+        {
+            var response = await _httpClient.PutAsJsonAsync("/api/company/my-profile", dto);
+            return response.IsSuccessStatusCode;
+        }
     }
 }

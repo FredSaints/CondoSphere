@@ -10,6 +10,8 @@
         IInterventionRepository Interventions { get; }
         IExpenseRepository Expenses { get; }
         IUnitQuotaRepository UnitQuotas { get; }
+        IQuotaPaymentRepository QuotaPayments { get; }
+        IReceiptRepository Receipts { get; }
         Task<int> CompleteAsync();
 
     }

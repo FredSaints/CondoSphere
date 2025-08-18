@@ -47,13 +47,24 @@
                             <span class="badge @statusClass">@quota.Status</span>
                         </td>
                         <td class="text-end">
-                            @if (quota.Status == UnitQuotaStatus.Pending || quota.Status == UnitQuotaStatus.Overdue)
-                            {
-                                <a asp-action="PayQuota" asp-route-id="@quota.Id" class="btn btn-sm btn-success">Pay Now</a>
-                            }
-                            <a asp-controller="Portal" asp-action="QuotaDetails" asp-route-id="@quota.Id" class="btn btn-sm btn-outline-primary">
-                                <i class="bi bi-receipt"></i> Details
-                            </a>
+                            <!-- === THIS IS THE CORRECTED LOGIC === -->
+                            <div class="btn-group">
+                                <a asp-controller="Portal" asp-action="QuotaDetails" asp-route-id="@quota.Id" class="btn btn-sm btn-outline-primary" title="View Details">
+                                    <i class="bi bi-receipt"></i> Details
+                                </a>
+                                @if (quota.Status == UnitQuotaStatus.Paid && quota.ReceiptId.HasValue)
+                                {
+                                    <a asp-controller="Portal" asp-action="Receipt" asp-route-id="@quota.ReceiptId" class="btn btn-sm btn-outline-info" title="View Receipt">
+                                        <i class="bi bi-receipt-cutoff"></i> Receipt
+                                    </a>
+                                }
+                                else if (quota.Status == UnitQuotaStatus.Pending || quota.Status == UnitQuotaStatus.Overdue)
+                                {
+                                    <a asp-controller="Portal" asp-action="PayQuota" asp-route-id="@quota.Id" class="btn btn-sm btn-success" title="Pay Now">
+                                        <i class="bi bi-credit-card"></i> Pay Now
+                                    </a>
+                                }
+                            </div>
                         </td>
                     </tr>
                 }

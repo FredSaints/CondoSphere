@@ -633,5 +633,16 @@ namespace CondoSphere.Web.Controllers
 
             return RedirectToAction("QuotaManagement", new { condominiumId });
         }
+
+        [HttpGet("receipts/{id}")]
+        public async Task<IActionResult> Receipt(int id)
+        {
+            var receipt = await _apiClient.GetReceiptDetailsForManagerAsync(id);
+            if (receipt == null)
+            {
+                return NotFound();
+            }
+            return View(receipt);
+        }
     }
 }

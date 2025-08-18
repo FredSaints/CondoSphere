@@ -20,7 +20,7 @@ namespace CondoSphere.Infrastructure.Repositories
         public async Task<IEnumerable<UserListDto>> GetCompanyUsersWithRolesAsync(int companyId)
         {
             return await _context.Users
-                .IgnoreQueryFilters() // Correctly allows admins to see inactive users
+                .IgnoreQueryFilters()
                 .Where(u => u.CompanyId == companyId)
                 .Select(u => new UserListDto
                 {
@@ -78,6 +78,13 @@ namespace CondoSphere.Infrastructure.Repositories
                             select role.Name).FirstOrDefault() ?? "No Role Assigned"
                 })
                 .ToListAsync();
+        }
+
+        public async Task<Core.Entities.Users.User?> GetUserByIdAsync(int userId)
+        {
+            return await _context.Users
+                .IgnoreQueryFilters()
+                .FirstOrDefaultAsync(u => u.Id == userId);
         }
     }
 }

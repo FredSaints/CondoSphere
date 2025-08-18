@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using System.Net;
 using CoreUser = CondoSphere.Core.Entities.Users.User;
+using CompanyEntity = CondoSphere.Core.Entities.Users.Company;
 
 namespace CondoSphere.Application.Services.User
 {
@@ -96,7 +97,15 @@ namespace CondoSphere.Application.Services.User
                 return IdentityResult.Failed(new IdentityError { Description = "An account with this email address already exists." });
             }
 
-            var newCompany = new Company { Name = registerDto.CompanyName, IsActive = true };
+            var newCompany = new CompanyEntity
+            {
+                Name = registerDto.CompanyName,
+                IsActive = true,
+                Email = registerDto.CompanyEmail,
+                PhoneNumber = registerDto.CompanyPhoneNumber,
+                VatNumber = registerDto.VatNumber,
+                Address = registerDto.Address
+            };
             await _unitOfWork.Companies.AddAsync(newCompany);
             await _unitOfWork.CompleteAsync();
 

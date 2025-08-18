@@ -46,6 +46,7 @@
                                 }
                                 <span class="badge @statusClass">@quota.Status</span>
                             </td>
+
                             <td class="text-end">
                                 @if (quota.Status == UnitQuotaStatus.PendingConfirmation)
                                 {
@@ -58,6 +59,12 @@
                                             <button type="submit" class="btn btn-sm btn-success">Confirm</button>
                                         </form>
                                     </div>
+                                }
+                                else if (quota.Status == UnitQuotaStatus.Paid && quota.ReceiptId.HasValue)
+                                {
+                                    <a asp-action="Receipt" asp-route-id="@quota.ReceiptId" class="btn btn-sm btn-outline-info">
+                                        <i class="bi bi-receipt-cutoff"></i> View Receipt
+                                    </a>
                                 }
                             </td>
                         </tr>

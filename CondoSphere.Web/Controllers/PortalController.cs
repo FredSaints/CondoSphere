@@ -204,5 +204,16 @@ namespace CondoSphere.Web.Controllers
             TempData["ErrorMessage"] = "Your payment was cancelled.";
             return RedirectToAction("Index");
         }
+
+        [HttpGet("receipts/{id}")]
+        public async Task<IActionResult> Receipt(int id)
+        {
+            var receipt = await _apiClient.GetReceiptDetailsForResidentAsync(id);
+            if (receipt == null)
+            {
+                return NotFound();
+            }
+            return View(receipt);
+        }
     }
 }

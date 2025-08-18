@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using CondoSphere.Core.DTOs.Account;
+using CondoSphere.Core.Entities.Users;
 using CoreUser = CondoSphere.Core.Entities.Users.User;
 
 namespace CondoSphere.Application.Mappings
@@ -14,6 +15,8 @@ namespace CondoSphere.Application.Mappings
 
             CreateMap<CoreUser, UserListDto>();
             CreateMap<UserListDto, SimpleUserDto>();
+            CreateMap<Company, CompanyProfileDto>();
+            CreateMap<CompanyProfileDto, Company>();
         }
     }
 }

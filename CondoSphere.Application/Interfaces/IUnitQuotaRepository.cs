@@ -10,5 +10,6 @@ namespace CondoSphere.Application.Interfaces
         Task<UnitQuota?> GetByIdAsync(int quotaId);
         void Update (UnitQuota unitQuota);
         Task<IEnumerable<UnitQuota>> GetQuotasByCondominiumAsync(int condominiumId);
+        Task<bool> QuotasExistForPeriodAsync(int condominiumId, int year, int month);
     }
 }

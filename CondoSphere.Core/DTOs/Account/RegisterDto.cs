@@ -11,6 +11,22 @@ namespace CondoSphere.Core.DTOs.Account
         [StringLength(100, MinimumLength = 2)]
         public string CompanyName { get; set; } = string.Empty;
 
+        [EmailAddress]
+        [Display(Name = "Company Email")]
+        public string? CompanyEmail { get; set; }
+
+        [Phone]
+        [Display(Name = "Company Phone Number")]
+        public string? CompanyPhoneNumber { get; set; }
+
+        [StringLength(50)]
+        [Display(Name = "VAT Number")]
+        public string? VatNumber { get; set; }
+
+        [StringLength(255)]
+        [Display(Name = "Company Address")]
+        public string? Address { get; set; }
+
         [Required]
         [StringLength(100, MinimumLength = 2)]
         public string FirstName { get; set; } = string.Empty;

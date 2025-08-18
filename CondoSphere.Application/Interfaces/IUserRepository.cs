@@ -16,5 +16,6 @@ namespace CondoSphere.Application.Interfaces
         Task<IEnumerable<UserListDto>> GetUsersInRoleAsync(string roleName, int companyId);
 
         Task<IEnumerable<UserListDto>> GetUsersByIdsAsync(List<int> userIds);
+        Task<Core.Entities.Users.User?> GetUserByIdAsync(int userId);
     }
 }

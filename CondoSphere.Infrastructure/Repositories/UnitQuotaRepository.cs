@@ -47,5 +47,11 @@ namespace CondoSphere.Infrastructure.Repositories
                 .AsNoTracking()
                 .ToListAsync();
         }
+        public async Task<bool> QuotasExistForPeriodAsync(int condominiumId, int year, int month)
+        {
+            var description = $"Condominium Fee - {new DateTime(year, month, 1):MMMM yyyy}";
+            return await _context.UnitQuotas
+                .AnyAsync(q => q.CondominiumId == condominiumId && q.Description == description);
+        }
     }
 }

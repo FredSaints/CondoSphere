@@ -1,0 +1,121 @@
+﻿@model CondoSphere.Core.DTOs.Financials.ReceiptDto
+
+@{
+    ViewData["Title"] = $"Receipt #{Model.Id}";
+    Layout = null; // Use a blank layout for printing
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>@ViewData["Title"]</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .receipt-container {
+            max-width: 800px;
+            margin: 40px auto;
+            background-color: #fff;
+            border: 1px solid #dee2e6;
+            box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.15);
+        }
+
+        .receipt-header {
+            background-color: #e9ecef;
+            padding: 2rem;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .receipt-body {
+            padding: 2.5rem;
+        }
+
+        .print-button {
+            display: block;
+        }
+
+        @@media print {
+            body {
+                background-color: #fff;
+            }
+
+            .receipt-container {
+                margin: 0;
+                box-shadow: none;
+                border: none;
+            }
+
+            .print-button {
+                display: none;
+            }
+
+            .back-link {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="text-center my-3">
+            <button onclick="window.print()" class="btn btn-primary print-button"><i class="bi bi-printer-fill"></i> Print Receipt</button>
+            <a asp-action="QuotaManagement" asp-route-condominiumId="@Model.CondominiumId" class="btn btn-secondary back-link"><i class="bi bi-arrow-left"></i> Back to Quota Management</a>
+        </div>
+
+        <div class="receipt-container">
+            <div class="receipt-header text-center">
+                <h1 class="display-6">RECEIPT</h1>
+                <p class="lead mb-0">@Model.CompanyName</p>
+                @if (!string.IsNullOrWhiteSpace(Model.CompanyAddress))
+                {
+                    <p class="text-muted small mb-0">@Model.CompanyAddress</p>
+                }
+                @if (!string.IsNullOrWhiteSpace(Model.CompanyPhone))
+                {
+                    <p class="text-muted small mb-0">Phone: @Model.CompanyPhone</p>
+                }
+            </div>
+            <div class="receipt-body">
+                <div class="row mb-4">
+                    <div class="col-sm-6">
+                        <h5 class="mb-3">Billed To:</h5>
+                        <p class="mb-1"><strong>@Model.ResidentName</strong></p>
+                        <p class="mb-0">@Model.CondominiumName</p>
+                        <p class="mb-0">Unit: @Model.UnitIdentifier</p>
+                    </div>
+                    <div class="col-sm-6 text-sm-end">
+                        <h5 class="mb-3">Details:</h5>
+                        <p class="mb-1"><strong>Receipt #:</strong> @Model.Id</p>
+                        <p class="mb-0"><strong>Issue Date:</strong> @Model.IssueDate.ToLocalTime().ToString("D")</p>
+                    </div>
+                </div>
+
+                <table class="table">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Description</th>
+                            <th class="text-end">Amount Paid</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>@Model.Details</td>
+                            <td class="text-end">@Model.Amount.ToString("C")</td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr class="fw-bold fs-5">
+                            <td>Total Paid</td>
+                            <td class="text-end">@Model.Amount.ToString("C")</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
