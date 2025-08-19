@@ -1,0 +1,53 @@
+﻿@model IEnumerable<CondoSphere.Core.DTOs.Occurrences.OccurrenceDto>
+@using CondoSphere.Core.Enums
+
+@if (Model.Any())
+{
+    <div class="table-responsive">
+        <table class="table table-hover mb-0 align-middle">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Reported By</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                    <th class="text-end">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var occurrence in Model)
+                {
+                    <tr>
+                        <td><strong>@occurrence.Title</strong></td>
+                        <td>@occurrence.ReportedByUserName</td>
+                        <td>@occurrence.ReportedDate.ToLocalTime().ToString("yyyy-MM-dd HH:mm")</td>
+                        <td>
+                            @{
+                                var statusClass = "bg-secondary";
+                                switch (occurrence.Status)
+                                {
+                                    case OccurrenceStatus.Open: statusClass = "bg-danger"; break;
+                                    case OccurrenceStatus.InProgress: statusClass = "bg-warning text-dark"; break;
+                                    case OccurrenceStatus.Resolved: statusClass = "bg-info"; break;
+                                    case OccurrenceStatus.Closed: statusClass = "bg-success"; break;
+                                }
+                            }
+                            <span class="badge @statusClass">@occurrence.Status</span>
+                        </td>
+                        <td class="text-end">
+                            <a asp-controller="CondoManagement" asp-action="OccurrenceDetails" asp-route-condominiumId="@occurrence.CondominiumId" asp-route-occurrenceId="@occurrence.Id" class="btn btn-sm btn-outline-primary">
+                                <i class="bi bi-eye me-1"></i>View Details
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+else
+{
+    <div class="text-center p-4">
+        <p class="text-muted mb-0">No occurrences have been reported for this condominium yet.</p>
+    </div>
+}

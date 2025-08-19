@@ -4,81 +4,60 @@
     ViewData["Title"] = $"Manage: {Model.Condominium.Name}";
 }
 
+<!-- Header -->
 <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
         <h1>@Model.Condominium.Name</h1>
         <p class="text-muted mb-0">@Model.Condominium.Address</p>
     </div>
-    <div>
-        <a asp-action="CreateUnit" asp-route-condominiumId="@Model.Condominium.Id" class="btn btn-success">
-            <i class="bi bi-plus-square-fill me-1"></i> Add New Unit
-        </a>
-    </div>
 </div>
 
+<!-- Tabbed Interface -->
 <div class="card shadow-sm">
     <div class="card-header">
-        <h5 class="mb-0">Units</h5>
+        <ul class="nav nav-tabs card-header-tabs" id="condoDetailsTab" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="units-tab" data-bs-toggle="tab" data-bs-target="#units-pane" type="button" role="tab" aria-controls="units-pane" aria-selected="true">Units & Residents</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="occurrences-tab" data-bs-toggle="tab" data-bs-target="#occurrences-pane" type="button" role="tab" aria-controls="occurrences-pane" aria-selected="false">Occurrences</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="financials-tab" data-bs-toggle="tab" data-bs-target="#financials-pane" type="button" role="tab" aria-controls="financials-pane" aria-selected="false">Financials</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="documents-tab" data-bs-toggle="tab" data-bs-target="#documents-pane" type="button" role="tab" aria-controls="documents-pane" aria-selected="false">Documents</button>
+            </li>
+        </ul>
     </div>
-    <div class="card-body p-0">
-        @if (Model.Units.Any())
-        {
-            <div class="table-responsive">
-                <table class="table table-hover mb-0 align-middle">
-                    <thead>
-                        <tr>
-                            <th scope="col">Identifier</th>
-                            <th scope="col">Status / Resident</th>
-                            <th scope="col" class="text-end">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var unit in Model.Units)
-                        {
-                            <tr>
-                                <td><strong>@unit.Identifier</strong></td>
-                                <td>
-                                    @if (unit.ResidentId.HasValue)
-                                    {
-                                        <span class="badge bg-info">Occupied</span>
-                                        <span class="ms-2">@unit.ResidentName</span>
-                                    }
-                                    else
-                                    {
-                                        <a asp-action="AssignResident"
-                                           asp-route-unitId="@unit.Id"
-                                           asp-route-condominiumId="@Model.Condominium.Id"
-                                           class="btn btn-sm btn-primary">Assign Resident</a>
-                                    }
-                                </td>
-                                <td class="text-end">
-                                    @if (unit.ResidentId.HasValue)
-                                    {
-                                        <form asp-action="UnassignResident" asp-route-condominiumId="@Model.Condominium.Id" asp-route-unitId="@unit.Id" method="post" onsubmit="return confirm('Are you sure you want to unassign this resident? Their account will be deactivated.');">
-                                            @Html.AntiForgeryToken()
-                                            <button type="submit" class="btn btn-sm btn-outline-danger">Unassign Resident</button>
-                                        </form>
-                                    }
-                                    else
-                                    {
-                                        <a asp-action="RegisterResident"
-                                           asp-route-unitId="@unit.Id"
-                                           asp-route-condominiumId="@Model.Condominium.Id"
-                                           class="btn btn-sm btn-primary">Register Resident</a>
-                                    }
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
+
+    <div class="card-body">
+        <div class="tab-content" id="condoDetailsTabContent">
+
+            <!-- Units & Residents Tab Pane -->
+            <div class="tab-pane fade show active" id="units-pane" role="tabpanel" aria-labelledby="units-tab" tabindex="0">
+                <div class="d-flex justify-content-end mb-3">
+                    <a asp-action="CreateUnit" asp-route-condominiumId="@Model.Condominium.Id" class="btn btn-sm btn-success">
+                        <i class="bi bi-plus-square-fill me-1"></i> Add New Unit
+                    </a>
+                </div>
+                @await Html.PartialAsync("_CondoMgmtUnitsPartial", Model.Units)
             </div>
-        }
-        else
-        {
-            <div class="text-center p-4">
-                <p class="text-muted mb-0">No units have been created for this condominium yet.</p>
+
+            <!-- Occurrences Tab Pane -->
+            <div class="tab-pane fade" id="occurrences-pane" role="tabpanel" aria-labelledby="occurrences-tab" tabindex="0">
+                @await Html.PartialAsync("_CondoMgmtOccurrencesPartial", Model.Occurrences)
             </div>
-        }
+
+            <!-- Financials Tab Pane -->
+            <div class="tab-pane fade" id="financials-pane" role="tabpanel" aria-labelledby="financials-tab" tabindex="0">
+                @await Html.PartialAsync("_CondoMgmtFinancialsPartial", Model)
+            </div>
+            <div class="tab-pane fade" id="documents-pane" role="tabpanel" tabindex="0">
+                @await Html.PartialAsync("_CondoMgmtDocumentsPartial", Model)
+            </div>
+
+        </div>
     </div>
 </div>
 
@@ -87,54 +66,23 @@
         <i class="bi bi-arrow-left me-1"></i> Back to My Condos
     </a>
 </div>
-<hr class="my-4" />
 
-<div class="card shadow-sm">
-    <div class="card-header">
-        <h5 class="mb-0">Reported Occurrences</h5>
-    </div>
-    <div class="card-body p-0">
-        @if (Model.Occurrences.Any())
-        {
-            <div class="table-responsive">
-                <table class="table table-hover mb-0 align-middle">
-                    <thead>
-                        <tr>
-                            <th scope="col">Title</th>
-                            <th scope="col">Reported By</th>
-                            <th scope="col">Date</th>
-                            <th scope="col">Status</th>
-                            <th scope="col" class="text-end">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var occurrence in Model.Occurrences)
-                        {
-                            <tr>
-                                <td><strong>@occurrence.Title</strong></td>
-                                <td>@occurrence.ReportedByUserName</td>
-                                <td>@occurrence.ReportedDate.ToString("yyyy-MM-dd HH:mm")</td>
-                                <td>
-                                    <span class="badge bg-danger">@occurrence.Status</span>
-                                </td>
-                                <td class="text-end">
-                                    @* ===== REPLACE THIS LINK ===== *@
-                                    <a asp-action="OccurrenceDetails"
-                                       asp-route-condominiumId="@Model.Condominium.Id"
-                                       asp-route-occurrenceId="@occurrence.Id"
-                                       class="btn btn-sm btn-outline-primary">View Details</a>
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
-        }
-        else
-        {
-            <div class="text-center p-4">
-                <p class="text-muted mb-0">No occurrences have been reported for this condominium yet.</p>
-            </div>
-        }
-    </div>
-</div>
+@section Scripts {
+    @{
+        var activeTab = TempData["ActiveTab"] as string;
+    }
+
+    @if (!string.IsNullOrEmpty(activeTab))
+    {
+        <script>
+            // This script runs when the page loads
+            document.addEventListener('DOMContentLoaded', function () {
+                const tabToActivate = document.getElementById('@activeTab');
+                if (tabToActivate) {
+                    // Use Bootstrap's JavaScript API to programmatically show the tab
+                    new bootstrap.Tab(tabToActivate).show();
+                }
+            });
+        </script>
+    }
+}

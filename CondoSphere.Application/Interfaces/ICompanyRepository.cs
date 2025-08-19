@@ -10,5 +10,7 @@ namespace CondoSphere.Application.Interfaces
     {
         Task AddAsync(Company company);
         void Remove(Company company);
+        void Update(Company company);
+        Task<Company?> GetByIdAsync(int companyId);
     }
 }

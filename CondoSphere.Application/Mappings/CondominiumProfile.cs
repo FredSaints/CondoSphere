@@ -8,13 +8,9 @@ namespace CondoSphere.Application.Mappings
     {
         public CondominiumProfile()
         {
-            // This defines a map from the Condominium entity to the CondominiumDto.
-            // AutoMapper is smart enough to map properties with the same name automatically.
             CreateMap<Condominium, CondominiumDto>();
-
-            // This defines a map from the CreateUpdateCondominiumDto to the Condominium entity.
-            // This will be used when creating or updating a condominium.
             CreateMap<CreateUpdateCondominiumDto, Condominium>();
+            CreateMap<Document, DocumentDto>();
         }
     }
 }

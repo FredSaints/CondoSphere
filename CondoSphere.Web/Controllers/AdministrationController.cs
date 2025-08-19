@@ -209,5 +209,33 @@ namespace CondoSphere.Web.Controllers
             ModelState.AddModelError(string.Empty, "Failed to register employee. The email may already be in use.");
             return View(model);
         }
+
+        [HttpGet("company-profile")]
+        public async Task<IActionResult> CompanyProfile()
+        {
+            var model = await _apiClient.GetCompanyProfileAsync();
+            if (model == null) return NotFound();
+            return View(model);
+        }
+
+        [HttpPost("company-profile")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CompanyProfile(CompanyProfileDto model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            var success = await _apiClient.UpdateCompanyProfileAsync(model);
+            if (success)
+            {
+                TempData["SuccessMessage"] = "Company profile updated successfully.";
+                return RedirectToAction("Index");
+            }
+
+            ModelState.AddModelError(string.Empty, "An error occurred while updating the profile.");
+            return View(model);
+        }
     }
 }

@@ -2,9 +2,6 @@
 using CondoSphere.Core.Entities.Condominiums;
 using CondoSphere.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace CondoSphere.Infrastructure.Repositories
 {
@@ -45,19 +42,20 @@ namespace CondoSphere.Infrastructure.Repositories
             return await _context.Units.FindAsync(unitId);
         }
 
-        public async Task<IEnumerable<int>> GetOccupiedUnitResidentIdsAsync(int companyId)
+        public async Task<IEnumerable<Unit>> GetUnitsByResidentIdAsync(int residentId)
         {
             return await _context.Units
-                .Where(u => u.CompanyId == companyId && u.ResidentId.HasValue)
-                .Select(u => u.ResidentId.Value)
-                .Distinct()
+                .Where(u => u.ResidentId == residentId)
+                .AsNoTracking()
                 .ToListAsync();
         }
 
-        public async Task<Unit?> GetUnitByResidentIdAsync(int residentId)
+        public async Task<IEnumerable<Unit>> GetByResidentIdAsync(int residentId)
         {
             return await _context.Units
-                .FirstOrDefaultAsync(u => u.ResidentId == residentId);
+                .Where(u => u.ResidentId == residentId)
+                .AsNoTracking()
+                .ToListAsync();
         }
     }
 }

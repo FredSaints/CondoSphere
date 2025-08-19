@@ -1,6 +1,7 @@
 ﻿using CondoSphere.Application.Interfaces;
 using CondoSphere.Core.Entities.Users;
 using CondoSphere.Infrastructure.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace CondoSphere.Infrastructure.Repositories
 {
@@ -27,6 +28,18 @@ namespace CondoSphere.Infrastructure.Repositories
         {
             // This marks the entity for deletion in EF Core's change tracker.
             _context.Companies.Remove(company);
+        }
+
+        public void Update(Company company)
+        {
+            _context.Entry(company).State = EntityState.Modified;
+        }
+
+        public async Task<Company?> GetByIdAsync(int companyId)
+        {
+            return await _context.Companies
+                .IgnoreQueryFilters()
+                .FirstOrDefaultAsync(c => c.Id == companyId);
         }
     }
 }

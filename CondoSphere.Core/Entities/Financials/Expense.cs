@@ -1,4 +1,5 @@
 ﻿using CondoSphere.Core;
+using CondoSphere.Core.Enums;
 
 namespace CondoSphere.Core.Entities.Financials
 {
@@ -61,6 +62,23 @@ namespace CondoSphere.Core.Entities.Financials
         /// The foreign key to the occurrence this expense is associated with, if applicable.
         /// </summary>
         public int? OccurrenceId { get; set; }
+
+        /// <summary>
+        /// Defines how often this expense recurs. Defaults to a one-time expense.
+        /// </summary>
+        public ExpenseFrequency Frequency { get; set; } = ExpenseFrequency.OneTime;
+
+        /// <summary>
+        /// The day of the month this expense should be considered for billing (e.g., 1-31).
+        /// Relevant for recurring expenses.
+        /// </summary>
+        public int DayOfBilling { get; set; } = 1;
+
+        /// <summary>
+        /// Indicates if the recurring expense is currently active.
+        /// A manager can disable it without deleting it.
+        /// </summary>
+        public bool IsActive { get; set; } = true;
 
         /// <summary>
         /// The list of attachments related to this expense, such as invoices or receipts.

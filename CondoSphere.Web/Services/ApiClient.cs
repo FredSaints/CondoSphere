@@ -5,6 +5,7 @@ using CondoSphere.Core.DTOs.Interventions;
 using CondoSphere.Core.DTOs.Occurrences;
 using CondoSphere.Web.Models;
 using Microsoft.AspNetCore.WebUtilities;
+using System.Globalization;
 using System.Text.Json;
 
 namespace CondoSphere.Web.Services
@@ -37,16 +38,13 @@ namespace CondoSphere.Web.Services
             return response.IsSuccessStatusCode;
         }
 
-        // --- ADD THESE NEW METHODS ---
         public async Task<IEnumerable<CondominiumDto>> GetCondominiumsAsync()
         {
-            // TODO: Add paging parameters
             return await _httpClient.GetFromJsonAsync<IEnumerable<CondominiumDto>>("/api/condominiums");
         }
 
         public async Task<IEnumerable<UserListDto>> GetUsersAsync()
         {
-            // TODO: We need to create this API endpoint next.
             return await _httpClient.GetFromJsonAsync<IEnumerable<UserListDto>>("/api/accounts/company-users");
         }
 
@@ -74,16 +72,14 @@ namespace CondoSphere.Web.Services
         public async Task<(bool Success, string Message)> SetPasswordAsync(SetPasswordDto dto)
         {
             var response = await _httpClient.PostAsJsonAsync("/api/accounts/set-password", dto);
-            var responseContent = await response.Content.ReadFromJsonAsync<object>(); // Or a specific response DTO
+            var responseContent = await response.Content.ReadFromJsonAsync<object>();
 
             if (response.IsSuccessStatusCode)
             {
-                // A simple way to get the message back
                 var message = responseContent?.GetType().GetProperty("message")?.GetValue(responseContent)?.ToString();
                 return (true, message ?? "Password set successfully.");
             }
 
-            // Handle error messages if the API returns them in a structured way
             return (false, "Failed to set password. The link may have expired or the password may not meet complexity requirements.");
         }
 
@@ -109,12 +105,6 @@ namespace CondoSphere.Web.Services
             return response.IsSuccessStatusCode;
         }
 
-        public async Task<bool> UnassignResidentAsync(int condominiumId, int unitId)
-        {
-            var response = await _httpClient.PatchAsync($"/api/condominiums/{condominiumId}/units/{unitId}/unassign-resident", null);
-            return response.IsSuccessStatusCode;
-        }
-
         public async Task<(bool Success, string Message)> RegisterCompanyAdminAsync(RegisterDto dto)
         {
             var response = await _httpClient.PostAsJsonAsync("/api/accounts/register-admin", dto);
@@ -136,7 +126,6 @@ namespace CondoSphere.Web.Services
         {
             var path = "/api/accounts/confirm-email";
 
-            // 2. Create a dictionary of query parameters.
             var queryParams = new Dictionary<string, string>
             {
                 { "userId", userId },
@@ -195,6 +184,7 @@ namespace CondoSphere.Web.Services
             using var formData = new MultipartFormDataContent();
             formData.Add(new StringContent(dto.Title), name: nameof(CreateOccurrenceDto.Title));
             formData.Add(new StringContent(dto.Description), name: nameof(CreateOccurrenceDto.Description));
+            formData.Add(new StringContent(dto.UnitId.ToString()), name: nameof(CreateOccurrenceDto.UnitId));
 
             if (imageFile != null && imageFile.Length > 0)
             {
@@ -256,10 +246,19 @@ namespace CondoSphere.Web.Services
             return await _httpClient.GetFromJsonAsync<UserProfileDto>("/api/profile");
         }
 
-        public async Task<bool> UpdateOccurrenceStatusAsync(int occurrenceId, UpdateOccurrenceStatusDto dto)
+        public async Task<(bool Success, string Message)> UpdateOccurrenceStatusAsync(int occurrenceId, UpdateOccurrenceStatusDto dto)
         {
             var response = await _httpClient.PatchAsJsonAsync($"/api/occurrences/{occurrenceId}/status", dto);
-            return response.IsSuccessStatusCode;
+            var message = await response.Content.ReadAsStringAsync();
+
+            if (!string.IsNullOrWhiteSpace(message) && message.StartsWith("\"") && message.EndsWith("\""))
+            {
+                message = message.Trim('"');
+            }
+
+            return (response.IsSuccessStatusCode, string.IsNullOrWhiteSpace(message)
+                ? (response.IsSuccessStatusCode ? "Occurrence status has been updated." : "Failed to update status.")
+                : message);
         }
 
         public async Task<IEnumerable<InterventionDto>> GetInterventionsForOccurrenceAsync(int occurrenceId)
@@ -349,14 +348,281 @@ namespace CondoSphere.Web.Services
             return await _httpClient.GetFromJsonAsync<IEnumerable<ExpenseDto>>($"/api/occurrences/{occurrenceId}/expenses") ?? new List<ExpenseDto>();
         }
 
-        public async Task<ExpenseDto?> CreateExpenseAsync(CreateExpenseDto dto)
+        public async Task<(ExpenseDto? Expense, string? Error)> CreateExpenseAsync(CreateExpenseDto dto, List<IFormFile> attachmentFiles)
         {
-            var response = await _httpClient.PostAsJsonAsync("/api/expenses", dto);
+            Console.WriteLine($"[WEB.ApiClient] Start CreateExpenseAsync. Files={(attachmentFiles == null ? "null" : attachmentFiles.Count.ToString())}");
+               if (attachmentFiles != null)
+                       foreach (var f in attachmentFiles)
+                Console.WriteLine($"[WEB.ApiClient] File part => FileName='{f.FileName}', Length={f.Length}, ContentType='{f.ContentType}'");
+            using var formData = new MultipartFormDataContent();
+
+            formData.Add(new StringContent(dto.Title), nameof(dto.Title));
+            formData.Add(new StringContent(dto.Description ?? string.Empty), nameof(dto.Description));
+            formData.Add(new StringContent(dto.Amount.ToString(CultureInfo.InvariantCulture)), nameof(dto.Amount));
+            formData.Add(new StringContent(dto.ExpenseDate.ToString("o")), nameof(dto.ExpenseDate));
+            formData.Add(new StringContent(dto.CondominiumId.ToString()), nameof(dto.CondominiumId));
+
+            if (dto.OccurrenceId.HasValue)
+            {
+                formData.Add(new StringContent(dto.OccurrenceId.Value.ToString()), nameof(dto.OccurrenceId));
+            }
+
+            if (attachmentFiles != null)
+            {
+                foreach (var file in attachmentFiles)
+                {
+                    if (file.Length > 0)
+                    {
+                        var fileContent = new StreamContent(file.OpenReadStream());
+                        fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(file.ContentType);
+                        formData.Add(fileContent, "attachmentFiles", file.FileName);
+                    }
+                }
+            }
+            Console.WriteLine("[WEB.ApiClient] POST /api/expenses ...");
+            var response = await _httpClient.PostAsync("/api/expenses", formData);
+            Console.WriteLine($"[WEB.ApiClient] Response {(int)response.StatusCode} {response.ReasonPhrase}");
+
+            if (response.IsSuccessStatusCode)
+            {
+                var expense = await response.Content.ReadFromJsonAsync<ExpenseDto>();
+                return (expense, null);
+            }
+
+            var errorBody = await response.Content.ReadAsStringAsync();
+            var errorText = string.IsNullOrWhiteSpace(errorBody) ? response.ReasonPhrase : errorBody;
+            return (null, errorText);
+        }
+
+        public async Task<IEnumerable<UserListDto>> GetResidentsForCondominiumAsync(int condominiumId)
+        {
+            return await _httpClient.GetFromJsonAsync<IEnumerable<UserListDto>>($"/api/condominiums/{condominiumId}/residents")
+                   ?? new List<UserListDto>();
+        }
+
+        public async Task<bool> UnassignResidentFromUnitAsync(int residentId, int unitId)
+        {
+            var response = await _httpClient.PostAsync($"/api/residents/{residentId}/unassign-from/{unitId}", null);
+            return response.IsSuccessStatusCode;
+        }
+
+        public async Task<UnitDto?> GetUnitByIdAsync(int unitId)
+        {
+            var response = await _httpClient.GetAsync($"/api/units/{unitId}");
+            if (response.IsSuccessStatusCode)
+            {
+                return await response.Content.ReadFromJsonAsync<UnitDto>();
+            }
+            return null;
+        }
+
+        public async Task<IEnumerable<UnitDto>> GetMyUnitsAsync()
+        {
+            return await _httpClient.GetFromJsonAsync<IEnumerable<UnitDto>>("/api/users/my-units") ?? new List<UnitDto>();
+        }
+
+        public async Task<ExpenseDto?> GetExpenseDetailsAsync(int expenseId)
+        {
+            var response = await _httpClient.GetAsync($"/api/expenses/{expenseId}");
             if (response.IsSuccessStatusCode)
             {
                 return await response.Content.ReadFromJsonAsync<ExpenseDto>();
             }
             return null;
+        }
+
+        public async Task<IEnumerable<ExpenseDto>> GetFixedExpensesAsync(int condominiumId)
+        {
+            return await _httpClient.GetFromJsonAsync<IEnumerable<ExpenseDto>>($"/api/condominiums/{condominiumId}/fixed-expenses")
+                   ?? new List<ExpenseDto>();
+        }
+
+        public async Task<ExpenseDto?> CreateFixedExpenseAsync(int condominiumId, CreateUpdateFixedExpenseDto dto)
+        {
+            var response = await _httpClient.PostAsJsonAsync($"/api/condominiums/{condominiumId}/fixed-expenses", dto);
+            if (response.IsSuccessStatusCode)
+            {
+                return await response.Content.ReadFromJsonAsync<ExpenseDto>();
+            }
+            return null;
+        }
+
+        public async Task<ExpenseDto?> UpdateFixedExpenseAsync(int expenseId, int condominiumId, CreateUpdateFixedExpenseDto dto)
+        {
+            var response = await _httpClient.PutAsJsonAsync($"/api/condominiums/{condominiumId}/fixed-expenses/{expenseId}", dto);
+            if (response.IsSuccessStatusCode)
+            {
+                return await response.Content.ReadFromJsonAsync<ExpenseDto>();
+            }
+            return null;
+        }
+
+        public async Task<bool> ToggleFixedExpenseStatusAsync(int expenseId, int condominiumId)
+        {
+            var response = await _httpClient.PatchAsync($"/api/condominiums/{condominiumId}/fixed-expenses/{expenseId}/toggle-status", null);
+            return response.IsSuccessStatusCode;
+        }
+
+        public async Task<bool> DeleteFixedExpenseAsync(int expenseId, int condominiumId)
+        {
+            var response = await _httpClient.DeleteAsync($"/api/condominiums/{condominiumId}/fixed-expenses/{expenseId}");
+            return response.IsSuccessStatusCode;
+        }
+        public async Task<IEnumerable<UnitQuotaDto>> GetMyQuotasAsync()
+        {
+            return await _httpClient.GetFromJsonAsync<IEnumerable<UnitQuotaDto>>("/api/users/my-quotas")
+                   ?? new List<UnitQuotaDto>();
+        }
+
+        public async Task<(bool Success, string Message)> GenerateMonthlyQuotasAsync(int condominiumId, int year, int month)
+        {
+            var payload = new { year, month };
+            var response = await _httpClient.PostAsJsonAsync($"/api/financials/condominiums/{condominiumId}/generate-quotas", payload);
+            var responseBody = await response.Content.ReadFromJsonAsync<JsonElement>();
+            var message = responseBody.GetProperty("message").GetString() ?? "An unknown error occurred.";
+
+            return (response.IsSuccessStatusCode, message);
+        }
+
+        public async Task<QuotaBreakdownDto?> GetQuotaBreakdownAsync(int quotaId)
+        {
+            var response = await _httpClient.GetAsync($"/api/financials/quotas/{quotaId}/breakdown");
+            if (response.IsSuccessStatusCode)
+            {
+                return await response.Content.ReadFromJsonAsync<QuotaBreakdownDto>();
+            }
+            return null;
+        }
+
+        public async Task<UnitQuotaDto?> SubmitPaymentProofAsync(int quotaId, IFormFile proofFile)
+        {
+            using var formData = new MultipartFormDataContent();
+
+            var fileContent = new StreamContent(proofFile.OpenReadStream());
+            fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(proofFile.ContentType);
+
+            formData.Add(fileContent, name: "proofFile", fileName: proofFile.FileName);
+
+            var response = await _httpClient.PostAsync($"/api/financials/quotas/{quotaId}/submit-payment-proof", formData);
+
+            if (response.IsSuccessStatusCode)
+            {
+                return await response.Content.ReadFromJsonAsync<UnitQuotaDto>();
+            }
+            return null;
+        }
+
+        public async Task<(bool Success, string Message)> ConfirmPaymentAsync(int quotaId)
+        {
+            var response = await _httpClient.PostAsync($"/api/financials/quotas/{quotaId}/confirm-payment", null);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var responseBody = await response.Content.ReadFromJsonAsync<JsonElement>();
+                var message = responseBody.GetProperty("message").GetString() ?? "Payment confirmed.";
+                return (true, message);
+            }
+
+            var errorBody = await response.Content.ReadFromJsonAsync<JsonElement>();
+            var errorMessage = errorBody.GetProperty("message").GetString() ?? "Failed to confirm payment.";
+            return (false, errorMessage);
+        }
+
+        public async Task<IEnumerable<UnitQuotaDto>> GetQuotasForCondominiumAsync(int condominiumId)
+        {
+            return await _httpClient.GetFromJsonAsync<IEnumerable<UnitQuotaDto>>($"/api/financials/condominiums/{condominiumId}/quotas")
+                ?? new List<UnitQuotaDto>();
+        }
+
+        public async Task<string?> CreateStripeCheckoutSessionAsync(int quotaId)
+        {
+            var response = await _httpClient.PostAsync($"/api/financials/quotas/{quotaId}/create-checkout-session", null);
+            if (response.IsSuccessStatusCode)
+            {
+                var body = await response.Content.ReadFromJsonAsync<JsonElement>();
+                return body.GetProperty("sessionId").GetString();
+            }
+            return null;
+        }
+
+        public async Task<bool> MarkQuotaAsPaidAsync(int quotaId)
+        {
+            var response = await _httpClient.PostAsync($"/api/financials/quotas/{quotaId}/mark-as-paid", null);
+            return response.IsSuccessStatusCode;
+        }
+
+        public async Task<ReceiptDto?> GetReceiptDetailsForResidentAsync(int receiptId)
+        {
+            var response = await _httpClient.GetAsync($"/api/financials/receipts/{receiptId}");
+            if (response.IsSuccessStatusCode)
+            {
+                return await response.Content.ReadFromJsonAsync<ReceiptDto>();
+            }
+            return null;
+        }
+
+        public async Task<ReceiptDto?> GetReceiptDetailsForManagerAsync(int receiptId)
+        {
+            var response = await _httpClient.GetAsync($"/api/financials/manager/receipts/{receiptId}");
+            if (response.IsSuccessStatusCode)
+            {
+                return await response.Content.ReadFromJsonAsync<ReceiptDto>();
+            }
+            return null;
+        }
+
+        public async Task<CompanyProfileDto?> GetCompanyProfileAsync()
+        {
+            return await _httpClient.GetFromJsonAsync<CompanyProfileDto>("/api/company/my-profile");
+        }
+
+        public async Task<bool> UpdateCompanyProfileAsync(CompanyProfileDto dto)
+        {
+            var response = await _httpClient.PutAsJsonAsync("/api/company/my-profile", dto);
+            return response.IsSuccessStatusCode;
+        }
+
+        public async Task<DocumentDto?> UploadDocumentAsync(int condominiumId, CreateDocumentDto dto, IFormFile file)
+        {
+            using var formData = new MultipartFormDataContent();
+            formData.Add(new StringContent(dto.Title), nameof(dto.Title));
+            formData.Add(new StringContent(dto.Description ?? string.Empty), nameof(dto.Description));
+            formData.Add(new StringContent(dto.Category), nameof(dto.Category));
+
+            var fileContent = new StreamContent(file.OpenReadStream());
+            fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(file.ContentType);
+            formData.Add(fileContent, name: "file", fileName: file.FileName);
+
+            var response = await _httpClient.PostAsync($"/api/condominiums/{condominiumId}/documents", formData);
+
+            if (response.IsSuccessStatusCode)
+            {
+                return await response.Content.ReadFromJsonAsync<DocumentDto>();
+            }
+            return null;
+        }
+
+        public async Task<IEnumerable<DocumentDto>> GetDocumentsForCondominiumAsync(int condominiumId)
+        {
+            return await _httpClient.GetFromJsonAsync<IEnumerable<DocumentDto>>($"/api/condominiums/{condominiumId}/documents")
+                ?? new List<DocumentDto>();
+        }
+
+        public async Task<bool> DeleteDocumentAsync(int documentId)
+        {
+            var response = await _httpClient.DeleteAsync($"/api/documents/{documentId}");
+            return response.IsSuccessStatusCode;
+        }
+
+        public async Task<HttpResponseMessage> DownloadDocumentAsync(int documentId)
+        {
+            return await _httpClient.GetAsync($"/api/documents/{documentId}/download");
+        }
+
+        public async Task<IEnumerable<DocumentDto>> GetMyDocumentsAsync()
+        {
+            return await _httpClient.GetFromJsonAsync<IEnumerable<DocumentDto>>("/api/users/my-documents")
+                ?? new List<DocumentDto>();
         }
         // --- Two-Factor (2SV) ---
         public async Task<(bool Success, string Message)> SwitchTwoFactorAsync(ToggleTwoFactorDto dto)

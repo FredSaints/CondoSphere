@@ -1,9 +1,10 @@
 ﻿using AutoMapper;
 using CondoSphere.Application.Interfaces;
 using CondoSphere.Core;
+using CondoSphere.Core.DTOs.Account;
 using CondoSphere.Core.DTOs.Condominiums;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using CoreCondominium = CondoSphere.Core.Entities.Condominiums.Condominium;
 using CoreUser = CondoSphere.Core.Entities.Users.User;
 

@@ -1,8 +1,9 @@
 ﻿using CondoSphere.Application.Interfaces;
 using CondoSphere.Application.Services.Condominium;
+using CondoSphere.Application.Services.User;
 using CondoSphere.Core;
 using CondoSphere.Core.DTOs.Condominiums;
-using CondoSphere.Core.Enums;
+using CondoSphere.Infrastructure.Repositories;
 using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -11,25 +12,31 @@ namespace CondoSphere.API.Controllers
 {
     [ApiController]
     [Route("api/condominiums/{condominiumId}/units")]
-    [Authorize] // All actions in this controller require an authenticated user.
+    [Authorize]
     public class UnitsController : ControllerBase
     {
         private readonly IUnitService _unitService;
         private readonly IValidator<CreateUpdateUnitDto> _validator;
         private readonly ICurrentUserService _currentUserService;
+        private readonly IUserService _userService;
+        private readonly IUnitOfWork _unitOfWork;
 
         public UnitsController(
             IUnitService unitService,
             IValidator<CreateUpdateUnitDto> validator,
-            ICurrentUserService currentUserService)
+            ICurrentUserService currentUserService,
+            IUserService userService,
+            IUnitOfWork unitOfWork)
         {
             _unitService = unitService;
             _validator = validator;
             _currentUserService = currentUserService;
+            _userService = userService;
+            _unitOfWork = unitOfWork;
         }
 
         [HttpGet]
-        [Authorize(Policy = "IsCondoManagerPolicy")] // Checks if user is CompanyAdmin OR assigned manager.
+        [Authorize(Policy = "IsCondoManagerPolicy")]
         public async Task<IActionResult> GetUnitsForCondominium(int condominiumId)
         {
             var units = await _unitService.GetUnitsForCondominiumAsync(condominiumId);
@@ -44,6 +51,25 @@ namespace CondoSphere.API.Controllers
             if (unit == null || unit.CondominiumId != condominiumId)
             {
                 return NotFound();
+            }
+
+            return Ok(unit);
+        }
+
+        [HttpGet("~/api/units/{unitId}")]
+        [Authorize(Roles = RoleConstants.CondoManager + "," + RoleConstants.CompanyAdmin)]
+        public async Task<IActionResult> GetSingleUnitById(int unitId)
+        {
+            var unit = await _unitService.GetUnitByIdAsync(unitId);
+            if (unit == null)
+            {
+                return NotFound();
+            }
+
+            var condo = await _unitOfWork.Condominiums.GetByIdAsync(unit.CondominiumId, _currentUserService.CompanyId.Value);
+            if (condo == null)
+            {
+                return Forbid();
             }
 
             return Ok(unit);
@@ -124,14 +150,26 @@ namespace CondoSphere.API.Controllers
                 return NotFound();
             }
 
-            var success = await _unitService.UnassignResidentAsync(unitId);
+            var companyId = _currentUserService.CompanyId;
+            if (companyId == null)
+            {
+                return Forbid();
+            }
+
+            var residentId = unit.Resident?.Id;
+
+            if (residentId == null)
+            {
+                return BadRequest(new { message = "The unit is already vacant." });
+            }
+            var success = await _userService.UnassignResidentFromUnitAsync(residentId.Value, unitId, companyId.Value);
 
             if (success)
             {
                 return NoContent();
             }
 
-            return BadRequest(new { message = "Failed to unassign resident. The unit might already be vacant." });
+            return BadRequest(new { message = "Failed to unassign resident." });
         }
 
         [HttpPatch("{unitId}/assign-resident")]
@@ -139,15 +177,16 @@ namespace CondoSphere.API.Controllers
         public async Task<IActionResult> AssignResident(int condominiumId, int unitId, [FromBody] AssignResidentDto dto)
         {
             var companyId = _currentUserService.CompanyId;
-            if (companyId == null) return Forbid();
-
-            var success = await _unitService.AssignExistingResidentAsync(unitId, dto.ResidentId, companyId.Value);
+            if (companyId == null)
+            {
+                return Forbid();
+            }
+            var success = await _userService.AssignResidentToUnitAsync(dto.ResidentId, unitId, companyId.Value);
 
             if (success)
             {
                 return NoContent();
             }
-
             return BadRequest(new { message = "Failed to assign resident. The unit may be occupied or the resident invalid." });
         }
     }

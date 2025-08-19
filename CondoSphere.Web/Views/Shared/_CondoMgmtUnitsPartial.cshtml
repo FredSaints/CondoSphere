@@ -1,0 +1,69 @@
+﻿@model IEnumerable<CondoSphere.Core.DTOs.Condominiums.UnitDto>
+
+@if (Model.Any())
+{
+    <div class="table-responsive">
+        <table class="table table-hover mb-0 align-middle">
+            <thead>
+                <tr>
+                    <th>Unit Identifier</th>
+                    <th class="text-center">Status</th>
+                    <th>Assigned Resident</th>
+                    <th class="text-end">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var unit in Model)
+                {
+                    <tr>
+                        <td><strong>@unit.Identifier</strong></td>
+                        <td class="text-center">
+                            @if (unit.Resident != null)
+                            {
+                                <span class="badge bg-info">Occupied</span>
+                            }
+                            else
+                            {
+
+                                <span class="badge bg-success">Vacant</span>
+                            }
+                        </td>
+                        <td>
+                            @(unit.Resident?.FullName ?? "---")
+                            @if (unit.Resident != null)
+                            {
+                                <br />
+                    
+                                <small class="text-muted">@unit.Resident.Email</small>
+                            }
+                        </td>
+                        <td class="text-end">
+                            @if (unit.Resident == null)
+                            {
+                                <a asp-controller="CondoManagement" asp-action="AssignResident" asp-route-unitId="@unit.Id" asp-route-condominiumId="@unit.CondominiumId" class="btn btn-sm btn-primary">
+                                    <i class="bi bi-person-plus me-1"></i>Assign
+                                </a>
+                            }
+                            else
+                            {
+                                <form asp-controller="CondoManagement" asp-action="UnassignResidentFromUnit" asp-route-condominiumId="@unit.CondominiumId" asp-route-residentId="@unit.Resident.Id" asp-route-unitId="@unit.Id" method="post" class="d-inline" onsubmit="return confirm('Are you sure?');">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn btn-sm btn-outline-danger">
+                                        <i class="bi bi-person-dash me-1"></i>Unassign
+                                    </button>
+                                </form>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+else
+{
+    <div class="text-center p-4">
+        <i class="bi bi-house-slash text-muted fs-1 mb-3"></i>
+        <p class="text-muted mb-0">No units have been created for this condominium yet.</p>
+    </div>
+}

@@ -1,0 +1,53 @@
+﻿@model CondoSphere.Core.DTOs.Financials.UnitQuotaDto
+
+@{
+    ViewData["Title"] = "Proceed to Payment";
+    var stripePublishableKey = ViewData["StripePublishableKey"] as string;
+}
+
+<h1>@ViewData["Title"]</h1>
+<p>You are about to pay for: <strong>@Model.Description</strong></p>
+
+<div class="card col-md-6">
+    <div class="card-body">
+        <dl class="row">
+            <dt class="col-sm-4">Amount Due</dt>
+            <dd class="col-sm-8">@Model.AmountDue.ToString("C")</dd>
+        </dl>
+        <button id="checkout-button" class="btn btn-success w-100">Pay with Card</button>
+    </div>
+</div>
+
+@Html.AntiForgeryToken()
+<script src="https://js.stripe.com/v3/"></script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const stripe = Stripe('@stripePublishableKey');
+        const checkoutButton = document.getElementById('checkout-button');
+
+        checkoutButton.addEventListener('click', function () {
+               fetch('/portal/quotas/@Model.Id/create-session', {
+        method: 'POST',
+        headers: {
+            
+            'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+        }
+    })
+            .then(function (response) {
+                return response.json();
+            })
+            .then(function (session) {
+                return stripe.redirectToCheckout({ sessionId: session.sessionId });
+            })
+            .then(function (result) {
+                if (result.error) {
+                    alert(result.error.message);
+                }
+            })
+            .catch(function (error) {
+                console.error('Error:', error);
+            });
+        });
+    });
+</script>

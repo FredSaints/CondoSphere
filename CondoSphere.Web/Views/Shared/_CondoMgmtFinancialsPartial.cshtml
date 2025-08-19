@@ -1,0 +1,19 @@
+﻿@model CondoSphere.Web.Models.CondominiumDetailsViewModel
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h5 class="mb-0">Financial Tools</h5>
+    <div class="btn-group">
+        <a asp-controller="CondoManagement" asp-action="QuotaManagement" asp-route-condominiumId="@Model.Condominium.Id" class="btn btn-sm btn-outline-info">
+            <i class="bi bi-cash-stack me-1"></i> Manage Quotas
+        </a>
+        <a asp-controller="CondoManagement" asp-action="FixedExpenses" asp-route-condominiumId="@Model.Condominium.Id" class="btn btn-sm btn-outline-secondary">
+            <i class="bi bi-arrow-repeat me-1"></i> Manage Fixed Expenses
+        </a>
+        <a asp-controller="CondoManagement" asp-action="GenerateFees" asp-route-id="@Model.Condominium.Id" class="btn btn-sm btn-primary">
+            <i class="bi bi-calculator-fill me-1"></i> Generate Monthly Fees
+        </a>
+    </div>
+</div>
+<p class="text-muted">
+    Use this section to manage recurring costs, generate monthly fees for all residents, and review payment statuses.
+</p>

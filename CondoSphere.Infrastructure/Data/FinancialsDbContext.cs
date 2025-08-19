@@ -7,7 +7,9 @@ namespace CondoSphere.Infrastructure.Data
     {
         public DbSet<Expense> Expenses { get; set; }
         public DbSet<ExpenseAttachment> ExpenseAttachments { get; set; }
-        // We will add DbSet for UnitQuota, Receipt, etc. here later.
+        public DbSet<UnitQuota> UnitQuotas { get; set; }
+        public DbSet<QuotaPayment> QuotaPayments { get; set; }
+        public DbSet<Receipt> Receipts { get; set; }
 
         public FinancialsDbContext(DbContextOptions<FinancialsDbContext> options)
             : base(options)
@@ -21,14 +23,27 @@ namespace CondoSphere.Infrastructure.Data
             modelBuilder.Entity<Expense>()
                 .Property(e => e.Amount)
                 .HasColumnType("decimal(18, 2)");
-            // This defines the one-to-many relationship:
-            // An ExpenseAttachment has one Expense.
-            // An Expense has many ExpenseAttachments.
-            // The foreign key is ExpenseId.
+
             modelBuilder.Entity<ExpenseAttachment>()
                 .HasOne(a => a.Expense)
                 .WithMany(e => e.Attachments)
                 .HasForeignKey(a => a.ExpenseId);
+
+            modelBuilder.Entity<UnitQuota>(entity =>
+            {
+                entity.Property(e => e.AmountDue).HasColumnType("decimal(18, 2)");
+                entity.Property(e => e.AmountPaid).HasColumnType("decimal(18, 2)");
+            });
+
+            modelBuilder.Entity<QuotaPayment>(entity =>
+            {
+                entity.Property(e => e.Amount).HasColumnType("decimal(18, 2)");
+            });
+
+            modelBuilder.Entity<Receipt>(entity =>
+            {
+                entity.Property(e => e.Amount).HasColumnType("decimal(18, 2)");
+            });
         }
     }
 }

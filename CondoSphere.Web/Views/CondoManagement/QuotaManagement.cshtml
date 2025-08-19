@@ -1,0 +1,81 @@
+﻿@model IEnumerable<CondoSphere.Core.DTOs.Financials.UnitQuotaDto>
+@using CondoSphere.Core.DTOs.Condominiums
+@using CondoSphere.Core.Enums
+
+@{
+    var condo = ViewData["Condominium"] as CondominiumDto;
+    ViewData["Title"] = "Quota Management";
+}
+
+<h1>@ViewData["Title"]</h1>
+<p class="text-muted">Review and confirm payments for <strong>@condo.Name</strong></p>
+<hr />
+
+<div class="card shadow-sm">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0 align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Description</th>
+                        <th>Unit</th>
+                        <th>Due Date</th>
+                        <th class="text-end">Amount</th>
+                        <th class="text-center">Status</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var quota in Model.OrderBy(q => q.Status == UnitQuotaStatus.PendingConfirmation ? 0 : 1))
+                    {
+                        <tr class="@(quota.Status == UnitQuotaStatus.PendingConfirmation ? "table-info" : "")">
+                            <td>@quota.Description</td>
+                            <td><strong>@quota.UnitIdentifier</strong></td>
+                            <td>@quota.DueDate.ToString("yyyy-MM-dd")</td>
+                            <td class="text-end">@quota.AmountDue.ToString("C")</td>
+                            <td class="text-center">
+                                @{
+                                    var statusClass = "bg-secondary";
+                                    switch (quota.Status)
+                                    {
+                                        case UnitQuotaStatus.Pending: statusClass = "bg-warning text-dark"; break;
+                                        case UnitQuotaStatus.Paid: statusClass = "bg-success"; break;
+                                        case UnitQuotaStatus.Overdue: statusClass = "bg-danger"; break;
+                                        case UnitQuotaStatus.PendingConfirmation: statusClass = "bg-info text-dark"; break;
+                                    }
+                                }
+                                <span class="badge @statusClass">@quota.Status</span>
+                            </td>
+
+                            <td class="text-end">
+                                @if (quota.Status == UnitQuotaStatus.PendingConfirmation)
+                                {
+                                    <div class="btn-group">
+                                        <a href="@quota.ProofOfPaymentUrl" target="_blank" class="btn btn-sm btn-outline-primary">View Proof</a>
+                                        <form asp-action="ConfirmPayment" method="post">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="quotaId" value="@quota.Id" />
+                                            <input type="hidden" name="condominiumId" value="@condo.Id" />
+                                            <button type="submit" class="btn btn-sm btn-success">Confirm</button>
+                                        </form>
+                                    </div>
+                                }
+                                else if (quota.Status == UnitQuotaStatus.Paid && quota.ReceiptId.HasValue)
+                                {
+                                    <a asp-action="Receipt" asp-route-id="@quota.ReceiptId" class="btn btn-sm btn-outline-info">
+                                        <i class="bi bi-receipt-cutoff"></i> View Receipt
+                                    </a>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<div class="mt-4">
+    <a asp-action="Details" asp-route-id="@condo.Id" class="btn btn-secondary">
+        <i class="bi bi-arrow-left me-1"></i> Back to Condominium Details
+    </a>
+</div>

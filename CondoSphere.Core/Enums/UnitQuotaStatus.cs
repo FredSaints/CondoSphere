@@ -34,6 +34,11 @@ namespace CondoSphere.Core.Enums
         /// <summary>
         /// The quota has been cancelled or voided.
         /// </summary>
-        Cancelled = 5
+        Cancelled = 5,
+
+        /// <summary>
+        /// The resident has submitted proof of payment, awaiting manager confirmation.
+        /// </summary>
+        PendingConfirmation = 6
     }
 }

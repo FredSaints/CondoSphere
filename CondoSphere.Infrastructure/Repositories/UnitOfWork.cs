@@ -9,7 +9,6 @@ namespace CondoSphere.Infrastructure.Repositories
         private readonly CondominiumDbContext _condoContext;
         private readonly FinancialsDbContext _financialsContext;
 
-        // Implement all properties from the interface
         public ICompanyRepository Companies { get; private set; }
         public IUserRepository Users { get; private set; }
         public ICondominiumRepository Condominiums { get; private set; }
@@ -17,6 +16,10 @@ namespace CondoSphere.Infrastructure.Repositories
         public IOccurrenceRepository Occurrences { get; private set; }
         public IInterventionRepository Interventions { get; private set; }
         public IExpenseRepository Expenses { get; private set; }
+        public IUnitQuotaRepository UnitQuotas { get; private set; }
+        public IQuotaPaymentRepository QuotaPayments { get; private set; }
+        public IReceiptRepository Receipts { get; private set; }
+        public IDocumentRepository Documents { get; private set; }
 
         public UnitOfWork(UserManagementDbContext userContext, CondominiumDbContext condoContext, FinancialsDbContext financialsContext)
         {
@@ -24,7 +27,6 @@ namespace CondoSphere.Infrastructure.Repositories
             _condoContext = condoContext;
             _financialsContext = financialsContext;
 
-            // Instantiate all repositories with their respective DbContexts
             Companies = new CompanyRepository(_userContext);
             Users = new UserRepository(_userContext);
             Condominiums = new CondominiumRepository(_condoContext);
@@ -32,15 +34,19 @@ namespace CondoSphere.Infrastructure.Repositories
             Occurrences = new OccurrenceRepository(_condoContext);
             Interventions = new InterventionRepository(_condoContext);
             Expenses = new ExpenseRepository(_financialsContext);
+            UnitQuotas = new UnitQuotaRepository(_financialsContext);
+            QuotaPayments = new QuotaPaymentRepository(_financialsContext);
+            Receipts = new ReceiptRepository(_financialsContext);
+            Documents = new DocumentRepository(_condoContext);
         }
 
         public async Task<int> CompleteAsync()
         {
-            // Save changes for both contexts. The sum of records affected is returned.
             var userDbResult = await _userContext.SaveChangesAsync();
             var condoDbResult = await _condoContext.SaveChangesAsync();
             var financialsDbResult = await _financialsContext.SaveChangesAsync();
-            return userDbResult + condoDbResult;
+
+            return userDbResult + condoDbResult + financialsDbResult;
         }
 
         public async ValueTask DisposeAsync()
@@ -49,7 +55,5 @@ namespace CondoSphere.Infrastructure.Repositories
             await _condoContext.DisposeAsync();
             await _financialsContext.DisposeAsync();
         }
-
-
     }
 }

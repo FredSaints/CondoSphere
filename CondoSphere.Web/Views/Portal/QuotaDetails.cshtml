@@ -1,0 +1,142 @@
+﻿@model CondoSphere.Core.DTOs.Financials.QuotaBreakdownDto
+@using CondoSphere.Core.Enums
+
+@{
+    ViewData["Title"] = "Fee Details";
+    var totalExpenses = Model.FixedExpenses.Sum(e => e.Amount) + Model.OneTimeExpenses.Sum(e => e.Amount);
+}
+
+<h1>@Model.QuotaDetails.Description</h1>
+<p class="text-muted">Details for the fee due on @Model.QuotaDetails.DueDate.ToString("d")</p>
+<hr />
+
+<div class="row">
+    <div class="col-lg-8">
+
+        <!-- Recurring Expenses Card -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-header"><h5 class="mb-0">Recurring Expenses</h5></div>
+            <div class="card-body p-0">
+                @if (Model.FixedExpenses.Any())
+                {
+                    <table class="table mb-0">
+                        <tbody>
+                            @foreach (var expense in Model.FixedExpenses)
+                            {
+                                <tr>
+                                    <td>@expense.Title</td>
+                                    <td class="text-end">@expense.Amount.ToString("C")</td>
+                                </tr>
+                            }
+                        </tbody>
+                        <tfoot>
+                            <tr class="table-light">
+                                <td class="fw-bold">Subtotal</td>
+                                <td class="text-end fw-bold">@Model.FixedExpenses.Sum(e => e.Amount).ToString("C")</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                }
+                else
+                {
+                    <p class="p-3 text-muted">No recurring expenses were included this month.</p>
+                }
+            </div>
+        </div>
+
+        <!-- One-Time Expenses Card -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-header"><h5 class="mb-0">One-Time & Maintenance Expenses</h5></div>
+            <div class="card-body p-0">
+                @if (Model.OneTimeExpenses.Any())
+                {
+                    <table class="table mb-0">
+                        <tbody>
+                            @foreach (var expense in Model.OneTimeExpenses)
+                            {
+                                <tr>
+                                    <td>@expense.Title</td>
+                                    <td class="text-end">@expense.Amount.ToString("C")</td>
+                                </tr>
+                            }
+                        </tbody>
+                        <tfoot>
+                            <tr class="table-light">
+                                <td class="fw-bold">Subtotal</td>
+                                <td class="text-end fw-bold">@Model.OneTimeExpenses.Sum(e => e.Amount).ToString("C")</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                }
+                else
+                {
+                    <p class="p-3 text-muted">No one-time expenses were included this month.</p>
+                }
+            </div>
+        </div>
+
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card shadow-sm sticky-top" style="top: 20px;">
+            <div class="card-header"><h5 class="mb-0">Summary</h5></div>
+            <div class="card-body">
+                <dl class="row">
+                    <dt class="col-7">Total Expenses:</dt>
+                    <dd class="col-5 text-end">@totalExpenses.ToString("C")</dd>
+
+                    <dt class="col-7">Number of Units:</dt>
+                    <dd class="col-5 text-end">@Model.TotalUnitsInCondo</dd>
+
+                    <dt class="col-7 border-top pt-2">Fee Per Unit:</dt>
+                    <dd class="col-5 text-end border-top pt-2">@((totalExpenses / Model.TotalUnitsInCondo).ToString("C"))</dd>
+                </dl>
+                <hr />
+                <div class="d-flex justify-content-between align-items-baseline">
+                    <span class="h5">Your Total Due:</span>
+                    <span class="h5 text-primary">@Model.QuotaDetails.AmountDue.ToString("C")</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-header"><h5 class="mb-0">Payment</h5></div>
+    <div class="card-body">
+        @if (Model.QuotaDetails.Status == UnitQuotaStatus.Pending || Model.QuotaDetails.Status == UnitQuotaStatus.Overdue)
+        {
+            <p class="text-muted">Please make a payment and upload your proof/receipt below.</p>
+            <form asp-action="SubmitProof" asp-route-id="@Model.QuotaDetails.Id" method="post" enctype="multipart/form-data">
+                @Html.AntiForgeryToken()
+                <div class="mb-3">
+                    <label for="proofFile" class="form-label">Proof of Payment</label>
+                    <input name="proofFile" id="proofFile" class="form-control" type="file" required accept="image/*,.pdf" />
+                </div>
+                <button type="submit" class="btn btn-primary w-100">
+                    <i class="bi bi-upload me-1"></i> Submit Proof
+                </button>
+            </form>
+        }
+        else if (Model.QuotaDetails.Status == UnitQuotaStatus.PendingConfirmation)
+        {
+            <div class="alert alert-info text-center">
+                <h5 class="alert-heading"><i class="bi bi-hourglass-split"></i> Awaiting Confirmation</h5>
+                <p class="mb-0">Your payment proof has been submitted and is awaiting confirmation from the manager.</p>
+            </div>
+        }
+        else if (Model.QuotaDetails.Status == UnitQuotaStatus.Paid)
+        {
+            <div class="alert alert-success text-center">
+                <h5 class="alert-heading"><i class="bi bi-check-circle-fill"></i> Paid</h5>
+                <p class="mb-0">This fee was paid on @Model.QuotaDetails.PaymentDate?.ToLocalTime().ToString("d").</p>
+            </div>
+        }
+    </div>
+</div>
+
+<div class="mt-4">
+    <a asp-action="Index" class="btn btn-secondary">
+        <i class="bi bi-arrow-left me-1"></i> Back to Portal
+    </a>
+</div>

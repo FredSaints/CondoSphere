@@ -62,57 +62,80 @@ namespace CondoSphere.Application.Services.Occurrence
 
         public async Task<OccurrenceDto?> CreateOccurrenceAsync(CreateOccurrenceDto dto, int residentUserId, IFormFile? imageFile)
         {
-            // 1. Find the unit associated with the logged-in resident to get context.
-            var unit = await _unitOfWork.Units.GetUnitByResidentIdAsync(residentUserId);
+            // 1. Fetch the unit the resident is reporting for.
+            var unit = await _unitOfWork.Units.GetByIdAsync(dto.UnitId);
             if (unit == null)
             {
-                // Fail because this user is not an active resident of any unit.
+                // The unit specified in the request does not exist.
                 return null;
             }
 
-            // 2. Map the incoming data (Title, Description) to our database entity.
+            // 2. Security Check: Verify the logged-in resident is the actual resident of the unit they are reporting for.
+            if (unit.ResidentId != residentUserId)
+            {
+                // This is a forbidden action. The user is trying to report an issue for a unit they do not live in.
+                return null;
+            }
+
+            // 3. Map the incoming data (Title, Description, UnitId) to our database entity.
             var newOccurrence = _mapper.Map<CoreOccurrence>(dto);
 
-            // 3. Handle the optional image upload.
             if (imageFile != null && imageFile.Length > 0)
             {
-                var uploadPath = _configuration["FileUpload:Path"];
-                if (string.IsNullOrEmpty(uploadPath))
+                var uploadRootSetting = _configuration["FileUpload:Path"];
+                var uploadRoot = Environment.ExpandEnvironmentVariables(
+                    string.IsNullOrWhiteSpace(uploadRootSetting) ? "CondoSphere_Uploads" : uploadRootSetting);
+
+                if (!Path.IsPathRooted(uploadRoot))
                 {
-                    return null;
+                    uploadRoot = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), uploadRoot));
                 }
 
-                // Create a unique, random filename to prevent name collisions and obscure the original filename.
-                var uniqueFileName = $"{Guid.NewGuid()}{Path.GetExtension(imageFile.FileName)}";
-                var filePath = Path.Combine(uploadPath, uniqueFileName);
+                // >>> CHANGED: route occurrence photos to a subfolder inside CondoSphere_Uploads
+                var subfolder = "occurences-photos"; // per your requested folder name
+                var occurrenceFolder = Path.Combine(uploadRoot, subfolder);
+                if (!Directory.Exists(occurrenceFolder))
+                {
+                    Directory.CreateDirectory(occurrenceFolder);
+                }
 
-                // Save the file stream to the configured physical path on the server's disk.
+                var uniqueFileName = $"{Guid.NewGuid()}{Path.GetExtension(imageFile.FileName)}";
+                var filePath = Path.Combine(occurrenceFolder, uniqueFileName);
+
                 using (var stream = new FileStream(filePath, FileMode.Create))
                 {
                     await imageFile.CopyToAsync(stream);
                 }
-                // Get the current HTTP request context to build the base URL (e.g., https://localhost:7177)
+
                 var request = _httpContextAccessor.HttpContext.Request;
                 var baseUrl = $"{request.Scheme}://{request.Host}";
 
-                // Combine the base URL with the public path to the file.
-                newOccurrence.ImageUrl = $"{baseUrl}/uploads/{uniqueFileName}";
+                // >>> CHANGED: URL now includes the subfolder
+                newOccurrence.ImageUrl = $"{baseUrl}/uploads/{subfolder}/{uniqueFileName}";
             }
 
-            // 4. Populate the system-managed properties for the new occurrence.
+            // 5. Populate the remaining system-managed properties for the new occurrence.
             newOccurrence.ReportedDate = DateTime.UtcNow;
             newOccurrence.Status = OccurrenceStatus.Open;
             newOccurrence.ReportedByUserId = residentUserId;
-            newOccurrence.UnitId = unit.Id;
-            newOccurrence.CondominiumId = unit.CondominiumId;
-            newOccurrence.CompanyId = unit.CompanyId;
+            // The UnitId is already mapped from the DTO.
+            newOccurrence.CondominiumId = unit.CondominiumId; // Get context from the verified unit.
+            newOccurrence.CompanyId = unit.CompanyId;       // Get context from the verified unit.
 
-            // 5. Add the new entity to the repository and save the changes via the Unit of Work.
+            // 6. Add the new entity and save the changes.
             await _unitOfWork.Occurrences.AddAsync(newOccurrence);
             await _unitOfWork.CompleteAsync();
 
-            // 6. Map the fully populated entity (with its new ID and absolute ImageUrl) back to a DTO to return.
-            return _mapper.Map<OccurrenceDto>(newOccurrence);
+            // 7. Map the newly created entity back to a DTO to return to the caller.
+            // We need to enrich it with the reporter's name.
+            var resultDto = _mapper.Map<OccurrenceDto>(newOccurrence);
+            var reporter = await _userManager.FindByIdAsync(residentUserId.ToString());
+            if (reporter != null)
+            {
+                resultDto.ReportedByUserName = $"{reporter.FirstName} {reporter.LastName}";
+            }
+
+            return resultDto;
         }
 
         public async Task<OccurrenceDto?> GetOccurrenceByIdAsync(int occurrenceId)
@@ -150,12 +173,15 @@ namespace CondoSphere.Application.Services.Occurrence
                 return false;
             }
 
+            // NEW: once closed, never allow changing away from Closed
+            if (occurrence.Status == OccurrenceStatus.Closed && newStatus != OccurrenceStatus.Closed)
+            {
+                return false;
+            }
+
             occurrence.Status = newStatus;
-
             _unitOfWork.Occurrences.Update(occurrence);
-
             await _unitOfWork.CompleteAsync();
-
             return true;
         }
     }

@@ -66,7 +66,7 @@
             </div>
         </div>
 
-        @* ===== CARD 2: INTERVENTions LIST ===== *@
+        @* ===== CARD 2: INTERVENTIONS LIST ===== *@
         <div class="card shadow-sm mb-4">
             <div class="card-header d-flex justify-content-between align-items-center">
                 <h5 class="mb-0">Interventions</h5>
@@ -187,6 +187,7 @@
                                     <th>Title</th>
                                     <th>Date</th>
                                     <th class="text-end">Amount</th>
+                                    <th></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -196,6 +197,15 @@
                                         <td>@expense.Title</td>
                                         <td>@expense.ExpenseDate.ToLocalTime().ToString("yyyy-MM-dd")</td>
                                         <td class="text-end">@expense.Amount.ToString("C")</td>
+                                        <td class="text-end">
+                                            <a asp-action="ExpenseDetails"
+                                               asp-route-expenseId="@expense.Id"
+                                               asp-route-occurrenceId="@Model.Occurrence.Id"
+                                               asp-route-condominiumId="@Model.Occurrence.CondominiumId"
+                                               class="btn btn-sm btn-outline-primary">
+                                                Details
+                                            </a>
+                                        </td>
                                     </tr>
                                 }
                             </tbody>
@@ -294,23 +304,35 @@
             <form asp-action="RecordExpense"
                   asp-route-condominiumId="@Model.Occurrence.CondominiumId"
                   asp-route-occurrenceId="@Model.Occurrence.Id"
-                  method="post">
+                  method="post" enctype="multipart/form-data">
                 <div class="modal-header">
                     <h5 class="modal-title" id="addExpenseModalLabel">Record Expense</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     @Html.AntiForgeryToken()
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-2"></div>
+
                     <input type="hidden" asp-for="NewExpense.OccurrenceId" />
                     <input type="hidden" asp-for="NewExpense.CondominiumId" />
 
                     <div class="form-floating mb-3">
-                        <input asp-for="NewExpense.Title" class="form-control" placeholder="Expense Title" value="Expense for: @Model.Occurrence.Title" />
+                        <input asp-for="NewExpense.Title" class="form-control" placeholder="Expense Title" />
                         <label asp-for="NewExpense.Title"></label>
                         <span asp-validation-for="NewExpense.Title" class="text-danger"></span>
                     </div>
                     <div class="form-floating mb-3">
-                        <input asp-for="NewExpense.Amount" class="form-control" placeholder="0.00" />
+                        <textarea asp-for="NewExpense.Description"
+                                  class="form-control"
+                                  placeholder="Describe the expense"
+                                  style="height: 100px"></textarea>
+                        <label asp-for="NewExpense.Description"></label>
+                        <span asp-validation-for="NewExpense.Description" class="text-danger"></span>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input asp-for="NewExpense.Amount"
+                               class="form-control"
+                               type="number" step="0.01" inputmode="decimal" />
                         <label asp-for="NewExpense.Amount"></label>
                         <span asp-validation-for="NewExpense.Amount" class="text-danger"></span>
                     </div>
@@ -318,6 +340,16 @@
                         <input asp-for="NewExpense.ExpenseDate" asp-format="{0:yyyy-MM-dd}" class="form-control" type="date" />
                         <label asp-for="NewExpense.ExpenseDate"></label>
                         <span asp-validation-for="NewExpense.ExpenseDate" class="text-danger"></span>
+                    </div>
+                    <hr />
+                    <div class="mb-3">
+                        <label class="form-label">Attach Invoices/Receipts</label>
+                        <button type="button" id="add-files-btn" class="btn btn-outline-secondary w-100">
+                            <i class="bi bi-plus-circle"></i> Add File(s)
+                        </button>
+                        <input id="file-upload-input" name="attachmentFiles" type="file" class="d-none" multiple />
+                    </div>
+                    <div id="file-list-container" class="list-group">
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -329,24 +361,26 @@
     </div>
 </div>
 
-
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
 
     @{
-        // Prepare C# boolean flags. This part is correct.
         var shouldOpenInterventionModal = !ViewContext.ModelState.IsValid && ViewContext.ModelState.Keys.Any(k => k.StartsWith("NewIntervention"));
-        var shouldOpenExpenseModal = TempData["OpenExpenseModal"] as bool? == true;
+        var shouldOpenExpenseModal = !ViewContext.ModelState.IsValid && ViewContext.ModelState.Keys.Any(k => k.StartsWith("NewExpense"));
     }
+
+    <div id="modal-flags"
+         data-open-intervention="@shouldOpenInterventionModal.ToString().ToLower()"
+         data-open-expense="@shouldOpenExpenseModal.ToString().ToLower()"
+         style="display: none;"></div>
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
 
-            // --- 1. CONVERT C# FLAGS TO CLEAN JAVASCRIPT VARIABLES ---
-            const openInterventionModal = @shouldOpenInterventionModal.ToString().ToLower();
-            const openExpenseModal = @shouldOpenExpenseModal.ToString().ToLower();
+            const modalFlags = document.getElementById('modal-flags');
+            const openInterventionModal = modalFlags.getAttribute('data-open-intervention') === 'true';
+            const openExpenseModal = modalFlags.getAttribute('data-open-expense') === 'true';
 
-            // --- 2. USE THE CLEAN JAVASCRIPT VARIABLES ---
             if (openInterventionModal) {
                 var interventionModal = new bootstrap.Modal(document.getElementById('addInterventionModal'));
                 interventionModal.show();
@@ -357,14 +391,11 @@
                 expenseModal.show();
             }
 
-            // --- 3. THE REST OF THE SCRIPT REMAINS THE SAME ---
-            // Standard Bootstrap 5 script to initialize all tooltips on the page
             var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
             var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
                 return new bootstrap.Tooltip(tooltipTriggerEl)
             });
 
-            // Script for toggling the intervention status edit form
             const containers = document.querySelectorAll('.intervention-status-container');
             containers.forEach(container => {
                 const displayDiv = container.querySelector('.status-display');
@@ -386,6 +417,82 @@
                     });
                 }
             });
+
+            const addFilesBtn = document.getElementById('add-files-btn');
+            const fileInput = document.getElementById('file-upload-input');
+            const fileListContainer = document.getElementById('file-list-container');
+            const dataTransfer = new DataTransfer();
+            const expenseForm = document.querySelector('#addExpenseModal form');
+
+            if (addFilesBtn) {
+                addFilesBtn.addEventListener('click', function() {
+                    fileInput.click();
+                });
+            }
+
+            if (fileInput) {
+                fileInput.addEventListener('change', function(event) {
+                    for (let i = 0; i < event.target.files.length; i++) {
+                        dataTransfer.items.add(event.target.files[i]);
+                    }
+
+                    fileInput.files = dataTransfer.files;
+
+                    renderFileList();
+                });
+            }
+
+            if (expenseForm) {
+                expenseForm.addEventListener('submit', function () {
+                    fileInput.files = dataTransfer.files;
+                });
+            }
+
+            function renderFileList() {
+                if (!fileListContainer) return;
+
+                fileListContainer.innerHTML = '';
+
+                if (dataTransfer.files.length > 0) {
+                     fileListContainer.innerHTML = '<p class="text-muted small mt-2 mb-1">Files to be uploaded:</p>';
+                }
+
+                for (let i = 0; i < dataTransfer.files.length; i++) {
+                    const file = dataTransfer.files[i];
+                    const listItem = document.createElement('div');
+                    listItem.className = 'list-group-item list-group-item-action d-flex justify-content-between align-items-center py-2';
+
+                    const fileNameSpan = document.createElement('span');
+                    fileNameSpan.className = 'small';
+                    fileNameSpan.textContent = file.name;
+                    listItem.appendChild(fileNameSpan);
+
+                    const removeBtn = document.createElement('button');
+                    removeBtn.type = 'button';
+                    removeBtn.className = 'btn-close';
+                    removeBtn.setAttribute('aria-label', 'Remove file');
+
+                    removeBtn.addEventListener('click', function() {
+                        const newFiles = new DataTransfer();
+                        for (let j = 0; j < dataTransfer.files.length; j++) {
+                            if (i !== j) {
+                                newFiles.items.add(dataTransfer.files[j]);
+                            }
+                        }
+
+                        dataTransfer.items.clear();
+                        for(let k = 0; k < newFiles.files.length; k++){
+                            dataTransfer.items.add(newFiles.files[k]);
+                        }
+
+                        fileInput.files = dataTransfer.files;
+                        renderFileList();
+                    });
+
+                    listItem.appendChild(removeBtn);
+                    fileListContainer.appendChild(listItem);
+                }
+            }
         });
     </script>
 }

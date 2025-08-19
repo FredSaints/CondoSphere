@@ -11,5 +11,9 @@ namespace CondoSphere.Core.DTOs.Occurrences
         [Required]
         [StringLength(1000, MinimumLength = 10, ErrorMessage = "The Description must be between 10 and 1000 characters.")]
         public string Description { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Please select the unit for this occurrence.")]
+        [Range(1, int.MaxValue, ErrorMessage = "Please select a valid unit.")]
+        public int UnitId { get; set; }
     }
 }

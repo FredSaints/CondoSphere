@@ -1,9 +1,12 @@
 using CondoSphere.Application.Authorization;
 using CondoSphere.Application.Interfaces;
+using CondoSphere.Application.Services.Company;
 using CondoSphere.Application.Services.Condominium;
+using CondoSphere.Application.Services.Document;
 using CondoSphere.Application.Services.Financials;
 using CondoSphere.Application.Services.Intervention;
 using CondoSphere.Application.Services.Occurrence;
+using CondoSphere.Application.Services.Pdf;
 using CondoSphere.Application.Services.Token;
 using CondoSphere.Application.Services.User;
 using CondoSphere.Core.Entities.Users;
@@ -12,6 +15,7 @@ using CondoSphere.Infrastructure.Data;
 using CondoSphere.Infrastructure.Repositories;
 using CondoSphere.Infrastructure.Services;
 using FluentValidation;
+using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -37,8 +41,8 @@ namespace CondoSphere.API
             var condominiumConnectionString = builder.Configuration.GetConnectionString("CondominiumConnection");
             var financialsConnectionString = builder.Configuration.GetConnectionString("FinancialsConnection");
 
-            builder.Services.AddDbContext<UserManagementDbContext>(options =>options.UseSqlServer(userManagementConnectionString));
-            builder.Services.AddDbContext<CondominiumDbContext>(options =>options.UseSqlServer(condominiumConnectionString));
+            builder.Services.AddDbContext<UserManagementDbContext>(options => options.UseSqlServer(userManagementConnectionString));
+            builder.Services.AddDbContext<CondominiumDbContext>(options => options.UseSqlServer(condominiumConnectionString));
             builder.Services.AddDbContext<FinancialsDbContext>(options => options.UseSqlServer(financialsConnectionString));
 
             builder.Services.AddIdentity<User, IdentityRole<int>>(options =>
@@ -77,6 +81,7 @@ namespace CondoSphere.API
 
             builder.Services.AddTransient<SeedDb>();
             builder.Services.AddScoped<IUserService, UserService>();
+            builder.Services.AddScoped<ICompanyService, CompanyService>();
             builder.Services.AddScoped<ICompanyRepository, CompanyRepository>();
             builder.Services.AddScoped<ITokenService, TokenService>();
             builder.Services.AddScoped<ICondominiumRepository, CondominiumRepository>();
@@ -92,6 +97,13 @@ namespace CondoSphere.API
             builder.Services.AddScoped<IInterventionService, InterventionService>();
             builder.Services.AddScoped<IExpenseRepository, ExpenseRepository>();
             builder.Services.AddScoped<IExpenseService, ExpenseService>();
+            builder.Services.AddScoped<IUnitQuotaRepository, UnitQuotaRepository>();
+            builder.Services.AddScoped<IQuotaPaymentRepository, QuotaPaymentRepository>();
+            builder.Services.AddScoped<IReceiptRepository, ReceiptRepository>();
+            builder.Services.AddScoped<IDocumentRepository, DocumentRepository>();
+            builder.Services.AddScoped<IDocumentService, DocumentService>();
+            builder.Services.AddScoped<IPdfService, PdfService>();
+            builder.Services.AddScoped<IFinancialService, FinancialService>();
             builder.Services.AddScoped<IAuthorizationHandler, CanAccessOccurrenceHandler>();
             builder.Services.AddScoped<IAuthorizationHandler, CanManageInterventionHandler>();
             builder.Services.AddScoped<ISmsService, TwilioSmsService>();
@@ -103,13 +115,8 @@ namespace CondoSphere.API
                 cfg.AddMaps(typeof(CondoSphere.Application.Mappings.OccurrenceProfile).Assembly);
                 cfg.AddMaps(typeof(CondoSphere.Application.Mappings.InterventionProfile).Assembly);
                 cfg.AddMaps(typeof(CondoSphere.Application.Mappings.FinancialsProfile).Assembly);
+                cfg.AddMaps(typeof(CondoSphere.Application.Mappings.UserProfile).Assembly);
             });
-            builder.Services.AddAuthorization(options =>
-            {
-                options.AddPolicy("IsCondoManagerPolicy", policy =>
-                    policy.AddRequirements(new IsCondoManagerRequirement()));
-            });
-
             builder.Services.AddAuthorization(options =>
             {
                 options.AddPolicy("IsCondoManagerPolicy", policy =>
@@ -120,7 +127,6 @@ namespace CondoSphere.API
 
                 options.AddPolicy("CanManageIntervention", policy =>
                     policy.AddRequirements(new CanManageInterventionRequirement()));
-
             });
 
 
@@ -129,6 +135,7 @@ namespace CondoSphere.API
 
             builder.Services.AddControllers();
             builder.Services.AddValidatorsFromAssemblyContaining<CondoSphere.Application.Validators.Condominiums.CreateUpdateCondominiumDtoValidator>();
+            builder.Services.AddFluentValidationAutoValidation();
             builder.Services.AddScoped<IUnitRepository, UnitRepository>();
             builder.Services.AddScoped<IUnitService, UnitService>();
 
@@ -186,18 +193,24 @@ namespace CondoSphere.API
             app.UseAuthentication();
             app.UseAuthorization();
 
-            var uploadPath = builder.Configuration["FileUpload:Path"];
-            if (!Directory.Exists(uploadPath))
+            // --- BEGIN portable upload root resolution ---
+            var uploadPathSetting = builder.Configuration["FileUpload:Path"];
+            var resolvedUploadPath = Environment.ExpandEnvironmentVariables(
+                string.IsNullOrWhiteSpace(uploadPathSetting) ? "CondoSphere_Uploads" : uploadPathSetting);
+
+            // If the configured path is relative, make it absolute next to the app
+            if (!Path.IsPathRooted(resolvedUploadPath))
             {
-                Directory.CreateDirectory(uploadPath);
+                resolvedUploadPath = Path.GetFullPath(Path.Combine(app.Environment.ContentRootPath, resolvedUploadPath));
             }
+
+            Directory.CreateDirectory(resolvedUploadPath);
 
             app.UseStaticFiles(new StaticFileOptions
             {
-                FileProvider = new PhysicalFileProvider(uploadPath),
+                FileProvider = new PhysicalFileProvider(resolvedUploadPath),
                 RequestPath = "/uploads"
             });
-
 
             app.MapControllers();
 

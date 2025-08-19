@@ -2,30 +2,41 @@
 
 @{
     ViewData["Title"] = "Assign Resident to Unit";
+    var unitIdentifier = ViewData["UnitIdentifier"] as string;
 }
 
 <h1>@ViewData["Title"]</h1>
-<p>You are assigning a resident to <strong>Unit ID @Model.UnitId</strong>.</p>
+<p>You are assigning an existing resident to <strong>Unit @unitIdentifier</strong>.</p>
 <hr />
 
 <div class="row">
     <div class="col-md-6">
-        @* We can add a tabbed interface here later to include the "Register New" form *@
+        <div class="alert alert-info d-flex align-items-center">
+            <i class="bi bi-person-plus-fill fs-4 me-3"></i>
+            <div>
+                Need to create a new resident? <a asp-action="RegisterResident" asp-route-unitId="@Model.UnitId" asp-route-condominiumId="@Model.CondominiumId" class="alert-link">Register a new resident for this unit instead</a>.
+            </div>
+        </div>
+
         <form asp-action="AssignResident" method="post">
             <input type="hidden" asp-for="UnitId" />
             <input type="hidden" asp-for="CondominiumId" />
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
-            <div class="form-group mb-3">
+            <div class="form-group my-3">
                 <label asp-for="SelectedResidentId" class="form-label"></label>
-                <select asp-for="SelectedResidentId" asp-items="Model.AvailableResidents" class="form-control">
+                <select asp-for="SelectedResidentId" asp-items="Model.AvailableResidents" class="form-select">
                     <option value="">-- Please select a resident --</option>
                 </select>
                 <span asp-validation-for="SelectedResidentId" class="text-danger"></span>
             </div>
 
-            <button type="submit" class="btn btn-primary">Assign Resident</button>
+            <button type="submit" class="btn btn-primary">Assign Selected Resident</button>
             <a asp-action="Details" asp-route-id="@Model.CondominiumId" class="btn btn-secondary">Cancel</a>
         </form>
     </div>
 </div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

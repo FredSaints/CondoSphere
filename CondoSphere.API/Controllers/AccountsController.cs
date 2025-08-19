@@ -18,15 +18,11 @@ namespace CondoSphere.API.Controllers
         //todo este user manager e para sair daqui e encapsolar no user service
         private readonly IUserService _userService;
         private readonly ICurrentUserService _currentUserService;
-        private readonly UserManager<CoreUser> _userManager;
 
-        public AccountsController(IUserService userService,
-                                  ICurrentUserService currentUserService,
-                                  UserManager<CoreUser> userManager)
+        public AccountsController(IUserService userService,ICurrentUserService currentUserService)
         {
             _userService = userService;
             _currentUserService = currentUserService;
-            _userManager = userManager;
         }
 
         [HttpGet("company-users")]
@@ -144,17 +140,15 @@ namespace CondoSphere.API.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> ConfirmEmail(int userId, string token)
         {
-            var user = await _userManager.FindByIdAsync(userId.ToString());
-            if (user == null)
-                return NotFound("User not found.");
-
-            var result = await _userManager.ConfirmEmailAsync(user, token);
-
+            var result = await _userService.ConfirmEmailAsync(userId, token);
             if (result.Succeeded)
             {
                 return Ok(new { message = "Email confirmed successfully." });
             }
-
+            if (result.Errors.Any(e => e.Code == "NotFound"))
+            {
+                return NotFound("User not found.");
+            }
             return BadRequest("Email could not be confirmed. The link may have expired.");
         }
 
@@ -162,32 +156,13 @@ namespace CondoSphere.API.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> SetPassword([FromBody] SetPasswordDto setPasswordDto)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
+            if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            var user = await _userManager.FindByIdAsync(setPasswordDto.UserId);
-            if (user == null)
-            {
-                return Ok(new { message = "If a matching account was found, a password has been set." });
-            }
-
-            var result = await _userManager.ResetPasswordAsync(user, setPasswordDto.Token, setPasswordDto.Password);
-
+            var result = await _userService.SetPasswordAsync(setPasswordDto);
             if (result.Succeeded)
             {
-                // This is the crucial step: we now confirm their email because they have proven ownership
-                // by successfully using the token that was sent there.
-                if (!user.EmailConfirmed)
-                {
-                    user.EmailConfirmed = true;
-                    await _userManager.UpdateAsync(user);
-                }
                 return Ok(new { message = "Your password has been set successfully. You can now log in." });
             }
-
-            // If token is invalid, passwords don't match criteria, etc.
             return BadRequest(result.Errors);
         }
 
