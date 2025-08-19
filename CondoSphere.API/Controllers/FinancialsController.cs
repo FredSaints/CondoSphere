@@ -27,14 +27,13 @@ namespace CondoSphere.API.Controllers
             var companyId = _currentUserService.CompanyId;
             if (companyId == null) return Unauthorized();
 
-            var success = await _financialService.GenerateMonthlyQuotasAsync(condominiumId, request.Year, request.Month, companyId.Value);
+            var (success, message) = await _financialService.GenerateMonthlyQuotasAsync(condominiumId, request.Year, request.Month, companyId.Value);
 
             if (success)
             {
-                return Ok(new { message = "Monthly fees generated successfully." });
+                return Ok(new { message });
             }
-
-            return BadRequest(new { message = "Failed to generate fees. There may be no units or expenses for this period." });
+            return BadRequest(new { message });
         }
 
         [HttpGet("quotas/{quotaId}/breakdown")]
@@ -124,6 +123,39 @@ namespace CondoSphere.API.Controllers
             }
 
             return Ok(new { message = "Quota marked as paid." });
+        }
+
+        [HttpGet("receipts/{receiptId}")]
+        public async Task<ActionResult<ReceiptDto>> GetReceipt(int receiptId)
+        {
+            var userId = _currentUserService.UserId;
+            if (userId == null) return Unauthorized();
+
+            var receipt = await _financialService.GetReceiptDetailsAsync(receiptId, userId.Value);
+
+            if (receipt == null)
+            {
+                return Forbid();
+            }
+
+            return Ok(receipt);
+        }
+
+        [HttpGet("manager/receipts/{receiptId}")]
+        [Authorize(Roles = RoleConstants.CondoManager + "," + RoleConstants.CompanyAdmin)]
+        public async Task<ActionResult<ReceiptDto>> GetReceiptForManager(int receiptId)
+        {
+            var companyId = _currentUserService.CompanyId;
+            if (companyId == null) return Unauthorized();
+
+            var receipt = await _financialService.GetReceiptDetailsForManagerAsync(receiptId, companyId.Value);
+
+            if (receipt == null)
+            {
+                return Forbid();
+            }
+
+            return Ok(receipt);
         }
     }
 }

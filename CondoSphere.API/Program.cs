@@ -1,9 +1,12 @@
 using CondoSphere.Application.Authorization;
 using CondoSphere.Application.Interfaces;
+using CondoSphere.Application.Services.Company;
 using CondoSphere.Application.Services.Condominium;
+using CondoSphere.Application.Services.Document;
 using CondoSphere.Application.Services.Financials;
 using CondoSphere.Application.Services.Intervention;
 using CondoSphere.Application.Services.Occurrence;
+using CondoSphere.Application.Services.Pdf;
 using CondoSphere.Application.Services.Token;
 using CondoSphere.Application.Services.User;
 using CondoSphere.Core.Entities.Users;
@@ -12,6 +15,7 @@ using CondoSphere.Infrastructure.Data;
 using CondoSphere.Infrastructure.Repositories;
 using CondoSphere.Infrastructure.Services;
 using FluentValidation;
+using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -20,7 +24,6 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
-using FluentValidation.AspNetCore;
 
 namespace CondoSphere.API
 {
@@ -76,6 +79,7 @@ namespace CondoSphere.API
 
             builder.Services.AddTransient<SeedDb>();
             builder.Services.AddScoped<IUserService, UserService>();
+            builder.Services.AddScoped<ICompanyService, CompanyService>();
             builder.Services.AddScoped<ICompanyRepository, CompanyRepository>();
             builder.Services.AddScoped<ITokenService, TokenService>();
             builder.Services.AddScoped<ICondominiumRepository, CondominiumRepository>();
@@ -92,6 +96,11 @@ namespace CondoSphere.API
             builder.Services.AddScoped<IExpenseRepository, ExpenseRepository>();
             builder.Services.AddScoped<IExpenseService, ExpenseService>();
             builder.Services.AddScoped<IUnitQuotaRepository, UnitQuotaRepository>();
+            builder.Services.AddScoped<IQuotaPaymentRepository, QuotaPaymentRepository>();
+            builder.Services.AddScoped<IReceiptRepository, ReceiptRepository>();
+            builder.Services.AddScoped<IDocumentRepository, DocumentRepository>();
+            builder.Services.AddScoped<IDocumentService, DocumentService>();
+            builder.Services.AddScoped<IPdfService, PdfService>();
             builder.Services.AddScoped<IFinancialService, FinancialService>();
             builder.Services.AddScoped<IAuthorizationHandler, CanAccessOccurrenceHandler>();
             builder.Services.AddScoped<IAuthorizationHandler, CanManageInterventionHandler>();

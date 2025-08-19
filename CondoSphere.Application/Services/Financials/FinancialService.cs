@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using CondoSphere.Application.Interfaces;
+using CondoSphere.Application.Services.Pdf;
 using CondoSphere.Core.DTOs.Financials;
 using CondoSphere.Core.Enums;
 using Microsoft.AspNetCore.Http;
@@ -15,13 +16,15 @@ namespace CondoSphere.Application.Services.Financials
         private readonly IMapper _mapper;
         private readonly IConfiguration _configuration;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IPdfService _pdfService;
 
-        public FinancialService(IUnitOfWork unitOfWork, IMapper mapper, IConfiguration configuration, IHttpContextAccessor httpContextAccessor)
+        public FinancialService(IUnitOfWork unitOfWork, IMapper mapper, IConfiguration configuration, IHttpContextAccessor httpContextAccessor, IPdfService pdfService)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _configuration = configuration;
             _httpContextAccessor = httpContextAccessor;
+            _pdfService = pdfService;
             StripeConfiguration.ApiKey = _configuration["Stripe:SecretKey"];
         }
 
@@ -407,6 +410,45 @@ namespace CondoSphere.Application.Services.Financials
             return receiptDto;
         }
 
+        //private async Task CreatePaymentAndReceipt(Core.Entities.Financials.UnitQuota quota, string paymentMethod)
+        //{
+        //    // 1. Update the Quota
+        //    quota.Status = UnitQuotaStatus.Paid;
+        //    quota.PaymentDate = DateTime.UtcNow;
+        //    quota.AmountPaid = quota.AmountDue;
+        //    _unitOfWork.UnitQuotas.Update(quota);
+
+        //    // 2. Create the QuotaPayment record
+        //    var payment = new Core.Entities.Financials.QuotaPayment
+        //    {
+        //        Amount = quota.AmountDue,
+        //        PaymentDate = DateTime.UtcNow,
+        //        PaymentMethod = paymentMethod,
+        //        UnitQuotaId = quota.Id,
+        //        UnitId = quota.UnitId,
+        //        CompanyId = quota.CompanyId
+        //    };
+        //    await _unitOfWork.QuotaPayments.AddAsync(payment);
+
+        //    // We need to save here to get the new Payment ID for the receipt
+        //    await _unitOfWork.CompleteAsync();
+
+        //    // 3. Create the Receipt record
+        //    var receipt = new Core.Entities.Financials.Receipt
+        //    {
+        //        Amount = quota.AmountDue,
+        //        IssueDate = DateTime.UtcNow,
+        //        QuotaPaymentId = payment.Id, // Link to the payment we just created
+        //        Details = $"Receipt for payment of '{quota.Description}'",
+        //        CompanyId = quota.CompanyId,
+        //        CondominiumId = quota.CondominiumId
+        //    };
+        //    await _unitOfWork.Receipts.AddAsync(receipt);
+
+        //    // Final save for the receipt
+        //    await _unitOfWork.CompleteAsync();
+        //}
+
         private async Task CreatePaymentAndReceipt(Core.Entities.Financials.UnitQuota quota, string paymentMethod)
         {
             // 1. Update the Quota
@@ -427,7 +469,7 @@ namespace CondoSphere.Application.Services.Financials
             };
             await _unitOfWork.QuotaPayments.AddAsync(payment);
 
-            // We need to save here to get the new Payment ID for the receipt
+            // Save changes to get the new Payment ID for the receipt
             await _unitOfWork.CompleteAsync();
 
             // 3. Create the Receipt record
@@ -435,14 +477,56 @@ namespace CondoSphere.Application.Services.Financials
             {
                 Amount = quota.AmountDue,
                 IssueDate = DateTime.UtcNow,
-                QuotaPaymentId = payment.Id, // Link to the payment we just created
+                QuotaPaymentId = payment.Id,
                 Details = $"Receipt for payment of '{quota.Description}'",
                 CompanyId = quota.CompanyId,
                 CondominiumId = quota.CondominiumId
             };
             await _unitOfWork.Receipts.AddAsync(receipt);
 
-            // Final save for the receipt
+            // Save changes to get the new Receipt ID
+            await _unitOfWork.CompleteAsync();
+
+
+            // 4. Get the full, enriched ReceiptDto needed for the PDF
+            var receiptDto = await GetReceiptDetailsForManagerAsync(receipt.Id, quota.CompanyId);
+            if (receiptDto == null)
+            {
+                return;
+            }
+
+            // 5. Generate the PDF file from the DTO
+            var pdfBytes = await _pdfService.GenerateReceiptPdfAsync(receiptDto);
+
+            // 6. Save the PDF file to disk (just like a document)
+            var uploadRootSetting = _configuration["FileUpload:Path"];
+            var uploadRoot = Environment.ExpandEnvironmentVariables(uploadRootSetting);
+            if (!Path.IsPathRooted(uploadRoot))
+                uploadRoot = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), uploadRoot));
+
+            var subfolder = $"condo-{quota.CondominiumId}/documents/receipts";
+            var targetFolder = Path.Combine(uploadRoot, subfolder);
+            Directory.CreateDirectory(targetFolder);
+
+            var fileName = $"Receipt-{receipt.Id}-{quota.DueDate:yyyy-MM}.pdf";
+            var relativeFilePath = Path.Combine(subfolder, fileName);
+            var absoluteFilePath = Path.Combine(uploadRoot, relativeFilePath);
+            await System.IO.File.WriteAllBytesAsync(absoluteFilePath, pdfBytes);
+
+            // 7. Create a Document entity that points to the new PDF
+            var document = new Core.Entities.Condominiums.Document
+            {
+                Title = $"Receipt for {quota.Description}",
+                Description = $"Official receipt for payment of {quota.AmountDue:C}.",
+                Category = "Receipts",
+                FileName = fileName,
+                FilePathOrUrl = relativeFilePath,
+                CondominiumId = quota.CondominiumId,
+                CompanyId = quota.CompanyId,
+                UploadedByUserId = (await _unitOfWork.Units.GetByIdAsync(quota.UnitId))?.ResidentId ?? 0,
+                UploadDate = DateTime.UtcNow
+            };
+            await _unitOfWork.Documents.AddAsync(document);
             await _unitOfWork.CompleteAsync();
         }
     }

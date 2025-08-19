@@ -1,0 +1,119 @@
+﻿@model CondoSphere.Web.Models.CondominiumDetailsViewModel
+@using CondoSphere.Core.DTOs.Condominiums
+
+@{
+    var condoId = Model.Condominium.Id;
+    var newDocument = ViewData["NewDocumentModel"] as CreateDocumentDto ?? new CreateDocumentDto();
+}
+
+<div class="row g-4">
+    <!-- Upload Form Column -->
+    <div class="col-lg-4">
+        <h5 class="mb-3">Upload New Document</h5>
+        <form asp-controller="CondoManagement" asp-action="UploadDocument" asp-route-condominiumId="@condoId" method="post" enctype="multipart/form-data">
+            @Html.AntiForgeryToken()
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-2"></div>
+
+            <div class="form-floating mb-3">
+                <input asp-for="@newDocument.Title" class="form-control" />
+                <label asp-for="@newDocument.Title"></label>
+                <span asp-validation-for="@newDocument.Title" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <select asp-for="@newDocument.Category" class="form-select">
+                    <option value="">-- Select a Category --</option>
+                    <option>Meeting Minutes</option>
+                    <option>Regulations</option>
+                    <option>Budget</option>
+                    <option>Insurance</option>
+                    <option>Other</option>
+                </select>
+                <label asp-for="@newDocument.Category"></label>
+                <span asp-validation-for="@newDocument.Category" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <textarea asp-for="@newDocument.Description" class="form-control" style="height: 100px"></textarea>
+                <label asp-for="@newDocument.Description"></label>
+                <span asp-validation-for="@newDocument.Description" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label for="file" class="form-label">Document File</label>
+                <input name="file" id="file" type="file" class="form-control" required />
+                <span class="text-danger" data-valmsg-for="File" data-valmsg-replace="true"></span>
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Upload Document</button>
+        </form>
+    </div>
+
+    <!-- Document List Column -->
+    <div class="col-lg-8">
+        <h5 class="mb-3">Uploaded Documents</h5>
+        @if (Model.Documents.Any())
+        {
+            <div class="list-group list-group-flush border rounded">
+                @foreach (var group in Model.Documents.GroupBy(d => d.Category).OrderBy(g => g.Key))
+                {
+                    <div class="list-group-item list-group-item-light fw-bold">@group.Key</div>
+                    @foreach (var doc in group)
+                    {
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="mb-0">@doc.Title</h6>
+                                <small class="text-muted">Uploaded on @doc.UploadDate.ToLocalTime().ToString("d") by @doc.UploadedByUserName</small>
+                            </div>
+
+                            <div class="btn-group">
+                                <a asp-controller="CondoManagement"
+                                   asp-action="ViewDocument"
+                                   asp-route-documentId="@doc.Id"
+                                   class="btn btn-sm btn-outline-secondary"
+                                   title="View in new tab"
+                                   target="_blank">
+                                    <i class="bi bi-eye-fill"></i> View
+                                </a>
+                                <a asp-controller="CondoManagement"
+                                   asp-action="DownloadDocument"
+                                   asp-route-documentId="@doc.Id"
+                                   class="btn btn-sm btn-outline-primary"
+                                   title="Download file">
+                                    <i class="bi bi-download"></i> Download
+                                </a>
+                                <form asp-controller="CondoManagement" asp-action="DeleteDocument" asp-route-documentId="@doc.Id" asp-route-condominiumId="@condoId" method="post" onsubmit="return confirm('Are you sure?');">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete">
+                                        <i class="bi bi-trash-fill"></i>
+                                    </button>
+                                </form>
+                            </div>
+
+
+                        </div>
+                    }
+                }
+            </div>
+        }
+        else
+        {
+            <div class="text-center p-4 border rounded">
+                <p class="text-muted">No documents have been uploaded yet.</p>
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const uploadForm = document.querySelector('form[asp-action="UploadDocument"]');
+            if (uploadForm) {
+                uploadForm.addEventListener('submit', function (e) {
+                    const submitButton = uploadForm.querySelector('button[type="submit"]');
+                    if (submitButton) {
+                        submitButton.disabled = true;
+                        submitButton.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Uploading...`;
+                    }
+                });
+            }
+        });
+    </script>
+}

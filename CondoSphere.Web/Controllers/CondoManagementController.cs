@@ -39,8 +39,9 @@ namespace CondoSphere.Web.Controllers
             var occurrencesTask = _apiClient.GetOccurrencesForCondominiumAsync(id);
             var fixedExpensesTask = _apiClient.GetFixedExpensesAsync(id);
             var quotasTask = _apiClient.GetQuotasForCondominiumAsync(id);
+            var documentsTask = _apiClient.GetDocumentsForCondominiumAsync(id);
 
-            await Task.WhenAll(condoTask, unitsTask, occurrencesTask, fixedExpensesTask, quotasTask);
+            await Task.WhenAll(condoTask, unitsTask, occurrencesTask, fixedExpensesTask, quotasTask, documentsTask);
 
             var condo = await condoTask;
             if (condo == null)
@@ -54,7 +55,8 @@ namespace CondoSphere.Web.Controllers
                 Units = await unitsTask,
                 Occurrences = await occurrencesTask,
                 FixedExpenses = await fixedExpensesTask,
-                AllQuotas = await quotasTask
+                AllQuotas = await quotasTask,
+                Documents = await documentsTask
             };
 
             return View(viewModel);
@@ -124,6 +126,7 @@ namespace CondoSphere.Web.Controllers
             if (success)
             {
                 TempData["SuccessMessage"] = "New resident registered and assigned successfully!";
+                TempData["ActiveTab"] = "units-tab";
                 return RedirectToAction(nameof(Details), new { id = model.CondominiumId });
             }
 
@@ -156,6 +159,7 @@ namespace CondoSphere.Web.Controllers
             if (success)
             {
                 TempData["SuccessMessage"] = $"Unit '{dto.Identifier}' was created successfully!";
+                TempData["ActiveTab"] = "units-tab";
                 return RedirectToAction(nameof(Details), new { id = condominiumId });
             }
 
@@ -185,6 +189,7 @@ namespace CondoSphere.Web.Controllers
             if (success)
             {
                 TempData["SuccessMessage"] = "Resident assigned successfully!";
+                TempData["ActiveTab"] = "units-tab";
                 return RedirectToAction(nameof(Details), new { id = model.CondominiumId });
             }
 
@@ -413,6 +418,7 @@ namespace CondoSphere.Web.Controllers
             if (success)
             {
                 TempData["SuccessMessage"] = "Resident has been unassigned from the unit.";
+                TempData["ActiveTab"] = "units-tab";
             }
             else
             {
@@ -561,7 +567,8 @@ namespace CondoSphere.Web.Controllers
             {
                 TempData["ErrorMessage"] = "Failed to update expense status.";
             }
-            return RedirectToAction("FixedExpenses", new { condominiumId });
+            TempData["ActiveTab"] = "financials-tab";
+            return RedirectToAction("Details", new { id = condominiumId });
         }
 
         // POST: /condo-management/{condominiumId}/fixed-expenses/delete/{expenseId}
@@ -597,6 +604,7 @@ namespace CondoSphere.Web.Controllers
             if (success)
             {
                 TempData["SuccessMessage"] = message;
+                TempData["ActiveTab"] = "financials-tab";
             }
             else
             {
@@ -631,7 +639,8 @@ namespace CondoSphere.Web.Controllers
                 TempData["ErrorMessage"] = message;
             }
 
-            return RedirectToAction("QuotaManagement", new { condominiumId });
+            TempData["ActiveTab"] = "financials-tab"; 
+            return RedirectToAction("Details", new { id = condominiumId });
         }
 
         [HttpGet("receipts/{id}")]
@@ -643,6 +652,127 @@ namespace CondoSphere.Web.Controllers
                 return NotFound();
             }
             return View(receipt);
+        }
+
+
+        [HttpGet("{condominiumId}/documents")]
+        public async Task<IActionResult> Documents(int condominiumId)
+        {
+            var condo = await _apiClient.GetCondominiumDetailsAsync(condominiumId);
+            if (condo == null) return NotFound();
+
+            var documents = await _apiClient.GetDocumentsForCondominiumAsync(condominiumId);
+
+            ViewData["Condominium"] = condo;
+            ViewData["NewDocument"] = new CreateDocumentDto();
+
+            return View(documents);
+        }
+
+        [HttpPost("{condominiumId}/documents/upload")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UploadDocument(int condominiumId, [Bind(Prefix = "newDocument")] CreateDocumentDto dto, IFormFile file)
+        {
+            if (!ModelState.IsValid || file == null || file.Length == 0)
+            {
+                if (file == null || file.Length == 0)
+                {
+                    ModelState.AddModelError("file", "Please select a file to upload.");
+                }
+
+                TempData["ErrorMessage"] = "Failed to upload document. Please correct the errors and try again.";
+                TempData["ActiveTab"] = "documents-tab";
+
+                var condoTask = _apiClient.GetCondominiumDetailsAsync(condominiumId);
+                var unitsTask = _apiClient.GetUnitsForCondominiumAsync(condominiumId);
+                var occurrencesTask = _apiClient.GetOccurrencesForCondominiumAsync(condominiumId);
+                var fixedExpensesTask = _apiClient.GetFixedExpensesAsync(condominiumId);
+                var quotasTask = _apiClient.GetQuotasForCondominiumAsync(condominiumId);
+                var documentsTask = _apiClient.GetDocumentsForCondominiumAsync(condominiumId);
+
+                await Task.WhenAll(condoTask, unitsTask, occurrencesTask, fixedExpensesTask, quotasTask, documentsTask);
+
+                var condo = await condoTask;
+                if (condo == null) return NotFound();
+
+                var viewModel = new CondominiumDetailsViewModel
+                {
+                    Condominium = condo,
+                    Units = await unitsTask,
+                    Occurrences = await occurrencesTask,
+                    FixedExpenses = await fixedExpensesTask,
+                    AllQuotas = await quotasTask,
+                    Documents = await documentsTask
+                };
+                ViewData["NewDocumentModel"] = dto;
+                return View("Details", viewModel);
+            }
+
+            var result = await _apiClient.UploadDocumentAsync(condominiumId, dto, file);
+            if (result != null)
+            {
+                TempData["SuccessMessage"] = "Document uploaded successfully.";
+                TempData["ActiveTab"] = "documents-tab";
+            }
+            else
+            {
+                TempData["ErrorMessage"] = "Failed to upload document.";
+            }
+
+            return RedirectToAction("Details", new { id = condominiumId });
+        }
+
+        [HttpPost("documents/{documentId}/delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteDocument(int documentId, int condominiumId)
+        {
+            var success = await _apiClient.DeleteDocumentAsync(documentId);
+            if (success)
+            {
+                TempData["SuccessMessage"] = "Document deleted successfully.";
+            }
+            else
+            {
+                TempData["ErrorMessage"] = "Failed to delete document.";
+            }
+            TempData["ActiveTab"] = "documents-tab";
+            return RedirectToAction("Details", new { id= condominiumId });
+        }
+
+        [HttpGet("documents/{documentId}/view")]
+        public async Task<IActionResult> ViewDocument(int documentId)
+        {
+            var response = await _apiClient.DownloadDocumentAsync(documentId);
+            if (response.IsSuccessStatusCode)
+            {
+                var stream = await response.Content.ReadAsStreamAsync();
+                var contentType = response.Content.Headers.ContentType?.ToString() ?? "application/octet-stream";
+                var fileName = response.Content.Headers.ContentDisposition?.FileName?.Trim('"') ?? "document";
+
+                Response.Headers["Content-Disposition"] = new System.Net.Mime.ContentDisposition
+                {
+                    FileName = fileName,
+                    Inline = true,
+                }.ToString();
+
+                return File(stream, contentType);
+            }
+            return NotFound();
+        }
+
+        [HttpGet("documents/{documentId}/download")]
+        public async Task<IActionResult> DownloadDocument(int documentId)
+        {
+            var response = await _apiClient.DownloadDocumentAsync(documentId);
+            if (response.IsSuccessStatusCode)
+            {
+                var stream = await response.Content.ReadAsStreamAsync();
+                var contentType = response.Content.Headers.ContentType?.ToString() ?? "application/octet-stream";
+                var fileName = response.Content.Headers.ContentDisposition?.FileName?.Trim('"') ?? "downloaded-file";
+
+                return File(stream, contentType, fileName);
+            }
+            return NotFound();
         }
     }
 }

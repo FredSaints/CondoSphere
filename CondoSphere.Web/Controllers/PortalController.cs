@@ -29,14 +29,16 @@ namespace CondoSphere.Web.Controllers
             var occurrencesTask = _apiClient.GetMyOccurrencesAsync();
             var unitsTask = _apiClient.GetMyUnitsAsync();
             var quotasTask = _apiClient.GetMyQuotasAsync();
+            var documentsTask = _apiClient.GetMyDocumentsAsync();
 
-            await Task.WhenAll(occurrencesTask, unitsTask, quotasTask);
+            await Task.WhenAll(occurrencesTask, unitsTask, quotasTask, documentsTask);
 
             var viewModel = new PortalDashboardViewModel
             {
                 Occurrences = await occurrencesTask ?? new List<OccurrenceDto>(),
                 MyUnits = await unitsTask ?? new List<UnitDto>(),
-                MyQuotas = await quotasTask ?? new List<UnitQuotaDto>()
+                MyQuotas = await quotasTask ?? new List<UnitQuotaDto>(),
+                MyDocuments = await documentsTask ?? new List<DocumentDto>()
             };
 
             return View(viewModel);
@@ -214,6 +216,41 @@ namespace CondoSphere.Web.Controllers
                 return NotFound();
             }
             return View(receipt);
+        }
+
+        [HttpGet("documents/{documentId}/view")]
+        public async Task<IActionResult> ViewDocument(int documentId)
+        {
+            var response = await _apiClient.DownloadDocumentAsync(documentId);
+            if (response.IsSuccessStatusCode)
+            {
+                var stream = await response.Content.ReadAsStreamAsync();
+                var contentType = response.Content.Headers.ContentType?.ToString() ?? "application/octet-stream";
+                var fileName = response.Content.Headers.ContentDisposition?.FileName?.Trim('"') ?? "document";
+
+                Response.Headers["Content-Disposition"] = new System.Net.Mime.ContentDisposition
+                {
+                    FileName = fileName,
+                    Inline = true,
+                }.ToString();
+
+                return File(stream, contentType);
+            }
+            return NotFound();
+        }
+
+        [HttpGet("documents/{documentId}/download")]
+        public async Task<IActionResult> DownloadDocument(int documentId)
+        {
+            var response = await _apiClient.DownloadDocumentAsync(documentId);
+            if (response.IsSuccessStatusCode)
+            {
+                var stream = await response.Content.ReadAsStreamAsync();
+                var contentType = response.Content.Headers.ContentType?.ToString() ?? "application/octet-stream";
+                var fileName = response.Content.Headers.ContentDisposition?.FileName?.Trim('"') ?? "downloaded-file";
+                return File(stream, contentType, fileName);
+            }
+            return NotFound();
         }
     }
 }

@@ -581,5 +581,48 @@ namespace CondoSphere.Web.Services
             var response = await _httpClient.PutAsJsonAsync("/api/company/my-profile", dto);
             return response.IsSuccessStatusCode;
         }
+
+        public async Task<DocumentDto?> UploadDocumentAsync(int condominiumId, CreateDocumentDto dto, IFormFile file)
+        {
+            using var formData = new MultipartFormDataContent();
+            formData.Add(new StringContent(dto.Title), nameof(dto.Title));
+            formData.Add(new StringContent(dto.Description ?? string.Empty), nameof(dto.Description));
+            formData.Add(new StringContent(dto.Category), nameof(dto.Category));
+
+            var fileContent = new StreamContent(file.OpenReadStream());
+            fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(file.ContentType);
+            formData.Add(fileContent, name: "file", fileName: file.FileName);
+
+            var response = await _httpClient.PostAsync($"/api/condominiums/{condominiumId}/documents", formData);
+
+            if (response.IsSuccessStatusCode)
+            {
+                return await response.Content.ReadFromJsonAsync<DocumentDto>();
+            }
+            return null;
+        }
+
+        public async Task<IEnumerable<DocumentDto>> GetDocumentsForCondominiumAsync(int condominiumId)
+        {
+            return await _httpClient.GetFromJsonAsync<IEnumerable<DocumentDto>>($"/api/condominiums/{condominiumId}/documents")
+                ?? new List<DocumentDto>();
+        }
+
+        public async Task<bool> DeleteDocumentAsync(int documentId)
+        {
+            var response = await _httpClient.DeleteAsync($"/api/documents/{documentId}");
+            return response.IsSuccessStatusCode;
+        }
+
+        public async Task<HttpResponseMessage> DownloadDocumentAsync(int documentId)
+        {
+            return await _httpClient.GetAsync($"/api/documents/{documentId}/download");
+        }
+
+        public async Task<IEnumerable<DocumentDto>> GetMyDocumentsAsync()
+        {
+            return await _httpClient.GetFromJsonAsync<IEnumerable<DocumentDto>>("/api/users/my-documents")
+                ?? new List<DocumentDto>();
+        }
     }
 }

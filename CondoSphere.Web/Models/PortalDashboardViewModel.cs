@@ -9,5 +9,6 @@ namespace CondoSphere.Web.Models
         public IEnumerable<OccurrenceDto> Occurrences { get; set; } = new List<OccurrenceDto>();
         public IEnumerable<UnitDto> MyUnits { get; set; } = new List<UnitDto>();
         public IEnumerable<UnitQuotaDto> MyQuotas { get; set; } = new List<UnitQuotaDto>();
+        public IEnumerable<DocumentDto> MyDocuments { get; set; } = new List<DocumentDto>();
     }
 }

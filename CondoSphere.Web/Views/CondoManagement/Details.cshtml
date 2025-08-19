@@ -25,6 +25,9 @@
             <li class="nav-item" role="presentation">
                 <button class="nav-link" id="financials-tab" data-bs-toggle="tab" data-bs-target="#financials-pane" type="button" role="tab" aria-controls="financials-pane" aria-selected="false">Financials</button>
             </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="documents-tab" data-bs-toggle="tab" data-bs-target="#documents-pane" type="button" role="tab" aria-controls="documents-pane" aria-selected="false">Documents</button>
+            </li>
         </ul>
     </div>
 
@@ -50,6 +53,9 @@
             <div class="tab-pane fade" id="financials-pane" role="tabpanel" aria-labelledby="financials-tab" tabindex="0">
                 @await Html.PartialAsync("_CondoMgmtFinancialsPartial", Model)
             </div>
+            <div class="tab-pane fade" id="documents-pane" role="tabpanel" tabindex="0">
+                @await Html.PartialAsync("_CondoMgmtDocumentsPartial", Model)
+            </div>
 
         </div>
     </div>
@@ -60,3 +66,23 @@
         <i class="bi bi-arrow-left me-1"></i> Back to My Condos
     </a>
 </div>
+
+@section Scripts {
+    @{
+        var activeTab = TempData["ActiveTab"] as string;
+    }
+
+    @if (!string.IsNullOrEmpty(activeTab))
+    {
+        <script>
+            // This script runs when the page loads
+            document.addEventListener('DOMContentLoaded', function () {
+                const tabToActivate = document.getElementById('@activeTab');
+                if (tabToActivate) {
+                    // Use Bootstrap's JavaScript API to programmatically show the tab
+                    new bootstrap.Tab(tabToActivate).show();
+                }
+            });
+        </script>
+    }
+}
