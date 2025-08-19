@@ -9,10 +9,12 @@
             <div class="card-header bg-primary text-white py-3">
                 <h2 class="mb-0 text-center"><i class="bi bi-person-gear me-2"></i>@ViewData["Title"]</h2>
             </div>
+
             <div class="card-body p-4 p-md-5">
                 <form method="post" enctype="multipart/form-data" id="profileForm">
+                    @Html.AntiForgeryToken() <!-- preciso para o fetch -->
+
                     <input type="hidden" asp-for="CurrentProfileImageUrl" />
-                    <div asp-validation-summary="All" class="text-danger"></div>
                     <div asp-validation-summary="All" class="text-danger"></div>
 
                     <div class="row">
@@ -30,7 +32,25 @@
 
                     <hr class="my-4" />
 
-                    <div class="row align-items-center">
+                    <div class="form-group">
+                        <label asp-for="PhoneNumber" class="control-label"></label>
+                        <input asp-for="PhoneNumber" class="form-control" />
+                        <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label d-block mb-2">Two-step verification</label>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="twoFactorSwitch"
+                            @(Model.TwoFactorEnabled ? "checked" : "") />
+                            <label class="form-check-label" for="twoFactorSwitch">
+                                Add a code (email/SMS) when logging in
+                            </label>
+                            <small class="text-muted d-block">Recommended for extra security.</small>
+                        </div>
+                        <div id="twoFactorMsg" class="small mt-2"></div>
+                    </div>
+
+                    <div class="row align-items-center mt-4">
                         <div class="col-md-4 text-center">
                             <img src="@(Model.CurrentProfileImageUrl ?? "/images/user-photos/default-profile.png")"
                                  alt="Current Profile Image" class="img-thumbnail rounded-circle mb-2"
@@ -45,6 +65,7 @@
                     </div>
                 </form>
             </div>
+
             <div class="card-footer bg-light p-3">
                 <div class="d-flex justify-content-end align-items-center gap-2">
                     <a asp-controller="Profile" asp-action="ChangePassword" class="btn btn-secondary">Change Password</a>
@@ -54,3 +75,51 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        (function () {
+          const sw = document.getElementById('twoFactorSwitch');
+          const msg = document.getElementById('twoFactorMsg');
+          const token = document.querySelector('#profileForm input[name="__RequestVerificationToken"]').value;
+
+          function setMsg(text, ok) {
+            msg.textContent = text || '';
+            msg.className = 'small mt-2 ' + (ok === true ? 'text-success' : ok === false ? 'text-danger' : 'text-muted');
+          }
+
+          sw?.addEventListener('change', async (e) => {
+            sw.disabled = true;
+            setMsg('Applying changes…', null);
+
+            try {
+              const res = await fetch('/Profile/ToggleTwoFactor', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'RequestVerificationToken': token
+                },
+                body: JSON.stringify({ enable: sw.checked })
+              });
+
+              const body = await res.text();
+              let payload = {};
+              try { payload = JSON.parse(body); } catch {}
+
+              if (res.ok) {
+                setMsg(payload.message || 'Two-step verification updated.', true);
+              } else {
+                // revert switch on failure
+                sw.checked = !sw.checked;
+                setMsg(payload.message || 'Could not update two-step verification.', false);
+              }
+            } catch (err) {
+              sw.checked = !sw.checked;
+              setMsg('Network error updating two-step verification.', false);
+            } finally {
+              sw.disabled = false;
+            }
+          });
+        })();
+    </script>
+}

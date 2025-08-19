@@ -36,6 +36,9 @@ namespace CondoSphere.Application.Services.Token
                 new Claim("profile_picture", user.ProfilePictureUrl ?? string.Empty)
             };
 
+            if (!string.IsNullOrWhiteSpace(user.PhoneNumber))
+                claims.Add(new Claim(ClaimTypes.MobilePhone, user.PhoneNumber));
+
             var roles = await _userManager.GetRolesAsync(user);
             foreach (var role in roles)
             {

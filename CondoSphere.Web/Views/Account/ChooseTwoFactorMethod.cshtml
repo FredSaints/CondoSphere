@@ -1,0 +1,28 @@
+﻿@model CondoSphere.Web.Models.TwoFactorChooseMethodViewModel
+@{
+    ViewData["Title"] = "Escolher método de verificação";
+}
+
+<h2>@ViewData["Title"]</h2>
+<p>Escolhe como queres receber o teu código de verificação.</p>
+
+<form asp-action="ChooseTwoFactorMethod" method="post">
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="Email" />
+
+    <div class="form-check mb-2">
+        <input class="form-check-input" type="radio" asp-for="SelectedMethod" id="optEmail" value="Email" checked />
+        <label class="form-check-label" for="optEmail">E-mail</label>
+    </div>
+
+    <div class="form-check mb-3">
+        <input class="form-check-input" type="radio" asp-for="SelectedMethod" id="optSms" value="Sms" />
+        <label class="form-check-label" for="optSms">SMS</label>
+        <div class="form-text">Se não tiveres telemóvel configurado, o envio por SMS pode falhar.</div>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Continuar</button>
+    <a asp-action="Login" class="btn btn-secondary">Cancelar</a>
+
+    <div class="text-danger mt-3" asp-validation-summary="All"></div>
+</form>

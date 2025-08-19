@@ -58,6 +58,8 @@ CondoSphere.Application/Interfaces/IExpenseRepository.cs
 CondoSphere.Application/Interfaces/IInterventionRepository.cs
 CondoSphere.Application/Interfaces/IMailService.cs
 CondoSphere.Application/Interfaces/IOccurrenceRepository.cs
+CondoSphere.Application/Interfaces/IPhoneNumberService.cs
+CondoSphere.Application/Interfaces/ISmsService.cs
 CondoSphere.Application/Interfaces/IUnitOfWork.cs
 CondoSphere.Application/Interfaces/IUnitRepository.cs
 CondoSphere.Application/Interfaces/IUserRepository.cs
@@ -91,11 +93,14 @@ CondoSphere.Core/DTOs/Account/LoginDto.cs
 CondoSphere.Core/DTOs/Account/RegisterDto.cs
 CondoSphere.Core/DTOs/Account/RegisterManagerDto.cs
 CondoSphere.Core/DTOs/Account/RegisterResidentDto.cs
+CondoSphere.Core/DTOs/Account/SendTwoFactorCodeDto.cs
 CondoSphere.Core/DTOs/Account/SetPasswordDto.cs
+CondoSphere.Core/DTOs/Account/ToggleTwoFactorDto.cs
 CondoSphere.Core/DTOs/Account/UpdateProfileDto.cs
 CondoSphere.Core/DTOs/Account/UserDto.cs
 CondoSphere.Core/DTOs/Account/UserListDto.cs
 CondoSphere.Core/DTOs/Account/UserProfileDto.cs
+CondoSphere.Core/DTOs/Account/VerifyTwoFactorCodeDto.cs
 CondoSphere.Core/DTOs/Condominiums/CondominiumDto.cs
 CondoSphere.Core/DTOs/Condominiums/CreateUpdateCondominiumDto.cs
 CondoSphere.Core/DTOs/Condominiums/CreateUpdateUnitDto.cs
@@ -138,6 +143,7 @@ CondoSphere.Infrastructure/Data/CondominiumDbContext.cs
 CondoSphere.Infrastructure/Data/FinancialsDbContext.cs
 CondoSphere.Infrastructure/Data/SeedDb.cs
 CondoSphere.Infrastructure/Data/UserManagementDbContext.cs
+CondoSphere.Infrastructure/Notifications/TwilioSmsService.cs
 CondoSphere.Infrastructure/Repositories/CompanyRepository.cs
 CondoSphere.Infrastructure/Repositories/CondominiumRepository.cs
 CondoSphere.Infrastructure/Repositories/ExpenseRepository.cs
@@ -148,6 +154,7 @@ CondoSphere.Infrastructure/Repositories/UnitRepository.cs
 CondoSphere.Infrastructure/Repositories/UserRepository.cs
 CondoSphere.Infrastructure/Services/CurrentUserService.cs
 CondoSphere.Infrastructure/Services/MailService.cs
+CondoSphere.Infrastructure/Services/PhoneNumberService .cs
 CondoSphere.Web/appsettings.Development.json
 CondoSphere.Web/appsettings.json
 CondoSphere.Web/Controllers/AccountController.cs
@@ -171,6 +178,8 @@ CondoSphere.Web/Models/OccurrenceDetailsViewModel.cs
 CondoSphere.Web/Models/PortalDashboardViewModel.cs
 CondoSphere.Web/Models/RegisterResidentViewModel.cs
 CondoSphere.Web/Models/ResendConfirmationEmailViewModel.cs
+CondoSphere.Web/Models/TwoFactorChooseMethodViewModel.cs
+CondoSphere.Web/Models/TwoFactorVerifyViewModel.cs
 CondoSphere.Web/Program.cs
 CondoSphere.Web/Properties/launchSettings.json
 CondoSphere.Web/Services/ApiClient.cs
@@ -179,6 +188,7 @@ CondoSphere.Web/Services/ImageService.cs
 CondoSphere.Web/Services/JwtForwardingDelegatingHandler.cs
 CondoSphere.Web/Views/_ViewImports.cshtml
 CondoSphere.Web/Views/_ViewStart.cshtml
+CondoSphere.Web/Views/Account/ChooseTwoFactorMethod.cshtml
 CondoSphere.Web/Views/Account/ForgotPassword.cshtml
 CondoSphere.Web/Views/Account/ForgotPasswordConfirmation.cshtml
 CondoSphere.Web/Views/Account/Login.cshtml
@@ -186,6 +196,7 @@ CondoSphere.Web/Views/Account/Register.cshtml
 CondoSphere.Web/Views/Account/RegistrationComplete.cshtml
 CondoSphere.Web/Views/Account/ResendConfirmationEmail.cshtml
 CondoSphere.Web/Views/Account/SetPassword.cshtml
+CondoSphere.Web/Views/Account/VerifyTwoFactor.cshtml
 CondoSphere.Web/Views/Administration/AssignManager.cshtml
 CondoSphere.Web/Views/Administration/CreateCondominium.cshtml
 CondoSphere.Web/Views/Administration/Index.cshtml
@@ -217,7 +228,7 @@ CondoSphere.Web/wwwroot/js/site.js
 
 # Files
 
-## File: CondoSphere.Core/Enums/TwoFactorMethod.cs
+## File: CondoSphere.Application/Interfaces/IPhoneNumberService.cs
 ```csharp
 using System;
 using System.Collections.Generic;
@@ -225,14 +236,250 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CondoSphere.Core.Enums
+namespace CondoSphere.Application.Interfaces
 {
-    public enum TwoFactorMethod
+    public interface IPhoneNumberService
     {
-        Email = 1,
-        Sms = 2
+        string Normalize(string? raw, string defaultCountryCode = "+351");
     }
 }
+```
+
+## File: CondoSphere.Application/Interfaces/ISmsService.cs
+```csharp
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace CondoSphere.Application.Interfaces
+{
+    public interface ISmsService
+    {
+        Task<(bool Success, string? Error)> SendSmsAsync(string toE164, string message);
+    }
+}
+```
+
+## File: CondoSphere.Core/DTOs/Account/SendTwoFactorCodeDto.cs
+```csharp
+using CondoSphere.Core.Enums;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace CondoSphere.Core.DTOs.Account
+{
+    public class SendTwoFactorCodeDto
+    {
+        [Required, EmailAddress] public string Email { get; set; } = string.Empty;
+        [Required] public TwoFactorMethod Method { get; set; }
+    }
+}
+```
+
+## File: CondoSphere.Core/DTOs/Account/ToggleTwoFactorDto.cs
+```csharp
+using CondoSphere.Core.Enums;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace CondoSphere.Core.DTOs.Account
+{
+    public class ToggleTwoFactorDto
+    {
+        [Required, EmailAddress] public string Email { get; set; } = string.Empty;
+        [Required] public bool Enable { get; set; }
+    }
+}
+```
+
+## File: CondoSphere.Core/DTOs/Account/VerifyTwoFactorCodeDto.cs
+```csharp
+using CondoSphere.Core.Enums;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace CondoSphere.Core.DTOs.Account
+{
+    public class VerifyTwoFactorCodeDto
+    {
+        [Required, EmailAddress] public string Email { get; set; } = string.Empty;
+        [Required] public TwoFactorMethod Method { get; set; }
+        [Required] public string Code { get; set; } = string.Empty;
+    }
+}
+```
+
+## File: CondoSphere.Infrastructure/Notifications/TwilioSmsService.cs
+```csharp
+using CondoSphere.Application.Interfaces;
+using Microsoft.Extensions.Configuration;
+using Twilio;
+using Twilio.Rest.Api.V2010.Account;
+
+namespace CondoSphere.Infrastructure.Notifications
+{
+    public class TwilioSmsService : ISmsService
+    {
+        private readonly string _sid;
+        private readonly string _token;
+        private readonly string _from;
+
+        public TwilioSmsService(IConfiguration cfg)
+        {
+            _sid = cfg["Twilio:AccountSid"] ?? "";
+            _token = cfg["Twilio:AuthToken"] ?? "";
+            _from = cfg["Twilio:FromNumber"] ?? "";
+            TwilioClient.Init(_sid, _token);
+        }
+
+        public async Task<(bool Success, string? Error)> SendSmsAsync(string toE164, string message)
+        {
+            try
+            {
+                var msg = await MessageResource.CreateAsync(
+                    to: toE164,
+                    from: _from,                 
+                    body: message);
+
+                return (msg.ErrorCode == null, msg.ErrorMessage);
+            }
+            catch (Exception ex)
+            {
+                return (false, ex.Message);
+            }
+        }
+    }
+}
+```
+
+## File: CondoSphere.Infrastructure/Services/PhoneNumberService .cs
+```csharp
+using CondoSphere.Application.Interfaces;
+using System.Linq;
+
+namespace CondoSphere.Infrastructure.Services
+{
+    public class PhoneNumberService : IPhoneNumberService
+    {
+        public string Normalize(string? raw, string defaultCountryCode = "+351")
+        {
+            if (string.IsNullOrWhiteSpace(raw)) return "";
+
+            var digits = new string(raw.Where(char.IsDigit).ToArray());
+
+            if (raw.Trim().StartsWith("+"))
+                return "+" + digits;
+
+            if (digits.StartsWith("00"))
+                return "+" + digits[2..];
+
+            if (digits.Length == 9) // típico em PT
+                return defaultCountryCode + digits;
+
+            return defaultCountryCode + digits;
+        }
+    }
+}
+```
+
+## File: CondoSphere.Web/Models/TwoFactorChooseMethodViewModel.cs
+```csharp
+using System.ComponentModel.DataAnnotations;
+
+namespace CondoSphere.Web.Models
+{
+    public class TwoFactorChooseMethodViewModel
+    {
+        [Required, EmailAddress]
+        public string Email { get; set; } = string.Empty;
+
+        // "Email" ou "Sms"
+        [Required]
+        public string SelectedMethod { get; set; } = "Email";
+    }
+}
+```
+
+## File: CondoSphere.Web/Models/TwoFactorVerifyViewModel.cs
+```csharp
+using System.ComponentModel.DataAnnotations;
+namespace CondoSphere.Web.Models
+{
+    public class TwoFactorVerifyViewModel
+    {
+        public string Email { get; set; } = string.Empty;
+        public string SelectedMethod { get; set; } = "Email";
+        public string Code { get; set; } = string.Empty;
+    }
+}
+```
+
+## File: CondoSphere.Web/Views/Account/ChooseTwoFactorMethod.cshtml
+```
+@model CondoSphere.Web.Models.TwoFactorChooseMethodViewModel
+@{
+    ViewData["Title"] = "Escolher método de verificação";
+}
+
+<h2>@ViewData["Title"]</h2>
+<p>Escolhe como queres receber o teu código de verificação.</p>
+
+<form asp-action="ChooseTwoFactorMethod" method="post">
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="Email" />
+
+    <div class="form-check mb-2">
+        <input class="form-check-input" type="radio" asp-for="SelectedMethod" id="optEmail" value="Email" checked />
+        <label class="form-check-label" for="optEmail">E-mail</label>
+    </div>
+
+    <div class="form-check mb-3">
+        <input class="form-check-input" type="radio" asp-for="SelectedMethod" id="optSms" value="Sms" />
+        <label class="form-check-label" for="optSms">SMS</label>
+        <div class="form-text">Se não tiveres telemóvel configurado, o envio por SMS pode falhar.</div>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Continuar</button>
+    <a asp-action="Login" class="btn btn-secondary">Cancelar</a>
+
+    <div class="text-danger mt-3" asp-validation-summary="All"></div>
+</form>
+```
+
+## File: CondoSphere.Web/Views/Account/VerifyTwoFactor.cshtml
+```
+@model CondoSphere.Web.Models.TwoFactorVerifyViewModel
+@{
+    ViewData["Title"] = "Two-Factor Verification";
+}
+<h2>Two-Factor Verification</h2>
+
+<form asp-action="VerifyTwoFactor" method="post">
+    <input type="hidden" asp-for="Email" />
+    <input type="hidden" asp-for="SelectedMethod" />
+
+    <div class="form-group">
+        <label asp-for="Code">Code</label>
+        <input asp-for="Code" class="form-control" autocomplete="one-time-code" />
+        <span asp-validation-for="Code" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Verify</button>
+</form>
 ```
 
 ## File: CondoSphere.API/appsettings.json
@@ -244,7 +491,12 @@ namespace CondoSphere.Core.Enums
       "Microsoft.AspNetCore": "Warning"
     }
   },
-  "AllowedHosts": "*"
+  "AllowedHosts": "*",
+  "Twilio": {
+    "AccountSid": "ACxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    "AuthToken": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    "FromNumber": "+3519xxxxxxxx" 
+  }
 }
 ```
 
@@ -852,6 +1104,10 @@ namespace CondoSphere.Core.DTOs.Account
         public string Email { get; set; } = string.Empty;
 
         [Required]
+        [Phone] 
+        public string PhoneNumber { get; set; }
+
+        [Required]
         [StringLength(100, MinimumLength = 6)]//TODO: Aumentar a segurança da password (por enquanto vamos usar 123456)
         public string Password { get; set; } = string.Empty;
 
@@ -929,6 +1185,10 @@ namespace CondoSphere.Core.DTOs.Account
         [StringLength(100, MinimumLength = 2)]
         public string LastName { get; set; } = string.Empty;
         public string? ProfilePictureUrl { get; set; }
+
+        [Required]
+        [Phone] 
+        public string PhoneNumber { get; set; }
     }
 }
 ```
@@ -951,6 +1211,8 @@ namespace CondoSphere.Core.DTOs.Account
 
 ## File: CondoSphere.Core/DTOs/Account/UserProfileDto.cs
 ```csharp
+using System.ComponentModel.DataAnnotations;
+
 namespace CondoSphere.Core.DTOs.Account
 {
     // This DTO represents the full profile data we need on the frontend.
@@ -962,6 +1224,8 @@ namespace CondoSphere.Core.DTOs.Account
         public string Email { get; set; } = string.Empty;
         public string? ProfilePictureUrl { get; set; }
         public int? CompanyId { get; set; }
+        [Phone]
+        public string? PhoneNumber { get; set; }
         public IEnumerable<string> Roles { get; set; } = new List<string>();
     }
 }
@@ -1481,6 +1745,24 @@ namespace CondoSphere.Core.Enums
         CondoResident = 3,
         Employee = 4,
         PlatformSuperAdmin = 5
+    }
+}
+```
+
+## File: CondoSphere.Core/Enums/TwoFactorMethod.cs
+```csharp
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace CondoSphere.Core.Enums
+{
+    public enum TwoFactorMethod
+    {
+        Email = 1,
+        Sms = 2
     }
 }
 ```
@@ -2076,10 +2358,15 @@ namespace CondoSphere.Web.Models
         [StringLength(100, MinimumLength = 2)]
         public string LastName { get; set; } = string.Empty;
 
+        [Required]
+        [Phone] 
+        public string PhoneNumber { get; set; }
+
         public string? CurrentProfileImageUrl { get; set; }
 
         [Display(Name = "Upload New Profile Image")]
         public IFormFile? ProfileImage { get; set; }
+        public bool TwoFactorEnabled { get; set; }
     }
 }
 ```
@@ -2362,6 +2649,11 @@ namespace CondoSphere.Web.Services
                 <input asp-for="Email" class="form-control" placeholder="you@example.com" />
                 <label asp-for="Email"></label>
                 <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="PhoneNumber" class="control-label"></label>
+                <input asp-for="PhoneNumber" class="form-control" />
+                <span asp-validation-for="PhoneNumber" class="text-danger"></span>
             </div>
             <div class="form-floating mb-3">
                 <input asp-for="Password" type="password" class="form-control" />
@@ -2968,10 +3260,12 @@ else
             <div class="card-header bg-primary text-white py-3">
                 <h2 class="mb-0 text-center"><i class="bi bi-person-gear me-2"></i>@ViewData["Title"]</h2>
             </div>
+
             <div class="card-body p-4 p-md-5">
                 <form method="post" enctype="multipart/form-data" id="profileForm">
+                    @Html.AntiForgeryToken() <!-- preciso para o fetch -->
+
                     <input type="hidden" asp-for="CurrentProfileImageUrl" />
-                    <div asp-validation-summary="All" class="text-danger"></div>
                     <div asp-validation-summary="All" class="text-danger"></div>
 
                     <div class="row">
@@ -2989,7 +3283,25 @@ else
 
                     <hr class="my-4" />
 
-                    <div class="row align-items-center">
+                    <div class="form-group">
+                        <label asp-for="PhoneNumber" class="control-label"></label>
+                        <input asp-for="PhoneNumber" class="form-control" />
+                        <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label d-block mb-2">Two-step verification</label>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="twoFactorSwitch"
+                            @(Model.TwoFactorEnabled ? "checked" : "") />
+                            <label class="form-check-label" for="twoFactorSwitch">
+                                Add a code (email/SMS) when logging in
+                            </label>
+                            <small class="text-muted d-block">Recommended for extra security.</small>
+                        </div>
+                        <div id="twoFactorMsg" class="small mt-2"></div>
+                    </div>
+
+                    <div class="row align-items-center mt-4">
                         <div class="col-md-4 text-center">
                             <img src="@(Model.CurrentProfileImageUrl ?? "/images/user-photos/default-profile.png")"
                                  alt="Current Profile Image" class="img-thumbnail rounded-circle mb-2"
@@ -3004,6 +3316,7 @@ else
                     </div>
                 </form>
             </div>
+
             <div class="card-footer bg-light p-3">
                 <div class="d-flex justify-content-end align-items-center gap-2">
                     <a asp-controller="Profile" asp-action="ChangePassword" class="btn btn-secondary">Change Password</a>
@@ -3013,6 +3326,54 @@ else
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        (function () {
+          const sw = document.getElementById('twoFactorSwitch');
+          const msg = document.getElementById('twoFactorMsg');
+          const token = document.querySelector('#profileForm input[name="__RequestVerificationToken"]').value;
+
+          function setMsg(text, ok) {
+            msg.textContent = text || '';
+            msg.className = 'small mt-2 ' + (ok === true ? 'text-success' : ok === false ? 'text-danger' : 'text-muted');
+          }
+
+          sw?.addEventListener('change', async (e) => {
+            sw.disabled = true;
+            setMsg('Applying changes…', null);
+
+            try {
+              const res = await fetch('/Profile/ToggleTwoFactor', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'RequestVerificationToken': token
+                },
+                body: JSON.stringify({ enable: sw.checked })
+              });
+
+              const body = await res.text();
+              let payload = {};
+              try { payload = JSON.parse(body); } catch {}
+
+              if (res.ok) {
+                setMsg(payload.message || 'Two-step verification updated.', true);
+              } else {
+                // revert switch on failure
+                sw.checked = !sw.checked;
+                setMsg(payload.message || 'Could not update two-step verification.', false);
+              }
+            } catch (err) {
+              sw.checked = !sw.checked;
+              setMsg('Network error updating two-step verification.', false);
+            } finally {
+              sw.disabled = false;
+            }
+          });
+        })();
+    </script>
+}
 ```
 
 ## File: CondoSphere.Web/Views/Shared/_Layout.cshtml.css
@@ -3930,6 +4291,9 @@ namespace CondoSphere.Application.Services.Token
                 new Claim("profile_picture", user.ProfilePictureUrl ?? string.Empty)
             };
 
+            if (!string.IsNullOrWhiteSpace(user.PhoneNumber))
+                claims.Add(new Claim(ClaimTypes.MobilePhone, user.PhoneNumber));
+
             var roles = await _userManager.GetRolesAsync(user);
             foreach (var role in roles)
             {
@@ -4764,14 +5128,20 @@ namespace CondoSphere.Web.Controllers
         }
 
         [HttpGet("")]
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
+            var email = User.FindFirstValue(ClaimTypes.Email) ?? User.Identity?.Name ?? "";
+
             var model = new MyProfileViewModel
             {
                 FirstName = User.FindFirstValue(ClaimTypes.GivenName) ?? "",
                 LastName = User.FindFirstValue(ClaimTypes.Surname) ?? "",
-                CurrentProfileImageUrl = User.FindFirstValue("profile_picture")
+                PhoneNumber = User.FindFirstValue(ClaimTypes.MobilePhone) ?? "",
+                CurrentProfileImageUrl = User.FindFirstValue("profile_picture"),
+                // 👇 estado atual do 2FA vindo da API
+                TwoFactorEnabled = await _apiClient.IsTwoFactorEnabledAsync(new EmailDto { Email = email })
             };
+
             return View(model);
         }
 
@@ -4785,27 +5155,29 @@ namespace CondoSphere.Web.Controllers
                 return View(model);
             }
 
-            // Step 1: Handle file upload and determine the final image URL.
+            // Step 1: upload imagem
             string? finalImageUrl = model.CurrentProfileImageUrl;
             if (model.ProfileImage != null && model.ProfileImage.Length > 0)
             {
-                finalImageUrl = await _imageService.SaveImageAsync(model.ProfileImage, "user-photos", model.CurrentProfileImageUrl);
+                finalImageUrl = await _imageService.SaveImageAsync(
+                    model.ProfileImage, "user-photos", model.CurrentProfileImageUrl);
             }
 
-            // Step 2: Prepare the DTO to send to the API.
+            // Step 2: DTO para API
             var dto = new UpdateProfileDto
             {
                 FirstName = model.FirstName,
                 LastName = model.LastName,
+                PhoneNumber = model.PhoneNumber,
                 ProfilePictureUrl = finalImageUrl
             };
 
-            // Step 3: Call the API. It will return a new JWT on success.
+            // Step 3: chama API (volta com novo JWT)
             var (success, message, newToken) = await _apiClient.UpdateProfileAsync(dto);
 
             if (success && !string.IsNullOrEmpty(newToken))
             {
-                // Step 4: Validate the new token and re-issue the authentication cookie.
+                // Step 4: reemitir cookie
                 var handler = new JwtSecurityTokenHandler();
                 var principal = handler.ValidateToken(
                     newToken,
@@ -4820,10 +5192,11 @@ namespace CondoSphere.Web.Controllers
                         ValidAudience = _configuration["Jwt:Audience"],
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]))
                     },
-                    out _);
+                    out _
+                );
 
-                var claimsIdentity = (ClaimsIdentity)principal.Identity;
-                claimsIdentity.AddClaim(new Claim("access_token", newToken)); // Store the new token
+                var claimsIdentity = (ClaimsIdentity)principal.Identity!;
+                claimsIdentity.AddClaim(new Claim("access_token", newToken)); // guarda o novo token
 
                 await HttpContext.SignInAsync(
                     CookieAuthenticationDefaults.AuthenticationScheme,
@@ -4839,20 +5212,32 @@ namespace CondoSphere.Web.Controllers
             return View(model);
         }
 
-        [HttpGet("change-password")]
-        public IActionResult ChangePassword()
+
+        public class Toggle2FaVm { public bool Enable { get; set; } }
+
+        [HttpPost("ToggleTwoFactor")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ToggleTwoFactor([FromBody] Toggle2FaVm vm)
         {
-            return View(new ChangePasswordViewModel());
+            var email = User.FindFirstValue(ClaimTypes.Email) ?? User.Identity?.Name ?? "";
+            var result = await _apiClient.SwitchTwoFactorAsync(new ToggleTwoFactorDto
+            {
+                Email = email,
+                Enable = vm.Enable
+            });
+
+            if (result.Success) return Ok(new { message = result.Message });
+            return BadRequest(new { message = result.Message });
         }
+
+        [HttpGet("change-password")]
+        public IActionResult ChangePassword() => View(new ChangePasswordViewModel());
 
         [HttpPost("change-password")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ChangePassword(ChangePasswordViewModel model)
         {
-            if (!ModelState.IsValid)
-            {
-                return View(model);
-            }
+            if (!ModelState.IsValid) return View(model);
 
             var (success, message) = await _apiClient.ChangePasswordAsync(model);
             if (success)
@@ -6765,6 +7150,7 @@ Content-Type: application/json
   "companyName": "My New Test Company",
   "firstName": "Test",
   "lastName": "Admin",
+  "phoneNumer: 928122313"
   "email": "rafaalexandrecosta26@gmail.com",
   "password": "123456",
   "confirmPassword": "123456"
@@ -8005,6 +8391,7 @@ using CondoSphere.Application.Interfaces;
 using CondoSphere.Application.Services.User;
 using CondoSphere.Core;
 using CondoSphere.Core.DTOs.Account;
+using CondoSphere.Core.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -8016,6 +8403,8 @@ namespace CondoSphere.API.Controllers
     [ApiController]
     public class AccountsController : ControllerBase
     {
+
+        //todo este user manager e para sair daqui e encapsolar no user service
         private readonly IUserService _userService;
         private readonly ICurrentUserService _currentUserService;
         private readonly UserManager<CoreUser> _userManager;
@@ -8076,16 +8465,16 @@ namespace CondoSphere.API.Controllers
             }
 
             var user = await _userService.GetUserByEmailAsync(loginDto.Email);
-            if (user != null) 
+            if (user != null)
             {
                 var isConfirmed = await _userService.IsEmailConfirmedAsync(user);
 
                 if (!isConfirmed)
                 {
                     return Unauthorized(new { Message = "Not confirmed email" });
-                }  
+                }
             }
-          
+
             var userDto = await _userService.LoginAsync(loginDto);
 
             if (userDto == null)
@@ -8307,6 +8696,62 @@ namespace CondoSphere.API.Controllers
 
             return BadRequest(result.Errors);
         }
+
+        [HttpPost("2fa/verify")]
+        [AllowAnonymous]
+        public async Task<IActionResult> VerifyTwoFactorCode([FromBody] VerifyTwoFactorCodeDto dto)
+        {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+
+            var result = await _userService.VerifyCode2SVAsync(dto.Email, dto.Method, dto.Code);
+            if (!result.Succeeded)
+            {
+                return BadRequest(new { message = result.Error ?? "Invalid two-factor code." });
+            }
+
+            return Ok();
+        }
+
+        [HttpPost("2fa/switch")]
+        [Authorize]
+        public async Task<IActionResult> SwitchTwoFactor([FromBody] ToggleTwoFactorDto Dto)
+        {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+
+            var result = await _userService.Switch2SVAsync(Dto.Email, Dto.Enable);
+            if (result.Succeeded)
+            {
+                return Ok(new { message = "Two-factor authentication switched." });
+            }
+
+            return BadRequest(result.Errors);
+        }
+
+        [HttpPost("2fa/send-code")]
+        [AllowAnonymous]
+        public async Task<IActionResult> SendTwoFactorCode([FromBody] SendTwoFactorCodeDto dto)
+        {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+
+            var result = await _userService.SendCode2SVAsync(dto.Email, dto.Method);
+            if (result.Succeeded)
+            {
+                return Ok(new { message = "Two-factor code sent." });
+            }
+
+            return BadRequest(result.Errors);
+        }
+
+        [HttpPost("2fa/IsEnable")]
+        [AllowAnonymous]
+        public async Task<IActionResult> IsTwoFactorEnabled([FromBody] EmailDto dto)
+        {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+
+            var isEnabled = await _userService.Is2SVEnabledAsync(dto);
+            return Ok(new { enabled = isEnabled });
+
+        }
     }
 }
 ```
@@ -8314,6 +8759,7 @@ namespace CondoSphere.API.Controllers
 ## File: CondoSphere.Application/Services/User/IUserService.cs
 ```csharp
 using CondoSphere.Core.DTOs.Account;
+using CondoSphere.Core.Enums;
 using Microsoft.AspNetCore.Identity;
 using CoreUser = CondoSphere.Core.Entities.Users.User;
 
@@ -8344,6 +8790,11 @@ namespace CondoSphere.Application.Services.User
         Task<CoreUser?> GetUserByEmailAsync(string email);
         Task<IdentityResult> ResendConfirmationEmailAsync(EmailDto dto);
 
+        Task<IdentityResult> Switch2SVAsync(string email, bool enable2SV);
+        Task<IdentityResult> SendCode2SVAsync(string email, TwoFactorMethod twoFactorMethodOption);
+        Task<(bool Succeeded, string? Token, string? Error)> VerifyCode2SVAsync(string email, TwoFactorMethod method, string code);
+
+        Task<bool> Is2SVEnabledAsync(EmailDto dto);
     }
 }
 ```
@@ -8355,6 +8806,7 @@ using CondoSphere.Application.Services.Token;
 using CondoSphere.Core;
 using CondoSphere.Core.DTOs.Account;
 using CondoSphere.Core.Entities.Users;
+using CondoSphere.Core.Enums;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -8372,6 +8824,9 @@ namespace CondoSphere.Application.Services.User
         private readonly IMailService _mailService;
         private readonly IConfiguration _configuration;
         private readonly ICurrentUserService _currentUserService;
+        private readonly ISmsService _smsService;
+        private readonly IPhoneNumberService _phoneNumberService;
+
 
         public UserService(
             UserManager<CoreUser> userManager,
@@ -8379,7 +8834,9 @@ namespace CondoSphere.Application.Services.User
             ITokenService tokenService,
             IMailService mailService,
             IConfiguration configuration,
-            ICurrentUserService currentUserService)
+            ICurrentUserService currentUserService, 
+            ISmsService smsService, 
+            IPhoneNumberService phoneNumberService)
         {
             _userManager = userManager;
             _unitOfWork = unitOfWork;
@@ -8387,6 +8844,8 @@ namespace CondoSphere.Application.Services.User
             _mailService = mailService;
             _configuration = configuration;
             _currentUserService = currentUserService;
+            _smsService = smsService;
+            _phoneNumberService = phoneNumberService;
         }
 
         public async Task<CoreUser?> GetUserByIdAsync(int userId)
@@ -8661,7 +9120,12 @@ namespace CondoSphere.Application.Services.User
             user.FirstName = dto.FirstName;
             user.LastName = dto.LastName;
             user.ProfilePictureUrl = dto.ProfilePictureUrl;
-
+            if (!string.Equals(user.PhoneNumber, dto.PhoneNumber, StringComparison.Ordinal))
+            {
+                var phoneRes = await _userManager.SetPhoneNumberAsync(user, dto.PhoneNumber);
+                if (!phoneRes.Succeeded)
+                    return (false, phoneRes.Errors);
+            }
             var result = await _userManager.UpdateAsync(user);
             return (result.Succeeded, result.Errors);
         }
@@ -8690,6 +9154,7 @@ namespace CondoSphere.Application.Services.User
                 LastName = user.LastName ?? "",
                 Email = user.Email,
                 ProfilePictureUrl = user.ProfilePictureUrl,
+                PhoneNumber = user.PhoneNumber,
                 CompanyId = user.CompanyId,
                 Roles = roles
             };
@@ -8773,6 +9238,106 @@ namespace CondoSphere.Application.Services.User
 
             return IdentityResult.Success;
         }
+
+        public async Task<IdentityResult> Switch2SVAsync(string email, bool enable2SV)
+        {
+            var  user = await _userManager.FindByEmailAsync(email);
+            if (user == null)
+            {
+                return IdentityResult.Failed(new IdentityError { Description = "User not found." });
+            }
+
+            user.TwoFactorEnabled = enable2SV;
+            var result = await _userManager.UpdateAsync(user);
+            if (!result.Succeeded)
+            {
+                return result;
+            }
+
+            return IdentityResult.Success;
+
+        }
+
+        public async Task<IdentityResult> SendCode2SVAsync(string email, TwoFactorMethod twoFactorMethodOption)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null) return IdentityResult.Failed(new IdentityError { Description = "User not found." });
+            if (!user.TwoFactorEnabled) return IdentityResult.Failed(new IdentityError { Description = "Two-factor auth is disabled for this user." });
+
+            var provider = twoFactorMethodOption == TwoFactorMethod.Email
+                ? TokenOptions.DefaultEmailProvider   // "Email"
+                : TokenOptions.DefaultPhoneProvider;  // "Phone"
+
+            // Pré-condições de contacto
+            if (twoFactorMethodOption == TwoFactorMethod.Email)
+            {
+                if (string.IsNullOrWhiteSpace(user.Email))
+                    return IdentityResult.Failed(new IdentityError { Description = "User has no email." });
+                // opcional: exigir EmailConfirmed
+            }
+            else
+            {
+                if (string.IsNullOrWhiteSpace(user.PhoneNumber))
+                    return IdentityResult.Failed(new IdentityError { Description = "User has no phone number." });
+                // opcional: exigir PhoneNumberConfirmed
+            }
+
+        
+            var code = await _userManager.GenerateTwoFactorTokenAsync(user, provider);
+
+            if (twoFactorMethodOption == TwoFactorMethod.Email)
+            {
+                await _mailService.SendEmailAsync(
+                    user.Email!,
+                    "Your login code",
+                    $"<p>Hello {user.FirstName},</p><p>Your 2FA code is: <b>{code}</b></p><p>This code expires shortly.</p>");
+            }
+            else
+            {
+          
+                var to = _phoneNumberService.Normalize(user.PhoneNumber);
+                var (ok, err) = await _smsService.SendSmsAsync(to, $"Your 2FA code: {code}");
+
+                if (!ok)
+                {
+                    return IdentityResult.Failed(new IdentityError { Description = $"SMS failed: {err}" });
+                }
+            }
+
+
+            return IdentityResult.Success;
+        }
+
+        public async Task<(bool Succeeded, string? Token, string? Error)> VerifyCode2SVAsync(string email, TwoFactorMethod method, string code)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null) return (false, null, "User not found.");
+            if (!user.TwoFactorEnabled) return (false, null, "Two-factor auth is disabled.");
+
+            var provider = method == TwoFactorMethod.Email
+                ? TokenOptions.DefaultEmailProvider
+                : TokenOptions.DefaultPhoneProvider;
+
+            var ok = await _userManager.VerifyTwoFactorTokenAsync(user, provider, code);
+            if (!ok) return (false, null, "Invalid or expired code.");
+
+            var jwt = await _tokenService.CreateToken(user); // já existe no teu projeto
+            return (true, jwt, null);
+        }
+
+        public async Task<bool> Is2SVEnabledAsync(EmailDto dto)
+        {
+            var user = await _userManager.FindByEmailAsync(dto.Email);
+
+            if (user.TwoFactorEnabled)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
     }
 }
 ```
@@ -8812,80 +9377,169 @@ namespace CondoSphere.Web.Controllers
             return View();
         }
 
+        // using ... (mantém os teus usings)
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginDto model, string? returnUrl = null)
         {
             if (!ModelState.IsValid)
-            {
                 return View(model);
-            }
 
-            var (isConfirmed, raw) = await _apiClient.IsEmailConfirmedAsync(model.Email);
+            // 1) email confirmado?
+            var (isConfirmed, _) = await _apiClient.IsEmailConfirmedAsync(model.Email);
             if (!isConfirmed)
-            {
                 return RedirectToAction("ResendConfirmationEmail", "Account", new { email = model.Email });
-            }
 
-            var userDto = await _apiClient.LoginAsync(model);
+            // 2) verificar se o utilizador tem 2SV ativo
+            var twoFactorOn = await _apiClient.IsTwoFactorEnabledAsync(new EmailDto { Email = model.Email });
 
-            if (userDto == null || string.IsNullOrWhiteSpace(userDto.Token))
+            if (twoFactorOn)
             {
+                // NÃO enviar código aqui.
+                TempData["PendingLogin"] = System.Text.Json.JsonSerializer.Serialize(model);
+                TempData["ReturnUrl"] = returnUrl;
+                TempData.Keep("PendingLogin");
+                TempData.Keep("ReturnUrl");
+
+                return RedirectToAction(nameof(ChooseTwoFactorMethod), new { email = model.Email });
+            }
+            else
+            {
+                // 2SV desativado → login direto (mantém como tinhas)
+                var userDto = await _apiClient.LoginAsync(model);
+                if (userDto != null && !string.IsNullOrWhiteSpace(userDto.Token))
+                {
+                    await SignInWithJwtAsync(userDto);
+                    return RedirectByRoleOrHome();
+                }
+
                 ModelState.AddModelError(string.Empty, "Invalid login attempt.");
                 return View(model);
             }
 
-            var handler = new JwtSecurityTokenHandler();
-            var principal = handler.ValidateToken(
-                userDto.Token,
-                new TokenValidationParameters
-                {
-                    ValidateIssuer = true,
-                    ValidateAudience = true,
-                    ValidateIssuerSigningKey = true,
-                    ValidateLifetime = true,
-                    ClockSkew = TimeSpan.Zero,
-                    ValidIssuer = _configuration["Jwt:Issuer"],
-                    ValidAudience = _configuration["Jwt:Audience"],
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]))
-                },
-                out _);
-
-            // Create a new claims identity to add our custom access_token claim
-            var claimsIdentity = (ClaimsIdentity)principal.Identity;
-            claimsIdentity.AddClaim(new Claim("access_token", userDto.Token));
-
-            var authProperties = new AuthenticationProperties
-            {
-                IsPersistent = true, // Make the cookie persistent
-                ExpiresUtc = DateTimeOffset.UtcNow.AddDays(7)
-            };
-
-            // Use the new identity with the added claim to sign in
-            await HttpContext.SignInAsync(
-                CookieAuthenticationDefaults.AuthenticationScheme,
-                new ClaimsPrincipal(claimsIdentity),
-                authProperties);
-
-            if (User.IsInRole(RoleConstants.CompanyAdmin))
-            {
-                return RedirectToAction("Index", "Administration");
-            }
-            if (User.IsInRole(RoleConstants.CondoManager))
-            {
-                return RedirectToAction("Index", "CondoManagement");
-            }
-            if (User.IsInRole(RoleConstants.CondoResident))
-            {
-                return RedirectToAction("Index", "Portal");
-            }
-            if (User.IsInRole(RoleConstants.Employee))
-            {
-                return RedirectToAction("Index", "Employee");
-            }
-
-            return RedirectToAction("Index", "Home"); // Fallback for any other case
         }
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult ChooseTwoFactorMethod(string email)
+        {
+            if (string.IsNullOrWhiteSpace(email))
+                return RedirectToAction(nameof(Login));
+
+            TempData.Keep("PendingLogin");
+            TempData.Keep("ReturnUrl");
+
+            return View(new TwoFactorChooseMethodViewModel
+            {
+                Email = email,
+                SelectedMethod = "Email" // default
+            });
+        }
+
+
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ChooseTwoFactorMethod(TwoFactorChooseMethodViewModel vm)
+        {
+            if (!ModelState.IsValid || string.IsNullOrWhiteSpace(vm.Email))
+                return View(vm);
+
+            TempData.Keep("PendingLogin");
+            TempData.Keep("ReturnUrl");
+
+            var methodEnum = vm.SelectedMethod?.ToLowerInvariant() == "sms"
+                ? CondoSphere.Core.Enums.TwoFactorMethod.Sms
+                : CondoSphere.Core.Enums.TwoFactorMethod.Email;
+
+            // AGORA sim: envia o código conforme a escolha
+            var send = await _apiClient.SendTwoFactorCodeAsync(new SendTwoFactorCodeDto
+            {
+                Email = vm.Email,
+                Method = methodEnum
+            });
+
+            if (!send.Success)
+            {
+                ModelState.AddModelError(string.Empty, send.Message);
+                return View(vm);
+            }
+
+            // segue para o ecrã de verificação com o método escolhido
+            return RedirectToAction(nameof(VerifyTwoFactor), new { email = vm.Email, method = vm.SelectedMethod });
+        }
+
+        [HttpGet("VerifyTwoFactor")]
+        [AllowAnonymous]
+        public IActionResult VerifyTwoFactor(string email, string? method = "Email")
+        {
+            if (string.IsNullOrWhiteSpace(email))
+                return RedirectToAction(nameof(Login));
+
+            TempData.Keep("PendingLogin");
+            TempData.Keep("ReturnUrl");
+
+            return View(new TwoFactorVerifyViewModel
+            {
+                Email = email,
+                SelectedMethod = string.IsNullOrWhiteSpace(method) ? "Email" : method
+            });
+        }
+
+        [HttpPost("VerifyTwoFactor")]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> VerifyTwoFactor(TwoFactorVerifyViewModel vm)
+        {
+            if (!ModelState.IsValid)
+            {
+                TempData.Keep("PendingLogin");
+                TempData.Keep("ReturnUrl");
+                return View(vm);
+            }
+
+            var methodEnum = vm.SelectedMethod?.ToLowerInvariant() == "sms"
+               ? CondoSphere.Core.Enums.TwoFactorMethod.Sms
+               : CondoSphere.Core.Enums.TwoFactorMethod.Email;
+
+            var verify = await _apiClient.VerifyTwoFactorCodeAsync(new VerifyTwoFactorCodeDto
+            {
+                Email = vm.Email,
+                Method = methodEnum,
+                Code = vm.Code
+            });
+
+            if (!verify.Success)
+            {
+                ModelState.AddModelError(string.Empty, verify.Message);
+                TempData.Keep("PendingLogin");
+                TempData.Keep("ReturnUrl");
+                return View(vm);
+            }
+
+            // Código OK → refazer o login para obter o JWT (o endpoint /verify não devolve UserDto)
+            if (!(TempData["PendingLogin"] is string serialized) || string.IsNullOrWhiteSpace(serialized))
+                return RedirectToAction(nameof(Login));
+
+            var loginDto = System.Text.Json.JsonSerializer.Deserialize<LoginDto>(serialized);
+            TempData.Remove("PendingLogin");
+
+            var userDto = await _apiClient.LoginAsync(loginDto!);
+            if (userDto == null || string.IsNullOrWhiteSpace(userDto.Token))
+            {
+                ModelState.AddModelError(string.Empty, "Could not complete sign-in after verification.");
+                return View(vm);
+            }
+
+            await SignInWithJwtAsync(userDto);
+
+            // limpar ReturnUrl e redirecionar por role (como já fazes)
+            var returnUrl = TempData["ReturnUrl"] as string;
+            TempData.Remove("ReturnUrl");
+            return RedirectByRoleOrHome();
+        }
+
+
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -9050,6 +9704,65 @@ namespace CondoSphere.Web.Controllers
 
             return View(model);
         }
+       
+
+        private async Task SignInWithJwtAsync(UserDto userDto)
+        {
+            var handler = new JwtSecurityTokenHandler();
+
+            var principal = handler.ValidateToken(
+                userDto.Token,
+                new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidateLifetime = true,
+                    ClockSkew = TimeSpan.Zero,
+                    ValidIssuer = _configuration["Jwt:Issuer"],
+                    ValidAudience = _configuration["Jwt:Audience"],
+                    IssuerSigningKey =
+                        new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]))
+                },
+                out _
+            );
+
+            // adiciona o token como claim para o JwtForwardingDelegatingHandler
+            var identity = (ClaimsIdentity)principal.Identity!;
+            identity.AddClaim(new Claim("access_token", userDto.Token));
+
+            var authProperties = new AuthenticationProperties
+            {
+                IsPersistent = true,
+                ExpiresUtc = DateTimeOffset.UtcNow.AddDays(7)
+            };
+
+            await HttpContext.SignInAsync(
+                CookieAuthenticationDefaults.AuthenticationScheme,
+                new ClaimsPrincipal(identity),
+                authProperties
+            );
+
+            // garante que nesta mesma request User.IsInRole() já reflete as claims
+            HttpContext.User = new ClaimsPrincipal(identity);
+        }
+
+        private IActionResult RedirectByRoleOrHome()
+        {
+            if (User.IsInRole(RoleConstants.CompanyAdmin))
+                return RedirectToAction("Index", "Administration");
+
+            if (User.IsInRole(RoleConstants.CondoManager))
+                return RedirectToAction("Index", "CondoManagement");
+
+            if (User.IsInRole(RoleConstants.CondoResident))
+                return RedirectToAction("Index", "Portal");
+
+            if (User.IsInRole(RoleConstants.Employee))
+                return RedirectToAction("Index", "Employee");
+
+            return RedirectToAction("Index", "Home");
+        }
 
     }
 }
@@ -9078,6 +9791,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using CondoSphere.Infrastructure.Notifications;
+using System;
 using System.Text;
 
 namespace CondoSphere.API
@@ -9151,6 +9866,8 @@ namespace CondoSphere.API
             builder.Services.AddScoped<IExpenseService, ExpenseService>();
             builder.Services.AddScoped<IAuthorizationHandler, CanAccessOccurrenceHandler>();
             builder.Services.AddScoped<IAuthorizationHandler, CanManageInterventionHandler>();
+            builder.Services.AddScoped<ISmsService, TwilioSmsService>();
+            builder.Services.AddScoped<IPhoneNumberService, PhoneNumberService>();
 
             builder.Services.AddAutoMapper(cfg =>
             {
@@ -9177,6 +9894,7 @@ namespace CondoSphere.API
                     policy.AddRequirements(new CanManageInterventionRequirement()));
 
             });
+
 
             builder.Services.AddScoped<IAuthorizationHandler, IsCondoManagerHandler>();
 
@@ -9623,6 +10341,133 @@ namespace CondoSphere.Web.Services
             }
             return null;
         }
+        // --- Two-Factor (2SV) ---
+        public async Task<(bool Success, string Message)> SwitchTwoFactorAsync(ToggleTwoFactorDto dto)
+        {
+            var response = await _httpClient.PostAsJsonAsync("/api/accounts/2fa/switch", dto);
+            var raw = await response.Content.ReadAsStringAsync();
+
+            if (response.IsSuccessStatusCode)
+            {
+                try
+                {
+                    using var json = JsonDocument.Parse(raw);
+                    var msg = json.RootElement.TryGetProperty("message", out var m) ? m.GetString() : "Two-factor switched.";
+                    return (true, msg ?? "Two-factor switched.");
+                }
+                catch
+                {
+                    return (true, "Two-factor switched.");
+                }
+            }
+
+            try
+            {
+                using var json = JsonDocument.Parse(raw);
+                var msg = json.RootElement.TryGetProperty("message", out var m) ? m.GetString() : raw;
+                return (false, msg ?? raw);
+            }
+            catch
+            {
+                return (false, raw);
+            }
+        }
+
+        public async Task<(bool Success, string Message)> SendTwoFactorCodeAsync(SendTwoFactorCodeDto dto)
+        {
+            var response = await _httpClient.PostAsJsonAsync("/api/accounts/2fa/send-code", dto);
+            var raw = await response.Content.ReadAsStringAsync();
+
+            if (response.IsSuccessStatusCode)
+            {
+                try
+                {
+                    using var json = JsonDocument.Parse(raw);
+                    var msg = json.RootElement.TryGetProperty("message", out var m) ? m.GetString() : "Two-factor code sent.";
+                    return (true, msg ?? "Two-factor code sent.");
+                }
+                catch
+                {
+                    return (true, "Two-factor code sent.");
+                }
+            }
+
+            try
+            {
+                using var json = JsonDocument.Parse(raw);
+                var msg = json.RootElement.TryGetProperty("message", out var m) ? m.GetString() : raw;
+                return (false, msg ?? raw);
+            }
+            catch
+            {
+                return (false, raw);
+            }
+        }
+
+        public async Task<(bool Success, string Message)> VerifyTwoFactorCodeAsync(VerifyTwoFactorCodeDto dto)
+        {
+            var response = await _httpClient.PostAsJsonAsync("/api/accounts/2fa/verify", dto);
+            var raw = await response.Content.ReadAsStringAsync();
+
+            if (response.IsSuccessStatusCode)
+            {
+                // O teu endpoint devolve 200 OK sem body
+                return (true, "Two-factor code verified.");
+            }
+
+            try
+            {
+                using var json = JsonDocument.Parse(raw);
+                var msg = json.RootElement.TryGetProperty("message", out var m) ? m.GetString() : raw;
+                return (false, msg ?? raw);
+            }
+            catch
+            {
+                return (false, raw);
+            }
+        }
+
+        public async Task<bool> IsTwoFactorEnabledAsync(EmailDto dto)
+        {
+            // 1) envia um objeto JSON com a propriedade Email (não envies só a string)
+            var response = await _httpClient.PostAsJsonAsync("/api/accounts/2fa/IsEnable", dto);
+
+            if (!response.IsSuccessStatusCode)
+                return false;
+
+            // 2) lê o corpo como string e tenta várias formas de interpretar
+            var raw = await response.Content.ReadAsStringAsync();
+
+            try
+            {
+                // a) se for um booleano puro: true/false (JSON)
+                //    também cobre o caso de vir "true"/"false" como string
+                if (bool.TryParse(raw.Trim().Trim('"'), out var directBool))
+                    return directBool;
+
+                // b) se for um objeto: { "enabled": true }, { "isEnabled": true }, { "twoFactorEnabled": true }
+                using var doc = JsonDocument.Parse(raw);
+                var root = doc.RootElement;
+                if (root.ValueKind == JsonValueKind.Object)
+                {
+                    if (root.TryGetProperty("enabled", out var e) && e.ValueKind == JsonValueKind.True || e.ValueKind == JsonValueKind.False)
+                        return e.GetBoolean();
+
+                    if (root.TryGetProperty("isEnabled", out var ie) && (ie.ValueKind == JsonValueKind.True || ie.ValueKind == JsonValueKind.False))
+                        return ie.GetBoolean();
+
+                    if (root.TryGetProperty("twoFactorEnabled", out var tfe) && (tfe.ValueKind == JsonValueKind.True || tfe.ValueKind == JsonValueKind.False))
+                        return tfe.GetBoolean();
+                }
+            }
+            catch
+            {
+                // ignora parsing errors e cai para false
+            }
+            //TODO rever isto 
+            return false;
+        }
+
     }
 }
 ```

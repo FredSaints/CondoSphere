@@ -1,4 +1,5 @@
 ﻿using CondoSphere.Core.DTOs.Account;
+using CondoSphere.Core.Enums;
 using Microsoft.AspNetCore.Identity;
 using CoreUser = CondoSphere.Core.Entities.Users.User;
 
@@ -29,5 +30,10 @@ namespace CondoSphere.Application.Services.User
         Task<CoreUser?> GetUserByEmailAsync(string email);
         Task<IdentityResult> ResendConfirmationEmailAsync(EmailDto dto);
 
+        Task<IdentityResult> Switch2SVAsync(string email, bool enable2SV);
+        Task<IdentityResult> SendCode2SVAsync(string email, TwoFactorMethod twoFactorMethodOption);
+        Task<(bool Succeeded, string? Token, string? Error)> VerifyCode2SVAsync(string email, TwoFactorMethod method, string code);
+
+        Task<bool> Is2SVEnabledAsync(EmailDto dto);
     }
 }

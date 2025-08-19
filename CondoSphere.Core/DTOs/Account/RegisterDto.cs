@@ -24,6 +24,10 @@ namespace CondoSphere.Core.DTOs.Account
         public string Email { get; set; } = string.Empty;
 
         [Required]
+        [Phone] 
+        public string PhoneNumber { get; set; }
+
+        [Required]
         [StringLength(100, MinimumLength = 6)]//TODO: Aumentar a segurança da password (por enquanto vamos usar 123456)
         public string Password { get; set; } = string.Empty;
 

@@ -14,9 +14,14 @@ namespace CondoSphere.Web.Models
         [StringLength(100, MinimumLength = 2)]
         public string LastName { get; set; } = string.Empty;
 
+        [Required]
+        [Phone] 
+        public string PhoneNumber { get; set; }
+
         public string? CurrentProfileImageUrl { get; set; }
 
         [Display(Name = "Upload New Profile Image")]
         public IFormFile? ProfileImage { get; set; }
+        public bool TwoFactorEnabled { get; set; }
     }
 }

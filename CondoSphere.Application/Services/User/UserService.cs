@@ -3,6 +3,7 @@ using CondoSphere.Application.Services.Token;
 using CondoSphere.Core;
 using CondoSphere.Core.DTOs.Account;
 using CondoSphere.Core.Entities.Users;
+using CondoSphere.Core.Enums;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -20,6 +21,9 @@ namespace CondoSphere.Application.Services.User
         private readonly IMailService _mailService;
         private readonly IConfiguration _configuration;
         private readonly ICurrentUserService _currentUserService;
+        private readonly ISmsService _smsService;
+        private readonly IPhoneNumberService _phoneNumberService;
+
 
         public UserService(
             UserManager<CoreUser> userManager,
@@ -27,7 +31,9 @@ namespace CondoSphere.Application.Services.User
             ITokenService tokenService,
             IMailService mailService,
             IConfiguration configuration,
-            ICurrentUserService currentUserService)
+            ICurrentUserService currentUserService, 
+            ISmsService smsService, 
+            IPhoneNumberService phoneNumberService)
         {
             _userManager = userManager;
             _unitOfWork = unitOfWork;
@@ -35,6 +41,8 @@ namespace CondoSphere.Application.Services.User
             _mailService = mailService;
             _configuration = configuration;
             _currentUserService = currentUserService;
+            _smsService = smsService;
+            _phoneNumberService = phoneNumberService;
         }
 
         public async Task<CoreUser?> GetUserByIdAsync(int userId)
@@ -309,7 +317,12 @@ namespace CondoSphere.Application.Services.User
             user.FirstName = dto.FirstName;
             user.LastName = dto.LastName;
             user.ProfilePictureUrl = dto.ProfilePictureUrl;
-
+            if (!string.Equals(user.PhoneNumber, dto.PhoneNumber, StringComparison.Ordinal))
+            {
+                var phoneRes = await _userManager.SetPhoneNumberAsync(user, dto.PhoneNumber);
+                if (!phoneRes.Succeeded)
+                    return (false, phoneRes.Errors);
+            }
             var result = await _userManager.UpdateAsync(user);
             return (result.Succeeded, result.Errors);
         }
@@ -338,6 +351,7 @@ namespace CondoSphere.Application.Services.User
                 LastName = user.LastName ?? "",
                 Email = user.Email,
                 ProfilePictureUrl = user.ProfilePictureUrl,
+                PhoneNumber = user.PhoneNumber,
                 CompanyId = user.CompanyId,
                 Roles = roles
             };
@@ -420,6 +434,106 @@ namespace CondoSphere.Application.Services.User
                 $"<h1>Welcome to CondoSphere!</h1><p>Please confirm your account by <a href='{confirmationLink}'>clicking here</a>.</p>");
 
             return IdentityResult.Success;
+        }
+
+        public async Task<IdentityResult> Switch2SVAsync(string email, bool enable2SV)
+        {
+            var  user = await _userManager.FindByEmailAsync(email);
+            if (user == null)
+            {
+                return IdentityResult.Failed(new IdentityError { Description = "User not found." });
+            }
+
+            user.TwoFactorEnabled = enable2SV;
+            var result = await _userManager.UpdateAsync(user);
+            if (!result.Succeeded)
+            {
+                return result;
+            }
+
+            return IdentityResult.Success;
+
+        }
+
+        public async Task<IdentityResult> SendCode2SVAsync(string email, TwoFactorMethod twoFactorMethodOption)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null) return IdentityResult.Failed(new IdentityError { Description = "User not found." });
+            if (!user.TwoFactorEnabled) return IdentityResult.Failed(new IdentityError { Description = "Two-factor auth is disabled for this user." });
+
+            var provider = twoFactorMethodOption == TwoFactorMethod.Email
+                ? TokenOptions.DefaultEmailProvider   // "Email"
+                : TokenOptions.DefaultPhoneProvider;  // "Phone"
+
+            // Pré-condições de contacto
+            if (twoFactorMethodOption == TwoFactorMethod.Email)
+            {
+                if (string.IsNullOrWhiteSpace(user.Email))
+                    return IdentityResult.Failed(new IdentityError { Description = "User has no email." });
+                // opcional: exigir EmailConfirmed
+            }
+            else
+            {
+                if (string.IsNullOrWhiteSpace(user.PhoneNumber))
+                    return IdentityResult.Failed(new IdentityError { Description = "User has no phone number." });
+                // opcional: exigir PhoneNumberConfirmed
+            }
+
+        
+            var code = await _userManager.GenerateTwoFactorTokenAsync(user, provider);
+
+            if (twoFactorMethodOption == TwoFactorMethod.Email)
+            {
+                await _mailService.SendEmailAsync(
+                    user.Email!,
+                    "Your login code",
+                    $"<p>Hello {user.FirstName},</p><p>Your 2FA code is: <b>{code}</b></p><p>This code expires shortly.</p>");
+            }
+            else
+            {
+          
+                var to = _phoneNumberService.Normalize(user.PhoneNumber);
+                var (ok, err) = await _smsService.SendSmsAsync(to, $"Your 2FA code: {code}");
+
+                if (!ok)
+                {
+                    return IdentityResult.Failed(new IdentityError { Description = $"SMS failed: {err}" });
+                }
+            }
+
+
+            return IdentityResult.Success;
+        }
+
+        public async Task<(bool Succeeded, string? Token, string? Error)> VerifyCode2SVAsync(string email, TwoFactorMethod method, string code)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null) return (false, null, "User not found.");
+            if (!user.TwoFactorEnabled) return (false, null, "Two-factor auth is disabled.");
+
+            var provider = method == TwoFactorMethod.Email
+                ? TokenOptions.DefaultEmailProvider
+                : TokenOptions.DefaultPhoneProvider;
+
+            var ok = await _userManager.VerifyTwoFactorTokenAsync(user, provider, code);
+            if (!ok) return (false, null, "Invalid or expired code.");
+
+            var jwt = await _tokenService.CreateToken(user); // já existe no teu projeto
+            return (true, jwt, null);
+        }
+
+        public async Task<bool> Is2SVEnabledAsync(EmailDto dto)
+        {
+            var user = await _userManager.FindByEmailAsync(dto.Email);
+
+            if (user.TwoFactorEnabled)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
     }
 }

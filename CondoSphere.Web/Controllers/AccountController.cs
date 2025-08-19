@@ -31,80 +31,169 @@ namespace CondoSphere.Web.Controllers
             return View();
         }
 
+        // using ... (mantém os teus usings)
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginDto model, string? returnUrl = null)
         {
             if (!ModelState.IsValid)
-            {
                 return View(model);
-            }
 
-            var (isConfirmed, raw) = await _apiClient.IsEmailConfirmedAsync(model.Email);
+            // 1) email confirmado?
+            var (isConfirmed, _) = await _apiClient.IsEmailConfirmedAsync(model.Email);
             if (!isConfirmed)
-            {
                 return RedirectToAction("ResendConfirmationEmail", "Account", new { email = model.Email });
-            }
 
-            var userDto = await _apiClient.LoginAsync(model);
+            // 2) verificar se o utilizador tem 2SV ativo
+            var twoFactorOn = await _apiClient.IsTwoFactorEnabledAsync(new EmailDto { Email = model.Email });
 
-            if (userDto == null || string.IsNullOrWhiteSpace(userDto.Token))
+            if (twoFactorOn)
             {
+                // NÃO enviar código aqui.
+                TempData["PendingLogin"] = System.Text.Json.JsonSerializer.Serialize(model);
+                TempData["ReturnUrl"] = returnUrl;
+                TempData.Keep("PendingLogin");
+                TempData.Keep("ReturnUrl");
+
+                return RedirectToAction(nameof(ChooseTwoFactorMethod), new { email = model.Email });
+            }
+            else
+            {
+                // 2SV desativado → login direto (mantém como tinhas)
+                var userDto = await _apiClient.LoginAsync(model);
+                if (userDto != null && !string.IsNullOrWhiteSpace(userDto.Token))
+                {
+                    await SignInWithJwtAsync(userDto);
+                    return RedirectByRoleOrHome();
+                }
+
                 ModelState.AddModelError(string.Empty, "Invalid login attempt.");
                 return View(model);
             }
 
-            var handler = new JwtSecurityTokenHandler();
-            var principal = handler.ValidateToken(
-                userDto.Token,
-                new TokenValidationParameters
-                {
-                    ValidateIssuer = true,
-                    ValidateAudience = true,
-                    ValidateIssuerSigningKey = true,
-                    ValidateLifetime = true,
-                    ClockSkew = TimeSpan.Zero,
-                    ValidIssuer = _configuration["Jwt:Issuer"],
-                    ValidAudience = _configuration["Jwt:Audience"],
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]))
-                },
-                out _);
-
-            // Create a new claims identity to add our custom access_token claim
-            var claimsIdentity = (ClaimsIdentity)principal.Identity;
-            claimsIdentity.AddClaim(new Claim("access_token", userDto.Token));
-
-            var authProperties = new AuthenticationProperties
-            {
-                IsPersistent = true, // Make the cookie persistent
-                ExpiresUtc = DateTimeOffset.UtcNow.AddDays(7)
-            };
-
-            // Use the new identity with the added claim to sign in
-            await HttpContext.SignInAsync(
-                CookieAuthenticationDefaults.AuthenticationScheme,
-                new ClaimsPrincipal(claimsIdentity),
-                authProperties);
-
-            if (User.IsInRole(RoleConstants.CompanyAdmin))
-            {
-                return RedirectToAction("Index", "Administration");
-            }
-            if (User.IsInRole(RoleConstants.CondoManager))
-            {
-                return RedirectToAction("Index", "CondoManagement");
-            }
-            if (User.IsInRole(RoleConstants.CondoResident))
-            {
-                return RedirectToAction("Index", "Portal");
-            }
-            if (User.IsInRole(RoleConstants.Employee))
-            {
-                return RedirectToAction("Index", "Employee");
-            }
-
-            return RedirectToAction("Index", "Home"); // Fallback for any other case
         }
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult ChooseTwoFactorMethod(string email)
+        {
+            if (string.IsNullOrWhiteSpace(email))
+                return RedirectToAction(nameof(Login));
+
+            TempData.Keep("PendingLogin");
+            TempData.Keep("ReturnUrl");
+
+            return View(new TwoFactorChooseMethodViewModel
+            {
+                Email = email,
+                SelectedMethod = "Email" // default
+            });
+        }
+
+
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ChooseTwoFactorMethod(TwoFactorChooseMethodViewModel vm)
+        {
+            if (!ModelState.IsValid || string.IsNullOrWhiteSpace(vm.Email))
+                return View(vm);
+
+            TempData.Keep("PendingLogin");
+            TempData.Keep("ReturnUrl");
+
+            var methodEnum = vm.SelectedMethod?.ToLowerInvariant() == "sms"
+                ? CondoSphere.Core.Enums.TwoFactorMethod.Sms
+                : CondoSphere.Core.Enums.TwoFactorMethod.Email;
+
+            // AGORA sim: envia o código conforme a escolha
+            var send = await _apiClient.SendTwoFactorCodeAsync(new SendTwoFactorCodeDto
+            {
+                Email = vm.Email,
+                Method = methodEnum
+            });
+
+            if (!send.Success)
+            {
+                ModelState.AddModelError(string.Empty, send.Message);
+                return View(vm);
+            }
+
+            // segue para o ecrã de verificação com o método escolhido
+            return RedirectToAction(nameof(VerifyTwoFactor), new { email = vm.Email, method = vm.SelectedMethod });
+        }
+
+        [HttpGet("VerifyTwoFactor")]
+        [AllowAnonymous]
+        public IActionResult VerifyTwoFactor(string email, string? method = "Email")
+        {
+            if (string.IsNullOrWhiteSpace(email))
+                return RedirectToAction(nameof(Login));
+
+            TempData.Keep("PendingLogin");
+            TempData.Keep("ReturnUrl");
+
+            return View(new TwoFactorVerifyViewModel
+            {
+                Email = email,
+                SelectedMethod = string.IsNullOrWhiteSpace(method) ? "Email" : method
+            });
+        }
+
+        [HttpPost("VerifyTwoFactor")]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> VerifyTwoFactor(TwoFactorVerifyViewModel vm)
+        {
+            if (!ModelState.IsValid)
+            {
+                TempData.Keep("PendingLogin");
+                TempData.Keep("ReturnUrl");
+                return View(vm);
+            }
+
+            var methodEnum = vm.SelectedMethod?.ToLowerInvariant() == "sms"
+               ? CondoSphere.Core.Enums.TwoFactorMethod.Sms
+               : CondoSphere.Core.Enums.TwoFactorMethod.Email;
+
+            var verify = await _apiClient.VerifyTwoFactorCodeAsync(new VerifyTwoFactorCodeDto
+            {
+                Email = vm.Email,
+                Method = methodEnum,
+                Code = vm.Code
+            });
+
+            if (!verify.Success)
+            {
+                ModelState.AddModelError(string.Empty, verify.Message);
+                TempData.Keep("PendingLogin");
+                TempData.Keep("ReturnUrl");
+                return View(vm);
+            }
+
+            // Código OK → refazer o login para obter o JWT (o endpoint /verify não devolve UserDto)
+            if (!(TempData["PendingLogin"] is string serialized) || string.IsNullOrWhiteSpace(serialized))
+                return RedirectToAction(nameof(Login));
+
+            var loginDto = System.Text.Json.JsonSerializer.Deserialize<LoginDto>(serialized);
+            TempData.Remove("PendingLogin");
+
+            var userDto = await _apiClient.LoginAsync(loginDto!);
+            if (userDto == null || string.IsNullOrWhiteSpace(userDto.Token))
+            {
+                ModelState.AddModelError(string.Empty, "Could not complete sign-in after verification.");
+                return View(vm);
+            }
+
+            await SignInWithJwtAsync(userDto);
+
+            // limpar ReturnUrl e redirecionar por role (como já fazes)
+            var returnUrl = TempData["ReturnUrl"] as string;
+            TempData.Remove("ReturnUrl");
+            return RedirectByRoleOrHome();
+        }
+
+
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -268,6 +357,65 @@ namespace CondoSphere.Web.Controllers
                 : "Ocorreu um erro ao tentar reenviar o email de confirmação.";
 
             return View(model);
+        }
+       
+
+        private async Task SignInWithJwtAsync(UserDto userDto)
+        {
+            var handler = new JwtSecurityTokenHandler();
+
+            var principal = handler.ValidateToken(
+                userDto.Token,
+                new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidateLifetime = true,
+                    ClockSkew = TimeSpan.Zero,
+                    ValidIssuer = _configuration["Jwt:Issuer"],
+                    ValidAudience = _configuration["Jwt:Audience"],
+                    IssuerSigningKey =
+                        new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]))
+                },
+                out _
+            );
+
+            // adiciona o token como claim para o JwtForwardingDelegatingHandler
+            var identity = (ClaimsIdentity)principal.Identity!;
+            identity.AddClaim(new Claim("access_token", userDto.Token));
+
+            var authProperties = new AuthenticationProperties
+            {
+                IsPersistent = true,
+                ExpiresUtc = DateTimeOffset.UtcNow.AddDays(7)
+            };
+
+            await HttpContext.SignInAsync(
+                CookieAuthenticationDefaults.AuthenticationScheme,
+                new ClaimsPrincipal(identity),
+                authProperties
+            );
+
+            // garante que nesta mesma request User.IsInRole() já reflete as claims
+            HttpContext.User = new ClaimsPrincipal(identity);
+        }
+
+        private IActionResult RedirectByRoleOrHome()
+        {
+            if (User.IsInRole(RoleConstants.CompanyAdmin))
+                return RedirectToAction("Index", "Administration");
+
+            if (User.IsInRole(RoleConstants.CondoManager))
+                return RedirectToAction("Index", "CondoManagement");
+
+            if (User.IsInRole(RoleConstants.CondoResident))
+                return RedirectToAction("Index", "Portal");
+
+            if (User.IsInRole(RoleConstants.Employee))
+                return RedirectToAction("Index", "Employee");
+
+            return RedirectToAction("Index", "Home");
         }
 
     }
