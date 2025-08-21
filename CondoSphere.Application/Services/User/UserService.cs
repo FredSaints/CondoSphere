@@ -154,6 +154,8 @@ namespace CondoSphere.Application.Services.User
                 return IdentityResult.Failed(new IdentityError { Description = "An account with this email address already exists." });
             }
 
+            var phone = _phoneNumberService?.Normalize(registerDto.PhoneNumber) ?? registerDto.PhoneNumber;
+
             var newUser = new CoreUser
             {
                 FirstName = registerDto.FirstName,
@@ -162,7 +164,9 @@ namespace CondoSphere.Application.Services.User
                 UserName = registerDto.Email,
                 CompanyId = companyId,
                 IsActive = true,
-                EmailConfirmed = false
+                EmailConfirmed = false,
+                PhoneNumber = phone
+
             };
 
             var result = await _userManager.CreateAsync(newUser);
@@ -213,7 +217,8 @@ namespace CondoSphere.Application.Services.User
                 UserName = dto.Email,
                 CompanyId = companyId,
                 IsActive = true,
-                EmailConfirmed = false
+                EmailConfirmed = false,
+                PhoneNumber = _phoneNumberService.Normalize(dto.PhoneNumber),
             };
 
             var result = await _userManager.CreateAsync(newUser);
@@ -382,6 +387,7 @@ namespace CondoSphere.Application.Services.User
             {
                 return IdentityResult.Failed(new IdentityError { Description = "An account with this email address already exists." });
             }
+            var phone = _phoneNumberService?.Normalize(registerDto.PhoneNumber) ?? registerDto.PhoneNumber;
 
             var newUser = new CoreUser
             {
@@ -391,7 +397,8 @@ namespace CondoSphere.Application.Services.User
                 UserName = registerDto.Email,
                 CompanyId = companyId,
                 IsActive = true,
-                EmailConfirmed = false
+                EmailConfirmed = false,
+                PhoneNumber = phone
             };
 
             var result = await _userManager.CreateAsync(newUser);

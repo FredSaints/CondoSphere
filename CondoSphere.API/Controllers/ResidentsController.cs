@@ -2,6 +2,7 @@
 using CondoSphere.Application.Services.User;
 using CondoSphere.Core;
 using CondoSphere.Core.DTOs.Account;
+using CondoSphere.Infrastructure.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -36,7 +37,7 @@ namespace CondoSphere.API.Controllers
             {
                 return Unauthorized("Company information is missing from the token.");
             }
-
+            
             var result = await _userService.RegisterResidentAsync(dto, companyId.Value, condominiumId);
 
             if (result.Succeeded)
