@@ -120,7 +120,8 @@ namespace CondoSphere.Web.Controllers
                 UnitId = model.UnitId,
                 FirstName = model.FirstName,
                 LastName = model.LastName,
-                Email = model.Email
+                Email = model.Email,
+                PhoneNumber = model.PhoneNumber,
             };
 
             var success = await _apiClient.RegisterResidentAsync(model.CondominiumId, dto);

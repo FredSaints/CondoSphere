@@ -732,5 +732,132 @@ namespace CondoSphere.Web.Services
             var response = await _httpClient.PatchAsync($"/api/condominiums/{condominiumId}/unassign-manager", null);
             return response.IsSuccessStatusCode;
         }
+        // --- Two-Factor (2SV) ---
+        public async Task<(bool Success, string Message)> SwitchTwoFactorAsync(ToggleTwoFactorDto dto)
+        {
+            var response = await _httpClient.PostAsJsonAsync("/api/accounts/2fa/switch", dto);
+            var raw = await response.Content.ReadAsStringAsync();
+
+            if (response.IsSuccessStatusCode)
+            {
+                try
+                {
+                    using var json = JsonDocument.Parse(raw);
+                    var msg = json.RootElement.TryGetProperty("message", out var m) ? m.GetString() : "Two-factor switched.";
+                    return (true, msg ?? "Two-factor switched.");
+                }
+                catch
+                {
+                    return (true, "Two-factor switched.");
+                }
+            }
+
+            try
+            {
+                using var json = JsonDocument.Parse(raw);
+                var msg = json.RootElement.TryGetProperty("message", out var m) ? m.GetString() : raw;
+                return (false, msg ?? raw);
+            }
+            catch
+            {
+                return (false, raw);
+            }
+        }
+
+        public async Task<(bool Success, string Message)> SendTwoFactorCodeAsync(SendTwoFactorCodeDto dto)
+        {
+            var response = await _httpClient.PostAsJsonAsync("/api/accounts/2fa/send-code", dto);
+            var raw = await response.Content.ReadAsStringAsync();
+
+            if (response.IsSuccessStatusCode)
+            {
+                try
+                {
+                    using var json = JsonDocument.Parse(raw);
+                    var msg = json.RootElement.TryGetProperty("message", out var m) ? m.GetString() : "Two-factor code sent.";
+                    return (true, msg ?? "Two-factor code sent.");
+                }
+                catch
+                {
+                    return (true, "Two-factor code sent.");
+                }
+            }
+
+            try
+            {
+                using var json = JsonDocument.Parse(raw);
+                var msg = json.RootElement.TryGetProperty("message", out var m) ? m.GetString() : raw;
+                return (false, msg ?? raw);
+            }
+            catch
+            {
+                return (false, raw);
+            }
+        }
+
+        public async Task<(bool Success, string Message)> VerifyTwoFactorCodeAsync(VerifyTwoFactorCodeDto dto)
+        {
+            var response = await _httpClient.PostAsJsonAsync("/api/accounts/2fa/verify", dto);
+            var raw = await response.Content.ReadAsStringAsync();
+
+            if (response.IsSuccessStatusCode)
+            {
+                // O teu endpoint devolve 200 OK sem body
+                return (true, "Two-factor code verified.");
+            }
+
+            try
+            {
+                using var json = JsonDocument.Parse(raw);
+                var msg = json.RootElement.TryGetProperty("message", out var m) ? m.GetString() : raw;
+                return (false, msg ?? raw);
+            }
+            catch
+            {
+                return (false, raw);
+            }
+        }
+
+        public async Task<bool> IsTwoFactorEnabledAsync(EmailDto dto)
+        {
+            // 1) envia um objeto JSON com a propriedade Email (não envies só a string)
+            var response = await _httpClient.PostAsJsonAsync("/api/accounts/2fa/IsEnable", dto);
+
+            if (!response.IsSuccessStatusCode)
+                return false;
+
+            // 2) lê o corpo como string e tenta várias formas de interpretar
+            var raw = await response.Content.ReadAsStringAsync();
+
+            try
+            {
+                // a) se for um booleano puro: true/false (JSON)
+                //    também cobre o caso de vir "true"/"false" como string
+                if (bool.TryParse(raw.Trim().Trim('"'), out var directBool))
+                    return directBool;
+
+                // b) se for um objeto: { "enabled": true }, { "isEnabled": true }, { "twoFactorEnabled": true }
+                using var doc = JsonDocument.Parse(raw);
+                var root = doc.RootElement;
+                if (root.ValueKind == JsonValueKind.Object)
+                {
+                    if (root.TryGetProperty("enabled", out var e) && e.ValueKind == JsonValueKind.True || e.ValueKind == JsonValueKind.False)
+                        return e.GetBoolean();
+
+                    if (root.TryGetProperty("isEnabled", out var ie) && (ie.ValueKind == JsonValueKind.True || ie.ValueKind == JsonValueKind.False))
+                        return ie.GetBoolean();
+
+                    if (root.TryGetProperty("twoFactorEnabled", out var tfe) && (tfe.ValueKind == JsonValueKind.True || tfe.ValueKind == JsonValueKind.False))
+                        return tfe.GetBoolean();
+                }
+            }
+            catch
+            {
+                // ignora parsing errors e cai para false
+            }
+            //TODO rever isto 
+            return false;
+        }
+
     }
 }

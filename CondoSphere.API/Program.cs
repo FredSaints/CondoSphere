@@ -26,6 +26,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using CondoSphere.Infrastructure.Notifications;
+using System;
 using System.Text;
 
 namespace CondoSphere.API
@@ -122,6 +124,8 @@ namespace CondoSphere.API
             builder.Services.AddScoped<IFinancialService, FinancialService>();
             builder.Services.AddScoped<IAuthorizationHandler, CanAccessOccurrenceHandler>();
             builder.Services.AddScoped<IAuthorizationHandler, CanManageInterventionHandler>();
+            builder.Services.AddScoped<ISmsService, TwilioSmsService>();
+            builder.Services.AddScoped<IPhoneNumberService, PhoneNumberService>();
 
             builder.Services.AddAutoMapper(cfg =>
             {
@@ -142,6 +146,7 @@ namespace CondoSphere.API
                 options.AddPolicy("CanManageIntervention", policy =>
                     policy.AddRequirements(new CanManageInterventionRequirement()));
             });
+
 
             builder.Services.AddScoped<IAuthorizationHandler, IsCondoManagerHandler>();
 

@@ -2,6 +2,7 @@
 using CondoSphere.Application.Services.User;
 using CondoSphere.Core;
 using CondoSphere.Core.DTOs.Account;
+using CondoSphere.Core.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -13,6 +14,8 @@ namespace CondoSphere.API.Controllers
     [ApiController]
     public class AccountsController : ControllerBase
     {
+
+        //todo este user manager e para sair daqui e encapsolar no user service
         private readonly IUserService _userService;
         private readonly ICurrentUserService _currentUserService;
 
@@ -69,16 +72,16 @@ namespace CondoSphere.API.Controllers
             }
 
             var user = await _userService.GetUserByEmailAsync(loginDto.Email);
-            if (user != null) 
+            if (user != null)
             {
                 var isConfirmed = await _userService.IsEmailConfirmedAsync(user);
 
                 if (!isConfirmed)
                 {
                     return Unauthorized(new { Message = "Not confirmed email" });
-                }  
+                }
             }
-          
+
             var userDto = await _userService.LoginAsync(loginDto);
 
             if (userDto == null)
@@ -278,6 +281,62 @@ namespace CondoSphere.API.Controllers
                 return Ok(new { message = "Confirmation Email Resent" });
 
             return BadRequest(result.Errors);
+        }
+
+        [HttpPost("2fa/verify")]
+        [AllowAnonymous]
+        public async Task<IActionResult> VerifyTwoFactorCode([FromBody] VerifyTwoFactorCodeDto dto)
+        {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+
+            var result = await _userService.VerifyCode2SVAsync(dto.Email, dto.Method, dto.Code);
+            if (!result.Succeeded)
+            {
+                return BadRequest(new { message = result.Error ?? "Invalid two-factor code." });
+            }
+
+            return Ok();
+        }
+
+        [HttpPost("2fa/switch")]
+        [Authorize]
+        public async Task<IActionResult> SwitchTwoFactor([FromBody] ToggleTwoFactorDto Dto)
+        {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+
+            var result = await _userService.Switch2SVAsync(Dto.Email, Dto.Enable);
+            if (result.Succeeded)
+            {
+                return Ok(new { message = "Two-factor authentication switched." });
+            }
+
+            return BadRequest(result.Errors);
+        }
+
+        [HttpPost("2fa/send-code")]
+        [AllowAnonymous]
+        public async Task<IActionResult> SendTwoFactorCode([FromBody] SendTwoFactorCodeDto dto)
+        {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+
+            var result = await _userService.SendCode2SVAsync(dto.Email, dto.Method);
+            if (result.Succeeded)
+            {
+                return Ok(new { message = "Two-factor code sent." });
+            }
+
+            return BadRequest(result.Errors);
+        }
+
+        [HttpPost("2fa/IsEnable")]
+        [AllowAnonymous]
+        public async Task<IActionResult> IsTwoFactorEnabled([FromBody] EmailDto dto)
+        {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+
+            var isEnabled = await _userService.Is2SVEnabledAsync(dto);
+            return Ok(new { enabled = isEnabled });
+
         }
     }
 }

@@ -18,5 +18,10 @@ namespace CondoSphere.Core.DTOs.Account
 
         [Required]
         public int UnitId { get; set; }
+
+        [Required]
+        [Phone]
+        [Display(Name = "Phone Number")]
+        public string PhoneNumber { get; set; } = string.Empty;
     }
 }

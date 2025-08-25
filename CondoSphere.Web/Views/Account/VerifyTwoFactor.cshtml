@@ -1,0 +1,18 @@
+﻿@model CondoSphere.Web.Models.TwoFactorVerifyViewModel
+@{
+    ViewData["Title"] = "Two-Factor Verification";
+}
+<h2>Two-Factor Verification</h2>
+
+<form asp-action="VerifyTwoFactor" method="post">
+    <input type="hidden" asp-for="Email" />
+    <input type="hidden" asp-for="SelectedMethod" />
+
+    <div class="form-group">
+        <label asp-for="Code">Code</label>
+        <input asp-for="Code" class="form-control" autocomplete="one-time-code" />
+        <span asp-validation-for="Code" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Verify</button>
+</form>

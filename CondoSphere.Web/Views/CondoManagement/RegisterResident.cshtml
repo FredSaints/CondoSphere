@@ -38,6 +38,11 @@
                 <label asp-for="Email"></label>
                 <span asp-validation-for="Email" class="text-danger"></span>
             </div>
+            <div class="col-md-6 form-floating mb-3">
+                <input asp-for="PhoneNumber" class="form-control" placeholder="+3519XXXXXXXX" />
+                <label asp-for="PhoneNumber"></label>
+                <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+            </div>
 
             <button type="submit" class="btn btn-primary">Register and Assign Resident</button>
             <a asp-action="Details" asp-route-id="@Model.CondominiumId" class="btn btn-secondary">Cancel</a>

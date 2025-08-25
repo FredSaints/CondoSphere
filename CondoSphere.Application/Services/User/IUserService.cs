@@ -1,5 +1,6 @@
 ﻿using CondoSphere.Core.DTOs.Account;
 using CondoSphere.Core.DTOs.Condominiums;
+using CondoSphere.Core.Enums;
 using Microsoft.AspNetCore.Identity;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -37,5 +38,11 @@ namespace CondoSphere.Application.Services.User
         Task<IEnumerable<UserListDto>> GetUsersByIdsAsync(List<int> userIds);
         Task<IdentityResult> ConfirmEmailAsync(int userId, string token);
         Task<IdentityResult> SetPasswordAsync(SetPasswordDto dto);
+
+        Task<IdentityResult> Switch2SVAsync(string email, bool enable2SV);
+        Task<IdentityResult> SendCode2SVAsync(string email, TwoFactorMethod twoFactorMethodOption);
+        Task<(bool Succeeded, string? Token, string? Error)> VerifyCode2SVAsync(string email, TwoFactorMethod method, string code);
+
+        Task<bool> Is2SVEnabledAsync(EmailDto dto);
     }
 }
