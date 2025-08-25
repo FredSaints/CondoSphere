@@ -6,6 +6,9 @@
         <a asp-controller="CondoManagement" asp-action="QuotaManagement" asp-route-condominiumId="@Model.Condominium.Id" class="btn btn-sm btn-outline-info">
             <i class="bi bi-cash-stack me-1"></i> Manage Quotas
         </a>
+        <a asp-controller="CondoManagement" asp-action="FinancialReport" asp-route-condominiumId="@Model.Condominium.Id" class="btn btn-sm btn-outline-dark">
+            <i class="bi bi-file-earmark-bar-graph me-1"></i> Financial Report
+        </a>
         <a asp-controller="CondoManagement" asp-action="FixedExpenses" asp-route-condominiumId="@Model.Condominium.Id" class="btn btn-sm btn-outline-secondary">
             <i class="bi bi-arrow-repeat me-1"></i> Manage Fixed Expenses
         </a>

@@ -1,5 +1,6 @@
 ﻿@using CondoSphere.Core
 @using Microsoft.AspNetCore.Identity
+@inject IConfiguration Configuration
 
 <!DOCTYPE html>
 <html lang="en">
@@ -10,7 +11,6 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/CondoSphere.Web.styles.css" asp-append-version="true" />
-    @* Added reference for Bootstrap Icons used in some views *@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 </head>
 <body>
@@ -34,7 +34,10 @@
                             if (User.IsInRole(RoleConstants.CompanyAdmin))
                             {
                                 <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-controller="Administration" asp-action="Index">Admin Dashboard</a>
+                                    <a class="nav-link text-dark" asp-controller="Administration" asp-action="Index">Admin Management</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-controller="Administration" asp-action="Dashboard">BI Dashboard</a>
                                 </li>
                             }
                             if (User.IsInRole(RoleConstants.CondoManager))
@@ -46,7 +49,7 @@
                             if (User.IsInRole(RoleConstants.CondoResident))
                             {
                                 <li class="nav-item">
-                                    @* This is a placeholder for a future feature *@
+
                                     <a class="nav-link text-dark" asp-controller="Portal" asp-action="Index">My Portal</a>
                                 </li>
                             }
@@ -86,8 +89,14 @@
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
             }
-
-            @RenderBody()
+           @RenderBody()
+            @if (User.Identity?.IsAuthenticated == true)
+            {
+                <script>
+                    const jwtToken = "@User.FindFirst("access_token")?.Value";
+                    const apiBaseUrl = "@Configuration["ApiSettings:BaseUrl"]";
+                </script>
+            }
         </main>
     </div>
 
@@ -99,6 +108,21 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/lib/microsoft/signalr/dist/browser/signalr.min.js"></script>
+    <script src="~/js/notifications.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const urlParams = new URLSearchParams(window.location.search);
+            const activeTabId = urlParams.get('activeTab');
+
+            if (activeTabId) {
+                const tabToActivate = document.getElementById(activeTabId);
+                if (tabToActivate) {
+                    new bootstrap.Tab(tabToActivate).show();
+                }
+            }
+        });
+    </script>
 </body>
 </html>

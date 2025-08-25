@@ -3,7 +3,9 @@ using CondoSphere.Core.DTOs.Account;
 using CondoSphere.Core.DTOs.Condominiums;
 using CondoSphere.Core.DTOs.Financials;
 using CondoSphere.Core.DTOs.Interventions;
+using CondoSphere.Core.DTOs.Notifications;
 using CondoSphere.Core.DTOs.Occurrences;
+using CondoSphere.Core.DTOs.Reports;
 using CondoSphere.Core.Enums;
 using CondoSphere.Web.Models;
 using CondoSphere.Web.Services;
@@ -625,7 +627,7 @@ namespace CondoSphere.Web.Controllers
             return View(quotas);
         }
 
-        [HttpPost]
+        [HttpPost("quotas/confirm")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ConfirmPayment(int quotaId, int condominiumId)
         {
@@ -773,6 +775,91 @@ namespace CondoSphere.Web.Controllers
                 return File(stream, contentType, fileName);
             }
             return NotFound();
+        }
+
+        [HttpGet("{condominiumId}/announcement")]
+        public async Task<IActionResult> Announcement(int condominiumId)
+        {
+            var condo = await _apiClient.GetCondominiumDetailsAsync(condominiumId);
+            if (condo == null) return NotFound();
+
+            ViewData["Condominium"] = condo;
+            return View(new AnnouncementDto());
+        }
+
+        [HttpPost("{condominiumId}/announcement")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Announcement(int condominiumId, AnnouncementDto dto)
+        {
+            if (!ModelState.IsValid)
+            {
+                var condo = await _apiClient.GetCondominiumDetailsAsync(condominiumId);
+                ViewData["Condominium"] = condo;
+                return View(dto);
+            }
+
+            var (success, message) = await _apiClient.SendAnnouncementAsync(condominiumId, dto);
+
+            if (success)
+            {
+                TempData["SuccessMessage"] = message;
+                TempData["ActiveTab"] = "communications-tab";
+            }
+            else
+            {
+                TempData["ErrorMessage"] = "Failed to send announcement: " + message;
+            }
+
+            return RedirectToAction("Details", new { id = condominiumId });
+        }
+
+        [HttpGet("notifications")]
+        public async Task<IActionResult> AllNotifications()
+        {
+            var notifications = await _apiClient.GetAllMyNotificationsAsync();
+            return View(notifications);
+        }
+
+        [HttpPost("quotas/reject")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> RejectPayment(int quotaId, int condominiumId, RejectPaymentDto dto)
+        {
+            if (!ModelState.IsValid)
+            {
+                TempData["ErrorMessage"] = "Rejection reason must be at least 10 characters long.";
+                return RedirectToAction("QuotaManagement", new { condominiumId });
+            }
+
+            var (success, message) = await _apiClient.RejectPaymentProofAsync(quotaId, dto);
+            if (success)
+            {
+                TempData["SuccessMessage"] = message;
+            }
+            else
+            {
+                TempData["ErrorMessage"] = message;
+            }
+
+            return RedirectToAction("QuotaManagement", new { condominiumId });
+        }
+
+        [HttpGet("{condominiumId}/financial-report")]
+        public async Task<IActionResult> FinancialReport(int condominiumId, int? year, int? month)
+        {
+            var condo = await _apiClient.GetCondominiumDetailsAsync(condominiumId);
+            if (condo == null)
+            {
+                return NotFound();
+            }
+
+            ViewData["Condominium"] = condo;
+            FinancialStatementDto? report = null;
+
+            if (year.HasValue && month.HasValue)
+            {
+                report = await _apiClient.GetFinancialStatementAsync(condominiumId, year.Value, month.Value);
+            }
+            return View(report);
         }
     }
 }

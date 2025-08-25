@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using CondoSphere.Application.Interfaces;
+using CondoSphere.Application.Services.Notifications;
 using CondoSphere.Application.Services.Pdf;
 using CondoSphere.Core.DTOs.Financials;
 using CondoSphere.Core.Enums;
@@ -17,14 +18,21 @@ namespace CondoSphere.Application.Services.Financials
         private readonly IConfiguration _configuration;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IPdfService _pdfService;
+        private readonly INotificationService _notificationService;
 
-        public FinancialService(IUnitOfWork unitOfWork, IMapper mapper, IConfiguration configuration, IHttpContextAccessor httpContextAccessor, IPdfService pdfService)
+        public FinancialService(IUnitOfWork unitOfWork,
+                                IMapper mapper,
+                                IConfiguration configuration,
+                                IHttpContextAccessor httpContextAccessor,
+                                IPdfService pdfService,
+                                INotificationService notificationService)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _configuration = configuration;
             _httpContextAccessor = httpContextAccessor;
             _pdfService = pdfService;
+            _notificationService = notificationService;
             StripeConfiguration.ApiKey = _configuration["Stripe:SecretKey"];
         }
 
@@ -111,35 +119,29 @@ namespace CondoSphere.Application.Services.Financials
 
         public async Task<(bool Success, string Message)> GenerateMonthlyQuotasAsync(int condominiumId, int year, int month, int companyId)
         {
-            // Security Check: Ensure the condo belongs to the calling manager's company
             var condo = await _unitOfWork.Condominiums.GetByIdAsync(condominiumId, companyId);
             if (condo == null)
             {
                 return (false, "Condominium not found or access denied.");
             }
 
-            // New Duplicate Check: See if fees for this exact period already exist.
             var alreadyExists = await _unitOfWork.UnitQuotas.QuotasExistForPeriodAsync(condominiumId, year, month);
             if (alreadyExists)
             {
                 return (false, $"Fees for {new DateTime(year, month, 1):MMMM yyyy} have already been generated.");
             }
 
-            // 1. Get all units in the condominium
             var units = (await _unitOfWork.Units.GetAllAsync(condominiumId)).ToList();
             if (!units.Any())
             {
                 return (false, "Cannot generate fees because there are no units in this condominium.");
             }
 
-            // 2. Get all active, recurring expenses for this condominium
             var fixedExpenses = await _unitOfWork.Expenses.GetFixedExpensesByCondominiumAsync(condominiumId);
             var activeFixedExpenses = fixedExpenses.Where(e => e.IsActive).ToList();
 
-            // 3. Get all one-time expenses for the specified month and year
             var oneTimeExpenses = await _unitOfWork.Expenses.GetOneTimeExpensesForPeriodAsync(condominiumId, year, month);
 
-            // 4. Calculate total expenses
             decimal totalFixed = activeFixedExpenses.Sum(e => e.Amount);
             decimal totalOneTime = oneTimeExpenses.Sum(e => e.Amount);
             decimal totalExpenses = totalFixed + totalOneTime;
@@ -149,12 +151,12 @@ namespace CondoSphere.Application.Services.Financials
                 return (false, "No expenses were found for this period, so no fees were generated.");
             }
 
-            // 5. Calculate the amount per unit (simple division for now)
             decimal amountPerUnit = totalExpenses / units.Count;
 
-            // 6. Create a new UnitQuota for each unit
-            var dueDate = new DateTime(year, month, 1).AddMonths(1).AddDays(-1); // Last day of the billing month
+            var dueDate = new DateTime(year, month, 1).AddMonths(1).AddDays(-1);
             var description = $"Condominium Fee - {new DateTime(year, month, 1):MMMM yyyy}";
+
+            var newQuotasList = new List<Core.Entities.Financials.UnitQuota>();
 
             foreach (var unit in units)
             {
@@ -170,11 +172,14 @@ namespace CondoSphere.Application.Services.Financials
                     Status = Core.Enums.UnitQuotaStatus.Pending
                 };
                 await _unitOfWork.UnitQuotas.AddAsync(newQuota);
+                newQuotasList.Add(newQuota);
             }
 
-            // 7. Save all new quotas to the database in one transaction
             await _unitOfWork.CompleteAsync();
-
+            if (newQuotasList.Any())
+            {
+                await _notificationService.NotifyResidentsOfNewQuotasAsync(newQuotasList, condo.Name);
+            }
             return (true, "Monthly fees generated successfully.");
         }
 
@@ -258,6 +263,7 @@ namespace CondoSphere.Application.Services.Financials
             quota.Status = UnitQuotaStatus.PendingConfirmation; 
             _unitOfWork.UnitQuotas.Update(quota);
             await _unitOfWork.CompleteAsync();
+            await _notificationService.NotifyManagerOfPaymentProofSubmittedAsync(quota);
 
             return _mapper.Map<UnitQuotaDto>(quota);
         }
@@ -270,6 +276,48 @@ namespace CondoSphere.Application.Services.Financials
 
             // Call a shared private method to do the work
             await CreatePaymentAndReceipt(quota, "Manual Confirmation");
+
+            return true;
+        }
+
+        public async Task<bool> RejectPaymentProofAsync(int quotaId, int companyId, string rejectionReason)
+        {
+            var quota = await _unitOfWork.UnitQuotas.GetByIdAsync(quotaId);
+            if (quota == null || quota.CompanyId != companyId || quota.Status != UnitQuotaStatus.PendingConfirmation)
+            {
+                return false;
+            }
+
+            // Delete the physical proof of payment file
+            if (!string.IsNullOrEmpty(quota.ProofOfPaymentUrl))
+            {
+                var uploadRootSetting = _configuration["FileUpload:Path"];
+                var uploadRoot = Environment.ExpandEnvironmentVariables(uploadRootSetting);
+                if (!Path.IsPathRooted(uploadRoot))
+                    uploadRoot = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), uploadRoot));
+
+                // Extract the relative path from the full URL
+                var uri = new Uri(quota.ProofOfPaymentUrl);
+                var relativeFilePath = uri.AbsolutePath.TrimStart('/');
+                // The first part of the path is "uploads", which is the request path, not part of the physical path
+                relativeFilePath = relativeFilePath.Substring(relativeFilePath.IndexOf('/') + 1);
+
+                var fullPath = Path.Combine(uploadRoot, relativeFilePath.Replace('/', Path.DirectorySeparatorChar));
+
+                if (System.IO.File.Exists(fullPath))
+                {
+                    System.IO.File.Delete(fullPath);
+                }
+            }
+
+            // Reset the quota's status and clear the proof URL
+            quota.Status = quota.DueDate < DateTime.UtcNow ? UnitQuotaStatus.Overdue : UnitQuotaStatus.Pending;
+            quota.ProofOfPaymentUrl = null;
+            _unitOfWork.UnitQuotas.Update(quota);
+            await _unitOfWork.CompleteAsync();
+
+            // Notify the resident of the rejection
+            await _notificationService.NotifyResidentOfPaymentRejectionAsync(quota, rejectionReason);
 
             return true;
         }
@@ -410,45 +458,6 @@ namespace CondoSphere.Application.Services.Financials
             return receiptDto;
         }
 
-        //private async Task CreatePaymentAndReceipt(Core.Entities.Financials.UnitQuota quota, string paymentMethod)
-        //{
-        //    // 1. Update the Quota
-        //    quota.Status = UnitQuotaStatus.Paid;
-        //    quota.PaymentDate = DateTime.UtcNow;
-        //    quota.AmountPaid = quota.AmountDue;
-        //    _unitOfWork.UnitQuotas.Update(quota);
-
-        //    // 2. Create the QuotaPayment record
-        //    var payment = new Core.Entities.Financials.QuotaPayment
-        //    {
-        //        Amount = quota.AmountDue,
-        //        PaymentDate = DateTime.UtcNow,
-        //        PaymentMethod = paymentMethod,
-        //        UnitQuotaId = quota.Id,
-        //        UnitId = quota.UnitId,
-        //        CompanyId = quota.CompanyId
-        //    };
-        //    await _unitOfWork.QuotaPayments.AddAsync(payment);
-
-        //    // We need to save here to get the new Payment ID for the receipt
-        //    await _unitOfWork.CompleteAsync();
-
-        //    // 3. Create the Receipt record
-        //    var receipt = new Core.Entities.Financials.Receipt
-        //    {
-        //        Amount = quota.AmountDue,
-        //        IssueDate = DateTime.UtcNow,
-        //        QuotaPaymentId = payment.Id, // Link to the payment we just created
-        //        Details = $"Receipt for payment of '{quota.Description}'",
-        //        CompanyId = quota.CompanyId,
-        //        CondominiumId = quota.CondominiumId
-        //    };
-        //    await _unitOfWork.Receipts.AddAsync(receipt);
-
-        //    // Final save for the receipt
-        //    await _unitOfWork.CompleteAsync();
-        //}
-
         private async Task CreatePaymentAndReceipt(Core.Entities.Financials.UnitQuota quota, string paymentMethod)
         {
             // 1. Update the Quota
@@ -465,7 +474,8 @@ namespace CondoSphere.Application.Services.Financials
                 PaymentMethod = paymentMethod,
                 UnitQuotaId = quota.Id,
                 UnitId = quota.UnitId,
-                CompanyId = quota.CompanyId
+                CompanyId = quota.CompanyId,
+                CondominiumId = quota.CondominiumId
             };
             await _unitOfWork.QuotaPayments.AddAsync(payment);
 
@@ -528,6 +538,7 @@ namespace CondoSphere.Application.Services.Financials
             };
             await _unitOfWork.Documents.AddAsync(document);
             await _unitOfWork.CompleteAsync();
+            await _notificationService.NotifyResidentOfPaymentConfirmationAsync(quota);
         }
     }
 }

@@ -2,7 +2,9 @@
 using CondoSphere.Core.DTOs.Condominiums;
 using CondoSphere.Core.DTOs.Financials;
 using CondoSphere.Core.DTOs.Interventions;
+using CondoSphere.Core.DTOs.Notifications;
 using CondoSphere.Core.DTOs.Occurrences;
+using CondoSphere.Core.DTOs.Reports;
 using CondoSphere.Web.Models;
 using Microsoft.AspNetCore.WebUtilities;
 using System.Globalization;
@@ -623,6 +625,112 @@ namespace CondoSphere.Web.Services
         {
             return await _httpClient.GetFromJsonAsync<IEnumerable<DocumentDto>>("/api/users/my-documents")
                 ?? new List<DocumentDto>();
+        }
+
+        public async Task<(bool Success, string Message)> SendAnnouncementAsync(int condominiumId, AnnouncementDto dto)
+        {
+            var response = await _httpClient.PostAsJsonAsync($"/api/condominiums/{condominiumId}/announcements", dto);
+            if (response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadFromJsonAsync<JsonElement>();
+                return (true, result.GetProperty("message").GetString() ?? "Success");
+            }
+            var error = await response.Content.ReadAsStringAsync();
+            return (false, error);
+        }
+
+        public async Task<IEnumerable<NotificationDto>> GetMyNotificationsAsync()
+        {
+            return await _httpClient.GetFromJsonAsync<IEnumerable<NotificationDto>>("/api/notifications/my-notifications")
+                ?? new List<NotificationDto>();
+        }
+
+        public async Task MarkAllNotificationsAsReadAsync()
+        {
+            await _httpClient.PostAsync("/api/notifications/mark-all-as-read", null);
+        }
+
+        public async Task<IEnumerable<NotificationDto>> GetAllMyNotificationsAsync()
+        {
+            return await _httpClient.GetFromJsonAsync<IEnumerable<NotificationDto>>("/api/notifications/my-notifications-all")
+                ?? new List<NotificationDto>();
+        }
+
+        public async Task<(bool Success, string Message)> RejectPaymentProofAsync(int quotaId, RejectPaymentDto dto)
+        {
+            var response = await _httpClient.PostAsJsonAsync($"/api/financials/quotas/{quotaId}/reject-payment", dto);
+            var responseBody = await response.Content.ReadFromJsonAsync<JsonElement>();
+            var message = responseBody.GetProperty("message").GetString() ?? "An unknown error occurred.";
+            return (response.IsSuccessStatusCode, message);
+        }
+
+        public async Task<FinancialStatementDto?> GetFinancialStatementAsync(int condominiumId, int year, int month)
+        {
+            var url = $"/api/reports/condominiums/{condominiumId}/financial-statement?year={year}&month={month}";
+            var response = await _httpClient.GetAsync(url);
+
+            if (response.IsSuccessStatusCode)
+            {
+                return await response.Content.ReadFromJsonAsync<FinancialStatementDto>();
+            }
+
+            return null;
+        }
+
+        public async Task<AdminDashboardDto?> GetAdminDashboardAsync()
+        {
+            var response = await _httpClient.GetAsync("/api/reports/admin-dashboard");
+            response.EnsureSuccessStatusCode();
+            if (response.IsSuccessStatusCode)
+            {
+                return await response.Content.ReadFromJsonAsync<AdminDashboardDto>();
+            }
+            return null;
+        }
+        public async Task<IEnumerable<MonthlyFinancialsDto>> GetMonthlyFinancialsAsync()
+        {
+            return await _httpClient.GetFromJsonAsync<IEnumerable<MonthlyFinancialsDto>>("/api/reports/monthly-financials")
+                ?? new List<MonthlyFinancialsDto>();
+        }
+
+        public async Task<IEnumerable<StatusSummaryDto>> GetOccurrenceStatusSummaryAsync()
+        {
+            return await _httpClient.GetFromJsonAsync<IEnumerable<StatusSummaryDto>>("/api/reports/occurrence-status-summary")
+                ?? new List<StatusSummaryDto>();
+        }
+
+        public async Task<IEnumerable<CondoHotspotDto>> GetCondoHotspotsAsync()
+        {
+            return await _httpClient.GetFromJsonAsync<IEnumerable<CondoHotspotDto>>("/api/reports/condo-hotspots")
+                ?? new List<CondoHotspotDto>();
+        }
+
+        public async Task<bool> UpdateCondominiumAsync(int id, CreateUpdateCondominiumDto dto)
+        {
+            var response = await _httpClient.PutAsJsonAsync($"/api/condominiums/{id}", dto);
+            return response.IsSuccessStatusCode;
+        }
+
+        public async Task<(bool Success, string Message)> DeleteCondominiumAsync(int id)
+        {
+            var response = await _httpClient.DeleteAsync($"/api/condominiums/{id}");
+
+            if (response.IsSuccessStatusCode)
+            {
+                return (true, "Condominium deleted successfully.");
+            }
+            else
+            {
+                var errorResponse = await response.Content.ReadFromJsonAsync<JsonElement>();
+                var message = errorResponse.GetProperty("message").GetString() ?? "An unknown error occurred.";
+                return (false, message);
+            }
+        }
+
+        public async Task<bool> UnassignManagerAsync(int condominiumId)
+        {
+            var response = await _httpClient.PatchAsync($"/api/condominiums/{condominiumId}/unassign-manager", null);
+            return response.IsSuccessStatusCode;
         }
     }
 }

@@ -1,0 +1,36 @@
+﻿@model CondoSphere.Core.DTOs.Condominiums.CreateUpdateCondominiumDto
+
+@{
+    ViewData["Title"] = "Edit Condominium";
+}
+
+<h1>@ViewData["Title"]</h1>
+<p class="text-muted">Updating details for: <strong>@ViewData["CondominiumName"]</strong></p>
+<hr />
+
+<div class="row">
+    <div class="col-md-8">
+        <form asp-action="EditCondominium" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="form-floating mb-3">
+                <input asp-for="Name" class="form-control" />
+                <label asp-for="Name"></label>
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+
+            <div class="form-floating mb-3">
+                <input asp-for="Address" class="form-control" />
+                <label asp-for="Address"></label>
+                <span asp-validation-for="Address" class="text-danger"></span>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Save Changes</button>
+            <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

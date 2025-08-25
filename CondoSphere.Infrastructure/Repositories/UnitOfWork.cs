@@ -1,4 +1,5 @@
 ﻿using CondoSphere.Application.Interfaces;
+using CondoSphere.Core.Entities.Users;
 using CondoSphere.Infrastructure.Data;
 
 namespace CondoSphere.Infrastructure.Repositories
@@ -20,6 +21,7 @@ namespace CondoSphere.Infrastructure.Repositories
         public IQuotaPaymentRepository QuotaPayments { get; private set; }
         public IReceiptRepository Receipts { get; private set; }
         public IDocumentRepository Documents { get; private set; }
+        public INotificationRepository Notifications { get; private set; }
 
         public UnitOfWork(UserManagementDbContext userContext, CondominiumDbContext condoContext, FinancialsDbContext financialsContext)
         {
@@ -38,6 +40,7 @@ namespace CondoSphere.Infrastructure.Repositories
             QuotaPayments = new QuotaPaymentRepository(_financialsContext);
             Receipts = new ReceiptRepository(_financialsContext);
             Documents = new DocumentRepository(_condoContext);
+            Notifications = new NotificationRepository(_userContext);
         }
 
         public async Task<int> CompleteAsync()

@@ -75,6 +75,9 @@ namespace CondoSphere.Infrastructure.Data.Migrations.UserManagement
                     b.Property<DateTime?>("ReadDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<int?>("RelatedEntityId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("SentDate")
                         .HasColumnType("datetime2");
 

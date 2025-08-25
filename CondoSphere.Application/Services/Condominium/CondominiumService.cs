@@ -97,17 +97,27 @@ namespace CondoSphere.Application.Services.Condominium
             return true;
         }
 
-        public async Task<bool> DeleteCondominiumAsync(int id, int companyId)
+        public async Task<(bool Success, string Message)> DeleteCondominiumAsync(int id, int companyId)
         {
             var condominium = await _unitOfWork.Condominiums.GetByIdAsync(id, companyId);
             if (condominium == null)
             {
-                return false;
+                return (false, "Condominium not found or you do not have permission to access it.");
             }
 
+            var units = await _unitOfWork.Units.GetAllAsync(id);
+            if (units.Any())
+            {
+                return (false, "Error: Cannot delete a condominium that contains units. Please remove all units first.");
+            }
+            if (condominium.ManagerId.HasValue)
+            {
+                return (false, "Error: Cannot delete a condominium that has a manager assigned. Please un-assign the manager first.");
+            }
             _unitOfWork.Condominiums.Remove(condominium);
             await _unitOfWork.CompleteAsync();
-            return true;
+
+            return (true, "Condominium deleted successfully.");
         }
 
         public async Task<bool> AssignManagerAsync(int condominiumId, int managerId, int companyId)
@@ -132,6 +142,21 @@ namespace CondoSphere.Application.Services.Condominium
         {
             var condominiums = await _unitOfWork.Condominiums.GetByManagerIdAsync(managerId);
             return _mapper.Map<IEnumerable<CondominiumDto>>(condominiums);
+        }
+
+        public async Task<bool> UnassignManagerAsync(int condominiumId, int companyId)
+        {
+            var condominium = await _unitOfWork.Condominiums.GetByIdAsync(condominiumId, companyId);
+            if (condominium == null)
+            {
+                return false;
+            }
+
+            condominium.ManagerId = null;
+            _unitOfWork.Condominiums.Update(condominium);
+            await _unitOfWork.CompleteAsync();
+
+            return true;
         }
     }
 }

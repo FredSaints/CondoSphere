@@ -20,6 +20,11 @@
 
   <ItemGroup>
     <ProjectReference Include="..\CondoSphere.Core\CondoSphere.Core.csproj" />
+    <ProjectReference Include="..\CondoSphere.Shared.Hubs\CondoSphere.Shared.Hubs.csproj" />
   </ItemGroup>
-
+	
+	<ItemGroup>
+		<FrameworkReference Include="Microsoft.AspNetCore.App" />
+	</ItemGroup>
+	
 </Project>

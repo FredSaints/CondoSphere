@@ -67,5 +67,23 @@ namespace CondoSphere.Infrastructure.Repositories
                             e.ExpenseDate < endDate)
                 .ToListAsync();
         }
+
+        public async Task<decimal> GetTotalExpensesForPeriodAsync(int companyId, DateTime start, DateTime end)
+        {
+            var oneTimeTotal = await _context.Expenses
+                .Where(e => e.CompanyId == companyId &&
+                            e.Frequency == ExpenseFrequency.OneTime &&
+                            e.ExpenseDate >= start &&
+                            e.ExpenseDate < end)
+                .SumAsync(e => e.Amount);
+
+            var recurringTotal = await _context.Expenses
+                .Where(e => e.CompanyId == companyId &&
+                            e.IsActive &&
+                            e.Frequency != ExpenseFrequency.OneTime)
+                .SumAsync(e => e.Amount);
+
+            return oneTimeTotal + recurringTotal;
+        }
     }
 }

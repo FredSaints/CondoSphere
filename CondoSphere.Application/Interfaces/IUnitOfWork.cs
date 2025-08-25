@@ -13,6 +13,7 @@
         IQuotaPaymentRepository QuotaPayments { get; }
         IReceiptRepository Receipts { get; }
         IDocumentRepository Documents { get; }
+        INotificationRepository Notifications { get; }
         Task<int> CompleteAsync();
 
     }

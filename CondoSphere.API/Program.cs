@@ -5,8 +5,10 @@ using CondoSphere.Application.Services.Condominium;
 using CondoSphere.Application.Services.Document;
 using CondoSphere.Application.Services.Financials;
 using CondoSphere.Application.Services.Intervention;
+using CondoSphere.Application.Services.Notifications;
 using CondoSphere.Application.Services.Occurrence;
 using CondoSphere.Application.Services.Pdf;
+using CondoSphere.Application.Services.Reports;
 using CondoSphere.Application.Services.Token;
 using CondoSphere.Application.Services.User;
 using CondoSphere.Core.Entities.Users;
@@ -14,6 +16,7 @@ using CondoSphere.Infrastructure.Authorization;
 using CondoSphere.Infrastructure.Data;
 using CondoSphere.Infrastructure.Repositories;
 using CondoSphere.Infrastructure.Services;
+using CondoSphere.Shared.Hubs;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -33,12 +36,24 @@ namespace CondoSphere.API
         {
             var builder = WebApplication.CreateBuilder(args);
 
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("WebAppPolicy", policy =>
+                {
+                    policy.WithOrigins("https://localhost:7183")
+                          .AllowAnyHeader()
+                          .AllowAnyMethod()
+                          .AllowCredentials();
+                });
+            });
+
             // Add services to the container.
 
             var userManagementConnectionString = builder.Configuration.GetConnectionString("UserManagementConnection");
             var condominiumConnectionString = builder.Configuration.GetConnectionString("CondominiumConnection");
             var financialsConnectionString = builder.Configuration.GetConnectionString("FinancialsConnection");
 
+            builder.Services.AddSignalR();
             builder.Services.AddDbContext<UserManagementDbContext>(options => options.UseSqlServer(userManagementConnectionString));
             builder.Services.AddDbContext<CondominiumDbContext>(options => options.UseSqlServer(condominiumConnectionString));
             builder.Services.AddDbContext<FinancialsDbContext>(options => options.UseSqlServer(financialsConnectionString));
@@ -100,6 +115,9 @@ namespace CondoSphere.API
             builder.Services.AddScoped<IReceiptRepository, ReceiptRepository>();
             builder.Services.AddScoped<IDocumentRepository, DocumentRepository>();
             builder.Services.AddScoped<IDocumentService, DocumentService>();
+            builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
+            builder.Services.AddScoped<INotificationService, NotificationService>();
+            builder.Services.AddScoped<IReportService, ReportService>();
             builder.Services.AddScoped<IPdfService, PdfService>();
             builder.Services.AddScoped<IFinancialService, FinancialService>();
             builder.Services.AddScoped<IAuthorizationHandler, CanAccessOccurrenceHandler>();
@@ -184,6 +202,7 @@ namespace CondoSphere.API
                 app.UseSwaggerUI();
             }
 
+            app.UseCors("WebAppPolicy");
             app.UseHttpsRedirection();
             app.UseAuthentication();
             app.UseAuthorization();
@@ -208,6 +227,7 @@ namespace CondoSphere.API
             });
 
             app.MapControllers();
+            app.MapHub<NotificationHub>("/notificationHub");
 
             app.Run();
         }

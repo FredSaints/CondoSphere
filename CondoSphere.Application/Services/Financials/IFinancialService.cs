@@ -15,5 +15,6 @@ namespace CondoSphere.Application.Services.Financials
         Task<bool> MarkQuotaAsPaidAsync(int quotaId, int userId);
         Task<ReceiptDto?> GetReceiptDetailsAsync(int receiptId, int userId);
         Task<ReceiptDto?> GetReceiptDetailsForManagerAsync(int receiptId, int companyId);
+        Task<bool> RejectPaymentProofAsync(int quotaId, int companyId, string rejectionReason);
     }
 }

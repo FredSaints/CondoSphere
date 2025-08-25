@@ -1,0 +1,38 @@
+﻿@model CondoSphere.Core.DTOs.Notifications.AnnouncementDto
+@using CondoSphere.Core.DTOs.Condominiums
+
+@{
+    var condo = ViewData["Condominium"] as CondominiumDto;
+    ViewData["Title"] = "Send Announcement";
+}
+
+<h1>@ViewData["Title"]</h1>
+<p class="text-muted">To all residents of <strong>@condo.Name</strong></p>
+<hr />
+
+<div class="row">
+    <div class="col-md-8">
+        <form asp-action="Announcement" asp-route-condominiumId="@condo.Id" method="post">
+            @Html.AntiForgeryToken()
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+            <div class="form-floating mb-3">
+                <input asp-for="Subject" class="form-control" />
+                <label asp-for="Subject"></label>
+                <span asp-validation-for="Subject" class="text-danger"></span>
+            </div>
+
+            <div class="form-floating mb-3">
+                <textarea asp-for="Message" class="form-control" style="height: 200px;"></textarea>
+                <label asp-for="Message"></label>
+                <span asp-validation-for="Message" class="text-danger"></span>
+            </div>
+
+            <button type="submit" class="btn btn-primary"><i class="bi bi-send-fill me-2"></i>Send Announcement</button>
+            <a asp-action="Details" asp-route-id="@condo.Id" class="btn btn-secondary">Cancel</a>
+        </form>
+    </div>
+</div>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

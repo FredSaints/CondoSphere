@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using CondoSphere.Application.Interfaces;
+using CondoSphere.Application.Services.Notifications;
 using CondoSphere.Core.DTOs.Condominiums;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
@@ -11,12 +12,14 @@ namespace CondoSphere.Application.Services.Document
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly IConfiguration _configuration;
+        private readonly INotificationService _notificationService;
 
-        public DocumentService(IUnitOfWork unitOfWork, IMapper mapper, IConfiguration configuration)
+        public DocumentService(IUnitOfWork unitOfWork, IMapper mapper, IConfiguration configuration, INotificationService notificationService)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _configuration = configuration;
+            _notificationService = notificationService;
         }
 
         public async Task<DocumentDto?> UploadDocumentAsync(int condominiumId, int companyId, int uploadedByUserId, CreateDocumentDto dto, IFormFile file)
@@ -57,6 +60,7 @@ namespace CondoSphere.Application.Services.Document
 
             await _unitOfWork.Documents.AddAsync(document);
             await _unitOfWork.CompleteAsync();
+            await _notificationService.NotifyResidentsOfNewDocumentAsync(document);
 
             var user = await _unitOfWork.Users.GetUserByIdAsync(uploadedByUserId);
             var documentDto = _mapper.Map<DocumentDto>(document);

@@ -157,5 +157,21 @@ namespace CondoSphere.API.Controllers
 
             return Ok(receipt);
         }
+
+        [HttpPost("quotas/{quotaId}/reject-payment")]
+        [Authorize(Roles = RoleConstants.CondoManager + "," + RoleConstants.CompanyAdmin)]
+        public async Task<IActionResult> RejectPayment(int quotaId, [FromBody] RejectPaymentDto dto)
+        {
+            var companyId = _currentUserService.CompanyId;
+            if (companyId == null) return Unauthorized();
+
+            var success = await _financialService.RejectPaymentProofAsync(quotaId, companyId.Value, dto.RejectionReason);
+
+            if (!success)
+            {
+                return BadRequest(new { message = "Failed to reject payment. The quota may not exist or is not pending confirmation." });
+            }
+            return Ok(new { message = "Payment proof rejected and resident has been notified." });
+        }
     }
 }

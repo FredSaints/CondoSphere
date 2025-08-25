@@ -15,5 +15,6 @@ namespace CondoSphere.Application.Interfaces
         Task<IEnumerable<Condominium>> GetAllAsync(int companyId, int pageNumber, int pageSize);
         Task<IEnumerable<Condominium>> GetByManagerIdAsync(int managerId);
         Task<IEnumerable<Condominium>> GetByIdsAsync(IEnumerable<int> ids);
+        Task<IEnumerable<Condominium>> GetAllForCompanyAsync(int companyId);
     }
 }
