@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Shell
+    x:Class="CondoSphere.Mobile.AppShell"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:views="clr-namespace:CondoSphere.Mobile.Views"
+    xmlns:vm="clr-namespace:CondoSphere.Mobile.ViewModels"
+    Shell.FlyoutBehavior="Disabled"
+    Title="CondoSphere.Mobile">
+
+    <Shell.BindingContext>
+        <vm:ShellViewModel />
+    </Shell.BindingContext>
+
+    <TabBar Route="auth" IsVisible="{Binding IsUnauthenticated}">
+        <ShellContent Title="Login"
+                Route="login"
+                Shell.NavBarIsVisible="False"
+                ContentTemplate="{DataTemplate views:LoginPage}" />
+    </TabBar>
+    <!-- Resident Tabs -->
+    <TabBar Route="resident" IsVisible="{Binding IsResident}">
+        <ShellContent Title="Portal"    Route="portal"     ContentTemplate="{DataTemplate views:ResidentPortalPage}" />
+        <ShellContent Title="Documents" Route="documents"  ContentTemplate="{DataTemplate views:DocumentsPage}" />
+    </TabBar>
+
+    <!-- Manager Tabs -->
+    <TabBar Route="manager" IsVisible="{Binding IsManager}">
+        <ShellContent Title="My Condos" Route="condos"     ContentTemplate="{DataTemplate views:CondoListPage}" />
+    </TabBar>
+
+    <!-- Admin Tabs -->
+    <TabBar Route="admin" IsVisible="{Binding IsAdmin}">
+        <ShellContent Title="Dashboard" Route="dashboard"  ContentTemplate="{DataTemplate views:AdminDashboardPage}" />
+    </TabBar>
+
+    <!-- Universal Profile Tab -->
+    <TabBar Route="profile" IsVisible="{Binding IsAuthenticated}">
+        <ShellContent Title="Profile" Route="profilehome"
+                ContentTemplate="{DataTemplate views:ProfilePage}" />
+    </TabBar>
+
+</Shell>

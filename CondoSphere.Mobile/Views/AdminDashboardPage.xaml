@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:CondoSphere.Mobile.ViewModels"
+             x:DataType="vm:AdminDashboardViewModel"
+             x:Class="CondoSphere.Mobile.Views.AdminDashboardPage"
+             Title="Company Dashboard">
+
+    <Grid RowDefinitions="*">
+        <ActivityIndicator IsRunning="{Binding IsBusy}" VerticalOptions="Center" HorizontalOptions="Center" />
+
+        <RefreshView Command="{Binding LoadDataCommand}" IsRefreshing="{Binding IsBusy}">
+            <ScrollView>
+                <VerticalStackLayout Padding="20" Spacing="15">
+
+                    <Label Text="Company Overview" FontSize="24" FontAttributes="Bold" HorizontalTextAlignment="Center" Margin="0,0,0,10" />
+
+                    <!-- KPI Grid -->
+                    <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto" RowSpacing="10" ColumnSpacing="10">
+
+                        <!-- Row 1 -->
+                        <Frame Grid.Row="0" Grid.Column="0" Padding="15" BorderColor="LightGray" CornerRadius="8">
+                            <VerticalStackLayout>
+                                <Label Text="{Binding Stats.TotalCondominiums}" FontSize="22" FontAttributes="Bold" HorizontalTextAlignment="Center"/>
+                                <Label Text="Condominiums" HorizontalTextAlignment="Center"/>
+                            </VerticalStackLayout>
+                        </Frame>
+                        <Frame Grid.Row="0" Grid.Column="1" Padding="15" BorderColor="LightGray" CornerRadius="8">
+                            <VerticalStackLayout>
+                                <Label Text="{Binding Stats.TotalUnits}" FontSize="22" FontAttributes="Bold" HorizontalTextAlignment="Center"/>
+                                <Label Text="Total Units" HorizontalTextAlignment="Center"/>
+                            </VerticalStackLayout>
+                        </Frame>
+
+                        <!-- Row 2 -->
+                        <Frame Grid.Row="1" Grid.Column="0" Padding="15" BorderColor="LightGray" CornerRadius="8">
+                            <VerticalStackLayout>
+                                <Label Text="{Binding Stats.TotalIncomeThisMonth, StringFormat='{0:C}'}" FontSize="22" FontAttributes="Bold" TextColor="Green" HorizontalTextAlignment="Center"/>
+                                <Label Text="Income (Month)" HorizontalTextAlignment="Center"/>
+                            </VerticalStackLayout>
+                        </Frame>
+                        <Frame Grid.Row="1" Grid.Column="1" Padding="15" BorderColor="LightGray" CornerRadius="8">
+                            <VerticalStackLayout>
+                                <Label Text="{Binding Stats.TotalExpensesThisMonth, StringFormat='{0:C}'}" FontSize="22" FontAttributes="Bold" TextColor="Red" HorizontalTextAlignment="Center"/>
+                                <Label Text="Expenses (Month)" HorizontalTextAlignment="Center"/>
+                            </VerticalStackLayout>
+                        </Frame>
+
+                        <!-- Row 3 -->
+                        <Frame Grid.Row="2" Grid.Column="0" Padding="15" BorderColor="LightGray" CornerRadius="8">
+                            <VerticalStackLayout>
+                                <Label Text="{Binding Stats.OpenOccurrences}" FontSize="22" FontAttributes="Bold" TextColor="Orange" HorizontalTextAlignment="Center"/>
+                                <Label Text="Open Issues" HorizontalTextAlignment="Center"/>
+                            </VerticalStackLayout>
+                        </Frame>
+                        <Frame Grid.Row="2" Grid.Column="1" Padding="15" BorderColor="LightGray" CornerRadius="8">
+                            <VerticalStackLayout>
+                                <Label Text="{Binding Stats.TotalResidents}" FontSize="22" FontAttributes="Bold" HorizontalTextAlignment="Center"/>
+                                <Label Text="Active Residents" HorizontalTextAlignment="Center"/>
+                            </VerticalStackLayout>
+                        </Frame>
+
+                    </Grid>
+
+                </VerticalStackLayout>
+            </ScrollView>
+        </RefreshView>
+    </Grid>
+
+</ContentPage>

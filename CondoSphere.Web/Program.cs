@@ -1,7 +1,8 @@
 using CondoSphere.Web.Services;
-using System.Globalization;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.Extensions.FileProviders;
+using System.Globalization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -41,13 +42,32 @@ builder.Services.AddScoped<IImageService, ImageService>();
 
 var app = builder.Build();
 
-if (!app.Environment.IsDevelopment())
+//if (!app.Environment.IsDevelopment())
+//{
+//    app.UseExceptionHandler("/Home/Error");
+//    app.UseHsts();
+//}
+
+//app.UseHttpsRedirection();
+//app.UseStaticFiles();
+
+if (app.Environment.IsDevelopment())
+{
+    app.UseDeveloperExceptionPage();
+    app.UseStatusCodePages(async context =>
+    {
+        var resp = context.HttpContext.Response;
+        var path = context.HttpContext.Request.Path;
+        await resp.WriteAsync($"HTTP {resp.StatusCode} at {path}");
+    });
+}
+else
 {
     app.UseExceptionHandler("/Home/Error");
     app.UseHsts();
+    app.UseHttpsRedirection();
 }
 
-app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 var uploadPathSetting = builder.Configuration["FileUpload:Path"];

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:CondoSphere.Mobile.ViewModels"
+             x:DataType="vm:LoginViewModel"
+             x:Class="CondoSphere.Mobile.Views.LoginPage"
+             Shell.NavBarIsVisible="False"
+             Title="Login">
+    <Grid RowDefinitions="*,Auto" Padding="30">
+
+        <VerticalStackLayout Grid.Row="0"
+                             Spacing="15" 
+                             VerticalOptions="Center">
+
+            <Label 
+                Text="Welcome to CondoSphere"
+                FontSize="28"
+                FontAttributes="Bold"
+                HorizontalOptions="Center" />
+
+            <Entry 
+                Placeholder="Email" 
+                Text="{Binding Email}" 
+                Keyboard="Email" />
+
+            <Entry 
+                Placeholder="Password" 
+                Text="{Binding Password}" 
+                IsPassword="True" />
+
+            <Button 
+                Text="Login" 
+                Command="{Binding LoginCommand}" 
+                Margin="0,20,0,0"/>
+
+            <ActivityIndicator 
+                IsRunning="{Binding IsBusy}" 
+                HorizontalOptions="Center" />
+
+        </VerticalStackLayout>
+
+    </Grid>
+</ContentPage>

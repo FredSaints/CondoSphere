@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:CondoSphere.Mobile.ViewModels"
+             xmlns:dto="clr-namespace:CondoSphere.Core.DTOs.Financials;assembly=CondoSphere.Core"
+             xmlns:dtoOcc="clr-namespace:CondoSphere.Core.DTOs.Occurrences;assembly=CondoSphere.Core"
+             x:DataType="vm:ResidentPortalViewModel"
+             x:Class="CondoSphere.Mobile.Views.ResidentPortalPage"
+             Title="Portal">
+
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="+" Command="{Binding AddOccurrenceCommand}" />
+    </ContentPage.ToolbarItems>
+
+    <Grid RowDefinitions="Auto, *">
+        <ActivityIndicator Grid.RowSpan="2" IsRunning="{Binding IsBusy}" VerticalOptions="Center" HorizontalOptions="Center" />
+
+        <RefreshView Grid.Row="1" Command="{Binding LoadDataCommand}" IsRefreshing="{Binding IsBusy}">
+            <ScrollView>
+                <VerticalStackLayout Spacing="20" Padding="15">
+
+                    <!-- My Account Status Section -->
+                    <Label Text="My Account Status" FontSize="20" FontAttributes="Bold" />
+                    <CollectionView ItemsSource="{Binding Quotas}">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="dto:UnitQuotaDto">
+                                <Frame Padding="10" Margin="0,5" CornerRadius="5" BorderColor="LightGray">
+                                    <!-- Add TapGestureRecognizer to make quotas clickable -->
+                                    <Frame.GestureRecognizers>
+                                        <TapGestureRecognizer 
+                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ResidentPortalViewModel}}, Path=ViewQuotaDetailsCommand}"
+                        CommandParameter="{Binding .}" />
+                                    </Frame.GestureRecognizers>
+                                    <Grid ColumnDefinitions="*, Auto">
+                                        <VerticalStackLayout>
+                                            <Label Text="{Binding Description}" FontAttributes="Bold" />
+                                            <Label Text="{Binding AmountDue, StringFormat='Amount: {0:C}'}" />
+                                            <Label Text="{Binding DueDate, StringFormat='Due: {0:d}'}" />
+                                        </VerticalStackLayout>
+                                        <Label Grid.Column="1" Text="{Binding Status}" VerticalOptions="Center" />
+                                    </Grid>
+                                </Frame>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+
+                    <!-- My Reported Issues Section -->
+                    <Label Text="My Reported Issues" FontSize="20" FontAttributes="Bold" />
+                    <CollectionView ItemsSource="{Binding Occurrences}">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="dtoOcc:OccurrenceDto">
+                                <Frame Padding="10" Margin="0,5" CornerRadius="5" BorderColor="LightGray">
+                                    <Grid ColumnDefinitions="*, Auto">
+                                        <VerticalStackLayout>
+                                            <Label Text="{Binding Title}" FontAttributes="Bold" />
+                                            <Label Text="{Binding ReportedDate, StringFormat='Reported: {0:d}'}" />
+                                        </VerticalStackLayout>
+                                        <Label Grid.Column="1" Text="{Binding Status}" VerticalOptions="Center" />
+                                    </Grid>
+                                </Frame>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+
+                </VerticalStackLayout>
+            </ScrollView>
+        </RefreshView>
+    </Grid>
+</ContentPage>

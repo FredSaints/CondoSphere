@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:CondoSphere.Mobile.ViewModels"
+             xmlns:dto="clr-namespace:CondoSphere.Core.DTOs.Interventions;assembly=CondoSphere.Core"
+             x:DataType="vm:ManagerOccurrenceDetailsViewModel"
+             x:Class="CondoSphere.Mobile.Views.ManagerOccurrenceDetailsPage"
+             Title="{Binding Occurrence.Title}">
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="🔙" Command="{Binding GoBackCommand}" />
+    </ContentPage.ToolbarItems>
+
+    <ScrollView>
+        <VerticalStackLayout Padding="15" Spacing="10">
+
+            <!-- Occurrence Details -->
+            <Frame Padding="15" BorderColor="LightGray" CornerRadius="8">
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Occurrence Details" FontSize="18" FontAttributes="Bold"/>
+                    <Label>
+                        <Label.FormattedText>
+                            <FormattedString>
+                                <Span Text="Reported by: " FontAttributes="Bold"/>
+                                <Span Text="{Binding Occurrence.ReportedByUserName}"/>
+                            </FormattedString>
+                        </Label.FormattedText>
+                    </Label>
+                    <Label>
+                        <Label.FormattedText>
+                            <FormattedString>
+                                <Span Text="Date: " FontAttributes="Bold"/>
+                                <Span Text="{Binding Occurrence.ReportedDate, StringFormat='{0:g}'}"/>
+                            </FormattedString>
+                        </Label.FormattedText>
+                    </Label>
+                    <Label Text="{Binding Occurrence.Description}" Margin="0,10,0,0"/>
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Interventions List -->
+            <Label Text="Interventions" FontSize="18" FontAttributes="Bold" Margin="0,20,0,0"/>
+            <ActivityIndicator IsRunning="{Binding IsBusy}" />
+            <CollectionView ItemsSource="{Binding Interventions}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="dto:InterventionDto">
+                        <Frame Padding="10" Margin="0,5" CornerRadius="5" BorderColor="LightGray">
+                            <Grid ColumnDefinitions="*, Auto">
+                                <VerticalStackLayout>
+                                    <Label Text="{Binding Description}" />
+                                    <Label Text="{Binding AssignedToUserName, StringFormat='Assigned to: {0}'}" FontSize="Small"/>
+                                    <Label Text="{Binding StartDate, StringFormat='Scheduled for: {0:g}'}" FontSize="Small" TextColor="Gray"/>
+                                </VerticalStackLayout>
+                                <Label Grid.Column="1" Text="{Binding Status}" VerticalOptions="Center" />
+                            </Grid>
+                        </Frame>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+                <CollectionView.EmptyView>
+                    <Label Text="No interventions have been created for this issue yet." Padding="20" HorizontalTextAlignment="Center"/>
+                </CollectionView.EmptyView>
+            </CollectionView>
+
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>

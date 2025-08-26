@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:CondoSphere.Mobile.ViewModels"
+             x:DataType="vm:CreateOccurrenceViewModel"
+             x:Class="CondoSphere.Mobile.Views.CreateOccurrencePage"
+             Title="Report New Occurrence">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="15">
+
+            <Label Text="Unit" />
+            <Picker ItemsSource="{Binding UserUnits}"
+                    ItemDisplayBinding="{Binding Identifier}"
+                    SelectedItem="{Binding SelectedUnit}" />
+
+            <Label Text="Title" />
+            <Entry Placeholder="e.g., Leaky faucet in kitchen" Text="{Binding Title}" />
+
+            <Label Text="Description" />
+            <Editor Placeholder="Please describe the issue in detail..." 
+                    Text="{Binding Description}"
+                    HeightRequest="200" 
+                    AutoSize="Disabled" />
+
+            <Button Text="Select Photo (Optional)" Command="{Binding SelectPhotoCommand}" Margin="0,10,0,0"/>
+            <Image Source="{Binding ImageFileSource}"
+       HeightRequest="200"
+       Margin="0,10,0,0"
+       IsVisible="{Binding ImageIsVisible}" />
+
+            <Button Text="Submit Report" 
+                    Command="{Binding SubmitCommand}" 
+                    Margin="0,20,0,0"/>
+
+            <ActivityIndicator IsRunning="{Binding IsBusy}" />
+
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>
