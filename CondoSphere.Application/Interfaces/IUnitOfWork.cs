@@ -14,6 +14,7 @@
         IReceiptRepository Receipts { get; }
         IDocumentRepository Documents { get; }
         INotificationRepository Notifications { get; }
+        IMessageRepository Messages { get; }
         Task<int> CompleteAsync();
 
     }

@@ -220,5 +220,102 @@ namespace CondoSphere.Mobile.Services
                 return false;
             }
         }
+
+        public async Task<IEnumerable<MessageListDto>> GetInboxAsync(int pageNumber = 1, int pageSize = 20)
+        {
+            try
+            {
+                var response = await _httpClient.GetFromJsonAsync<IEnumerable<MessageListDto>>($"/api/messages/inbox?pageNumber={pageNumber}&pageSize={pageSize}");
+                return response ?? new List<MessageListDto>();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"GetInbox Error: {ex.Message}");
+                return new List<MessageListDto>();
+            }
+        }
+
+        public async Task<IEnumerable<MessageListDto>> GetSentMessagesAsync(int pageNumber = 1, int pageSize = 20)
+        {
+            try
+            {
+                var response = await _httpClient.GetFromJsonAsync<IEnumerable<MessageListDto>>($"/api/messages/sent?pageNumber={pageNumber}&pageSize={pageSize}");
+                return response ?? new List<MessageListDto>();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"GetSentMessages Error: {ex.Message}");
+                return new List<MessageListDto>();
+            }
+        }
+
+        public async Task<MessageDto> GetMessageAsync(int messageId)
+        {
+            try
+            {
+                return await _httpClient.GetFromJsonAsync<MessageDto>($"/api/messages/{messageId}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"GetMessage Error: {ex.Message}");
+                return null;
+            }
+        }
+
+        public async Task<bool> SendMessageAsync(SendMessageDto dto)
+        {
+            try
+            {
+                var response = await _httpClient.PostAsJsonAsync("/api/messages", dto);
+                return response.IsSuccessStatusCode;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"SendMessage Error: {ex.Message}");
+                return false;
+            }
+        }
+
+        public async Task<int> GetUnreadMessageCountAsync()
+        {
+            try
+            {
+                var response = await _httpClient.GetFromJsonAsync<dynamic>("/api/messages/unread-count");
+                return response?.unreadCount ?? 0;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"GetUnreadMessageCount Error: {ex.Message}");
+                return 0;
+            }
+        }
+
+        public async Task<IEnumerable<SimpleUserDto>> GetContactsAsync()
+        {
+            try
+            {
+                var response = await _httpClient.GetFromJsonAsync<IEnumerable<SimpleUserDto>>("/api/messages/contacts");
+                return response ?? new List<SimpleUserDto>();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"GetContacts Error: {ex.Message}");
+                return new List<SimpleUserDto>();
+            }
+        }
+
+        public async Task<bool> MarkMessageAsReadAsync(int messageId)
+        {
+            try
+            {
+                var response = await _httpClient.PostAsync($"/api/messages/{messageId}/mark-read", null);
+                return response.IsSuccessStatusCode;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"MarkMessageAsRead Error: {ex.Message}");
+                return false;
+            }
+        }
     }
 }

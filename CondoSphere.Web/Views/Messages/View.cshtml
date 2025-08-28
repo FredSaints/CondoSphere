@@ -1,0 +1,67 @@
+﻿@model CondoSphere.Core.DTOs.Messages.MessageDto
+@{
+    ViewData["Title"] = "View Message";
+}
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5><i class="bi bi-envelope-open me-2"></i>Message Details</h5>
+                    <div class="btn-group">
+                        <a asp-action="Reply" asp-route-id="@Model.Id" class="btn btn-sm btn-primary">
+                            <i class="bi bi-reply me-1"></i> Reply
+                        </a>
+                        <a asp-action="Index" class="btn btn-sm btn-outline-secondary">
+                            <i class="bi bi-arrow-left me-1"></i> Back
+                        </a>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="message-header mb-4">
+                        <div class="row">
+                            <div class="col-sm-3 fw-bold">From:</div>
+                            <div class="col-sm-9">@Model.SenderName</div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-3 fw-bold">To:</div>
+                            <div class="col-sm-9">@Model.ReceiverName</div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-3 fw-bold">Subject:</div>
+                            <div class="col-sm-9">@Model.Subject</div>
+                        </div>
+                        @if (!string.IsNullOrEmpty(Model.CondominiumName))
+                        {
+                            <div class="row">
+                                <div class="col-sm-3 fw-bold">Building:</div>
+                                <div class="col-sm-9">@Model.CondominiumName</div>
+                            </div>
+                        }
+                        <div class="row">
+                            <div class="col-sm-3 fw-bold">Date:</div>
+                            <div class="col-sm-9">@Model.SentDate.ToString("dddd, dd MMMM yyyy 'at' HH:mm")</div>
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <div class="message-content">
+                        <div class="p-3 bg-light rounded">
+                            @Html.Raw(Model.Content.Replace("\n", "<br>"))
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer d-flex justify-content-between">
+                    <a asp-action="Index" class="btn btn-outline-secondary">
+                        <i class="bi bi-arrow-left me-1"></i> Back to Inbox
+                    </a>
+                    <a asp-action="Reply" asp-route-id="@Model.Id" class="btn btn-primary">
+                        <i class="bi bi-reply me-1"></i> Reply to Message
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -6,61 +6,290 @@
              xmlns:dtoOcc="clr-namespace:CondoSphere.Core.DTOs.Occurrences;assembly=CondoSphere.Core"
              x:DataType="vm:ResidentPortalViewModel"
              x:Class="CondoSphere.Mobile.Views.ResidentPortalPage"
-             Title="Portal">
+             BackgroundColor="{StaticResource BackgroundSecondary}"
+             Title="My Portal">
 
     <ContentPage.ToolbarItems>
-        <ToolbarItem Text="+" Command="{Binding AddOccurrenceCommand}" />
+        <ToolbarItem Text="+"
+                     IconImageSource="plus_icon.png" 
+                     Command="{Binding AddOccurrenceCommand}" />
     </ContentPage.ToolbarItems>
 
-    <Grid RowDefinitions="Auto, *">
-        <ActivityIndicator Grid.RowSpan="2" IsRunning="{Binding IsBusy}" VerticalOptions="Center" HorizontalOptions="Center" />
+    <Grid RowDefinitions="Auto,*">
 
-        <RefreshView Grid.Row="1" Command="{Binding LoadDataCommand}" IsRefreshing="{Binding IsBusy}">
+        <!-- Loading Overlay -->
+        <Frame Grid.RowSpan="2" 
+               BackgroundColor="#80000000"
+               IsVisible="{Binding IsBusy}"
+               ZIndex="999"
+               Padding="0">
+            <ActivityIndicator IsRunning="{Binding IsBusy}" 
+                             Color="{StaticResource Primary}"
+                             HeightRequest="48"
+                             WidthRequest="48"
+                             VerticalOptions="Center" 
+                             HorizontalOptions="Center" />
+        </Frame>
+
+        <!-- Header with Welcome Message -->
+        <Frame Grid.Row="0"
+               BackgroundColor="{StaticResource Primary}"
+               CornerRadius="24"
+               HasShadow="False"
+               Padding="24,40,24,24"
+               Margin="0,0,0,16">
+            <Frame.Shadow>
+                <Shadow Brush="{StaticResource ShadowDark}" 
+                        Offset="0,4" 
+                        Radius="12" 
+                        Opacity="0.15" />
+            </Frame.Shadow>
+
+            <Grid ColumnDefinitions="*,Auto">
+                <VerticalStackLayout Spacing="4">
+                    <Label Text="Good day!" 
+                           Style="{StaticResource SubheadingLarge}"
+                           TextColor="{StaticResource TextOnPrimary}" />
+                    <Label Text="Here's what's happening in your home"
+                           Style="{StaticResource BodyMedium}"
+                           TextColor="{StaticResource TextOnPrimary}"
+                           Opacity="0.9" />
+                </VerticalStackLayout>
+
+                <!-- Notification Bell Icon -->
+                <Frame Grid.Column="1"
+                       BackgroundColor="{StaticResource TextOnPrimary}"
+                       CornerRadius="20"
+                       HeightRequest="40"
+                       WidthRequest="40"
+                       Padding="0"
+                       HasShadow="False">
+                    <Label Text="🔔" 
+                           FontSize="18"
+                           HorizontalOptions="Center"
+                           VerticalOptions="Center" />
+                </Frame>
+            </Grid>
+        </Frame>
+
+        <!-- Main Content -->
+        <RefreshView Grid.Row="1" 
+                     Command="{Binding LoadDataCommand}" 
+                     IsRefreshing="{Binding IsBusy}">
             <ScrollView>
-                <VerticalStackLayout Spacing="20" Padding="15">
+                <VerticalStackLayout Spacing="24" Padding="20,0,20,40">
 
-                    <!-- My Account Status Section -->
-                    <Label Text="My Account Status" FontSize="20" FontAttributes="Bold" />
-                    <CollectionView ItemsSource="{Binding Quotas}">
-                        <CollectionView.ItemTemplate>
-                            <DataTemplate x:DataType="dto:UnitQuotaDto">
-                                <Frame Padding="10" Margin="0,5" CornerRadius="5" BorderColor="LightGray">
-                                    <!-- Add TapGestureRecognizer to make quotas clickable -->
-                                    <Frame.GestureRecognizers>
-                                        <TapGestureRecognizer 
-                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ResidentPortalViewModel}}, Path=ViewQuotaDetailsCommand}"
-                        CommandParameter="{Binding .}" />
-                                    </Frame.GestureRecognizers>
-                                    <Grid ColumnDefinitions="*, Auto">
-                                        <VerticalStackLayout>
-                                            <Label Text="{Binding Description}" FontAttributes="Bold" />
-                                            <Label Text="{Binding AmountDue, StringFormat='Amount: {0:C}'}" />
-                                            <Label Text="{Binding DueDate, StringFormat='Due: {0:d}'}" />
-                                        </VerticalStackLayout>
-                                        <Label Grid.Column="1" Text="{Binding Status}" VerticalOptions="Center" />
-                                    </Grid>
-                                </Frame>
-                            </DataTemplate>
-                        </CollectionView.ItemTemplate>
-                    </CollectionView>
+                    <!-- Quick Stats Cards -->
+                    <Grid ColumnDefinitions="*,*" 
+                          RowDefinitions="Auto"
+                          ColumnSpacing="12">
 
-                    <!-- My Reported Issues Section -->
-                    <Label Text="My Reported Issues" FontSize="20" FontAttributes="Bold" />
-                    <CollectionView ItemsSource="{Binding Occurrences}">
-                        <CollectionView.ItemTemplate>
-                            <DataTemplate x:DataType="dtoOcc:OccurrenceDto">
-                                <Frame Padding="10" Margin="0,5" CornerRadius="5" BorderColor="LightGray">
-                                    <Grid ColumnDefinitions="*, Auto">
-                                        <VerticalStackLayout>
-                                            <Label Text="{Binding Title}" FontAttributes="Bold" />
-                                            <Label Text="{Binding ReportedDate, StringFormat='Reported: {0:d}'}" />
-                                        </VerticalStackLayout>
-                                        <Label Grid.Column="1" Text="{Binding Status}" VerticalOptions="Center" />
-                                    </Grid>
+                        <!-- Unpaid Bills Card -->
+                        <Frame Grid.Column="0" 
+                               Style="{StaticResource CardStyle}"
+                               Padding="16">
+                            <VerticalStackLayout Spacing="8">
+                                <Label Text="💳" FontSize="24" />
+                                <Label Text="Pending Bills" 
+                                       Style="{StaticResource BodySmall}"
+                                       TextColor="{StaticResource TextSecondary}" />
+                                <Label Text="{Binding Quotas.Count}" 
+                                       Style="{StaticResource SubheadingLarge}"
+                                       TextColor="{StaticResource Primary}" />
+                            </VerticalStackLayout>
+                        </Frame>
+
+                        <!-- Open Issues Card -->
+                        <Frame Grid.Column="1" 
+                               Style="{StaticResource CardStyle}"
+                               Padding="16">
+                            <VerticalStackLayout Spacing="8">
+                                <Label Text="⚠️" FontSize="24" />
+                                <Label Text="Open Issues" 
+                                       Style="{StaticResource BodySmall}"
+                                       TextColor="{StaticResource TextSecondary}" />
+                                <Label Text="{Binding Occurrences.Count}" 
+                                       Style="{StaticResource SubheadingLarge}"
+                                       TextColor="{StaticResource Warning}" />
+                            </VerticalStackLayout>
+                        </Frame>
+                    </Grid>
+
+                    <!-- Bills Section -->
+                    <VerticalStackLayout Spacing="16">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <Label Text="Bills and Payments" 
+                                   Style="{StaticResource SubheadingLarge}" />
+                            <Button Grid.Column="1" 
+                                    Text="View All" 
+                                    Style="{StaticResource ButtonGhost}"
+                                    FontSize="14"
+                                    HeightRequest="32"
+                                    Padding="12,0" />
+                        </Grid>
+
+                        <CollectionView ItemsSource="{Binding Quotas}"
+                                        HeightRequest="200">
+                            <CollectionView.EmptyView>
+                                <Frame Style="{StaticResource CardStyle}"
+                                       Padding="32">
+                                    <VerticalStackLayout Spacing="12" HorizontalOptions="Center">
+                                        <Label Text="📋" FontSize="48" HorizontalOptions="Center" />
+                                        <Label Text="No bills at the moment" 
+                                               Style="{StaticResource BodyMedium}"
+                                               HorizontalTextAlignment="Center" />
+                                        <Label Text="You're all caught up!" 
+                                               Style="{StaticResource BodySmall}"
+                                               HorizontalTextAlignment="Center" />
+                                    </VerticalStackLayout>
                                 </Frame>
-                            </DataTemplate>
-                        </CollectionView.ItemTemplate>
-                    </CollectionView>
+                            </CollectionView.EmptyView>
+
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate x:DataType="dto:UnitQuotaDto">
+                                    <Frame Style="{StaticResource CardStyle}" 
+                                           Margin="0,4">
+                                        <Frame.GestureRecognizers>
+                                            <TapGestureRecognizer 
+                                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ResidentPortalViewModel}}, Path=ViewQuotaDetailsCommand}"
+                                                CommandParameter="{Binding .}" />
+                                        </Frame.GestureRecognizers>
+
+                                        <Grid ColumnDefinitions="Auto,*,Auto" 
+                                              RowDefinitions="Auto,Auto,Auto"
+                                              ColumnSpacing="16"
+                                              RowSpacing="4">
+
+                                            <!-- Status Icon -->
+                                            <Frame Grid.RowSpan="3"
+                                                   CornerRadius="20"
+                                                   HeightRequest="40"
+                                                   WidthRequest="40"
+                                                   Padding="0"
+                                                   HasShadow="False"
+                                                   BackgroundColor="{Binding Status, Converter={StaticResource StatusToColorConverter}}">
+                                                <Label Text="💰" 
+                                                       FontSize="18"
+                                                       HorizontalOptions="Center"
+                                                       VerticalOptions="Center" />
+                                            </Frame>
+
+                                            <!-- Bill Details -->
+                                            <Label Grid.Column="1" 
+                                                   Text="{Binding Description}" 
+                                                   Style="{StaticResource SubheadingMedium}" />
+
+                                            <Label Grid.Column="1" Grid.Row="1"
+                                                   Text="{Binding AmountDue, StringFormat='€{0:N2}'}" 
+                                                   Style="{StaticResource BodyMedium}"
+                                                   TextColor="{StaticResource Primary}"
+                                                   FontAttributes="Bold" />
+
+                                            <Label Grid.Column="1" Grid.Row="2"
+                                                   Text="{Binding DueDate, StringFormat='Due: {0:MMM dd, yyyy}'}" 
+                                                   Style="{StaticResource BodySmall}" />
+
+                                            <!-- Status Badge -->
+                                            <Frame Grid.Column="2" Grid.RowSpan="3"
+                                                   CornerRadius="12"
+                                                   Padding="8,4"
+                                                   HasShadow="False"
+                                                   VerticalOptions="Start"
+                                                   BackgroundColor="{Binding Status, Converter={StaticResource StatusToColorConverter}}">
+                                                <Label Text="{Binding Status}" 
+                                                       Style="{StaticResource BodySmall}"
+                                                       TextColor="{StaticResource TextOnPrimary}"
+                                                       FontAttributes="Bold" />
+                                            </Frame>
+                                        </Grid>
+                                    </Frame>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                        </CollectionView>
+                    </VerticalStackLayout>
+
+                    <!-- Issues Section -->
+                    <VerticalStackLayout Spacing="16">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <Label Text="My Reported Issues" 
+                                   Style="{StaticResource SubheadingLarge}" />
+                            <Button Grid.Column="1" 
+                                    Text="+ Report" 
+                                    Style="{StaticResource ButtonOutline}"
+                                    FontSize="14"
+                                    HeightRequest="36"
+                                    Padding="16,0"
+                                    Command="{Binding AddOccurrenceCommand}" />
+                        </Grid>
+
+                        <CollectionView ItemsSource="{Binding Occurrences}"
+                                        HeightRequest="200">
+                            <CollectionView.EmptyView>
+                                <Frame Style="{StaticResource CardStyle}"
+                                       Padding="32">
+                                    <VerticalStackLayout Spacing="12" HorizontalOptions="Center">
+                                        <Label Text="✅" FontSize="48" HorizontalOptions="Center" />
+                                        <Label Text="No issues reported" 
+                                               Style="{StaticResource BodyMedium}"
+                                               HorizontalTextAlignment="Center" />
+                                        <Label Text="Everything looks good!" 
+                                               Style="{StaticResource BodySmall}"
+                                               HorizontalTextAlignment="Center" />
+                                    </VerticalStackLayout>
+                                </Frame>
+                            </CollectionView.EmptyView>
+
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate x:DataType="dtoOcc:OccurrenceDto">
+                                    <Frame Style="{StaticResource CardStyle}" 
+                                           Margin="0,4">
+
+                                        <Grid ColumnDefinitions="Auto,*,Auto" 
+                                              RowDefinitions="Auto,Auto"
+                                              ColumnSpacing="16"
+                                              RowSpacing="4">
+
+                                            <!-- Issue Icon -->
+                                            <Frame Grid.RowSpan="2"
+                                                   CornerRadius="20"
+                                                   HeightRequest="40"
+                                                   WidthRequest="40"
+                                                   Padding="0"
+                                                   HasShadow="False"
+                                                   BackgroundColor="{StaticResource Warning}">
+                                                <Label Text="🔧" 
+                                                       FontSize="18"
+                                                       HorizontalOptions="Center"
+                                                       VerticalOptions="Center" />
+                                            </Frame>
+
+                                            <!-- Issue Details -->
+                                            <Label Grid.Column="1" 
+                                                   Text="{Binding Title}" 
+                                                   Style="{StaticResource SubheadingMedium}" />
+
+                                            <Label Grid.Column="1" Grid.Row="1"
+                                                   Text="{Binding ReportedDate, StringFormat='Reported: {0:MMM dd, yyyy}'}" 
+                                                   Style="{StaticResource BodySmall}" />
+
+                                            <!-- Status Badge -->
+                                            <Frame Grid.Column="2" Grid.RowSpan="2"
+                                                   CornerRadius="12"
+                                                   Padding="8,4"
+                                                   HasShadow="False"
+                                                   VerticalOptions="Start"
+                                                   BackgroundColor="{StaticResource Info}">
+                                                <Label Text="{Binding Status}" 
+                                                       Style="{StaticResource BodySmall}"
+                                                       TextColor="{StaticResource TextOnPrimary}"
+                                                       FontAttributes="Bold" />
+                                            </Frame>
+                                        </Grid>
+                                    </Frame>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                        </CollectionView>
+                    </VerticalStackLayout>
 
                 </VerticalStackLayout>
             </ScrollView>

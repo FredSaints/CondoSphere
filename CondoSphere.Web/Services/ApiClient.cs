@@ -2,6 +2,7 @@
 using CondoSphere.Core.DTOs.Condominiums;
 using CondoSphere.Core.DTOs.Financials;
 using CondoSphere.Core.DTOs.Interventions;
+using CondoSphere.Core.DTOs.Messages;
 using CondoSphere.Core.DTOs.Notifications;
 using CondoSphere.Core.DTOs.Occurrences;
 using CondoSphere.Core.DTOs.Reports;
@@ -859,5 +860,67 @@ namespace CondoSphere.Web.Services
             return false;
         }
 
+        public async Task<IEnumerable<MessageListDto>> GetInboxAsync(int pageNumber = 1, int pageSize = 20)
+        {
+            var response = await _httpClient.GetAsync($"/api/messages/inbox?pageNumber={pageNumber}&pageSize={pageSize}");
+            if (response.IsSuccessStatusCode)
+            {
+                return await response.Content.ReadFromJsonAsync<IEnumerable<MessageListDto>>() ?? new List<MessageListDto>();
+            }
+            return new List<MessageListDto>();
+        }
+
+        public async Task<IEnumerable<MessageListDto>> GetSentMessagesAsync(int pageNumber = 1, int pageSize = 20)
+        {
+            var response = await _httpClient.GetAsync($"/api/messages/sent?pageNumber={pageNumber}&pageSize={pageSize}");
+            if (response.IsSuccessStatusCode)
+            {
+                return await response.Content.ReadFromJsonAsync<IEnumerable<MessageListDto>>() ?? new List<MessageListDto>();
+            }
+            return new List<MessageListDto>();
+        }
+
+        public async Task<MessageDto?> GetMessageAsync(int messageId)
+        {
+            var response = await _httpClient.GetAsync($"/api/messages/{messageId}");
+            if (response.IsSuccessStatusCode)
+            {
+                return await response.Content.ReadFromJsonAsync<MessageDto>();
+            }
+            return null;
+        }
+
+        public async Task<bool> SendMessageAsync(SendMessageDto dto)
+        {
+            var response = await _httpClient.PostAsJsonAsync("/api/messages", dto);
+            return response.IsSuccessStatusCode;
+        }
+
+        public async Task<int> GetUnreadMessageCountAsync()
+        {
+            var response = await _httpClient.GetAsync("/api/messages/unread-count");
+            if (response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadFromJsonAsync<dynamic>();
+                return result?.unreadCount ?? 0;
+            }
+            return 0;
+        }
+
+        public async Task<IEnumerable<SimpleUserDto>> GetContactsAsync()
+        {
+            var response = await _httpClient.GetAsync("/api/messages/contacts");
+            if (response.IsSuccessStatusCode)
+            {
+                return await response.Content.ReadFromJsonAsync<IEnumerable<SimpleUserDto>>() ?? new List<SimpleUserDto>();
+            }
+            return new List<SimpleUserDto>();
+        }
+
+        public async Task<bool> MarkMessageAsReadAsync(int messageId)
+        {
+            var response = await _httpClient.PostAsync($"/api/messages/{messageId}/mark-read", null);
+            return response.IsSuccessStatusCode;
+        }
     }
 }

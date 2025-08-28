@@ -5,31 +5,208 @@
              xmlns:dto="clr-namespace:CondoSphere.Core.DTOs.Condominiums;assembly=CondoSphere.Core"
              x:DataType="vm:CondoListViewModel"
              x:Class="CondoSphere.Mobile.Views.CondoListPage"
-             Title="My Condominiums">
+             BackgroundColor="{StaticResource BackgroundSecondary}"
+             Title="My Properties">
 
-    <Grid RowDefinitions="*">
-        <ActivityIndicator IsRunning="{Binding IsBusy}" VerticalOptions="Center" HorizontalOptions="Center" ZIndex="1" />
-        <RefreshView Command="{Binding LoadDataCommand}" IsRefreshing="{Binding IsBusy}">
-            <CollectionView ItemsSource="{Binding Condominiums}">
+    <Grid RowDefinitions="Auto,*">
+
+        <!-- Loading Overlay -->
+        <Frame Grid.RowSpan="2" 
+               BackgroundColor="#80000000"
+               IsVisible="{Binding IsBusy}"
+               ZIndex="999"
+               Padding="0">
+            <ActivityIndicator IsRunning="{Binding IsBusy}" 
+                             Color="{StaticResource Primary}"
+                             HeightRequest="48"
+                             WidthRequest="48"
+                             VerticalOptions="Center" 
+                             HorizontalOptions="Center" />
+        </Frame>
+
+        <!-- Header -->
+        <Frame Grid.Row="0"
+               BackgroundColor="{StaticResource Primary}"
+               CornerRadius="24"
+               HasShadow="False"
+               Padding="24,40,24,24"
+               Margin="0,0,0,20">
+            <Frame.Shadow>
+                <Shadow Brush="{StaticResource ShadowDark}" 
+                        Offset="0,4" 
+                        Radius="12" 
+                        Opacity="0.15" />
+            </Frame.Shadow>
+
+            <Grid ColumnDefinitions="*,Auto">
+                <VerticalStackLayout Spacing="4">
+                    <Label Text="Property Manager" 
+                           Style="{StaticResource HeadingMedium}"
+                           TextColor="{StaticResource TextOnPrimary}" />
+                    <Label Text="Manage your assigned condominiums"
+                           Style="{StaticResource BodyMedium}"
+                           TextColor="{StaticResource TextOnPrimary}"
+                           Opacity="0.9" />
+                </VerticalStackLayout>
+
+                <!-- Search Icon -->
+                <Frame Grid.Column="1"
+                       BackgroundColor="{StaticResource TextOnPrimary}"
+                       CornerRadius="20"
+                       HeightRequest="40"
+                       WidthRequest="40"
+                       Padding="0"
+                       HasShadow="False">
+                    <Label Text="🔍" 
+                           FontSize="18"
+                           HorizontalOptions="Center"
+                           VerticalOptions="Center" />
+                </Frame>
+            </Grid>
+        </Frame>
+
+        <!-- Main Content -->
+        <RefreshView Grid.Row="1" 
+                     Command="{Binding LoadDataCommand}" 
+                     IsRefreshing="{Binding IsBusy}">
+
+            <CollectionView ItemsSource="{Binding Condominiums}"
+                            Margin="20,0,20,40">
+
+                <!-- Header -->
+                <CollectionView.Header>
+                    <VerticalStackLayout Spacing="16" Margin="0,0,0,20">
+
+                        <!-- Quick Stats -->
+                        <Grid ColumnDefinitions="*,*" ColumnSpacing="16">
+
+                            <!-- Total Properties -->
+                            <Frame Grid.Column="0" 
+                                   Style="{StaticResource CardStyle}"
+                                   Padding="20">
+                                <VerticalStackLayout Spacing="8" HorizontalOptions="Center">
+                                    <Label Text="🏢" FontSize="28" HorizontalOptions="Center" />
+                                    <Label Text="{Binding Condominiums.Count}" 
+                                           Style="{StaticResource HeadingMedium}"
+                                           TextColor="{StaticResource Primary}"
+                                           HorizontalTextAlignment="Center" />
+                                    <Label Text="Properties" 
+                                           Style="{StaticResource BodyMedium}"
+                                           HorizontalTextAlignment="Center" />
+                                </VerticalStackLayout>
+                            </Frame>
+
+                            <!-- Active Management -->
+                            <Frame Grid.Column="1" 
+                                   Style="{StaticResource CardStyle}"
+                                   Padding="20">
+                                <VerticalStackLayout Spacing="8" HorizontalOptions="Center">
+                                    <Label Text="⚡" FontSize="28" HorizontalOptions="Center" />
+                                    <Label Text="Active" 
+                                           Style="{StaticResource HeadingMedium}"
+                                           TextColor="{StaticResource Success}"
+                                           HorizontalTextAlignment="Center" />
+                                    <Label Text="Status" 
+                                           Style="{StaticResource BodyMedium}"
+                                           HorizontalTextAlignment="Center" />
+                                </VerticalStackLayout>
+                            </Frame>
+                        </Grid>
+
+                        <!-- Section Title -->
+                        <Label Text="🏢 My Properties" 
+                               Style="{StaticResource SubheadingLarge}"
+                               Margin="4,8,0,0" />
+                    </VerticalStackLayout>
+                </CollectionView.Header>
+
+                <!-- Property Items -->
                 <CollectionView.ItemTemplate>
                     <DataTemplate x:DataType="dto:CondominiumDto">
-                        <Frame Padding="15" Margin="15,8" CornerRadius="8" BorderColor="LightGray">
+                        <Frame Style="{StaticResource CardElevated}" 
+                               Margin="0,8">
                             <Frame.GestureRecognizers>
                                 <TapGestureRecognizer 
                                     Command="{Binding Source={RelativeSource AncestorType={x:Type vm:CondoListViewModel}}, Path=GoToDetailsCommand}"
                                     CommandParameter="{Binding .}"/>
                             </Frame.GestureRecognizers>
-                            <VerticalStackLayout Spacing="5">
-                                <Label Text="{Binding Name}" FontAttributes="Bold" FontSize="18"/>
-                                <Label Text="{Binding Address}" FontSize="14" TextColor="Gray"/>
-                            </VerticalStackLayout>
+
+                            <Grid ColumnDefinitions="Auto,*,Auto" 
+                                  RowDefinitions="Auto,Auto,Auto"
+                                  ColumnSpacing="16"
+                                  RowSpacing="8">
+
+                                <!-- Property Icon -->
+                                <Frame Grid.RowSpan="3"
+                                       CornerRadius="24"
+                                       HeightRequest="48"
+                                       WidthRequest="48"
+                                       Padding="0"
+                                       HasShadow="False"
+                                       BackgroundColor="{StaticResource Primary}">
+                                    <Label Text="🏢" 
+                                           FontSize="24"
+                                           TextColor="{StaticResource TextOnPrimary}"
+                                           HorizontalOptions="Center"
+                                           VerticalOptions="Center" />
+                                </Frame>
+
+                                <!-- Property Details -->
+                                <Label Grid.Column="1" 
+                                       Text="{Binding Name}" 
+                                       Style="{StaticResource SubheadingMedium}" />
+
+                                <Label Grid.Column="1" Grid.Row="1"
+                                       Text="{Binding Address}" 
+                                       Style="{StaticResource BodyMedium}"
+                                       TextColor="{StaticResource TextSecondary}" />
+
+                                <Label Grid.Column="1" Grid.Row="2"
+                                       Text="{Binding ManagerName, StringFormat='Manager: {0}', FallbackValue='Managed by you'}" 
+                                       Style="{StaticResource BodySmall}"
+                                       TextColor="{StaticResource Primary}" />
+
+                                <!-- Arrow Icon -->
+                                <Frame Grid.Column="2" Grid.RowSpan="3"
+                                       CornerRadius="16"
+                                       HeightRequest="32"
+                                       WidthRequest="32"
+                                       Padding="0"
+                                       HasShadow="False"
+                                       BackgroundColor="{StaticResource BackgroundTertiary}"
+                                       VerticalOptions="Center">
+                                    <Label Text="▶️" 
+                                           FontSize="12"
+                                           HorizontalOptions="Center"
+                                           VerticalOptions="Center" />
+                                </Frame>
+                            </Grid>
                         </Frame>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
+
+                <!-- Empty State -->
                 <CollectionView.EmptyView>
-                    <StackLayout Padding="20" VerticalOptions="Center">
-                        <Label Text="You are not assigned to any condominiums." HorizontalTextAlignment="Center" TextColor="Gray"/>
-                    </StackLayout>
+                    <Frame Style="{StaticResource CardStyle}"
+                           Padding="40"
+                           Margin="0,40">
+                        <VerticalStackLayout Spacing="20" HorizontalOptions="Center">
+                            <Label Text="🏢" FontSize="64" HorizontalOptions="Center" Opacity="0.5" />
+                            <Label Text="No Properties Assigned" 
+                                   Style="{StaticResource SubheadingLarge}"
+                                   HorizontalTextAlignment="Center" />
+                            <Label Text="You haven't been assigned to manage any condominiums yet. Contact your administrator for property assignments." 
+                                   Style="{StaticResource BodyMedium}"
+                                   HorizontalTextAlignment="Center"
+                                   TextColor="{StaticResource TextSecondary}" />
+                            <Button Text="🔄 Refresh" 
+                                    Command="{Binding LoadDataCommand}"
+                                    Style="{StaticResource ButtonOutline}"
+                                    HeightRequest="40"
+                                    FontSize="14"
+                                    Margin="0,16,0,0" />
+                        </VerticalStackLayout>
+                    </Frame>
                 </CollectionView.EmptyView>
             </CollectionView>
         </RefreshView>

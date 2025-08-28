@@ -5,137 +5,215 @@
              xmlns:dto="clr-namespace:CondoSphere.Core.DTOs.Financials;assembly=CondoSphere.Core"
              x:DataType="vm:QuotaDetailsViewModel"
              x:Class="CondoSphere.Mobile.Views.QuotaDetailsPage"
-             Title="Quota Details">
+             BackgroundColor="{StaticResource BackgroundSecondary}"
+             Title="Bill Details">
 
     <ContentPage.ToolbarItems>
-        <ToolbarItem Text="Back" Command="{Binding GoBackCommand}" />
+        <ToolbarItem Text="Close" Command="{Binding GoBackCommand}" />
     </ContentPage.ToolbarItems>
 
     <ScrollView>
-        <VerticalStackLayout Padding="20" Spacing="15">
+        <VerticalStackLayout Spacing="24" Padding="20,0,20,40">
 
+            <!-- Loading Indicator -->
             <ActivityIndicator IsRunning="{Binding IsBusy}" 
-                             VerticalOptions="Center" 
-                             HorizontalOptions="Center" />
+                             Color="{StaticResource Primary}"
+                             HeightRequest="48"
+                             WidthRequest="48"
+                             HorizontalOptions="Center"
+                             Margin="20"
+                             IsVisible="{Binding IsBusy}" />
 
-            <!-- Quota Summary Card -->
-            <Frame BorderColor="LightGray" CornerRadius="8" Padding="15">
-                <VerticalStackLayout Spacing="10">
+            <!-- Header Card with Amount -->
+            <Frame Style="{StaticResource CardElevated}"
+                   BackgroundColor="{StaticResource Primary}">
+                <Grid ColumnDefinitions="*,Auto" 
+                      RowDefinitions="Auto,Auto,Auto">
+
+                    <!-- Bill Icon and Status -->
+                    <Frame Grid.RowSpan="3" Grid.Column="1"
+                           BackgroundColor="{StaticResource TextOnPrimary}"
+                           CornerRadius="24"
+                           HeightRequest="48"
+                           WidthRequest="48"
+                           Padding="0"
+                           HasShadow="False"
+                           VerticalOptions="Start">
+                        <Label Text="💰" 
+                               FontSize="24"
+                               HorizontalOptions="Center"
+                               VerticalOptions="Center" />
+                    </Frame>
+
+                    <!-- Bill Details -->
                     <Label Text="{Binding Quota.Description}" 
-                           FontSize="18" 
+                           Style="{StaticResource SubheadingLarge}"
+                           TextColor="{StaticResource TextOnPrimary}" />
+
+                    <Label Grid.Row="1"
+                           Text="{Binding Quota.AmountDue, StringFormat='€{0:N2}'}" 
+                           Style="{StaticResource HeadingLarge}"
+                           TextColor="{StaticResource TextOnPrimary}"
                            FontAttributes="Bold" />
 
-                    <Grid ColumnDefinitions="*, *" 
-                          RowDefinitions="Auto, Auto, Auto" 
-                          RowSpacing="8">
-
-                        <Label Grid.Row="0" Grid.Column="0" Text="Amount Due:" />
-                        <Label Grid.Row="0" Grid.Column="1" 
-                               Text="{Binding Quota.AmountDue, StringFormat='{0:C}'}" 
-                               FontAttributes="Bold" />
-
-                        <Label Grid.Row="1" Grid.Column="0" Text="Due Date:" />
-                        <Label Grid.Row="1" Grid.Column="1" 
-                               Text="{Binding Quota.DueDate, StringFormat='{0:d}'}" />
-
-                        <Label Grid.Row="2" Grid.Column="0" Text="Status:" />
-                        <Label Grid.Row="2" Grid.Column="1" 
-                               Text="{Binding Quota.Status}" 
-                               TextColor="{Binding Quota.Status, Converter={StaticResource StatusToColorConverter}}" 
-                               FontAttributes="Bold" />
-                    </Grid>
-                </VerticalStackLayout>
+                    <Label Grid.Row="2"
+                           Text="{Binding Quota.DueDate, StringFormat='Due: {0:MMMM dd, yyyy}'}" 
+                           Style="{StaticResource BodyMedium}"
+                           TextColor="{StaticResource TextOnPrimary}"
+                           Opacity="0.9" />
+                </Grid>
             </Frame>
 
-            <!-- Breakdown Section -->
-            <Label Text="Fee Breakdown" 
-                   FontSize="20" 
-                   FontAttributes="Bold" 
-                   Margin="0,10,0,0" 
-                   IsVisible="{Binding Breakdown, Converter={StaticResource IsNotNullConverter}}" />
+            <!-- Status Badge -->
+            <Frame CornerRadius="16"
+                   Padding="16,8"
+                   HasShadow="False"
+                   HorizontalOptions="Start"
+                   BackgroundColor="{Binding Quota.Status, Converter={StaticResource StatusToColorConverter}}">
+                <Label Text="{Binding Quota.Status}" 
+                       Style="{StaticResource SubheadingMedium}"
+                       TextColor="{StaticResource TextOnPrimary}"
+                       FontAttributes="Bold" />
+            </Frame>
 
-            <!-- Fixed Expenses -->
-            <Frame BorderColor="LightGray" 
-                   CornerRadius="5" 
-                   Padding="10" 
+            <!-- Bill Breakdown Section -->
+            <Frame Style="{StaticResource CardStyle}"
                    IsVisible="{Binding Breakdown, Converter={StaticResource IsNotNullConverter}}">
-                <VerticalStackLayout Spacing="8">
-                    <Label Text="Fixed Monthly Expenses" FontAttributes="Bold" />
-                    <CollectionView ItemsSource="{Binding Breakdown.FixedExpenses}" 
-                                    HeightRequest="150">
-                        <CollectionView.ItemTemplate>
-                            <DataTemplate x:DataType="dto:ExpenseDto">
-                                <Grid ColumnDefinitions="*, Auto" Padding="0,2">
-                                    <Label Grid.Column="0" 
-                                           Text="{Binding Title}" 
-                                           FontSize="14" />
-                                    <Label Grid.Column="1" 
-                                           Text="{Binding Amount, StringFormat='{0:C}'}" 
-                                           FontSize="14" />
-                                </Grid>
-                            </DataTemplate>
-                        </CollectionView.ItemTemplate>
-                        <CollectionView.EmptyView>
-                            <Label Text="No fixed expenses" 
-                                   TextColor="Gray" 
-                                   FontSize="12" />
-                        </CollectionView.EmptyView>
-                    </CollectionView>
+                <VerticalStackLayout Spacing="20">
+
+                    <Label Text="📋 Fee Breakdown" 
+                           Style="{StaticResource SubheadingLarge}" />
+
+                    <!-- Fixed Expenses -->
+                    <VerticalStackLayout Spacing="12"
+                                       IsVisible="{Binding Breakdown.FixedExpenses, Converter={StaticResource HasItemsConverter}}">
+                        <Label Text="Monthly Fixed Costs" 
+                               Style="{StaticResource SubheadingMedium}"
+                               TextColor="{StaticResource Primary}" />
+
+                        <Frame BackgroundColor="{StaticResource BackgroundTertiary}"
+                               CornerRadius="12"
+                               Padding="16"
+                               HasShadow="False">
+                            <CollectionView ItemsSource="{Binding Breakdown.FixedExpenses}"
+                                          HeightRequest="120">
+                                <CollectionView.ItemTemplate>
+                                    <DataTemplate x:DataType="dto:ExpenseDto">
+                                        <Grid ColumnDefinitions="*,Auto" 
+                                              Padding="0,4"
+                                              RowSpacing="2">
+                                            <Label Text="{Binding Title}" 
+                                                   Style="{StaticResource BodyMedium}" />
+                                            <Label Grid.Column="1" 
+                                                   Text="{Binding Amount, StringFormat='€{0:N2}'}" 
+                                                   Style="{StaticResource BodyMedium}"
+                                                   FontAttributes="Bold"
+                                                   TextColor="{StaticResource Primary}" />
+                                        </Grid>
+                                    </DataTemplate>
+                                </CollectionView.ItemTemplate>
+                            </CollectionView>
+                        </Frame>
+                    </VerticalStackLayout>
+
+                    <!-- One-Time Expenses -->
+                    <VerticalStackLayout Spacing="12"
+                                       IsVisible="{Binding Breakdown.OneTimeExpenses, Converter={StaticResource HasItemsConverter}}">
+                        <Label Text="Special Assessments" 
+                               Style="{StaticResource SubheadingMedium}"
+                               TextColor="{StaticResource Warning}" />
+
+                        <Frame BackgroundColor="{StaticResource BackgroundTertiary}"
+                               CornerRadius="12"
+                               Padding="16"
+                               HasShadow="False">
+                            <CollectionView ItemsSource="{Binding Breakdown.OneTimeExpenses}"
+                                          HeightRequest="120">
+                                <CollectionView.ItemTemplate>
+                                    <DataTemplate x:DataType="dto:ExpenseDto">
+                                        <Grid ColumnDefinitions="*,Auto" 
+                                              Padding="0,4"
+                                              RowSpacing="2">
+                                            <VerticalStackLayout>
+                                                <Label Text="{Binding Title}" 
+                                                       Style="{StaticResource BodyMedium}" />
+                                                <Label Text="{Binding ExpenseDate, StringFormat='{0:MMM yyyy}'}" 
+                                                       Style="{StaticResource BodySmall}" />
+                                            </VerticalStackLayout>
+                                            <Label Grid.Column="1" 
+                                                   Text="{Binding Amount, StringFormat='€{0:N2}'}" 
+                                                   Style="{StaticResource BodyMedium}"
+                                                   FontAttributes="Bold"
+                                                   TextColor="{StaticResource Warning}" />
+                                        </Grid>
+                                    </DataTemplate>
+                                </CollectionView.ItemTemplate>
+                            </CollectionView>
+                        </Frame>
+                    </VerticalStackLayout>
+
+                    <!-- Division Info -->
+                    <Frame BackgroundColor="{StaticResource Info}"
+                           CornerRadius="12"
+                           Padding="12"
+                           HasShadow="False">
+                        <Label Text="{Binding Breakdown.TotalUnitsInCondo, StringFormat='ℹ️ Total cost divided equally among {0} units'}" 
+                               Style="{StaticResource BodySmall}"
+                               TextColor="{StaticResource TextOnPrimary}"
+                               HorizontalTextAlignment="Center" />
+                    </Frame>
                 </VerticalStackLayout>
             </Frame>
 
-            <!-- One-Time Expenses -->
-            <Frame BorderColor="LightGray" 
-                   CornerRadius="5" 
-                   Padding="10" 
-                   IsVisible="{Binding Breakdown.OneTimeExpenses, Converter={StaticResource HasItemsConverter}}">
-                <VerticalStackLayout Spacing="8">
-                    <Label Text="One-Time Expenses" FontAttributes="Bold" />
-                    <CollectionView ItemsSource="{Binding Breakdown.OneTimeExpenses}"
-                                    HeightRequest="150">
-                        <CollectionView.ItemTemplate>
-                            <DataTemplate x:DataType="dto:ExpenseDto">
-                                <Grid ColumnDefinitions="*, Auto" Padding="0,2">
-                                    <Label Grid.Column="0" 
-                                           Text="{Binding Title}" 
-                                           FontSize="14" />
-                                    <Label Grid.Column="1" 
-                                           Text="{Binding Amount, StringFormat='{0:C}'}" 
-                                           FontSize="14" />
-                                </Grid>
-                            </DataTemplate>
-                        </CollectionView.ItemTemplate>
-                    </CollectionView>
-                </VerticalStackLayout>
-            </Frame>
+            <!-- Payment Actions -->
+            <VerticalStackLayout Spacing="16">
 
-            <!-- Unit Share Info -->
-            <Label Text="{Binding Breakdown.TotalUnitsInCondo, StringFormat='Total cost divided by {0} units'}" 
-                   FontSize="12" 
-                   TextColor="Gray" 
-                   HorizontalTextAlignment="Center"
-                   IsVisible="{Binding Breakdown, Converter={StaticResource IsNotNullConverter}}" />
-
-            <!-- Action Buttons -->
-            <VerticalStackLayout Spacing="10" Margin="0,20,0,0">
-                <Button Text="Pay Now Online" 
+                <!-- Pay Now Button -->
+                <Button Text="💳 Pay Online Now" 
                         Command="{Binding PayNowCommand}"
-                        BackgroundColor="Green"
-                        TextColor="White"
+                        Style="{StaticResource ButtonPrimary}"
                         IsVisible="{Binding Quota.Status, Converter={StaticResource StatusToBoolConverter}, ConverterParameter=ShowPayButton}" />
 
-                <Button Text="Upload Payment Proof" 
+                <!-- Upload Proof Button -->
+                <Button Text="📎 Upload Payment Proof" 
                         Command="{Binding UploadProofCommand}"
-                        BackgroundColor="Blue"
-                        TextColor="White"
+                        Style="{StaticResource ButtonSecondary}"
                         IsVisible="{Binding Quota.Status, Converter={StaticResource StatusToBoolConverter}, ConverterParameter=ShowUploadButton}" />
 
-                <Label Text="Payment proof uploaded. Awaiting manager confirmation." 
-                       TextColor="Orange"
-                       HorizontalTextAlignment="Center"
-                       FontAttributes="Italic"
-                       IsVisible="{Binding Quota.Status, Converter={StaticResource StatusToBoolConverter}, ConverterParameter=ShowPendingMessage}" />
+                <!-- Pending Confirmation Message -->
+                <Frame Style="{StaticResource CardStyle}"
+                       BackgroundColor="{StaticResource Warning}"
+                       IsVisible="{Binding Quota.Status, Converter={StaticResource StatusToBoolConverter}, ConverterParameter=ShowPendingMessage}">
+                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                        <Label Text="⏳" FontSize="24" VerticalOptions="Center" />
+                        <VerticalStackLayout Grid.Column="1" Spacing="4">
+                            <Label Text="Payment Under Review" 
+                                   Style="{StaticResource SubheadingMedium}"
+                                   TextColor="{StaticResource TextOnPrimary}" />
+                            <Label Text="Your payment proof has been uploaded and is being reviewed by the property manager." 
+                                   Style="{StaticResource BodySmall}"
+                                   TextColor="{StaticResource TextOnPrimary}"
+                                   Opacity="0.9" />
+                        </VerticalStackLayout>
+                    </Grid>
+                </Frame>
+
             </VerticalStackLayout>
+
+            <!-- Help Section -->
+            <Frame Style="{StaticResource CardOutline}"
+                   Padding="20">
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="💬 Need Help?" 
+                           Style="{StaticResource SubheadingMedium}" />
+                    <Label Text="Have questions about this bill? Contact your property manager for assistance." 
+                           Style="{StaticResource BodyMedium}" />
+                    <Button Text="Contact Support" 
+                            Style="{StaticResource ButtonOutline}"
+                            HeightRequest="40"
+                            FontSize="14" />
+                </VerticalStackLayout>
+            </Frame>
 
         </VerticalStackLayout>
     </ScrollView>

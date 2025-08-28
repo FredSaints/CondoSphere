@@ -1,0 +1,20 @@
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace CondoSphere.Core.DTOs.Messages
+{
+    public class SendMessageDto
+    {
+        [Required]
+        public int ReceiverId { get; set; }
+
+        [Required]
+        [StringLength(150, MinimumLength = 3)]
+        public string Subject { get; set; } = string.Empty;
+
+        [Required]
+        [StringLength(2000, MinimumLength = 5)]
+        public string Content { get; set; } = string.Empty;
+
+        public int? CondominiumId { get; set; }
+    }
+}

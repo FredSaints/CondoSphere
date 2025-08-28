@@ -5,29 +5,267 @@
              xmlns:dto="clr-namespace:CondoSphere.Core.DTOs.Condominiums;assembly=CondoSphere.Core"
              x:DataType="vm:DocumentsViewModel"
              x:Class="CondoSphere.Mobile.Views.DocumentsPage"
+             BackgroundColor="{StaticResource BackgroundSecondary}"
              Title="Documents">
 
-    <Grid RowDefinitions="*">
-        <ActivityIndicator IsRunning="{Binding IsBusy}" VerticalOptions="Center" HorizontalOptions="Center" />
-        <RefreshView Command="{Binding LoadDataCommand}" IsRefreshing="{Binding IsBusy}">
+    <Grid RowDefinitions="Auto,*">
+
+        <!-- Loading Overlay -->
+        <Frame Grid.RowSpan="2" 
+               BackgroundColor="#80000000"
+               IsVisible="{Binding IsBusy}"
+               ZIndex="999"
+               Padding="0">
+            <ActivityIndicator IsRunning="{Binding IsBusy}" 
+                             Color="{StaticResource Primary}"
+                             HeightRequest="48"
+                             WidthRequest="48"
+                             VerticalOptions="Center" 
+                             HorizontalOptions="Center" />
+        </Frame>
+
+        <!-- Header -->
+        <Frame Grid.Row="0"
+               BackgroundColor="{StaticResource Primary}"
+               CornerRadius="24"
+               HasShadow="False"
+               Padding="24,40,24,24"
+               Margin="0,0,0,20">
+            <Frame.Shadow>
+                <Shadow Brush="{StaticResource ShadowDark}" 
+                        Offset="0,4" 
+                        Radius="12" 
+                        Opacity="0.15" />
+            </Frame.Shadow>
+
+            <Grid ColumnDefinitions="*,Auto">
+                <VerticalStackLayout Spacing="4">
+                    <Label Text="📋 Document Library" 
+                           Style="{StaticResource HeadingMedium}"
+                           TextColor="{StaticResource TextOnPrimary}" />
+                    <Label Text="Access your property documents and files"
+                           Style="{StaticResource BodyMedium}"
+                           TextColor="{StaticResource TextOnPrimary}"
+                           Opacity="0.9" />
+                </VerticalStackLayout>
+
+                <!-- Filter Icon -->
+                <Frame Grid.Column="1"
+                       BackgroundColor="{StaticResource TextOnPrimary}"
+                       CornerRadius="20"
+                       HeightRequest="40"
+                       WidthRequest="40"
+                       Padding="0"
+                       HasShadow="False">
+                    <Label Text="🔽" 
+                           FontSize="18"
+                           HorizontalOptions="Center"
+                           VerticalOptions="Center" />
+                </Frame>
+            </Grid>
+        </Frame>
+
+        <!-- Main Content -->
+        <RefreshView Grid.Row="1" 
+                     Command="{Binding LoadDataCommand}" 
+                     IsRefreshing="{Binding IsBusy}">
 
             <CollectionView x:Name="documentsCollectionView" 
-                            ItemsSource="{Binding Documents}" 
-                            SelectionMode="Single">
+                            ItemsSource="{Binding Documents}"
+                            SelectionMode="Single"
+                            Margin="20,0,20,40">
 
+                <!-- Header -->
+                <CollectionView.Header>
+                    <VerticalStackLayout Spacing="16" Margin="0,0,0,20">
+
+                        <!-- Quick Access Categories -->
+                        <VerticalStackLayout Spacing="12">
+                            <Label Text="📁 Quick Access" 
+                                   Style="{StaticResource SubheadingMedium}" />
+
+                            <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never">
+                                <HorizontalStackLayout Spacing="12" Padding="4,0">
+
+                                    <!-- All Documents -->
+                                    <Frame Style="{StaticResource CardStyle}"
+                                           Padding="16,12"
+                                           WidthRequest="120"
+                                           BackgroundColor="{StaticResource Primary}">
+                                        <VerticalStackLayout Spacing="4" HorizontalOptions="Center">
+                                            <Label Text="📄" FontSize="20" HorizontalOptions="Center" />
+                                            <Label Text="All Files" 
+                                                   Style="{StaticResource BodySmall}"
+                                                   TextColor="{StaticResource TextOnPrimary}"
+                                                   HorizontalTextAlignment="Center" />
+                                        </VerticalStackLayout>
+                                    </Frame>
+
+                                    <!-- Minutes -->
+                                    <Frame Style="{StaticResource CardOutline}"
+                                           Padding="16,12"
+                                           WidthRequest="120">
+                                        <VerticalStackLayout Spacing="4" HorizontalOptions="Center">
+                                            <Label Text="📝" FontSize="20" HorizontalOptions="Center" />
+                                            <Label Text="Minutes" 
+                                                   Style="{StaticResource BodySmall}"
+                                                   HorizontalTextAlignment="Center" />
+                                        </VerticalStackLayout>
+                                    </Frame>
+
+                                    <!-- Budget -->
+                                    <Frame Style="{StaticResource CardOutline}"
+                                           Padding="16,12"
+                                           WidthRequest="120">
+                                        <VerticalStackLayout Spacing="4" HorizontalOptions="Center">
+                                            <Label Text="💰" FontSize="20" HorizontalOptions="Center" />
+                                            <Label Text="Budget" 
+                                                   Style="{StaticResource BodySmall}"
+                                                   HorizontalTextAlignment="Center" />
+                                        </VerticalStackLayout>
+                                    </Frame>
+
+                                    <!-- Regulations -->
+                                    <Frame Style="{StaticResource CardOutline}"
+                                           Padding="16,12"
+                                           WidthRequest="120">
+                                        <VerticalStackLayout Spacing="4" HorizontalOptions="Center">
+                                            <Label Text="⚖️" FontSize="20" HorizontalOptions="Center" />
+                                            <Label Text="Rules" 
+                                                   Style="{StaticResource BodySmall}"
+                                                   HorizontalTextAlignment="Center" />
+                                        </VerticalStackLayout>
+                                    </Frame>
+
+                                </HorizontalStackLayout>
+                            </ScrollView>
+                        </VerticalStackLayout>
+
+                        <!-- Search Bar -->
+                        <Frame Style="{StaticResource CardOutline}" 
+                               Padding="0"
+                               HeightRequest="48">
+                            <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                                <Label Grid.Column="0" 
+                                       Text="🔍" 
+                                       FontSize="18"
+                                       VerticalOptions="Center"
+                                       Margin="16,0,0,0" />
+                                <Entry Grid.Column="1"
+                                       Placeholder="Search documents..."
+                                       BackgroundColor="Transparent"
+                                       Style="{StaticResource EntryDefault}"
+                                       VerticalOptions="Center" />
+                                <Label Grid.Column="2" 
+                                       Text="🔽" 
+                                       FontSize="16"
+                                       VerticalOptions="Center"
+                                       Margin="0,0,16,0" />
+                            </Grid>
+                        </Frame>
+
+                        <!-- Section Title -->
+                        <Label Text="📋 Recent Documents" 
+                               Style="{StaticResource SubheadingMedium}"
+                               Margin="4,8,0,0" />
+                    </VerticalStackLayout>
+                </CollectionView.Header>
+
+                <!-- Document Items -->
                 <CollectionView.ItemTemplate>
                     <DataTemplate x:DataType="dto:DocumentDto">
-                        <Frame Padding="15" Margin="10,5" CornerRadius="5" BorderColor="LightGray">
-                            <VerticalStackLayout>
-                                <Label Text="{Binding Title}" FontAttributes="Bold" />
-                                <Label Text="{Binding Category, StringFormat='Category: {0}'}" FontSize="Small" TextColor="Gray" />
-                            </VerticalStackLayout>
+                        <Frame Style="{StaticResource CardStyle}" 
+                               Margin="0,6">
+
+                            <Grid ColumnDefinitions="Auto,*,Auto" 
+                                  RowDefinitions="Auto,Auto,Auto"
+                                  ColumnSpacing="16"
+                                  RowSpacing="4">
+
+                                <!-- Document Type Icon -->
+                                <Frame Grid.RowSpan="3"
+                                       CornerRadius="20"
+                                       HeightRequest="40"
+                                       WidthRequest="40"
+                                       Padding="0"
+                                       HasShadow="False"
+                                       BackgroundColor="{StaticResource Info}">
+                                    <Label Text="📄" 
+                                           FontSize="18"
+                                           HorizontalOptions="Center"
+                                           VerticalOptions="Center" />
+                                </Frame>
+
+                                <!-- Document Details -->
+                                <Label Grid.Column="1" 
+                                       Text="{Binding Title}" 
+                                       Style="{StaticResource SubheadingMedium}" />
+
+                                <Label Grid.Column="1" Grid.Row="1"
+                                       Text="{Binding Category}" 
+                                       Style="{StaticResource BodySmall}"
+                                       TextColor="{StaticResource Primary}"
+                                       FontAttributes="Bold" />
+
+                                <Grid Grid.Column="1" Grid.Row="2" 
+                                      ColumnDefinitions="Auto,Auto,*"
+                                      ColumnSpacing="12">
+                                    <Label Text="{Binding UploadDate, StringFormat='{0:MMM dd, yyyy}'}" 
+                                           Style="{StaticResource BodySmall}"
+                                           TextColor="{StaticResource TextSecondary}" />
+                                    <Label Grid.Column="1"
+                                           Text="•" 
+                                           Style="{StaticResource BodySmall}"
+                                           TextColor="{StaticResource TextSecondary}" />
+                                    <Label Grid.Column="2"
+                                           Text="{Binding UploadedByUserName}" 
+                                           Style="{StaticResource BodySmall}"
+                                           TextColor="{StaticResource TextSecondary}" />
+                                </Grid>
+
+                                <!-- Download Button -->
+                                <Frame Grid.Column="2" Grid.RowSpan="3"
+                                       CornerRadius="16"
+                                       HeightRequest="32"
+                                       WidthRequest="32"
+                                       Padding="0"
+                                       HasShadow="False"
+                                       BackgroundColor="{StaticResource Success}"
+                                       VerticalOptions="Center">
+                                    <Label Text="⬇️" 
+                                           FontSize="14"
+                                           HorizontalOptions="Center"
+                                           VerticalOptions="Center" />
+                                </Frame>
+                            </Grid>
                         </Frame>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
+
+                <!-- Empty State -->
+                <CollectionView.EmptyView>
+                    <Frame Style="{StaticResource CardStyle}"
+                           Padding="40"
+                           Margin="0,40">
+                        <VerticalStackLayout Spacing="20" HorizontalOptions="Center">
+                            <Label Text="📁" FontSize="64" HorizontalOptions="Center" Opacity="0.5" />
+                            <Label Text="No Documents Available" 
+                                   Style="{StaticResource SubheadingLarge}"
+                                   HorizontalTextAlignment="Center" />
+                            <Label Text="Documents shared by your property manager will appear here. Check back later or contact management for access." 
+                                   Style="{StaticResource BodyMedium}"
+                                   HorizontalTextAlignment="Center"
+                                   TextColor="{StaticResource TextSecondary}" />
+                            <Button Text="🔄 Refresh" 
+                                    Command="{Binding LoadDataCommand}"
+                                    Style="{StaticResource ButtonOutline}"
+                                    HeightRequest="40"
+                                    FontSize="14"
+                                    Margin="0,16,0,0" />
+                        </VerticalStackLayout>
+                    </Frame>
+                </CollectionView.EmptyView>
             </CollectionView>
         </RefreshView>
     </Grid>
 </ContentPage>
-
-  

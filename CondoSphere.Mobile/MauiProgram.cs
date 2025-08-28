@@ -41,6 +41,9 @@ namespace CondoSphere.Mobile
             builder.Services.AddTransient<CreateOccurrenceViewModel>();
             builder.Services.AddTransient<ManagerOccurrenceDetailsViewModel>();
             builder.Services.AddTransient<QuotaDetailsViewModel>();
+            builder.Services.AddTransient<MessagesViewModel>();
+            builder.Services.AddTransient<MessageDetailsViewModel>();
+            builder.Services.AddTransient<ComposeMessageViewModel>();
 
             // Pages (Transients)
             builder.Services.AddTransient<LoginPage>();
@@ -53,6 +56,9 @@ namespace CondoSphere.Mobile
             builder.Services.AddTransient<CreateOccurrencePage>();
             builder.Services.AddTransient<ManagerOccurrenceDetailsPage>();
             builder.Services.AddTransient<QuotaDetailsPage>();
+            builder.Services.AddTransient<MessagesPage>();
+            builder.Services.AddTransient<MessageDetailsPage>();
+            builder.Services.AddTransient<ComposeMessagePage>();
 
 
             return builder.Build();

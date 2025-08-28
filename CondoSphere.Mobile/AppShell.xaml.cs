@@ -17,6 +17,8 @@ public partial class AppShell : Shell
         Routing.RegisterRoute("condos/occurrences/details", typeof(ManagerOccurrenceDetailsPage));
         Routing.RegisterRoute("condos/occurrences/create", typeof(CreateOccurrencePage));
         Routing.RegisterRoute("quotas/details", typeof(QuotaDetailsPage));
+        Routing.RegisterRoute(nameof(MessageDetailsPage), typeof(MessageDetailsPage));
+        Routing.RegisterRoute(nameof(ComposeMessagePage), typeof(ComposeMessagePage));
 
         // Listen for successful login
         WeakReferenceMessenger.Default.Register<LoginSuccessMessage>(this, async (_, msg) =>

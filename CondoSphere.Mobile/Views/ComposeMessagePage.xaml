@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage x:Class="CondoSphere.Mobile.Views.ComposeMessagePage"
+             xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:CondoSphere.Mobile.ViewModels"
+             xmlns:services="clr-namespace:CondoSphere.Mobile.Services"
+             x:DataType="vm:ComposeMessageViewModel"
+             Title="Compose Message">
+
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="Send" 
+                     Command="{Binding SendMessageCommand}"
+                     IconImageSource="send.png" />
+    </ContentPage.ToolbarItems>
+
+    <ScrollView BackgroundColor="{StaticResource BackgroundPrimary}">
+        <StackLayout Padding="20" Spacing="20">
+
+            <!-- Recipient Selection -->
+            <Frame BackgroundColor="{StaticResource SurfacePrimary}" 
+                   BorderColor="Transparent" 
+                   CornerRadius="10" 
+                   Padding="15">
+
+                <StackLayout Spacing="10">
+                    <Label Text="To:" 
+                           FontAttributes="Bold" 
+                           TextColor="{StaticResource TextPrimary}" />
+
+                    <Picker ItemsSource="{Binding Contacts}"
+                            SelectedItem="{Binding SelectedContact}"
+                            ItemDisplayBinding="{Binding FullName}"
+                            Title="Select recipient..."
+                            BackgroundColor="{StaticResource BackgroundPrimary}"
+                            TextColor="{StaticResource TextPrimary}" />
+
+                    <Label Text="Please select a recipient" 
+                           TextColor="{StaticResource Danger}" 
+                           FontSize="12"
+                           IsVisible="{Binding SelectedContact, Converter={StaticResource IsNullConverter}}" />
+                </StackLayout>
+            </Frame>
+
+            <!-- Subject -->
+            <Frame BackgroundColor="{StaticResource SurfacePrimary}" 
+                   BorderColor="Transparent" 
+                   CornerRadius="10" 
+                   Padding="15">
+
+                <StackLayout Spacing="10">
+                    <Label Text="Subject:" 
+                           FontAttributes="Bold" 
+                           TextColor="{StaticResource TextPrimary}" />
+
+                    <Entry Text="{Binding Subject}"
+                           Placeholder="Enter message subject..."
+                           BackgroundColor="{StaticResource BackgroundPrimary}"
+                           TextColor="{StaticResource TextPrimary}"
+                           PlaceholderColor="{StaticResource Gray500}"
+                           MaxLength="150" />
+
+                    <Label Text="Subject is required" 
+                           TextColor="{StaticResource Danger}" 
+                           FontSize="12"
+                           IsVisible="{Binding Subject, Converter={StaticResource StringToBoolConverter}, ConverterParameter='Inverse'}" />
+                </StackLayout>
+            </Frame>
+
+            <!-- Message Content -->
+            <Frame BackgroundColor="{StaticResource SurfacePrimary}" 
+                   BorderColor="Transparent" 
+                   CornerRadius="10" 
+                   Padding="15">
+
+                <StackLayout Spacing="10">
+                    <Label Text="Message:" 
+                           FontAttributes="Bold" 
+                           TextColor="{StaticResource TextPrimary}" />
+
+                    <Editor Text="{Binding Content}"
+                            Placeholder="Type your message here..."
+                            BackgroundColor="{StaticResource BackgroundPrimary}"
+                            TextColor="{StaticResource TextPrimary}"
+                            PlaceholderColor="{StaticResource Gray500}"
+                            HeightRequest="200"
+                            AutoSize="TextChanges"
+                            MaxLength="2000" />
+
+                    <StackLayout Orientation="Horizontal" HorizontalOptions="End">
+                        <Label Text="{Binding Content.Length}" 
+                               TextColor="{StaticResource Gray600}" 
+                               FontSize="12" />
+                        <Label Text="/2000" 
+                               TextColor="{StaticResource Gray600}" 
+                               FontSize="12" />
+                    </StackLayout>
+
+                    <Label Text="Message is required" 
+                           TextColor="{StaticResource Danger}" 
+                           FontSize="12"
+                           IsVisible="{Binding Content, Converter={StaticResource StringToBoolConverter}, ConverterParameter='Inverse'}" />
+                </StackLayout>
+            </Frame>
+
+            <!-- Building Context (if applicable) -->
+            <Frame BackgroundColor="{StaticResource Info}" 
+                   BorderColor="Transparent" 
+                   CornerRadius="10" 
+                   Padding="15"
+                   IsVisible="{Binding CondominiumId, Converter={StaticResource IsNotNullConverter}}">
+
+                <StackLayout Orientation="Horizontal" Spacing="10">
+                    <Label Text="🏢" FontSize="20" />
+                    <Label Text="This message is related to a specific building"
+                           TextColor="White" 
+                           FontSize="14"
+                           VerticalOptions="Center" />
+                </StackLayout>
+            </Frame>
+
+            <!-- Action Buttons -->
+            <StackLayout Orientation="Horizontal" 
+                        HorizontalOptions="Center" 
+                        Spacing="15" 
+                        Margin="0,20,0,0">
+
+                <Button Text="Send Message"
+                        Command="{Binding SendMessageCommand}"
+                        BackgroundColor="{StaticResource Primary}"
+                        TextColor="White"
+                        CornerRadius="25"
+                        WidthRequest="150"
+                        HeightRequest="50"
+                        IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBoolConverter}}" />
+
+                <Button Text="Cancel"
+                        Command="{Binding CancelCommand}"
+                        BackgroundColor="{StaticResource Gray200}"
+                        TextColor="{StaticResource TextPrimary}"
+                        CornerRadius="25"
+                        WidthRequest="120"
+                        HeightRequest="50"
+                        IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBoolConverter}}" />
+
+            </StackLayout>
+
+            <!-- Loading indicator -->
+            <ActivityIndicator IsVisible="{Binding IsBusy}" 
+                              IsRunning="{Binding IsBusy}"
+                              Color="{StaticResource Primary}" 
+                              HorizontalOptions="Center" 
+                              Margin="0,20,0,0" />
+
+        </StackLayout>
+    </ScrollView>
+
+</ContentPage>

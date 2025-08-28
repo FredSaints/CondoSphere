@@ -22,6 +22,7 @@ namespace CondoSphere.Infrastructure.Repositories
         public IReceiptRepository Receipts { get; private set; }
         public IDocumentRepository Documents { get; private set; }
         public INotificationRepository Notifications { get; private set; }
+        public IMessageRepository Messages { get; private set; }
 
         public UnitOfWork(UserManagementDbContext userContext, CondominiumDbContext condoContext, FinancialsDbContext financialsContext)
         {
@@ -41,6 +42,7 @@ namespace CondoSphere.Infrastructure.Repositories
             Receipts = new ReceiptRepository(_financialsContext);
             Documents = new DocumentRepository(_condoContext);
             Notifications = new NotificationRepository(_userContext);
+            Messages = new MessageRepository(_userContext);
         }
 
         public async Task<int> CompleteAsync()
@@ -48,8 +50,9 @@ namespace CondoSphere.Infrastructure.Repositories
             var userDbResult = await _userContext.SaveChangesAsync();
             var condoDbResult = await _condoContext.SaveChangesAsync();
             var financialsDbResult = await _financialsContext.SaveChangesAsync();
+            var messagingDbResult = await _userContext.SaveChangesAsync();
 
-            return userDbResult + condoDbResult + financialsDbResult;
+            return userDbResult + condoDbResult + financialsDbResult + messagingDbResult;
         }
 
         public async ValueTask DisposeAsync()

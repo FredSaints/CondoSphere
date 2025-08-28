@@ -4,38 +4,204 @@
              xmlns:vm="clr-namespace:CondoSphere.Mobile.ViewModels"
              x:DataType="vm:CreateOccurrenceViewModel"
              x:Class="CondoSphere.Mobile.Views.CreateOccurrencePage"
-             Title="Report New Occurrence">
+             BackgroundColor="{StaticResource BackgroundSecondary}"
+             Title="Report Issue">
 
-    <ScrollView>
-        <VerticalStackLayout Padding="20" Spacing="15">
+    <Grid RowDefinitions="Auto,*,Auto">
 
-            <Label Text="Unit" />
-            <Picker ItemsSource="{Binding UserUnits}"
-                    ItemDisplayBinding="{Binding Identifier}"
-                    SelectedItem="{Binding SelectedUnit}" />
+        <!-- Header -->
+        <Frame Grid.Row="0"
+               BackgroundColor="{StaticResource Primary}"
+               CornerRadius="24"
+               HasShadow="False"
+               Padding="24,40,24,24"
+               Margin="0,0,0,20">
+            <Frame.Shadow>
+                <Shadow Brush="{StaticResource ShadowDark}" 
+                        Offset="0,4" 
+                        Radius="12" 
+                        Opacity="0.15" />
+            </Frame.Shadow>
 
-            <Label Text="Title" />
-            <Entry Placeholder="e.g., Leaky faucet in kitchen" Text="{Binding Title}" />
+            <VerticalStackLayout Spacing="8">
+                <Label Text="🚨 Report an Issue" 
+                       Style="{StaticResource HeadingMedium}"
+                       TextColor="{StaticResource TextOnPrimary}" />
+                <Label Text="Help us resolve problems quickly by providing detailed information"
+                       Style="{StaticResource BodyMedium}"
+                       TextColor="{StaticResource TextOnPrimary}"
+                       Opacity="0.9" />
+            </VerticalStackLayout>
+        </Frame>
 
-            <Label Text="Description" />
-            <Editor Placeholder="Please describe the issue in detail..." 
-                    Text="{Binding Description}"
-                    HeightRequest="200" 
-                    AutoSize="Disabled" />
+        <!-- Main Form -->
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Spacing="24" Padding="20,0,20,20">
 
-            <Button Text="Select Photo (Optional)" Command="{Binding SelectPhotoCommand}" Margin="0,10,0,0"/>
-            <Image Source="{Binding ImageFileSource}"
-       HeightRequest="200"
-       Margin="0,10,0,0"
-       IsVisible="{Binding ImageIsVisible}" />
+                <!-- Unit Selection -->
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="🏠 Select Your Unit" 
+                           Style="{StaticResource SubheadingMedium}" />
 
-            <Button Text="Submit Report" 
-                    Command="{Binding SubmitCommand}" 
-                    Margin="0,20,0,0"/>
+                    <Frame Style="{StaticResource CardStyle}" Padding="0">
+                        <Picker ItemsSource="{Binding UserUnits}"
+                                ItemDisplayBinding="{Binding Identifier}"
+                                SelectedItem="{Binding SelectedUnit}"
+                                Title="Choose your unit..."
+                                FontSize="16"
+                                BackgroundColor="Transparent"
+                                Margin="16,0" />
+                    </Frame>
+                </VerticalStackLayout>
 
-            <ActivityIndicator IsRunning="{Binding IsBusy}" />
+                <!-- Issue Title -->
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="📝 Issue Title" 
+                           Style="{StaticResource SubheadingMedium}" />
 
-        </VerticalStackLayout>
-    </ScrollView>
+                    <Frame Style="{StaticResource CardStyle}" Padding="0">
+                        <Entry Placeholder="Brief description (e.g., 'Leaky faucet in kitchen')" 
+                               Text="{Binding Title}"
+                               FontSize="16"
+                               BackgroundColor="Transparent"
+                               Margin="16,0"
+                               MaxLength="100" />
+                    </Frame>
+
+                    <Label Text="Keep it concise and specific" 
+                           Style="{StaticResource BodySmall}"
+                           Margin="8,0,0,0" />
+                </VerticalStackLayout>
+
+                <!-- Detailed Description -->
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="📋 Detailed Description" 
+                           Style="{StaticResource SubheadingMedium}" />
+
+                    <Frame Style="{StaticResource CardStyle}" 
+                           Padding="16"
+                           HeightRequest="160">
+                        <Editor Placeholder="Please describe the issue in detail. Include when it started, how often it happens, and any steps you've already taken..."
+                                Text="{Binding Description}"
+                                FontSize="16"
+                                BackgroundColor="Transparent"
+                                AutoSize="Disabled" />
+                    </Frame>
+
+                    <Label Text="The more details you provide, the faster we can resolve the issue" 
+                           Style="{StaticResource BodySmall}"
+                           Margin="8,0,0,0" />
+                </VerticalStackLayout>
+
+                <!-- Photo Section -->
+                <VerticalStackLayout Spacing="16">
+                    <Label Text="📷 Add Photo (Optional)" 
+                           Style="{StaticResource SubheadingMedium}" />
+
+                    <!-- Photo Button or Preview -->
+                    <Frame Style="{StaticResource CardStyle}" 
+                           Padding="20"
+                           IsVisible="{Binding ImageIsVisible, Converter={StaticResource InverseBoolConverter}}">
+                        <VerticalStackLayout Spacing="16" HorizontalOptions="Center">
+                            <Label Text="📸" FontSize="48" HorizontalOptions="Center" />
+                            <Label Text="A picture helps us understand the problem better" 
+                                   Style="{StaticResource BodyMedium}"
+                                   HorizontalTextAlignment="Center" />
+                            <Button Text="📷 Take Photo" 
+                                    Command="{Binding SelectPhotoCommand}"
+                                    Style="{StaticResource ButtonOutline}"
+                                    HeightRequest="44" />
+                        </VerticalStackLayout>
+                    </Frame>
+
+                    <!-- Photo Preview -->
+                    <Frame Style="{StaticResource CardElevated}"
+                           IsVisible="{Binding ImageIsVisible}"
+                           Padding="8">
+                        <VerticalStackLayout Spacing="12">
+                            <Frame CornerRadius="8"
+                                   Padding="0"
+                                   HasShadow="False"
+                                   BackgroundColor="Transparent">
+                                <Image Source="{Binding ImageFileSource}"
+                                       Aspect="AspectFit"
+                                       HeightRequest="200" />
+                            </Frame>
+                            <Button Text="🔄 Change Photo" 
+                                    Command="{Binding SelectPhotoCommand}"
+                                    Style="{StaticResource ButtonGhost}"
+                                    FontSize="14"
+                                    HeightRequest="36" />
+                        </VerticalStackLayout>
+                    </Frame>
+                </VerticalStackLayout>
+
+                <!-- Priority Tips -->
+                <Frame BackgroundColor="{StaticResource Info}"
+                       CornerRadius="12"
+                       Padding="16"
+                       HasShadow="False">
+                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                        <Label Text="💡" FontSize="24" VerticalOptions="Start" />
+                        <VerticalStackLayout Grid.Column="1" Spacing="4">
+                            <Label Text="Reporting Tips" 
+                                   Style="{StaticResource SubheadingMedium}"
+                                   TextColor="{StaticResource TextOnPrimary}" />
+                            <Label Text="• For emergencies, call the management office directly&#10;• Include photos when possible&#10;• Be specific about location and timing&#10;• Mention if the issue affects multiple units" 
+                                   Style="{StaticResource BodySmall}"
+                                   TextColor="{StaticResource TextOnPrimary}"
+                                   Opacity="0.95" />
+                        </VerticalStackLayout>
+                    </Grid>
+                </Frame>
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!-- Bottom Action Bar -->
+        <Frame Grid.Row="2"
+               BackgroundColor="{StaticResource SurfacePrimary}"
+               CornerRadius="24"
+               HasShadow="False"
+               Padding="20,20,20,40">
+            <Frame.Shadow>
+                <Shadow Brush="{StaticResource Shadow}" 
+                        Offset="0,-4" 
+                        Radius="12" 
+                        Opacity="0.1" />
+            </Frame.Shadow>
+
+            <VerticalStackLayout Spacing="16">
+
+                <!-- Loading Indicator -->
+                <StackLayout Orientation="Horizontal" 
+                           HorizontalOptions="Center"
+                           Spacing="12"
+                           IsVisible="{Binding IsBusy}">
+                    <ActivityIndicator IsRunning="{Binding IsBusy}" 
+                                     Color="{StaticResource Primary}"
+                                     HeightRequest="24"
+                                     WidthRequest="24" />
+                    <Label Text="Submitting your report..." 
+                           Style="{StaticResource BodyMedium}"
+                           VerticalOptions="Center" />
+                </StackLayout>
+
+                <!-- Submit Button -->
+                <Button Text="📤 Submit Report" 
+                        Command="{Binding SubmitCommand}"
+                        Style="{StaticResource ButtonPrimary}"
+                        IsVisible="{Binding IsBusy, Converter={StaticResource InverseBoolConverter}}" />
+
+                <!-- Cancel Button -->
+                <Button Text="Cancel" 
+                        Style="{StaticResource ButtonGhost}"
+                        HeightRequest="40"
+                        FontSize="14"
+                        IsVisible="{Binding IsBusy, Converter={StaticResource InverseBoolConverter}}" />
+
+            </VerticalStackLayout>
+        </Frame>
+    </Grid>
 
 </ContentPage>

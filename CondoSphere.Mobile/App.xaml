@@ -7,15 +7,19 @@
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
+                <!-- Updated resource files -->
                 <ResourceDictionary Source="Resources/Styles/Colors.xaml" />
                 <ResourceDictionary Source="Resources/Styles/Styles.xaml" />
             </ResourceDictionary.MergedDictionaries>
 
-            <!-- Add Value Converters -->
+            <!-- Value Converters -->
             <converters:StatusToColorConverter x:Key="StatusToColorConverter" />
             <converters:IsNotNullConverter x:Key="IsNotNullConverter" />
             <converters:HasItemsConverter x:Key="HasItemsConverter" />
             <converters:StatusToBoolConverter x:Key="StatusToBoolConverter" />
+            <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+            <converters:InverseBoolConverter x:Key="InverseBoolConverter" />
+            <converters:OccurrenceStatusToColorConverter x:Key="OccurrenceStatusToColorConverter" />
         </ResourceDictionary>
     </Application.Resources>
 </Application>

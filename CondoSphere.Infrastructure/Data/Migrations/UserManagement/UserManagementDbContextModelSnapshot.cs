@@ -22,6 +22,56 @@ namespace CondoSphere.Infrastructure.Data.Migrations.UserManagement
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("CondoSphere.Core.Entities.Messages.Message", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CompanyId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("CondominiumId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
+                    b.Property<DateTime?>("ReadDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("ReceiverId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SenderId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("SentDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Subject")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ReceiverId", "SentDate")
+                        .HasDatabaseName("IX_Messages_Receiver_SentDate");
+
+                    b.HasIndex("SenderId", "SentDate")
+                        .HasDatabaseName("IX_Messages_Sender_SentDate");
+
+                    b.HasIndex("CompanyId", "ReceiverId", "ReadDate")
+                        .HasDatabaseName("IX_Messages_Company_Receiver_ReadDate");
+
+                    b.ToTable("Messages");
+                });
+
             modelBuilder.Entity("CondoSphere.Core.Entities.Users.Company", b =>
                 {
                     b.Property<int>("Id")

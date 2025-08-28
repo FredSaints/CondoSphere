@@ -74,7 +74,6 @@ var uploadPathSetting = builder.Configuration["FileUpload:Path"];
 var resolvedUploadPath = Environment.ExpandEnvironmentVariables(
     string.IsNullOrWhiteSpace(uploadPathSetting) ? "CondoSphere_Uploads" : uploadPathSetting);
 
-// If relative, make it absolute next to the app
 if (!Path.IsPathRooted(resolvedUploadPath))
 {
     resolvedUploadPath = Path.GetFullPath(Path.Combine(app.Environment.ContentRootPath, resolvedUploadPath));

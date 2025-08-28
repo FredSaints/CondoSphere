@@ -6,38 +6,83 @@
     xmlns:views="clr-namespace:CondoSphere.Mobile.Views"
     xmlns:vm="clr-namespace:CondoSphere.Mobile.ViewModels"
     Shell.FlyoutBehavior="Disabled"
-    Title="CondoSphere.Mobile">
+    Title="CondoSphere">
 
     <Shell.BindingContext>
         <vm:ShellViewModel />
     </Shell.BindingContext>
 
+    <!-- Shell Visual States -->
+    <Shell.Resources>
+        <Style TargetType="TabBar">
+            <Setter Property="Shell.TabBarBackgroundColor" Value="{StaticResource SurfacePrimary}" />
+            <Setter Property="Shell.TabBarTitleColor" Value="{StaticResource TextPrimary}" />
+            <Setter Property="Shell.TabBarUnselectedColor" Value="{StaticResource Gray500}" />
+            <Setter Property="Shell.TabBarForegroundColor" Value="{StaticResource Primary}" />
+        </Style>
+
+        <Style TargetType="Tab">
+            <Setter Property="Shell.TabBarTitleColor" Value="{StaticResource TextSecondary}" />
+            <Setter Property="Shell.TabBarUnselectedColor" Value="{StaticResource Gray400}" />
+        </Style>
+    </Shell.Resources>
+
+    <!-- Login Screen (Unauthenticated) -->
     <TabBar Route="auth" IsVisible="{Binding IsUnauthenticated}">
-        <ShellContent Title="Login"
-                Route="login"
-                Shell.NavBarIsVisible="False"
-                ContentTemplate="{DataTemplate views:LoginPage}" />
+        <Tab Title="Welcome" Route="login">
+            <ShellContent Shell.NavBarIsVisible="False"
+                          ContentTemplate="{DataTemplate views:LoginPage}" />
+        </Tab>
     </TabBar>
-    <!-- Resident Tabs -->
+
+    <!-- Resident Navigation -->
     <TabBar Route="resident" IsVisible="{Binding IsResident}">
-        <ShellContent Title="Portal"    Route="portal"     ContentTemplate="{DataTemplate views:ResidentPortalPage}" />
-        <ShellContent Title="Documents" Route="documents"  ContentTemplate="{DataTemplate views:DocumentsPage}" />
+        <Tab Title="Portal" Route="portal">
+            <Tab.Icon>
+                <FontImageSource FontFamily="MaterialIcons" Glyph="🏠" Color="{StaticResource Primary}" />
+            </Tab.Icon>
+            <ShellContent ContentTemplate="{DataTemplate views:ResidentPortalPage}" />
+        </Tab>
+
+        <Tab Title="Documents" Route="documents">
+            <Tab.Icon>
+                <FontImageSource FontFamily="MaterialIcons" Glyph="📄" Color="{StaticResource Primary}" />
+            </Tab.Icon>
+            <ShellContent ContentTemplate="{DataTemplate views:DocumentsPage}" />
+        </Tab>
+        <Tab Title="Messages" Icon="message.png">
+            <ShellContent Route="messages" ContentTemplate="{DataTemplate views:MessagesPage}" />
+        </Tab>
     </TabBar>
 
-    <!-- Manager Tabs -->
+    <!-- Manager Navigation -->
     <TabBar Route="manager" IsVisible="{Binding IsManager}">
-        <ShellContent Title="My Condos" Route="condos"     ContentTemplate="{DataTemplate views:CondoListPage}" />
+        <Tab Title="Properties" Route="condos">
+            <Tab.Icon>
+                <FontImageSource FontFamily="MaterialIcons" Glyph="🏢" Color="{StaticResource Primary}" />
+            </Tab.Icon>
+            <ShellContent ContentTemplate="{DataTemplate views:CondoListPage}" />
+        </Tab>
     </TabBar>
 
-    <!-- Admin Tabs -->
+    <!-- Admin Navigation -->
     <TabBar Route="admin" IsVisible="{Binding IsAdmin}">
-        <ShellContent Title="Dashboard" Route="dashboard"  ContentTemplate="{DataTemplate views:AdminDashboardPage}" />
+        <Tab Title="Dashboard" Route="dashboard">
+            <Tab.Icon>
+                <FontImageSource FontFamily="MaterialIcons" Glyph="📊" Color="{StaticResource Primary}" />
+            </Tab.Icon>
+            <ShellContent ContentTemplate="{DataTemplate views:AdminDashboardPage}" />
+        </Tab>
     </TabBar>
 
-    <!-- Universal Profile Tab -->
+    <!-- Profile Tab (Available to all authenticated users) -->
     <TabBar Route="profile" IsVisible="{Binding IsAuthenticated}">
-        <ShellContent Title="Profile" Route="profilehome"
-                ContentTemplate="{DataTemplate views:ProfilePage}" />
+        <Tab Title="Profile" Route="profilehome">
+            <Tab.Icon>
+                <FontImageSource FontFamily="MaterialIcons" Glyph="👤" Color="{StaticResource Primary}" />
+            </Tab.Icon>
+            <ShellContent ContentTemplate="{DataTemplate views:ProfilePage}" />
+        </Tab>
     </TabBar>
 
 </Shell>
