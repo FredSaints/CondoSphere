@@ -1,18 +1,49 @@
 ﻿@{
     ViewData["Title"] = "Registration Complete";
+    ViewData["IsFullWidth"] = true;
 }
 
-<div class="text-center">
-    <h1 class="display-4"><i class="bi bi-check-circle-fill text-success"></i> Thank You!</h1>
-    <p class="lead">Your company and administrator account have been created successfully.</p>
-    <hr />
-    <p class="h5">
-        <strong>A confirmation email has been sent to your address.</strong>
-    </p>
-    <p>
-        Please click the link in the email to activate your account before you can log in.
-    </p>
-    <div class="mt-4">
-        <a class="btn btn-primary" asp-action="Login">Proceed to Login Page</a>
+<style>
+    body {
+        background: var(--light-bg);
+    }
+</style>
+
+<div class="container">
+    <div class="row justify-content-center align-items-center" style="min-height: 70vh;">
+        <div class="col-md-11 col-lg-9 col-xl-8">
+
+            <div class="card shadow-lg border-0 text-center">
+                <div class="card-header py-4" style="background: var(--primary-gradient);">
+                    <i class="bi bi-check-circle-fill text-white" style="font-size: 3rem;"></i>
+                    <h2 class="mb-0 mt-2 text-white">Thank You!</h2>
+                </div>
+
+                <div class="card-body p-4 p-md-5">
+                    <h5 class="card-title mb-3">Your Account is Almost Ready!</h5>
+                    <p class="text-muted">
+                        Your company and administrator account have been created successfully.
+                    </p>
+                    <hr class="my-4" />
+                    <div class="alert alert-info d-flex align-items-center">
+                        <i class="bi bi-envelope-exclamation-fill flex-shrink-0 me-3" style="font-size: 1.5rem;"></i>
+                        <div>
+                            <strong>An email has been sent to your address.</strong> Please click the confirmation link inside to activate your account before logging in.
+                        </div>
+                    </div>
+                    <p class="small text-muted mt-3">
+                        Can't find it? Check your spam folder or <a asp-action="ResendConfirmationEmail">resend the confirmation email</a>.
+                    </p>
+                </div>
+
+                <div class="card-footer py-3 bg-light">
+                    <a class="btn btn-primary" asp-action="Login">
+                        <i class="bi bi-box-arrow-in-right me-1"></i>
+                        Proceed to Login Page
+                    </a>
+                </div>
+            </div>
+
+        </div>
     </div>
 </div>

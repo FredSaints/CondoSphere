@@ -47,14 +47,13 @@
                             <span class="badge @statusClass">@quota.Status</span>
                         </td>
                         <td class="text-end">
-                            <!-- === THIS IS THE CORRECTED LOGIC === -->
                             <div class="btn-group">
                                 <a asp-controller="Portal" asp-action="QuotaDetails" asp-route-id="@quota.Id" class="btn btn-sm btn-outline-primary" title="View Details">
                                     <i class="bi bi-receipt"></i> Details
                                 </a>
                                 @if (quota.Status == UnitQuotaStatus.Paid && quota.ReceiptId.HasValue)
                                 {
-                                    <a asp-controller="Portal" asp-action="Receipt" asp-route-id="@quota.ReceiptId" class="btn btn-sm btn-outline-info" title="View Receipt">
+                                    <a asp-controller="Portal" asp-action="Receipt" asp-route-id="@quota.ReceiptId" class="btn btn-sm btn-outline-secondary" title="View Receipt">
                                         <i class="bi bi-receipt-cutoff"></i> Receipt
                                     </a>
                                 }

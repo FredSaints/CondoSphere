@@ -1,20 +1,53 @@
 ﻿@model CondoSphere.Core.DTOs.Financials.UnitQuotaDto
 
 @{
-    ViewData["Title"] = "Proceed to Payment";
+    ViewData["Title"] = "Secure Payment";
     var stripePublishableKey = ViewData["StripePublishableKey"] as string;
+    ViewData["IsFullWidth"] = true;
 }
 
-<h1>@ViewData["Title"]</h1>
-<p>You are about to pay for: <strong>@Model.Description</strong></p>
+<style>
+    body {
+        background-color: var(--light-bg);
+    }
+</style>
 
-<div class="card col-md-6">
-    <div class="card-body">
-        <dl class="row">
-            <dt class="col-sm-4">Amount Due</dt>
-            <dd class="col-sm-8">@Model.AmountDue.ToString("C")</dd>
-        </dl>
-        <button id="checkout-button" class="btn btn-success w-100">Pay with Card</button>
+<div class="container my-5">
+    <div class="row justify-content-center align-items-center" style="min-height: 70vh;">
+        <div class="col-md-11 col-lg-9 col-xl-7">
+
+            <div class="card shadow-lg border-0 text-center">
+                <div class="card-header py-4" style="background: var(--primary-gradient);">
+                    <h2 class="mb-1 text-white"><i class="bi bi-credit-card-2-front-fill me-2"></i>@ViewData["Title"]</h2>
+                    <p class="mb-0 small text-white-50">Powered by Stripe</p>
+                </div>
+
+                <div class="card-body p-4 p-md-5">
+                    <h5 class="card-title">You are paying for:</h5>
+                    <p class="lead mb-4"><strong>@Model.Description</strong></p>
+
+                    <div class="bg-primary-subtle p-3 rounded mb-4">
+                        <h6 class="text-primary-emphasis mb-1">Total Amount Due</h6>
+                        <span class="h2 text-primary-emphasis fw-bold">@Model.AmountDue.ToString("C")</span>
+                    </div>
+
+                    <div class="d-grid">
+                        <button id="checkout-button" class="btn btn-success btn-lg">
+                            <i class="bi bi-lock-fill me-2"></i>
+                            Pay with Card
+                        </button>
+                    </div>
+                </div>
+
+                <div class="card-footer text-center py-3 bg-light">
+                    <a asp-action="QuotaDetails" asp-route-id="@Model.Id" class="btn btn-link">
+                        <i class="bi bi-arrow-left me-1"></i>
+                        Back to Bill Details
+                    </a>
+                </div>
+            </div>
+
+        </div>
     </div>
 </div>
 
@@ -25,29 +58,43 @@
     document.addEventListener("DOMContentLoaded", function () {
         const stripe = Stripe('@stripePublishableKey');
         const checkoutButton = document.getElementById('checkout-button');
+        const tokenInput = document.querySelector('input[name="__RequestVerificationToken"]');
 
-        checkoutButton.addEventListener('click', function () {
-               fetch('/portal/quotas/@Model.Id/create-session', {
-        method: 'POST',
-        headers: {
-            
-            'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
-        }
-    })
-            .then(function (response) {
-                return response.json();
-            })
-            .then(function (session) {
-                return stripe.redirectToCheckout({ sessionId: session.sessionId });
-            })
-            .then(function (result) {
-                if (result.error) {
-                    alert(result.error.message);
-                }
-            })
-            .catch(function (error) {
-                console.error('Error:', error);
+        if (checkoutButton && tokenInput) {
+             checkoutButton.addEventListener('click', function () {
+                checkoutButton.disabled = true;
+                checkoutButton.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Redirecting...';
+
+                fetch('/portal/quotas/@Model.Id/create-session', {
+                    method: 'POST',
+                    headers: {
+                        'RequestVerificationToken': tokenInput.value
+                    }
+                })
+                .then(function (response) {
+                    if (!response.ok) {
+                        throw new Error('Could not create payment session.');
+                    }
+                    return response.json();
+                })
+                .then(function (session) {
+                    return stripe.redirectToCheckout({ sessionId: session.sessionId });
+                })
+                .then(function (result) {
+
+                    if (result.error) {
+                        alert(result.error.message);
+                        checkoutButton.disabled = false;
+                        checkoutButton.innerHTML = '<i class="bi bi-lock-fill me-2"></i> Pay with Card';
+                    }
+                })
+                .catch(function (error) {
+                    console.error('Error:', error);
+                    alert('An unexpected error occurred. Please try again.');
+                    checkoutButton.disabled = false;
+                    checkoutButton.innerHTML = '<i class="bi bi-lock-fill me-2"></i> Pay with Card';
+                });
             });
-        });
+        }
     });
 </script>

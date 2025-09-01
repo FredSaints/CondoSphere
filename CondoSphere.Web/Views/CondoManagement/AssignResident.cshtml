@@ -3,37 +3,55 @@
 @{
     ViewData["Title"] = "Assign Resident to Unit";
     var unitIdentifier = ViewData["UnitIdentifier"] as string;
+    ViewData["IsFullWidth"] = true;
 }
 
-<h1>@ViewData["Title"]</h1>
-<p>You are assigning an existing resident to <strong>Unit @unitIdentifier</strong>.</p>
-<hr />
+<style>
+    body {
+        background-color: var(--light-bg);
+    }
+</style>
 
-<div class="row">
-    <div class="col-md-6">
-        <div class="alert alert-info d-flex align-items-center">
-            <i class="bi bi-person-plus-fill fs-4 me-3"></i>
-            <div>
-                Need to create a new resident? <a asp-action="RegisterResident" asp-route-unitId="@Model.UnitId" asp-route-condominiumId="@Model.CondominiumId" class="alert-link">Register a new resident for this unit instead</a>.
+<div class="container my-5">
+    <div class="row justify-content-center align-items-center" style="min-height: 70vh;">
+        <div class="col-md-11 col-lg-9 col-xl-8">
+
+            <div class="card shadow-lg border-0">
+                <div class="card-header text-center py-4" style="background: var(--primary-gradient);">
+                    <h2 class="mb-1 text-white"><i class="bi bi-person-plus-fill me-2"></i>@ViewData["Title"]</h2>
+                    <p class="mb-0 small text-white-50">To Unit: <strong>@unitIdentifier</strong></p>
+                </div>
+
+                <div class="card-body" style="padding: 5rem;">
+                    <div class="alert alert-info d-flex align-items-center">
+                        <i class="bi bi-person-plus-fill flex-shrink-0 me-3" style="font-size: 1.5rem;"></i>
+                        <div>
+                            Need to create a new resident? <a asp-action="RegisterResident" asp-route-unitId="@Model.UnitId" asp-route-condominiumId="@Model.CondominiumId" class="alert-link fw-bold">Register a new resident instead</a>.
+                        </div>
+                    </div>
+
+                    <form asp-action="AssignResident" method="post" class="mt-4">
+                        <input type="hidden" asp-for="UnitId" />
+                        <input type="hidden" asp-for="CondominiumId" />
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                        <div class="form-floating mb-3">
+                            <select asp-for="SelectedResidentId" asp-items="Model.AvailableResidents" class="form-select form-select-lg">
+                                <option value="">-- Select an existing resident --</option>
+                            </select>
+                            <label asp-for="SelectedResidentId"></label>
+                            <span asp-validation-for="SelectedResidentId" class="text-danger small mt-1 d-block"></span>
+                        </div>
+
+                        <div class="d-grid gap-2 mt-4">
+                            <button type="submit" class="btn btn-primary btn-lg">Assign Selected Resident</button>
+                            <a asp-action="Details" asp-route-id="@Model.CondominiumId" class="btn btn-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
             </div>
+
         </div>
-
-        <form asp-action="AssignResident" method="post">
-            <input type="hidden" asp-for="UnitId" />
-            <input type="hidden" asp-for="CondominiumId" />
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-
-            <div class="form-group my-3">
-                <label asp-for="SelectedResidentId" class="form-label"></label>
-                <select asp-for="SelectedResidentId" asp-items="Model.AvailableResidents" class="form-select">
-                    <option value="">-- Please select a resident --</option>
-                </select>
-                <span asp-validation-for="SelectedResidentId" class="text-danger"></span>
-            </div>
-
-            <button type="submit" class="btn btn-primary">Assign Selected Resident</button>
-            <a asp-action="Details" asp-route-id="@Model.CondominiumId" class="btn btn-secondary">Cancel</a>
-        </form>
     </div>
 </div>
 

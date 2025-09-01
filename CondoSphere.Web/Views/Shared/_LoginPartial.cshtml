@@ -13,7 +13,7 @@
                 <img src="@(string.IsNullOrEmpty(profilePictureUrl) ? "/images/user-photos/default-profile.png" : profilePictureUrl)"
                      alt="Profile Picture"
                      class="rounded-circle"
-                     style="width: 30px; height: 30px; object-fit: cover; margin-right: 8px;" />
+                     style="object-fit: cover; margin-right: 8px;" />
                 Hello, @User.FindFirstValue(ClaimTypes.GivenName)!
             </a>
             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">

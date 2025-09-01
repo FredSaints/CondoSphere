@@ -3,65 +3,73 @@
     ViewData["Title"] = "View Message";
 }
 
-<div class="container">
-    <div class="row justify-content-center">
-        <div class="col-lg-8">
-            <div class="card">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h5><i class="bi bi-envelope-open me-2"></i>Message Details</h5>
-                    <div class="btn-group">
-                        <a asp-action="Reply" asp-route-id="@Model.Id" class="btn btn-sm btn-primary">
-                            <i class="bi bi-reply me-1"></i> Reply
-                        </a>
-                        <a asp-action="Index" class="btn btn-sm btn-outline-secondary">
-                            <i class="bi bi-arrow-left me-1"></i> Back
-                        </a>
-                    </div>
-                </div>
-                <div class="card-body">
-                    <div class="message-header mb-4">
-                        <div class="row">
-                            <div class="col-sm-3 fw-bold">From:</div>
-                            <div class="col-sm-9">@Model.SenderName</div>
-                        </div>
-                        <div class="row">
-                            <div class="col-sm-3 fw-bold">To:</div>
-                            <div class="col-sm-9">@Model.ReceiverName</div>
-                        </div>
-                        <div class="row">
-                            <div class="col-sm-3 fw-bold">Subject:</div>
-                            <div class="col-sm-9">@Model.Subject</div>
-                        </div>
-                        @if (!string.IsNullOrEmpty(Model.CondominiumName))
-                        {
-                            <div class="row">
-                                <div class="col-sm-3 fw-bold">Building:</div>
-                                <div class="col-sm-9">@Model.CondominiumName</div>
-                            </div>
-                        }
-                        <div class="row">
-                            <div class="col-sm-3 fw-bold">Date:</div>
-                            <div class="col-sm-9">@Model.SentDate.ToString("dddd, dd MMMM yyyy 'at' HH:mm")</div>
-                        </div>
-                    </div>
+<style>
+    .message-view-card .card-header {
+        background: var(--light-bg);
+        border-bottom: 1px solid var(--border-color);
+    }
 
-                    <hr>
+    .message-details-grid {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        gap: 0.5rem 1rem;
+        font-size: 0.9rem;
+    }
 
-                    <div class="message-content">
-                        <div class="p-3 bg-light rounded">
-                            @Html.Raw(Model.Content.Replace("\n", "<br>"))
-                        </div>
-                    </div>
-                </div>
-                <div class="card-footer d-flex justify-content-between">
-                    <a asp-action="Index" class="btn btn-outline-secondary">
-                        <i class="bi bi-arrow-left me-1"></i> Back to Inbox
-                    </a>
-                    <a asp-action="Reply" asp-route-id="@Model.Id" class="btn btn-primary">
-                        <i class="bi bi-reply me-1"></i> Reply to Message
-                    </a>
-                </div>
-            </div>
+        .message-details-grid dt {
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-align: right;
+        }
+
+        .message-details-grid dd {
+            margin-bottom: 0;
+        }
+
+    .message-content {
+        font-size: 1.1rem;
+        line-height: 1.6;
+        white-space: pre-wrap;
+    }
+</style>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="mb-0">@Model.Subject</h1>
+        <p class="text-muted mb-0">Conversation with @Model.SenderName</p>
+    </div>
+    <div>
+        <a asp-action="Index" class="btn btn-secondary">
+            <i class="bi bi-arrow-left me-1"></i> Back to Inbox
+        </a>
+        <a asp-action="Reply" asp-route-id="@Model.Id" class="btn btn-primary">
+            <i class="bi bi-reply-fill me-1"></i> Reply
+        </a>
+    </div>
+</div>
+
+<div class="card shadow-sm border-0 message-view-card">
+    <div class="card-header p-3">
+        <dl class="message-details-grid">
+            <dt>From:</dt>
+            <dd>@Model.SenderName</dd>
+
+            <dt>To:</dt>
+            <dd>@Model.ReceiverName</dd>
+
+            <dt>Date:</dt>
+            <dd>@Model.SentDate.ToLocalTime().ToString("dddd, MMMM dd, yyyy 'at' hh:mm tt")</dd>
+
+            @if (!string.IsNullOrEmpty(Model.CondominiumName))
+            {
+                <dt>Property:</dt>
+                <dd>@Model.CondominiumName</dd>
+            }
+        </dl>
+    </div>
+    <div class="card-body p-4 p-md-5">
+        <div class="message-content">
+            @Model.Content
         </div>
     </div>
 </div>

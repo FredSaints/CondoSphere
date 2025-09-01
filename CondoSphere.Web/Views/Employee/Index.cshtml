@@ -1,39 +1,85 @@
 ﻿@model IEnumerable<CondoSphere.Core.DTOs.Interventions.InterventionDto>
+@using CondoSphere.Core.Enums
 
 @{
     ViewData["Title"] = "My Assigned Tasks";
 }
 
-<h1>@ViewData["Title"]</h1>
-<p class="text-muted">This is a list of all maintenance interventions currently assigned to you.</p>
-<hr />
 
-<div class="card shadow-sm">
+<style>
+    .table-tasks {
+        font-size: 1.1rem;
+    }
+
+        .table-tasks th {
+            font-size: 1.3rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+    .task-description {
+        font-weight: 300;
+        color: var(--text-secondary);
+    }
+
+    .task-date {
+        font-weight: 300;
+        color: var(--text-secondary);
+    }
+</style>
+
+
+
+<!-- Page Header -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="mb-0">@ViewData["Title"]</h1>
+        <p class="text-muted mb-0">A list of all maintenance interventions currently assigned to you.</p>
+    </div>
+</div>
+
+<div class="card shadow-sm border-0">
     <div class="card-body p-0">
         @if (Model.Any())
         {
             <div class="table-responsive">
-                <table class="table table-hover mb-0 align-middle">
+                <table class="table table-hover mb-0 align-middle table-tasks">
                     <thead class="table-light">
                         <tr>
-                            <th>Description</th>
-                            <th>Scheduled Start</th>
-                            <th>Status</th>
-                            <th class="text-end">Actions</th>
+                            <th scope="col" style="width: 45%;">Description</th>
+                            <th scope="col">Scheduled Start</th>
+                            <th scope="col" class="text-center">Status</th>
+                            <th scope="col" class="text-center">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach (var intervention in Model)
                         {
                             <tr>
-                                <td>@intervention.Description</td>
-                                <td>@intervention.StartDate.ToLocalTime().ToString("yyyy-MM-dd HH:mm")</td>
                                 <td>
-                                    @* We can add color-coding here later *@
-                                    <span class="badge bg-info">@intervention.Status</span>
+                                    <div class="task-description">@intervention.Description</div>
+                                </td>
+                                <td>
+                                    <div class="task-date">@intervention.StartDate.ToLocalTime().ToString("MMMM dd, yyyy 'at' hh:mm tt")</div>
+                                </td>
+                                <td class="text-center">
+                                    @{
+                                        var statusClass = "bg-secondary";
+                                        switch (intervention.Status)
+                                        {
+                                            case InterventionStatus.Scheduled: statusClass = "bg-info"; break;
+                                            case InterventionStatus.InProgress: statusClass = "bg-warning text-dark"; break;
+                                            case InterventionStatus.Completed: statusClass = "bg-success"; break;
+                                            case InterventionStatus.Cancelled: statusClass = "bg-danger"; break;
+                                        }
+                                    }
+                                    <span class="badge rounded-pill @statusClass">@intervention.Status</span>
                                 </td>
                                 <td class="text-end">
-                                    <a asp-action="Details" asp-route-interventionId="@intervention.Id" class="btn btn-sm btn-outline-primary">View Details</a>
+                                    <a asp-action="Details" asp-route-interventionId="@intervention.Id" class="btn btn-outline-primary">
+                                        <i class="bi bi-eye-fill me-1"></i> View Details
+                                    </a>
                                 </td>
                             </tr>
                         }

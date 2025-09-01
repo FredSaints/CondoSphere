@@ -3,33 +3,62 @@
 
 @{
     var condo = ViewData["Condominium"] as CondominiumDto;
-    ViewData["Title"] = $"Fixed Expenses for {condo?.Name ?? "Condominium"}";
+    ViewData["Title"] = "Fixed Expenses";
 }
+
+<style>
+    .table-fixed-expenses th {
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.8rem;
+        letter-spacing: 0.05em;
+    }
+
+    .table-fixed-expenses .expense-title {
+        font-weight: 600;
+        color: var(--text-primary);
+    }
+
+    .table-fixed-expenses .expense-description {
+        font-size: 0.9rem;
+        color: var(--text-secondary);
+    }
+
+    .btn-action-lg {
+        padding: 0.5rem 0.8rem; /* Iteration Knob 1: Controls padding */
+        font-size: 1rem; /* Iteration Knob 2: Controls icon size */
+    }
+</style>
 
 <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
-        <h1>@ViewData["Title"]</h1>
-        <p class="text-muted">Manage recurring monthly, quarterly, or annual expenses for this condominium.</p>
+        <h1 class="mb-0">@ViewData["Title"]</h1>
+        <p class="text-muted mb-0">Manage recurring expenses for: <strong>@condo.Name</strong></p>
     </div>
-    <a asp-action="CreateFixedExpense" asp-route-condominiumId="@condo.Id" class="btn btn-primary">
-        <i class="bi bi-plus-circle-fill me-1"></i> Create New Fixed Expense
-    </a>
+    <div>
+        <a asp-action="Details" asp-route-id="@condo.Id" class="btn btn-secondary">
+            <i class="bi bi-arrow-left me-1"></i> Back to Details
+        </a>
+        <a asp-action="CreateFixedExpense" asp-route-condominiumId="@condo.Id" class="btn btn-primary">
+            <i class="bi bi-plus-circle-fill me-1"></i> Create New Expense
+        </a>
+    </div>
 </div>
 
-<div class="card shadow-sm">
+<div class="card shadow-sm border-0">
     <div class="card-body p-0">
         @if (Model.Any())
         {
             <div class="table-responsive">
-                <table class="table table-hover mb-0 align-middle">
+                <table class="table table-hover mb-0 align-middle table-fixed-expenses">
                     <thead class="table-light">
                         <tr>
-                            <th>Title</th>
-                            <th class="text-end">Amount</th>
-                            <th class="text-center">Frequency</th>
-                            <th class="text-center">Day of Billing</th>
-                            <th class="text-center">Status</th>
-                            <th class="text-end">Actions</th>
+                            <th scope="col" style="width: 35%;">Title</th>
+                            <th scope="col" class="text-end">Amount</th>
+                            <th scope="col" class="text-center">Frequency</th>
+                            <th scope="col" class="text-center">Billing Day</th>
+                            <th scope="col" class="text-center">Status</th>
+                            <th scope="col" class="text-center">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -37,58 +66,69 @@
                         {
                             <tr>
                                 <td>
-                                    <strong>@expense.Title</strong>
+                                    <div class="expense-title">@expense.Title</div>
                                     @if (!string.IsNullOrWhiteSpace(expense.Description))
                                     {
-                                        <br />
-                            
-                                        <small class="text-muted">@expense.Description</small>
+                                        <div class="expense-description">@expense.Description</div>
                                     }
                                 </td>
-                                <td class="text-end">@expense.Amount.ToString("C")</td>
+                                <td class="text-end fw-bold">@expense.Amount.ToString("C")</td>
                                 <td class="text-center">@expense.Frequency</td>
                                 <td class="text-center">@expense.DayOfBilling</td>
                                 <td class="text-center">
                                     @if (expense.IsActive)
                                     {
-                                        <span class="badge bg-success">Active</span>
+                                        <span class="badge rounded-pill bg-success">Active</span>
                                     }
                                     else
                                     {
-                                        <span class="badge bg-secondary">Inactive</span>
+                                        <span class="badge rounded-pill bg-secondary">Inactive</span>
                                     }
                                 </td>
                                 <td class="text-end">
                                     <div class="btn-group" role="group" aria-label="Expense Actions">
 
+                                        <!-- Edit Button -->
                                         <a asp-action="EditFixedExpense"
                                            asp-route-condominiumId="@condo.Id"
                                            asp-route-expenseId="@expense.Id"
-                                           class="btn btn-sm btn-outline-secondary" title="Edit">
-                                            <i class="bi bi-pencil-fill"></i>
+                                           class="btn btn-action-lg btn-outline-secondary" title="Edit">
+                                            <i class="bi bi-pencil-fill me-1"></i>
+                                            <span>Edit</span>
                                         </a>
 
+                                        <!-- Deactivate/Activate Button -->
                                         <form asp-action="ToggleFixedExpenseStatus"
                                               asp-route-condominiumId="@condo.Id"
                                               asp-route-expenseId="@expense.Id"
                                               method="post" class="d-inline">
                                             @Html.AntiForgeryToken()
-                                            <button type="submit" class="btn btn-sm @(expense.IsActive ? "btn-outline-warning" : "btn-outline-success")" title="@(expense.IsActive ? "Deactivate" : "Activate")">
-                                                <i class="bi @(expense.IsActive ? "bi-pause-circle" : "bi-play-circle")"></i>
+                                            <button type="submit" class="btn btn-action-lg @(expense.IsActive ? "btn-outline-warning" : "btn-outline-success")" title="@(expense.IsActive ? "Deactivate" : "Activate")">
+                                                @if (expense.IsActive)
+                                                {
+                                                    <i class="bi bi-pause-circle me-1"></i>
+                                                    <span>Deactivate</span>
+                                                }
+                                                else
+                                                {
+                                                    <i class="bi bi-play-circle me-1"></i>
+                                                    <span>Activate</span>
+                                                }
                                             </button>
                                         </form>
 
+                                        <!-- Delete Button -->
                                         <form asp-action="DeleteFixedExpense"
                                               asp-route-condominiumId="@condo.Id"
                                               asp-route-expenseId="@expense.Id"
                                               method="post" class="d-inline"
                                               onsubmit="return confirm('Are you sure you want to permanently delete the expense: \'@expense.Title\'? This cannot be undone.');">
                                             @Html.AntiForgeryToken()
-                                            <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete">
-                                                <i class="bi bi-trash-fill"></i>
+                                            <button type="submit" class="btn btn-action-lg btn-outline-danger" title="Delete">
+                                                <i class="bi bi-trash-fill me-1"></i>
+                                                <span>Delete</span>
                                             </button>
                                         </form>
-
                                     </div>
                                 </td>
                             </tr>
@@ -102,14 +142,8 @@
             <div class="text-center p-5">
                 <i class="bi bi-journal-x fs-1 text-muted"></i>
                 <h4 class="mt-3">No Fixed Expenses Found</h4>
-                <p class="text-muted">Click the "Create New Fixed Expense" button to add a recurring expense.</p>
+                <p class="text-muted">Click the "Create New Expense" button to add a recurring expense for this condominium.</p>
             </div>
         }
     </div>
-</div>
-
-<div class="mt-4">
-    <a asp-action="Details" asp-route-id="@condo.Id" class="btn btn-secondary">
-        <i class="bi bi-arrow-left me-1"></i> Back to Condominium Details
-    </a>
 </div>

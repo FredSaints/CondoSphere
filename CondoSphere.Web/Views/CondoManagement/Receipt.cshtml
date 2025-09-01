@@ -2,7 +2,7 @@
 
 @{
     ViewData["Title"] = $"Receipt #{Model.Id}";
-    Layout = null; // Use a blank layout for printing
+    Layout = null;
 }
 
 <!DOCTYPE html>
@@ -11,109 +11,199 @@
     <meta charset="utf-8" />
     <title>@ViewData["Title"]</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
     <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
         body {
             background-color: #f8f9fa;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
         }
 
         .receipt-container {
             max-width: 800px;
             margin: 40px auto;
             background-color: #fff;
-            border: 1px solid #dee2e6;
-            box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.15);
+            border-radius: 0.5rem;
+            box-shadow: 0 0.5rem 1.5rem rgba(0,0,0,0.1);
+            overflow: hidden;
         }
 
         .receipt-header {
-            background-color: #e9ecef;
-            padding: 2rem;
-            border-bottom: 1px solid #dee2e6;
+            background: var(--primary-gradient);
+            color: white;
+            padding: 1rem;
+            text-align: center;
         }
+
+            .receipt-header h1 {
+                font-weight: 700;
+                letter-spacing: 2px;
+                margin: 0;
+            }
+
+            .receipt-header p {
+                color: rgba(255, 255, 255, 0.9);
+                margin: 0;
+                font-size: 1.5rem;
+            }
 
         .receipt-body {
             padding: 2.5rem;
+            position: relative;
         }
 
-        .print-button {
-            display: block;
+            .receipt-body::after {
+                content: "PAID";
+                font-size: 8rem;
+                font-weight: 700;
+                color: #e9ecef;
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%) rotate(-30deg);
+                z-index: 1;
+                user-select: none;
+            }
+
+        .receipt-content {
+            position: relative;
+            z-index: 2;
         }
 
+        .table tfoot tr {
+            background-color: #f8f9fa;
+        }
+
+        .print-controls {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+        }
+
+        /* --- PRINT-SPECIFIC STYLES --- */
         @@media print {
             body {
-                background-color: #fff;
+                background-color: #fff !important;
+                margin: 0;
+                padding: 0;
+            }
+
+            .print-hide {
+                display: none !important;
             }
 
             .receipt-container {
                 margin: 0;
-                box-shadow: none;
-                border: none;
+                box-shadow: none !important;
+                border-radius: 0 !important;
+                border: none !important;
+                width: 100%;
             }
 
-            .print-button {
-                display: none;
+            .receipt-header {
+                background-color: #f1f1f1 !important;
+                background-image: none !important;
+                color: #000 !important;
             }
 
-            .back-link {
-                display: none;
+                .receipt-header p {
+                    color: #555 !important;
+                }
+
+            .receipt-body::after {
+                display: none !important;
+            }
+
+            .receipt-content {
+                position: static !important;
+                z-index: auto !important;
+            }
+
+            .table, .table-bordered, .table-bordered th, .table-bordered td {
+                border-color: #dee2e6 !important;
+                border-width: 1px !important;
+                border-style: solid !important;
+                color: #000 !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            .table-light {
+                background-color: #f8f9fa !important;
             }
         }
     </style>
+
+
 </head>
 <body>
     <div class="container">
-        <div class="text-center my-3">
-            <button onclick="window.print()" class="btn btn-primary print-button"><i class="bi bi-printer-fill"></i> Print Receipt</button>
-            <a asp-action="QuotaManagement" asp-route-condominiumId="@Model.CondominiumId" class="btn btn-secondary back-link"><i class="bi bi-arrow-left"></i> Back to Quota Management</a>
+        <div class="text-center my-4 print-hide print-controls">
+            <a asp-action="QuotaManagement" asp-route-condominiumId="@Model.CondominiumId" class="btn btn-secondary btn-lg">
+                <i class="bi bi-arrow-left"></i> Back to Quota Management
+            </a>
+            <button onclick="window.print()" class="btn btn-primary btn-lg">
+                <i class="bi bi-printer-fill"></i> Print Receipt
+            </button>
         </div>
 
         <div class="receipt-container">
-            <div class="receipt-header text-center">
+
+            <div class="receipt-header">
                 <h1 class="display-6">RECEIPT</h1>
-                <p class="lead mb-0">@Model.CompanyName</p>
+                <p class="mb-0"><strong>@Model.CompanyName</strong></p>
                 @if (!string.IsNullOrWhiteSpace(Model.CompanyAddress))
                 {
-                    <p class="text-muted small mb-0">@Model.CompanyAddress</p>
+                    <p class="mb-0">Address: @Model.CompanyAddress</p>
                 }
                 @if (!string.IsNullOrWhiteSpace(Model.CompanyPhone))
                 {
-                    <p class="text-muted small mb-0">Phone: @Model.CompanyPhone</p>
+                    <p class="mb-0">Phone: @Model.CompanyPhone</p>
                 }
             </div>
-            <div class="receipt-body">
-                <div class="row mb-4">
-                    <div class="col-sm-6">
-                        <h5 class="mb-3">Billed To:</h5>
-                        <p class="mb-1"><strong>@Model.ResidentName</strong></p>
-                        <p class="mb-0">@Model.CondominiumName</p>
-                        <p class="mb-0">Unit: @Model.UnitIdentifier</p>
-                    </div>
-                    <div class="col-sm-6 text-sm-end">
-                        <h5 class="mb-3">Details:</h5>
-                        <p class="mb-1"><strong>Receipt #:</strong> @Model.Id</p>
-                        <p class="mb-0"><strong>Issue Date:</strong> @Model.IssueDate.ToLocalTime().ToString("D")</p>
-                    </div>
-                </div>
 
-                <table class="table">
-                    <thead class="table-light">
-                        <tr>
-                            <th>Description</th>
-                            <th class="text-end">Amount Paid</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>@Model.Details</td>
-                            <td class="text-end">@Model.Amount.ToString("C")</td>
-                        </tr>
-                    </tbody>
-                    <tfoot>
-                        <tr class="fw-bold fs-5">
-                            <td>Total Paid</td>
-                            <td class="text-end">@Model.Amount.ToString("C")</td>
-                        </tr>
-                    </tfoot>
-                </table>
+
+            <div class="receipt-body">
+                <div class="receipt-content">
+                    <div class="row mb-4">
+                        <div class="col-sm-6">
+                            <h5 class="mb-3 text-muted">BILLED TO</h5>
+                            <p class="mb-1 fs-5"><strong>@Model.ResidentName</strong></p>
+                            <p class="mb-0">@Model.CondominiumName</p>
+                            <p class="mb-0">Unit: @Model.UnitIdentifier</p>
+                        </div>
+                        <div class="col-sm-6 text-sm-end">
+                            <h5 class="mb-3 text-muted">DETAILS</h5>
+                            <p class="mb-1"><strong>Receipt #:</strong> @Model.Id</p>
+                            <p class="mb-0"><strong>Issue Date:</strong> @Model.IssueDate.ToLocalTime().ToString("D")</p>
+                        </div>
+                    </div>
+
+                    <table class="table table-bordered">
+                        <thead class="table-light">
+                            <tr>
+                                <th scope="col">Description</th>
+                                <th scope="col" class="text-end">Amount Paid</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>@Model.Details</td>
+                                <td class="text-end">@Model.Amount.ToString("C")</td>
+                            </tr>
+                        </tbody>
+                        <tfoot>
+                            <tr class="fw-bold fs-5">
+                                <td>Total Paid</td>
+                                <td class="text-end">@Model.Amount.ToString("C")</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
             </div>
         </div>
     </div>

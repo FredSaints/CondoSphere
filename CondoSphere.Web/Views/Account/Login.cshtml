@@ -2,39 +2,79 @@
 
 @{
     ViewData["Title"] = "Log in";
+    ViewData["IsFullWidth"] = true;
 }
 
-<h1>@ViewData["Title"]</h1>
-<div class="row">
-    <div class="col-md-4">
-        <section>
-            <form id="account" method="post">
-                @Html.AntiForgeryToken()
-                <hr />
-                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                <div class="form-floating mb-3">
-                    <input asp-for="Email" class="form-control" autocomplete="username" aria-required="true" />
-                    <label asp-for="Email" class="form-label"></label>
-                    <span asp-validation-for="Email" class="text-danger"></span>
+<style>
+    body {
+        background: var(--light-bg);
+    }
+</style>
+
+<div class="container" style="margin-top: 4rem; margin-bottom: 3rem;">
+    <div class="row justify-content-center align-items-center" style="min-height: 70vh;">
+        <div class="col-md-11 col-lg-9 col-xl-7">
+
+            <div class="card shadow-lg border-0">
+                <div class="card-header text-center py-4" style="background: var(--primary-gradient);">
+                    <h2 class="mb-1 text-white"><i class="bi bi-box-arrow-in-right me-2"></i>Welcome Back</h2>
+                    <p class="mb-0 small text-white-50">Sign in to continue to CondoSphere</p>
                 </div>
-                <div class="form-floating mb-3">
-                    <input asp-for="Password" class="form-control" type="password" autocomplete="current-password" aria-required="true" />
-                    <label asp-for="Password" class="form-label"></label>
-                    <span asp-validation-for="Password" class="text-danger"></span>
+
+                <div class="card-body p-4 p-md-5">
+                    <section>
+                        <form id="account" method="post">
+                            @Html.AntiForgeryToken()
+
+                            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                            <!-- Email with Icon -->
+                            <div class="mb-3">
+                                <label asp-for="Email" class="form-label fw-bold"></label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-envelope-fill"></i></span>
+                                    <div class="form-floating flex-grow-1">
+                                        <input asp-for="Email" class="form-control" placeholder="Email" autocomplete="username" aria-required="true" />
+                                        <label asp-for="Email"></label>
+                                    </div>
+                                </div>
+                                <span asp-validation-for="Email" class="text-danger small mt-1 d-block"></span>
+                            </div>
+
+                            <!-- Password with Icon -->
+                            <div class="mb-3">
+                                <label asp-for="Password" class="form-label fw-bold"></label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
+                                    <div class="form-floating flex-grow-1">
+                                        <input asp-for="Password" class="form-control" type="password" placeholder="Password" autocomplete="current-password" aria-required="true" />
+                                        <label asp-for="Password"></label>
+                                    </div>
+                                </div>
+                                <span asp-validation-for="Password" class="text-danger small mt-1 d-block"></span>
+                            </div>
+
+                            <div class="d-grid mt-4">
+                                <button id="login-submit" type="submit" class="btn btn-primary btn-lg">Log in</button>
+                            </div>
+
+                            <div class="text-center mt-3">
+                                <a asp-action="ForgotPassword">Forgot your password?</a>
+                            </div>
+                        </form>
+                    </section>
                 </div>
-                <div>
-                    <button id="login-submit" type="submit" class="w-100 btn btn-lg btn-primary">Log in</button>
+
+                <div class="card-footer text-center py-3 bg-light">
+                    <p class="mb-0">New to CondoSphere? <a asp-controller="Account" asp-action="Register">Create an account</a></p>
                 </div>
-                <div class="mt-3 text-center">
-                    <p>
-                        <a asp-action="ForgotPassword">Forgot your password?</a>
-                    </p>
-                </div>
-            </form>
-        </section>
+            </div>
+
+        </div>
     </div>
 </div>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+}
 }

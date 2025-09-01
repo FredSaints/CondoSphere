@@ -23,4 +23,8 @@
     <ProjectReference Include="..\CondoSphere.Infrastructure\CondoSphere.Infrastructure.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\images\Home\" />
+  </ItemGroup>
+
 </Project>

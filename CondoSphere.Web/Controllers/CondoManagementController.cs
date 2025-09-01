@@ -571,7 +571,7 @@ namespace CondoSphere.Web.Controllers
                 TempData["ErrorMessage"] = "Failed to update expense status.";
             }
             TempData["ActiveTab"] = "financials-tab";
-            return RedirectToAction("Details", new { id = condominiumId });
+            return RedirectToAction("FixedExpenses", new { condominiumId = condominiumId });
         }
 
         // POST: /condo-management/{condominiumId}/fixed-expenses/delete/{expenseId}

@@ -4,6 +4,22 @@
     ViewData["Title"] = $"Manage: {Model.Condominium.Name}";
 }
 
+<style>
+    .details-container-scaled {
+        --scale-factor: 1.1;
+        font-size: calc(1rem * var(--scale-factor));
+    }
+
+        .details-container-scaled .btn {
+            padding: calc(0.5em * var(--scale-factor)) calc(1em * var(--scale-factor));
+            font-size: calc(0.9em * var(--scale-factor));
+        }
+
+        .details-container-scaled .nav-tabs .nav-link {
+            font-size: 1.2em;
+        }
+</style>
+
 <!-- Header -->
 <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
@@ -12,68 +28,80 @@
     </div>
 </div>
 
-<!-- Tabbed Interface -->
-<div class="card shadow-sm">
-    <div class="card-header">
-        <ul class="nav nav-tabs card-header-tabs" id="condoDetailsTab" role="tablist">
-            <li class="nav-item" role="presentation">
-                <button class="nav-link active" id="units-tab" data-bs-toggle="tab" data-bs-target="#units-pane" type="button" role="tab" aria-controls="units-pane" aria-selected="true">Units & Residents</button>
-            </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link" id="occurrences-tab" data-bs-toggle="tab" data-bs-target="#occurrences-pane" type="button" role="tab" aria-controls="occurrences-pane" aria-selected="false">Occurrences</button>
-            </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link" id="financials-tab" data-bs-toggle="tab" data-bs-target="#financials-pane" type="button" role="tab" aria-controls="financials-pane" aria-selected="false">Financials</button>
-            </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link" id="documents-tab" data-bs-toggle="tab" data-bs-target="#documents-pane" type="button" role="tab" aria-controls="documents-pane" aria-selected="false">Documents</button>
-            </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link" id="communications-tab" data-bs-toggle="tab" data-bs-target="#communications-pane" type="button" role="tab">Communications</button>
-            </li>
-        </ul>
-    </div>
+<div class="details-container-scaled">
+    <!-- Tabbed Interface (Original Card Layout) -->
+    <div class="card shadow-sm">
+        <div class="card-header">
+            <ul class="nav nav-tabs card-header-tabs" id="condoDetailsTab" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="units-tab" data-bs-toggle="tab" data-bs-target="#units-pane" type="button" role="tab" aria-controls="units-pane" aria-selected="true">
+                        <i class="bi bi-people-fill me-1"></i> Units & Residents
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="occurrences-tab" data-bs-toggle="tab" data-bs-target="#occurrences-pane" type="button" role="tab" aria-controls="occurrences-pane" aria-selected="false">
+                        <i class="bi bi-flag-fill me-1"></i> Occurrences
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="financials-tab" data-bs-toggle="tab" data-bs-target="#financials-pane" type="button" role="tab" aria-controls="financials-pane" aria-selected="false">
+                        <i class="bi bi-cash-stack me-1"></i> Financials
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="documents-tab" data-bs-toggle="tab" data-bs-target="#documents-pane" type="button" role="tab" aria-controls="documents-pane" aria-selected="false">
+                        <i class="bi bi-folder-fill me-1"></i> Documents
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="communications-tab" data-bs-toggle="pill" data-bs-target="#communications-pane" type="button" role="tab" aria-controls="communications-pane" aria-selected="false">
+                        <i class="bi bi-megaphone-fill me-1"></i> Communications
+                    </button>
+                </li>
+            </ul>
+        </div>
 
-    <div class="card-body">
-        <div class="tab-content" id="condoDetailsTabContent">
+        <div class="card-body">
+            <div class="tab-content" id="condoDetailsTabContent">
 
-            <!-- Units & Residents Tab Pane -->
-            <div class="tab-pane fade show active" id="units-pane" role="tabpanel" aria-labelledby="units-tab" tabindex="0">
-                <div class="d-flex justify-content-end mb-3">
-                    <a asp-action="CreateUnit" asp-route-condominiumId="@Model.Condominium.Id" class="btn btn-sm btn-success">
-                        <i class="bi bi-plus-square-fill me-1"></i> Add New Unit
+                <!-- Units & Residents Tab Pane -->
+                <div class="tab-pane fade show active" id="units-pane" role="tabpanel" aria-labelledby="units-tab" tabindex="0">
+                    <div class="d-flex justify-content-end mb-3">
+                        <a asp-action="CreateUnit" asp-route-condominiumId="@Model.Condominium.Id" class="btn btn-success">
+                            <i class="bi bi-plus-square-fill me-1"></i> Add New Unit
+                        </a>
+                    </div>
+                    @await Html.PartialAsync("_CondoMgmtUnitsPartial", Model.Units)
+                </div>
+
+                <!-- Occurrences Tab Pane -->
+                <div class="tab-pane fade" id="occurrences-pane" role="tabpanel" aria-labelledby="occurrences-tab" tabindex="0">
+                    @await Html.PartialAsync("_CondoMgmtOccurrencesPartial", Model.Occurrences)
+                </div>
+
+                <!-- Financials Tab Pane -->
+                <div class="tab-pane fade" id="financials-pane" role="tabpanel" aria-labelledby="financials-tab" tabindex="0">
+                    @await Html.PartialAsync("_CondoMgmtFinancialsPartial", Model)
+                </div>
+                <div class="tab-pane fade" id="documents-pane" role="tabpanel" tabindex="0">
+                    @await Html.PartialAsync("_CondoMgmtDocumentsPartial", Model)
+                </div>
+                <div class="tab-pane fade" id="communications-pane" role="tabpanel">
+                    <h5 class="mb-3">Communication Tools</h5>
+                    <p class="text-muted">Send announcements and manage communications with residents.</p>
+                    <a class="btn btn-primary" asp-action="Announcement" asp-route-condominiumId="@Model.Condominium.Id">
+                        <i class="bi bi-megaphone-fill me-1"></i> Send New Announcement
                     </a>
                 </div>
-                @await Html.PartialAsync("_CondoMgmtUnitsPartial", Model.Units)
-            </div>
-
-            <!-- Occurrences Tab Pane -->
-            <div class="tab-pane fade" id="occurrences-pane" role="tabpanel" aria-labelledby="occurrences-tab" tabindex="0">
-                @await Html.PartialAsync("_CondoMgmtOccurrencesPartial", Model.Occurrences)
-            </div>
-
-            <!-- Financials Tab Pane -->
-            <div class="tab-pane fade" id="financials-pane" role="tabpanel" aria-labelledby="financials-tab" tabindex="0">
-                @await Html.PartialAsync("_CondoMgmtFinancialsPartial", Model)
-            </div>
-            <div class="tab-pane fade" id="documents-pane" role="tabpanel" tabindex="0">
-                @await Html.PartialAsync("_CondoMgmtDocumentsPartial", Model)
-            </div>
-            <div class="tab-pane fade" id="communications-pane" role="tabpanel">
-                <h5 class="mb-3">Communication Tools</h5>
-                <p class="text-muted">Send announcements and manage communications with residents.</p>
-                <a class="btn btn-primary" asp-action="Announcement" asp-route-condominiumId="@Model.Condominium.Id">
-                    <i class="bi bi-megaphone-fill me-1"></i> Send New Announcement
-                </a>
             </div>
         </div>
     </div>
-</div>
 
-<div class="mt-4">
-    <a asp-action="Index" class="btn btn-outline-secondary">
-        <i class="bi bi-arrow-left me-1"></i> Back to My Condos
-    </a>
+    <div class="mt-4">
+        <a asp-action="Index" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-1"></i> Back to My Condos
+        </a>
+    </div>
 </div>
 
 @section Scripts {
@@ -84,11 +112,9 @@
     @if (!string.IsNullOrEmpty(activeTab))
     {
         <script>
-            // This script runs when the page loads
             document.addEventListener('DOMContentLoaded', function () {
-                const tabToActivate = document.getElementById('@activeTab');
+                const tabToActivate = document.querySelector(`[data-bs-target="#${'@activeTab'}"]`);
                 if (tabToActivate) {
-                    // Use Bootstrap's JavaScript API to programmatically show the tab
                     new bootstrap.Tab(tabToActivate).show();
                 }
             });

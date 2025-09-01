@@ -4,6 +4,7 @@
     ViewData["Title"] = "Expense Details";
     var occurrenceId = ViewData["OccurrenceId"];
     var condominiumId = ViewData["CondominiumId"];
+    ViewData["IsFullWidth"] = true;
 }
 
 @functions {
@@ -14,90 +15,119 @@
             var ext = System.IO.Path.GetExtension(new Uri(url).AbsolutePath)?.ToLowerInvariant();
             return ext == ".jpg" || ext == ".jpeg" || ext == ".png" || ext == ".gif" || ext == ".webp" || ext == ".bmp";
         }
-        catch
-        {
-            return false;
-        }
+        catch { return false; }
     }
 }
 
-<h1>@Model.Title</h1>
-<p class="text-muted">Expense recorded on @Model.ExpenseDate.ToLocalTime().ToString("f")</p>
-<hr />
+<style>
+    body {
+        background-color: var(--light-bg);
+    }
+</style>
 
-<div class="row">
-    <div class="col-md-8">
-        <div class="card shadow-sm">
-            <div class="card-header">
-                <h5 class="mb-0">Details</h5>
-            </div>
-            <div class="card-body">
-                <dl class="row">
-                    <dt class="col-sm-3">Amount</dt>
-                    <dd class="col-sm-9"><strong>@Model.Amount.ToString("C")</strong></dd>
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10 col-xl-9">
 
-                    <dt class="col-sm-3">Description</dt>
-                    <dd class="col-sm-9">
-                        @if (!string.IsNullOrWhiteSpace(Model.Description))
-                        {
-                            @Model.Description
-                        }
-                        else
-                        {
-                            <span class="text-muted fst-italic">No description provided.</span>
-                        }
-                    </dd>
-                </dl>
+            <!-- Page Header -->
+            <div class="text-center mb-4">
+                <h1 class="mb-1">@Model.Title</h1>
+                <p class="text-muted">Expense recorded on @Model.ExpenseDate.ToLocalTime().ToString("f")</p>
             </div>
+
+            <!-- Main Details Card -->
+            <div class="card shadow-lg border-0 mb-4">
+                <div class="card-header d-flex align-items-center" style="background: var(--primary-gradient);">
+                    <i class="bi bi-receipt-cutoff text-white me-2 fs-5"></i>
+                    <h5 class="mb-0 text-white">Expense Details</h5>
+                </div>
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <h6 class="text-muted">Description</h6>
+                            <p>
+                                @if (!string.IsNullOrWhiteSpace(Model.Description))
+                                {
+                                    @Model.Description
+                                }
+                                else
+                                {
+                                    <span class="fst-italic">No description provided.</span>
+                                }
+                            </p>
+                        </div>
+                        <div class="text-end ps-3">
+                            <h6 class="text-muted">Amount</h6>
+                            <p class="h3 text-success fw-bold">@Model.Amount.ToString("C")</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Attachments Card -->
             @if (Model.AttachmentUrls.Any())
             {
-                <div class="card-footer">
-                    <h6 class="mb-2">Attachments</h6>
+                <div class="card shadow-lg border-0">
+                    <div class="card-header d-flex align-items-center">
+                        <i class="bi bi-paperclip me-2 fs-5"></i>
+                        <h5 class="mb-0">Attachments</h5>
+                    </div>
+                    <div class="card-body">
+                        @{
+                            var imageUrls = Model.AttachmentUrls.Where(u => IsImage(u)).ToList();
+                            var otherUrls = Model.AttachmentUrls.Where(u => !IsImage(u)).ToList();
+                        }
 
-                    @{
-                        var imageUrls = Model.AttachmentUrls.Where(u => IsImage(u)).ToList();
-                        var otherUrls = Model.AttachmentUrls.Where(u => !IsImage(u)).ToList();
-                    }
+                        @if (imageUrls.Any())
+                        {
+                            <h6 class="mb-3 text-muted">Images</h6>
+                            <div class="row g-3">
+                                @foreach (var url in imageUrls)
+                                {
+                                    <div class="col-6 col-md-4 col-lg-3">
+                                        <a href="@url" target="_blank" class="d-block rounded overflow-hidden shadow-sm" style="border: 1px solid var(--border-color);">
+                                            <img src="@url"
+                                                 alt="@System.IO.Path.GetFileName(new Uri(url).AbsolutePath)"
+                                                 class="img-fluid"
+                                                 loading="lazy" />
+                                        </a>
+                                    </div>
+                                }
+                            </div>
+                        }
 
-                    @if (imageUrls.Any())
-                    {
-                        <div class="row g-3 mb-2">
-                            @foreach (var url in imageUrls)
+                        @if (otherUrls.Any())
+                        {
+                            @if (imageUrls.Any())
                             {
-                                <div class="col-6 col-md-4 col-lg-3">
-                                    <a href="@url" target="_blank" class="d-block border rounded overflow-hidden">
-                                        <img src="@url"
-                                             alt="@System.IO.Path.GetFileName(new Uri(url).AbsolutePath)"
-                                             class="img-fluid"
-                                             loading="lazy" />
+                                <hr class="my-4" />
+                            }
+                            <h6 class="mb-3 text-muted">Files</h6>
+                            <div class="list-group">
+                                @foreach (var url in otherUrls)
+                                {
+                                    <a href="@url" target="_blank" class="list-group-item list-group-item-action d-flex align-items-center">
+                                        <i class="bi bi-file-earmark-text-fill text-primary me-2 fs-5"></i>
+                                        @System.IO.Path.GetFileName(new Uri(url).AbsolutePath)
+                                        <i class="bi bi-box-arrow-up-right ms-auto text-muted"></i>
                                     </a>
-                                </div>
-                            }
-                        </div>
-                    }
-                    @if (otherUrls.Any())
-                    {
-                        <div class="list-group">
-                            @foreach (var url in otherUrls)
-                            {
-                                <a href="@url" target="_blank" class="list-group-item list-group-item-action d-flex align-items-center">
-                                    <i class="bi bi-file-earmark-text me-2"></i>
-                                    @System.IO.Path.GetFileName(new Uri(url).AbsolutePath)
-                                </a>
-                            }
-                        </div>
-                    }
+                                }
+                            </div>
+                        }
+                    </div>
                 </div>
             }
-        </div>
 
-        <div class="mt-4">
-            <a asp-action="OccurrenceDetails"
-               asp-route-condominiumId="@condominiumId"
-               asp-route-occurrenceId="@occurrenceId"
-               class="btn btn-secondary">
-                <i class="bi bi-arrow-left me-1"></i> Back to Occurrence
-            </a>
+            <!-- Back Button is now at the very bottom, centered -->
+            <div class="text-center mt-4">
+                <a asp-action="OccurrenceDetails"
+                   asp-route-condominiumId="@condominiumId"
+                   asp-route-occurrenceId="@occurrenceId"
+                   class="btn btn-secondary btn-lg">
+                    <i class="bi bi-arrow-left me-1"></i> Back to Occurrence
+                </a>
+            </div>
+
         </div>
     </div>
 </div>

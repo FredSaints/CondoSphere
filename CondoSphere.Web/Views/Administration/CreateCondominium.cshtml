@@ -2,31 +2,51 @@
 
 @{
     ViewData["Title"] = "Create New Condominium";
+    ViewData["IsFullWidth"] = true;
 }
 
-<h1>@ViewData["Title"]</h1>
-<hr />
+<style>
+    body {
+        background-color: var(--light-bg);
+    }
+</style>
 
-<div class="row">
-    <div class="col-md-6">
-        <form asp-action="CreateCondominium" method="post">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+<div class="container my-5">
+    <div class="row justify-content-center align-items-center" style="min-height: 70vh;">
+        <div class="col-md-11 col-lg-9 col-xl-8">
 
-            <div class="form-floating mb-3">
-                <input asp-for="Name" class="form-control" placeholder="e.g., Central Park Residences" />
-                <label asp-for="Name"></label>
-                <span asp-validation-for="Name" class="text-danger"></span>
+            <div class="card shadow-lg border-0">
+                <div class="card-header text-center py-4" style="background: var(--primary-gradient);">
+                    <h2 class="mb-1 text-white"><i class="bi bi-building-fill-add me-2"></i>@ViewData["Title"]</h2>
+                    <p class="mb-0 small text-white-50">Add a new property to your portfolio.</p>
+                </div>
+
+                <div class="card-body p-4 p-md-5">
+                    <form asp-action="CreateCondominium" method="post">
+                        @Html.AntiForgeryToken()
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-4"></div>
+
+                        <div class="form-floating mb-3">
+                            <input asp-for="Name" class="form-control" placeholder="e.g., Central Park Residences" />
+                            <label asp-for="Name"></label>
+                            <span asp-validation-for="Name" class="text-danger small"></span>
+                        </div>
+
+                        <div class="form-floating mb-3">
+                            <input asp-for="Address" class="form-control" placeholder="e.g., 123 Main Street, Anytown" />
+                            <label asp-for="Address"></label>
+                            <span asp-validation-for="Address" class="text-danger small"></span>
+                        </div>
+
+                        <div class="d-grid gap-2 mt-4">
+                            <button type="submit" class="btn btn-success btn-lg">Create Condominium</button>
+                            <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
             </div>
 
-            <div class="form-floating mb-3">
-                <input asp-for="Address" class="form-control" placeholder="e.g., 123 Main Street, Anytown" />
-                <label asp-for="Address"></label>
-                <span asp-validation-for="Address" class="text-danger"></span>
-            </div>
-
-            <button type="submit" class="btn btn-success">Create Condominium</button>
-            <a asp-action="Index" class="btn btn-secondary">Cancel</a>
-        </form>
+        </div>
     </div>
 </div>
 

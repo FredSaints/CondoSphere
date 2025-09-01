@@ -3,25 +3,45 @@
 @{
     ViewData["Title"] = "Add New Unit";
     var condominiumId = ViewData["CondominiumId"];
+    ViewData["IsFullWidth"] = true;
 }
 
-<h1>@ViewData["Title"]</h1>
-<hr />
+<style>
+    body {
+        background-color: var(--light-bg);
+    }
+</style>
 
-<div class="row">
-    <div class="col-md-6">
-        <form asp-action="CreateUnit" asp-route-condominiumId="@condominiumId" method="post">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+<div class="container my-5">
+    <div class="row justify-content-center align-items-center" style="min-height: 70vh;">
+        <div class="col-md-11 col-lg-9 col-xl-8">
 
-            <div class="form-floating mb-3">
-                <input asp-for="Identifier" class="form-control" placeholder="e.g., Apt 101, Block B - Floor 2" />
-                <label asp-for="Identifier">Unit Identifier</label>
-                <span asp-validation-for="Identifier" class="text-danger"></span>
+            <div class="card shadow-lg border-0">
+                <div class="card-header text-center py-4" style="background: var(--primary-gradient);">
+                    <h2 class="mb-1 text-white"><i class="bi bi-house-add-fill me-2"></i>@ViewData["Title"]</h2>
+                    <p class="mb-0 small text-white-50">Adding a unit to: <strong>@ViewData["CondominiumName"]</strong></p>
+                </div>
+
+                <div class="card-body" style="padding: 4rem;">
+                    <form asp-action="CreateUnit" asp-route-condominiumId="@condominiumId" method="post">
+                        @Html.AntiForgeryToken()
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-4"></div>
+
+                        <div class="form-floating mb-3">
+                            <input asp-for="Identifier" class="form-control" placeholder="e.g., Apt 101, Block B - Floor 2" />
+                            <label asp-for="Identifier">Unit Identifier</label>
+                            <span asp-validation-for="Identifier" class="text-danger small"></span>
+                        </div>
+
+                        <div class="d-grid gap-2 mt-4">
+                            <button type="submit" class="btn btn-success btn-lg">Create Unit</button>
+                            <a asp-action="Details" asp-route-id="@condominiumId" class="btn btn-secondary btn-lg">Cancel</a>
+                        </div>
+                    </form>
+                </div>
             </div>
 
-            <button type="submit" class="btn btn-success">Create Unit</button>
-            <a asp-action="Details" asp-route-id="@condominiumId" class="btn btn-secondary">Cancel</a>
-        </form>
+        </div>
     </div>
 </div>
 
