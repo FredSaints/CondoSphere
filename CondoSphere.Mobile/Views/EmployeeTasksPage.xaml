@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:CondoSphere.Mobile.ViewModels"
+             xmlns:dto="clr-namespace:CondoSphere.Mobile.Services"
+             x:DataType="vm:EmployeeTasksViewModel"
+             x:Class="CondoSphere.Mobile.Views.EmployeeTasksPage"
+             BackgroundColor="{StaticResource BackgroundSecondary}"
+             Title="My Tasks">
+
+    <!-- Add Toolbar Icon for Profile -->
+    <ContentPage.ToolbarItems>
+        <ToolbarItem IconImageSource="default_profile.png" Command="{Binding GoToProfileCommand}" Order="Primary" Priority="0" />
+    </ContentPage.ToolbarItems>
+
+    <Grid RowDefinitions="Auto, *">
+
+        <!-- Header -->
+        <Frame Grid.Row="0" BackgroundColor="{StaticResource Primary}" CornerRadius="24" HasShadow="False" Padding="24,40,24,24" Margin="0,0,0,20">
+            <VerticalStackLayout Spacing="8">
+                <Label Text="🔧 My Tasks" Style="{StaticResource HeadingMedium}" TextColor="{StaticResource TextOnPrimary}" />
+                <Label Text="View all maintenance interventions assigned to you." Style="{StaticResource BodyMedium}" TextColor="{StaticResource TextOnPrimary}" Opacity="0.9" />
+            </VerticalStackLayout>
+        </Frame>
+
+        <!-- Task List -->
+        <RefreshView Grid.Row="1" IsRefreshing="{Binding IsBusy}" Command="{Binding LoadTasksCommand}">
+            <CollectionView ItemsSource="{Binding Tasks}"
+                            Margin="20,0,20,40"
+                            SelectionMode="None">
+
+                <CollectionView.EmptyView>
+                    <!-- This wrapper controls the visibility to prevent flickering -->
+                    <ContentView IsVisible="{Binding IsBusy, Converter={StaticResource InverseBoolConverter}}">
+                        <Frame Style="{StaticResource CardStyle}" Padding="40" Margin="0,40">
+                            <VerticalStackLayout Spacing="20" HorizontalOptions="Center">
+                                <Label Text="✅" FontSize="64" HorizontalOptions="Center" Opacity="0.5" />
+                                <Label Text="No Tasks Assigned" Style="{StaticResource SubheadingLarge}" HorizontalTextAlignment="Center" />
+                                <Label Text="Your task list is clear. Great job!" Style="{StaticResource BodyMedium}" HorizontalTextAlignment="Center" TextColor="{StaticResource TextSecondary}" />
+                            </VerticalStackLayout>
+                        </Frame>
+                    </ContentView>
+                </CollectionView.EmptyView>
+
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="dto:InterventionDto">
+                        <Frame Style="{StaticResource CardStyle}" Margin="0,6">
+                            <Frame.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:EmployeeTasksViewModel}}, Path=GoToTaskDetailsCommand}" 
+                                                      CommandParameter="{Binding .}"/>
+                            </Frame.GestureRecognizers>
+                            <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto" ColumnSpacing="16" RowSpacing="8">
+
+                                <!-- Task Description -->
+                                <Label Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2"
+                                       Style="{StaticResource SubheadingMedium}" 
+                                       Text="{Binding Description}"
+                                       FontAttributes="Bold" />
+
+                                <!-- Scheduled Date -->
+                                <Label Grid.Column="0" Grid.Row="1" Style="{StaticResource BodySmall}">
+                                    <Label.FormattedText>
+                                        <FormattedString>
+                                            <Span Text="Scheduled for: " TextColor="{StaticResource TextSecondary}" />
+                                            <Span Text="{Binding StartDate, StringFormat='{0:MMM dd, yyyy HH:mm}'}" FontAttributes="Bold" />
+                                        </FormattedString>
+                                    </Label.FormattedText>
+                                </Label>
+
+                                <!-- Status Badge -->
+                                <Frame Grid.Column="1" Grid.Row="1"
+                                       CornerRadius="16"
+                                       Padding="12,6"
+                                       HasShadow="False"
+                                       VerticalOptions="Center"
+                                       BackgroundColor="{StaticResource Info}">
+                                    <Label Text="{Binding Status}" 
+                                           Style="{StaticResource BodySmall}" TextColor="{StaticResource TextOnPrimary}" FontAttributes="Bold" />
+                                </Frame>
+                            </Grid>
+                        </Frame>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </RefreshView>
+    </Grid>
+</ContentPage>

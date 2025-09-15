@@ -10,9 +10,10 @@
              Title="My Portal">
 
     <ContentPage.ToolbarItems>
-        <ToolbarItem Text="+"
+        <ToolbarItem Text="Report an Occurrence"
                      IconImageSource="plus_icon.png" 
                      Command="{Binding AddOccurrenceCommand}" />
+        <ToolbarItem IconImageSource="default_profile.png" Command="{Binding GoToProfileCommand}" Order="Primary" Priority="0" />
     </ContentPage.ToolbarItems>
 
     <Grid RowDefinitions="Auto,*">
@@ -290,7 +291,6 @@
                             </CollectionView.ItemTemplate>
                         </CollectionView>
                     </VerticalStackLayout>
-
                 </VerticalStackLayout>
             </ScrollView>
         </RefreshView>

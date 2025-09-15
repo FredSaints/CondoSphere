@@ -5,7 +5,6 @@ using CondoSphere.Core.DTOs.Account;
 using CondoSphere.Core.DTOs.Messages;
 using CondoSphere.Core.Entities.Messages;
 using Microsoft.AspNetCore.Identity;
-using System.Linq;
 using CoreUser = CondoSphere.Core.Entities.Users.User;
 
 namespace CondoSphere.Application.Services.Messages
@@ -37,14 +36,11 @@ namespace CondoSphere.Application.Services.Messages
             if (sender.CompanyId != companyId || receiver.CompanyId != companyId)
                 throw new ArgumentException("Users must belong to the same company.");
 
-            var senderRoles = await _userManager.GetRolesAsync(sender);
-            var receiverRoles = await _userManager.GetRolesAsync(receiver);
-
-            var senderIsStaff = IsStaffMember(senderRoles);
-            var receiverIsStaff = IsStaffMember(receiverRoles);
-
-            if (!senderIsStaff && !receiverIsStaff)
-                throw new ArgumentException("Residents cannot message other residents.");
+            var canSendMessage = await CanUsersCommunicate(sender, receiver.Id);
+            if (!canSendMessage)
+            {
+                throw new System.Security.SecurityException("You do not have permission to send a message to this user.");
+            }
 
             var message = new Message
             {
@@ -209,52 +205,77 @@ namespace CondoSphere.Application.Services.Messages
             if (me == null) return Enumerable.Empty<SimpleUserDto>();
 
             var myRoles = await _userManager.GetRolesAsync(me);
-            var iAmStaff = IsStaffMember(myRoles);
+            var allUsersInCompany = (await _unitOfWork.Users.GetCompanyUsersWithRolesAsync(companyId))
+                                        .Where(u => u.Id != userId).ToList();
 
-            static SimpleUserDto ToDto(CoreUser u) => new SimpleUserDto
+            var staffContacts = allUsersInCompany
+                .Where(u => u.Role == RoleConstants.CompanyAdmin || u.Role == RoleConstants.CondoManager || u.Role == RoleConstants.Employee)
+                .ToList();
+
+            // Rule: All users can message staff.
+            if (myRoles.Contains(RoleConstants.CondoResident))
             {
-                Id = u.Id,
-                FullName = $"{u.FirstName} {u.LastName}".Trim(),
-                Email = u.Email ?? string.Empty
-            };
-
-            if (!iAmStaff)
-            {
-                var admins = await _unitOfWork.Users.GetUsersInRoleAsync(RoleConstants.CompanyAdmin, companyId);
-                var managers = await _unitOfWork.Users.GetUsersInRoleAsync(RoleConstants.CondoManager, companyId);
-                var employees = await _unitOfWork.Users.GetUsersInRoleAsync(RoleConstants.Employee, companyId);
-
-                return admins
-                    .Concat(managers)
-                    .Concat(employees)
-                    .Where(u => u.Id != userId)
-                    .GroupBy(u => u.Id).Select(g => g.First())
-                    .Select(u => new SimpleUserDto { Id = u.Id, FullName = $"{u.FirstName} {u.LastName}".Trim(), Email = u.Email ?? string.Empty })
-                    .OrderBy(c => c.FullName);
+                return staffContacts.Select(u => _mapper.Map<SimpleUserDto>(u)).OrderBy(c => c.FullName);
             }
-            else
-            {
-                var admins = await _unitOfWork.Users.GetUsersInRoleAsync(RoleConstants.CompanyAdmin, companyId);
-                var managers = await _unitOfWork.Users.GetUsersInRoleAsync(RoleConstants.CondoManager, companyId);
-                var employees = await _unitOfWork.Users.GetUsersInRoleAsync(RoleConstants.Employee, companyId);
-                var residents = await _unitOfWork.Users.GetUsersInRoleAsync(RoleConstants.CondoResident, companyId);
 
-                return admins
-                    .Concat(managers)
-                    .Concat(employees)
-                    .Concat(residents)
-                    .Where(u => u.Id != userId)
-                    .GroupBy(u => u.Id).Select(g => g.First())
-                    .Select(u => new SimpleUserDto { Id = u.Id, FullName = $"{u.FirstName} {u.LastName}".Trim(), Email = u.Email ?? string.Empty })
-                    .OrderBy(c => c.FullName);
+            // At this point, we know the user is a staff member. They can always contact other staff.
+            var residentContacts = new List<UserListDto>();
+
+            if (myRoles.Contains(RoleConstants.CompanyAdmin))
+            {
+                // Admins can contact all residents.
+                residentContacts = allUsersInCompany.Where(u => u.Role == RoleConstants.CondoResident).ToList();
             }
+            else if (myRoles.Contains(RoleConstants.CondoManager))
+            {
+                // Managers can contact residents of their assigned condos.
+                var managedCondos = await _unitOfWork.Condominiums.GetByManagerIdAsync(userId);
+                var managedCondoIds = managedCondos.Select(c => c.Id).ToList();
+
+                var allUnits = new List<CondoSphere.Core.Entities.Condominiums.Unit>();
+                foreach (var condoId in managedCondoIds)
+                {
+                    allUnits.AddRange(await _unitOfWork.Units.GetAllAsync(condoId));
+                }
+
+                var residentIds = allUnits.Where(u => u.ResidentId.HasValue).Select(u => u.ResidentId.Value).ToHashSet();
+                residentContacts = allUsersInCompany.Where(u => u.Role == RoleConstants.CondoResident && residentIds.Contains(u.Id)).ToList();
+            }
+            else if (myRoles.Contains(RoleConstants.Employee))
+            {
+                // Employees can contact residents for whom they have an open task.
+                var openInterventions = await _unitOfWork.Interventions.GetByAssignedUserIdAsync(userId);
+                var openOccurrenceIds = openInterventions.Select(i => i.OccurrenceId).ToHashSet();
+
+                var openOccurrences = new List<CondoSphere.Core.Entities.Condominiums.Occurrence>();
+                foreach (var occId in openOccurrenceIds)
+                {
+                    var occ = await _unitOfWork.Occurrences.GetByIdAsync(occId);
+                    if (occ != null) openOccurrences.Add(occ);
+                }
+
+                var residentIds = openOccurrences.Select(o => o.ReportedByUserId).ToHashSet();
+                residentContacts = allUsersInCompany.Where(u => u.Role == RoleConstants.CondoResident && residentIds.Contains(u.Id)).ToList();
+            }
+
+            return staffContacts.Concat(residentContacts)
+                                .GroupBy(u => u.Id).Select(g => g.First()) // Ensure uniqueness
+                                .Select(u => _mapper.Map<SimpleUserDto>(u))
+                                .OrderBy(c => c.FullName);
         }
+
 
         private bool IsStaffMember(IList<string> roles)
         {
             return roles.Contains(RoleConstants.CompanyAdmin) ||
                    roles.Contains(RoleConstants.CondoManager) ||
                    roles.Contains(RoleConstants.Employee);
+        }
+
+        private async Task<bool> CanUsersCommunicate(CoreUser sender, int receiverId)
+        {
+            var contacts = await GetAvailableContactsAsync(sender.Id, sender.CompanyId.Value);
+            return contacts.Any(c => c.Id == receiverId);
         }
     }
 }

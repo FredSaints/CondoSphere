@@ -1,4 +1,5 @@
-﻿using CondoSphere.Core.DTOs.Condominiums;
+﻿using CondoSphere.Core.DTOs.Account;
+using CondoSphere.Core.DTOs.Condominiums;
 using CondoSphere.Core.DTOs.Financials;
 using CondoSphere.Core.DTOs.Occurrences;
 using CondoSphere.Core.DTOs.Reports;
@@ -22,7 +23,6 @@ namespace CondoSphere.Mobile.Services
             };
         }
 
-        // --- METHODS FOR PHASE 2 ---
 
         public async Task<IEnumerable<UnitQuotaDto>> GetMyQuotasAsync()
         {
@@ -32,7 +32,7 @@ namespace CondoSphere.Mobile.Services
                 var result = await _httpClient.GetFromJsonAsync<IEnumerable<UnitQuotaDto>>("/api/users/my-quotas");
                 System.Diagnostics.Debug.WriteLine("[DEBUG] GetMyQuotasAsync: API call SUCCEEDED.");
                 return result;
-            }                       
+            }
             catch (HttpRequestException httpEx)
             {
                 // This catches network errors (DNS, server not found) and HTTP error codes (404, 500)
@@ -315,6 +315,297 @@ namespace CondoSphere.Mobile.Services
             {
                 Console.WriteLine($"MarkMessageAsRead Error: {ex.Message}");
                 return false;
+            }
+        }
+
+        public async Task<UserProfileDto> GetMyProfileAsync()
+        {
+            try
+            {
+                return await _httpClient.GetFromJsonAsync<UserProfileDto>("/api/profile");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"GetMyProfile Error: {ex.Message}");
+                return null;
+            }
+        }
+
+        public async Task<(bool Success, string Message)> ChangePasswordAsync(ChangePasswordDto dto)
+        {
+            try
+            {
+                var response = await _httpClient.PostAsJsonAsync("/api/profile/change-password", dto);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    return (true, "Password changed successfully.");
+                }
+                else
+                {
+                    var errorContent = await response.Content.ReadAsStringAsync();
+                    try
+                    {
+                        using var jsonDoc = JsonDocument.Parse(errorContent);
+                        if (jsonDoc.RootElement.TryGetProperty("message", out var messageElement))
+                        {
+                            return (false, messageElement.GetString());
+                        }
+                    }
+                    catch { }
+                    return (false, "Failed to change password. Please check your current password.");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"ChangePassword Error: {ex.Message}");
+                return (false, "An error occurred while connecting to the server.");
+            }
+        }
+
+        private async Task<string> UploadProfileImageAsync(FileResult imageFile)
+        {
+            try
+            {
+                using var formData = new MultipartFormDataContent();
+                var fileStream = await imageFile.OpenReadAsync();
+                var streamContent = new StreamContent(fileStream);
+                streamContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(imageFile.ContentType);
+
+                // "file" must match the IFormFile parameter name in our new UploadController
+                formData.Add(streamContent, "file", imageFile.FileName);
+
+                var response = await _httpClient.PostAsync("/api/upload/profile-picture", formData);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var responseBody = await response.Content.ReadFromJsonAsync<JsonElement>();
+                    return responseBody.GetProperty("url").GetString();
+                }
+                return null;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"UploadProfileImage Error: {ex.Message}");
+                return null;
+            }
+        }
+
+        // Method 2: The public method that the ViewModel will call
+        public async Task<(bool Success, string Message, string NewToken)> UpdateProfileAsync(UpdateProfileDto dto, FileResult newImageFile)
+        {
+            try
+            {
+                // Step A: If there's a new image, upload it first and get the new URL.
+                if (newImageFile != null)
+                {
+                    var newImageUrl = await UploadProfileImageAsync(newImageFile);
+                    if (!string.IsNullOrEmpty(newImageUrl))
+                    {
+                        // Set the URL in the DTO that we will send to the profile update endpoint
+                        dto.ProfilePictureUrl = newImageUrl;
+                    }
+                    else
+                    {
+                        // If the upload fails, stop the whole process.
+                        return (false, "Failed to upload new profile picture.", null);
+                    }
+                }
+
+                // Step B: Call the existing profile update endpoint with a clean JSON payload.
+                var response = await _httpClient.PutAsJsonAsync("/api/profile", dto);
+                var responseBody = await response.Content.ReadAsStringAsync();
+
+                if (response.IsSuccessStatusCode)
+                {
+                    using var jsonDoc = JsonDocument.Parse(responseBody);
+                    jsonDoc.RootElement.TryGetProperty("token", out var tokenElement);
+                    return (true, "Profile updated successfully.", tokenElement.GetString());
+                }
+
+                return (false, responseBody, null);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"UpdateProfile Error: {ex.Message}");
+                return (false, "An error occurred while connecting to the server.", null);
+            }
+        }
+
+        public async Task<IEnumerable<UserListDto>> GetUsersAsync()
+        {
+            try
+            {
+                return await _httpClient.GetFromJsonAsync<IEnumerable<UserListDto>>("/api/accounts/company-users");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"GetUsersAsync Error: {ex.Message}");
+                return null;
+            }
+        }
+
+        public async Task<IEnumerable<CondominiumDto>> GetAllCondosForAdminAsync()
+        {
+            try
+            {
+                return await _httpClient.GetFromJsonAsync<IEnumerable<CondominiumDto>>("/api/condominiums/for-admin");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"GetAllCondosForAdminAsync Error: {ex.Message}");
+                return null;
+            }
+        }
+
+        public async Task<IEnumerable<UnitDto>> GetUnitsForCondominiumAsync(int condominiumId)
+        {
+            try
+            {
+                var url = $"/api/condominiums/{condominiumId}/units";
+                return await _httpClient.GetFromJsonAsync<IEnumerable<UnitDto>>(url);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"GetUnitsForCondominiumAsync Error: {ex.Message}");
+                return null;
+            }
+        }
+
+        public async Task<(bool Success, string Message)> SendAnnouncementAsync(int condominiumId, AnnouncementDto dto)
+        {
+            try
+            {
+                var url = $"/api/condominiums/{condominiumId}/announcements";
+                var response = await _httpClient.PostAsJsonAsync(url, dto);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var result = await response.Content.ReadFromJsonAsync<JsonElement>();
+                    var message = result.GetProperty("message").GetString();
+                    return (true, message);
+                }
+                else
+                {
+                    var error = await response.Content.ReadAsStringAsync();
+                    return (false, error);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"SendAnnouncementAsync Error: {ex.Message}");
+                return (false, "An error occurred while connecting to the server.");
+            }
+        }
+
+        public async Task<(bool Success, string Message)> CreateExpenseAsync(CreateExpenseRequest dto)
+        {
+            try
+            {
+                using var formData = new MultipartFormDataContent();
+
+                formData.Add(new StringContent(dto.Title), nameof(dto.Title));
+                formData.Add(new StringContent(dto.Description ?? string.Empty), nameof(dto.Description));
+                formData.Add(new StringContent(dto.Amount.ToString()), nameof(dto.Amount));
+                formData.Add(new StringContent(dto.ExpenseDate.ToString("o")), nameof(dto.ExpenseDate));
+                formData.Add(new StringContent(dto.CondominiumId.ToString()), nameof(dto.CondominiumId));
+                if (dto.OccurrenceId.HasValue)
+                {
+                    formData.Add(new StringContent(dto.OccurrenceId.Value.ToString()), nameof(dto.OccurrenceId));
+                }
+
+                if (dto.AttachmentFiles != null)
+                {
+                    foreach (var file in dto.AttachmentFiles)
+                    {
+                        var fileStream = await file.OpenReadAsync();
+                        var streamContent = new StreamContent(fileStream);
+                        streamContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(file.ContentType);
+                        formData.Add(streamContent, "attachmentFiles", file.FileName);
+                    }
+                }
+
+                var response = await _httpClient.PostAsync("/api/expenses", formData);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    return (true, "Expense created successfully.");
+                }
+                else
+                {
+                    var error = await response.Content.ReadAsStringAsync();
+                    return (false, $"Failed to create expense: {error}");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"CreateExpenseAsync Error: {ex.Message}");
+                return (false, "An error occurred while connecting to the server.");
+            }
+        }
+
+        public async Task<IEnumerable<InterventionDto>> GetMyTasksAsync()
+        {
+            try
+            {
+                var url = "/api/interventions/my-tasks";
+                System.Diagnostics.Debug.WriteLine($"[ApiClient] ==> Calling GET {url}");
+
+                var response = await _httpClient.GetAsync(url);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var tasks = await response.Content.ReadFromJsonAsync<IEnumerable<InterventionDto>>();
+                    System.Diagnostics.Debug.WriteLine($"[ApiClient] <== SUCCESS: Received {tasks?.Count() ?? 0} tasks.");
+                    return tasks;
+                }
+                else
+                {
+                    var errorContent = await response.Content.ReadAsStringAsync();
+                    System.Diagnostics.Debug.WriteLine($"[ApiClient] <== FAILED with status {(int)response.StatusCode}.");
+                    System.Diagnostics.Debug.WriteLine($"[ApiClient] <== Error Body: {errorContent}");
+                    return null;
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[ApiClient] <== CRITICAL FAILURE: Exception during API call.");
+                System.Diagnostics.Debug.WriteLine($"[ApiClient] <== Exception: {ex.Message}");
+                return null;
+            }
+        }
+
+        public async Task<InterventionDto> GetInterventionDetailsAsync(int interventionId)
+        {
+            try
+            {
+                var url = $"/api/interventions/{interventionId}";
+                System.Diagnostics.Debug.WriteLine($"[ApiClient] ==> Calling GET {url}");
+                var response = await _httpClient.GetFromJsonAsync<InterventionDto>(url);
+                System.Diagnostics.Debug.WriteLine($"[ApiClient] <== SUCCESS: Received intervention details for ID {interventionId}.");
+                return response;
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[ApiClient] <== FAILED to get intervention details for ID {interventionId}. Exception: {ex.Message}");
+                return null;
+            }
+        }
+
+        public async Task<OccurrenceDto> GetOccurrenceDetailsAsync(int occurrenceId)
+        {
+            try
+            {
+                var url = $"/api/occurrences/{occurrenceId}";
+                System.Diagnostics.Debug.WriteLine($"[ApiClient] ==> Calling GET {url}");
+                var response = await _httpClient.GetFromJsonAsync<OccurrenceDto>(url);
+                System.Diagnostics.Debug.WriteLine($"[ApiClient] <== SUCCESS: Received occurrence details for ID {occurrenceId}.");
+                return response;
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[ApiClient] <== FAILED to get occurrence details for ID {occurrenceId}. Exception: {ex.Message}");
+                return null;
             }
         }
     }

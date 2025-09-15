@@ -50,9 +50,15 @@
             </Tab.Icon>
             <ShellContent ContentTemplate="{DataTemplate views:DocumentsPage}" />
         </Tab>
-        <Tab Title="Messages" Icon="message.png">
+
+        <Tab Title="Messages">
+            <Tab.Icon>
+                <FontImageSource FontFamily="MaterialIcons" Glyph="✉" Color="{StaticResource Primary}" />
+            </Tab.Icon>
             <ShellContent Route="messages" ContentTemplate="{DataTemplate views:MessagesPage}" />
         </Tab>
+
+
     </TabBar>
 
     <!-- Manager Navigation -->
@@ -62,6 +68,12 @@
                 <FontImageSource FontFamily="MaterialIcons" Glyph="🏢" Color="{StaticResource Primary}" />
             </Tab.Icon>
             <ShellContent ContentTemplate="{DataTemplate views:CondoListPage}" />
+        </Tab>
+        <Tab Title="Messages">
+            <Tab.Icon>
+                <FontImageSource FontFamily="MaterialIcons" Glyph="✉️" Color="{StaticResource Primary}" />
+            </Tab.Icon>
+            <ShellContent Route="messages" ContentTemplate="{DataTemplate views:MessagesPage}" />
         </Tab>
     </TabBar>
 
@@ -73,16 +85,26 @@
             </Tab.Icon>
             <ShellContent ContentTemplate="{DataTemplate views:AdminDashboardPage}" />
         </Tab>
-    </TabBar>
-
-    <!-- Profile Tab (Available to all authenticated users) -->
-    <TabBar Route="profile" IsVisible="{Binding IsAuthenticated}">
-        <Tab Title="Profile" Route="profilehome">
+        <Tab Title="Messages">
             <Tab.Icon>
-                <FontImageSource FontFamily="MaterialIcons" Glyph="👤" Color="{StaticResource Primary}" />
+                <FontImageSource FontFamily="MaterialIcons" Glyph="✉️" Color="{StaticResource Primary}" />
             </Tab.Icon>
-            <ShellContent ContentTemplate="{DataTemplate views:ProfilePage}" />
+            <ShellContent Route="messages" ContentTemplate="{DataTemplate views:MessagesPage}" />
         </Tab>
     </TabBar>
 
+    <TabBar Route="employee" IsVisible="{Binding IsEmployee}">
+        <Tab Title="My Tasks" Route="tasks">
+            <Tab.Icon>
+                <FontImageSource FontFamily="MaterialIcons" Glyph="🔧" Color="{StaticResource Primary}" />
+            </Tab.Icon>
+            <ShellContent ContentTemplate="{DataTemplate views:EmployeeTasksPage}" />
+        </Tab>
+        <Tab Title="Messages">
+            <Tab.Icon>
+                <FontImageSource FontFamily="MaterialIcons" Glyph="✉️" Color="{StaticResource Primary}" />
+            </Tab.Icon>
+            <ShellContent Route="messages" ContentTemplate="{DataTemplate views:MessagesPage}" />
+        </Tab>
+    </TabBar>
 </Shell>

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+xmlns:vm="clr-namespace:CondoSphere.Mobile.ViewModels"
+xmlns:behaviors="clr-namespace:CondoSphere.Mobile.Behaviors"
+x:DataType="vm:EditProfileViewModel"
+x:Class="CondoSphere.Mobile.Views.EditProfilePage"
+BackgroundColor="{StaticResource BackgroundSecondary}"
+Title="Edit Profile">
+
+    <Grid RowDefinitions="Auto,*">
+
+        <!-- Loading Overlay -->
+        <Frame Grid.RowSpan="2" BackgroundColor="#80000000" IsVisible="{Binding IsBusy}" ZIndex="999" Padding="0">
+            <ActivityIndicator IsRunning="{Binding IsBusy}" Color="{StaticResource Primary}" HeightRequest="48" WidthRequest="48" VerticalOptions="Center" HorizontalOptions="Center" />
+        </Frame>
+
+        <!-- Header -->
+        <Frame Grid.Row="0" BackgroundColor="{StaticResource Primary}" CornerRadius="24" HasShadow="False" Padding="24,40,24,24" Margin="0,0,0,20">
+            <VerticalStackLayout Spacing="8">
+                <Label Text="✏️ Edit Your Profile" Style="{StaticResource HeadingMedium}" TextColor="{StaticResource TextOnPrimary}" />
+                <Label Text="Update your personal information below." Style="{StaticResource BodyMedium}" TextColor="{StaticResource TextOnPrimary}" Opacity="0.9" />
+            </VerticalStackLayout>
+        </Frame>
+
+        <!-- Form Content -->
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Spacing="24" Padding="20,0,20,40">
+
+                <!-- Profile Picture Section -->
+                <Frame Style="{StaticResource CardStyle}">
+                    <VerticalStackLayout Spacing="16" HorizontalOptions="Center">
+                        <Label Text="Profile Picture" Style="{StaticResource SubheadingMedium}" HorizontalTextAlignment="Center" />
+                        <Image Source="{Binding ProfileImageSource}" Aspect="AspectFill" HeightRequest="120" WidthRequest="120">
+                            <Image.Clip>
+                                <EllipseGeometry RadiusX="60" RadiusY="60" Center="60,60"/>
+                            </Image.Clip>
+                            <Image.Behaviors>
+                                <behaviors:ImageLoadingBehavior />
+                            </Image.Behaviors>
+                        </Image>
+                        <Button Text="📷 Choose New Photo" Command="{Binding PickPhotoCommand}" Style="{StaticResource ButtonOutline}" />
+                    </VerticalStackLayout>
+                </Frame>
+
+                <!-- Personal Details Section -->
+                <Frame Style="{StaticResource CardStyle}">
+                    <VerticalStackLayout Spacing="16">
+                        <Label Text="Personal Details" Style="{StaticResource SubheadingMedium}" />
+
+                        <Entry Placeholder="First Name" Text="{Binding FirstName}" Style="{StaticResource EntryDefault}" />
+                        <Entry Placeholder="Last Name" Text="{Binding LastName}" Style="{StaticResource EntryDefault}" />
+                        <Entry Placeholder="Phone Number" Text="{Binding PhoneNumber}" Keyboard="Telephone" Style="{StaticResource EntryDefault}" />
+                    </VerticalStackLayout>
+                </Frame>
+
+                <!-- Action Buttons -->
+                <Button Text="Save Changes" Command="{Binding SaveProfileCommand}" Style="{StaticResource ButtonPrimary}" Margin="0,16,0,0" />
+                <Button Text="Cancel" Command="{Binding CancelCommand}" Style="{StaticResource ButtonGhost}" />
+
+            </VerticalStackLayout>
+        </ScrollView>
+    </Grid>
+</ContentPage>

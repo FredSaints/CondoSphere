@@ -19,20 +19,28 @@ public partial class AppShell : Shell
         Routing.RegisterRoute("quotas/details", typeof(QuotaDetailsPage));
         Routing.RegisterRoute(nameof(MessageDetailsPage), typeof(MessageDetailsPage));
         Routing.RegisterRoute(nameof(ComposeMessagePage), typeof(ComposeMessagePage));
+        Routing.RegisterRoute("profile/changepassword", typeof(ChangePasswordPage));
+        Routing.RegisterRoute("profile/edit", typeof(EditProfilePage));
+        Routing.RegisterRoute("admin/users", typeof(UserListAdminPage));
+        Routing.RegisterRoute("admin/properties", typeof(PropertyListAdminPage));
+        Routing.RegisterRoute("condos/details/units", typeof(UnitListPage));
+        Routing.RegisterRoute("condos/details/sendnotice", typeof(SendNoticePage));
+        Routing.RegisterRoute("condos/details/addexpense", typeof(AddExpensePage));
+        Routing.RegisterRoute("employee/taskdetails", typeof(InterventionDetailsPage));
+        Routing.RegisterRoute("profile", typeof(ProfilePage));
 
         // Listen for successful login
         WeakReferenceMessenger.Default.Register<LoginSuccessMessage>(this, async (_, msg) =>
         {
-            // Reuse the existing VM if you set it in XAML, otherwise create one:
             var vm = BindingContext as ShellViewModel ?? new ShellViewModel();
             BindingContext = vm;
 
-            // Load roles from the *fresh* token and apply
             var token = await TokenStorage.GetTokenAsync();
-            var roles = JwtHelpers.ExtractRoles(token); // implement this helper to parse claims
+            var roles = JwtHelpers.ExtractRoles(token);
             vm.ApplyRoles(roles);
 
             var home = vm.IsManager ? "//manager/condos"
+                     : vm.IsEmployee ? "//employee/tasks"
                      : vm.IsAdmin ? "//admin/dashboard"
                      : vm.IsResident ? "//resident/portal"
                      : "///auth/login";
@@ -45,17 +53,15 @@ public partial class AppShell : Shell
     {
         base.OnAppearing();
 
-        // Always clear token so the user must login again
-        await TokenStorage.RemoveTokenAsync();   // <-- make this async (see #3)
+        await TokenStorage.RemoveTokenAsync();
 
         // Reset ShellViewModel to "unauthenticated"
         if (BindingContext is ShellViewModel vm)
-            vm.ResetAuth();                      // <-- use your helper
+            vm.ResetAuth();
 
         await MainThread.InvokeOnMainThreadAsync(async () =>
         {
-            // IMPORTANT: your login page lives under the TabBar "auth" => route is "auth/login"
-            await Shell.Current.GoToAsync("///auth/login", false);   // <-- was "///login"
+            await Shell.Current.GoToAsync("///auth/login", false);
         });
     }
 }

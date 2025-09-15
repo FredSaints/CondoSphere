@@ -1,4 +1,6 @@
-﻿namespace CondoSphere.Mobile.Services
+﻿using CondoSphere.Mobile.Enums;
+
+namespace CondoSphere.Mobile.Services
 {
     public class LoginRequest
     {
@@ -24,7 +26,8 @@
         public int Id { get; set; }
         public string Description { get; set; }
         public DateTime StartDate { get; set; }
-        public string Status { get; set; }
+        public InterventionStatus Status { get; set; }
+        public int OccurrenceId { get; set; }
         public string AssignedToUserName { get; set; }
     }
 
@@ -69,5 +72,22 @@
         public int Id { get; set; }
         public string FullName { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;
+    }
+
+    public class AnnouncementDto
+    {
+        public string Subject { get; set; }
+        public string Message { get; set; }
+    }
+
+    public class CreateExpenseRequest
+    {
+        public string Title { get; set; }
+        public string Description { get; set; }
+        public decimal Amount { get; set; }
+        public System.DateTime ExpenseDate { get; set; }
+        public int CondominiumId { get; set; }
+        public int? OccurrenceId { get; set; }
+        public List<FileResult> AttachmentFiles { get; set; } = new();
     }
 }

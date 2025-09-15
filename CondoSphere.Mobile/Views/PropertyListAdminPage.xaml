@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:CondoSphere.Mobile.ViewModels"
+             xmlns:dto="clr-namespace:CondoSphere.Core.DTOs.Condominiums;assembly=CondoSphere.Core"
+             x:DataType="vm:PropertyListAdminViewModel"
+             x:Class="CondoSphere.Mobile.Views.PropertyListAdminPage"
+             BackgroundColor="{StaticResource BackgroundSecondary}"
+             Title="Manage Properties">
+
+    <Grid RowDefinitions="Auto,*">
+
+        <!-- Header -->
+        <Frame Grid.Row="0" BackgroundColor="{StaticResource Primary}" CornerRadius="24" HasShadow="False" Padding="24,40,24,24" Margin="0,0,0,20">
+            <VerticalStackLayout Spacing="8">
+                <Label Text="🏢 Company Properties" Style="{StaticResource HeadingMedium}" TextColor="{StaticResource TextOnPrimary}" />
+                <Label Text="View and manage all properties in your portfolio." Style="{StaticResource BodyMedium}" TextColor="{StaticResource TextOnPrimary}" Opacity="0.9" />
+            </VerticalStackLayout>
+        </Frame>
+
+        <!-- Property List -->
+        <RefreshView Grid.Row="1" IsRefreshing="{Binding IsBusy}" Command="{Binding LoadPropertiesCommand}">
+            <CollectionView ItemsSource="{Binding Properties}"
+                            Margin="20,0,20,40">
+                <CollectionView.EmptyView>
+                    <Frame Style="{StaticResource CardStyle}" Padding="40" Margin="0,40">
+                        <VerticalStackLayout Spacing="20" HorizontalOptions="Center">
+                            <Label Text="🏢" FontSize="64" HorizontalOptions="Center" Opacity="0.5" />
+                            <Label Text="No Properties Found" Style="{StaticResource SubheadingLarge}" HorizontalTextAlignment="Center" />
+                            <Label Text="Add your first property to get started." Style="{StaticResource BodyMedium}" HorizontalTextAlignment="Center" TextColor="{StaticResource TextSecondary}" />
+                        </VerticalStackLayout>
+                    </Frame>
+                </CollectionView.EmptyView>
+
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="dto:CondominiumDto">
+                        <Frame Style="{StaticResource CardStyle}" Margin="0,6">
+                            <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto" ColumnSpacing="16" RowSpacing="4">
+                                <!-- Icon -->
+                                <Frame Grid.RowSpan="2" CornerRadius="20" HeightRequest="40" WidthRequest="40" Padding="0" HasShadow="False" BackgroundColor="{StaticResource Primary}">
+                                    <Label Text="🏢" FontSize="18" HorizontalOptions="Center" VerticalOptions="Center" />
+                                </Frame>
+
+                                <!-- Property Details -->
+                                <VerticalStackLayout Grid.Column="1" Grid.RowSpan="2" VerticalOptions="Center">
+                                    <Label Style="{StaticResource SubheadingMedium}" Text="{Binding Name}" />
+                                    <Label Style="{StaticResource BodySmall}" Text="{Binding Address}" />
+                                </VerticalStackLayout>
+                            </Grid>
+                        </Frame>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </RefreshView>
+
+    </Grid>
+</ContentPage>

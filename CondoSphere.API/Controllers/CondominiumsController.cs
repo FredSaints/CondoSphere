@@ -178,5 +178,19 @@ namespace CondoSphere.API.Controllers
 
             return NoContent();
         }
+
+        [HttpGet("for-admin")]
+        [Authorize(Roles = RoleConstants.CompanyAdmin)]
+        public async Task<IActionResult> GetAllForAdmin()
+        {
+            var companyId = _currentUserService.CompanyId;
+            if (companyId == null)
+            {
+                return Unauthorized("Company information is missing from the token.");
+            }
+
+            var condominiums = await _condominiumService.GetAllCondominiumsAsync(companyId.Value, 1, 1000);
+            return Ok(condominiums);
+        }
     }
 }

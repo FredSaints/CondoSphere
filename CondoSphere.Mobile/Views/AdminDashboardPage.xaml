@@ -6,7 +6,10 @@
              x:Class="CondoSphere.Mobile.Views.AdminDashboardPage"
              BackgroundColor="{StaticResource BackgroundSecondary}"
              Title="Dashboard">
-
+    <ContentPage.ToolbarItems>
+        <ToolbarItem IconImageSource="default_profile.png" Command="{Binding GoToProfileCommand}" Order="Primary" Priority="0" />
+    </ContentPage.ToolbarItems>
+    
     <Grid RowDefinitions="Auto,*">
 
         <!-- Loading Overlay -->
@@ -185,13 +188,11 @@
                                    Style="{StaticResource CardStyle}"
                                    Padding="16">
                                 <Frame.GestureRecognizers>
-                                    <TapGestureRecognizer />
+                                    <TapGestureRecognizer Command="{Binding GoToPropertiesCommand}" />
                                 </Frame.GestureRecognizers>
                                 <VerticalStackLayout Spacing="8" HorizontalOptions="Center">
                                     <Label Text="🏢" FontSize="24" HorizontalOptions="Center" />
-                                    <Label Text="Add Property" 
-                                           Style="{StaticResource BodyMedium}"
-                                           HorizontalTextAlignment="Center" />
+                                    <Label Text="My Proprieties" Style="{StaticResource BodyMedium}" HorizontalTextAlignment="Center" />
                                 </VerticalStackLayout>
                             </Frame>
 
@@ -200,43 +201,43 @@
                                    Style="{StaticResource CardStyle}"
                                    Padding="16">
                                 <Frame.GestureRecognizers>
-                                    <TapGestureRecognizer />
+                                    <TapGestureRecognizer Command="{Binding GoToUsersCommand}" />
                                 </Frame.GestureRecognizers>
                                 <VerticalStackLayout Spacing="8" HorizontalOptions="Center">
                                     <Label Text="👤" FontSize="24" HorizontalOptions="Center" />
-                                    <Label Text="Manage Users" 
-                                           Style="{StaticResource BodyMedium}"
-                                           HorizontalTextAlignment="Center" />
+                                    <Label Text="Manage Users" Style="{StaticResource BodyMedium}" HorizontalTextAlignment="Center" />
                                 </VerticalStackLayout>
                             </Frame>
 
                             <!-- View Reports -->
                             <Frame Grid.Row="1" Grid.Column="0" 
-                                   Style="{StaticResource CardStyle}"
-                                   Padding="16">
+                               Style="{StaticResource CardStyle}"
+                               Padding="16">
+                                <!-- UPDATE THIS GESTURE RECOGNIZER -->
                                 <Frame.GestureRecognizers>
-                                    <TapGestureRecognizer />
+                                    <TapGestureRecognizer Command="{Binding GoToReportsCommand}" />
                                 </Frame.GestureRecognizers>
                                 <VerticalStackLayout Spacing="8" HorizontalOptions="Center">
                                     <Label Text="📊" FontSize="24" HorizontalOptions="Center" />
                                     <Label Text="View Reports" 
-                                           Style="{StaticResource BodyMedium}"
-                                           HorizontalTextAlignment="Center" />
+                                       Style="{StaticResource BodyMedium}"
+                                       HorizontalTextAlignment="Center" />
                                 </VerticalStackLayout>
                             </Frame>
 
                             <!-- Settings -->
                             <Frame Grid.Row="1" Grid.Column="1" 
-                                   Style="{StaticResource CardStyle}"
-                                   Padding="16">
+                               Style="{StaticResource CardStyle}"
+                               Padding="16">
+                                <!-- UPDATE THIS GESTURE RECOGNIZER -->
                                 <Frame.GestureRecognizers>
-                                    <TapGestureRecognizer />
+                                    <TapGestureRecognizer Command="{Binding GoToSettingsCommand}" />
                                 </Frame.GestureRecognizers>
                                 <VerticalStackLayout Spacing="8" HorizontalOptions="Center">
                                     <Label Text="⚙️" FontSize="24" HorizontalOptions="Center" />
                                     <Label Text="Settings" 
-                                           Style="{StaticResource BodyMedium}"
-                                           HorizontalTextAlignment="Center" />
+                                       Style="{StaticResource BodyMedium}"
+                                       HorizontalTextAlignment="Center" />
                                 </VerticalStackLayout>
                             </Frame>
                         </Grid>

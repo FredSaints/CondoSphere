@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:CondoSphere.Mobile.ViewModels"
+             x:DataType="vm:InterventionDetailsViewModel"
+             x:Class="CondoSphere.Mobile.Views.InterventionDetailsPage"
+             BackgroundColor="{StaticResource BackgroundSecondary}"
+             Title="Task Details">
+
+    <ScrollView>
+        <VerticalStackLayout Spacing="20" Padding="0,0,0,40">
+            <!-- Header -->
+            <Frame BackgroundColor="{StaticResource Primary}" CornerRadius="24" HasShadow="False" Padding="24,40,24,24" Margin="0,0,0,10">
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="{Binding OccurrenceDetails.Title}" Style="{StaticResource HeadingMedium}" TextColor="{StaticResource TextOnPrimary}" />
+                    <Label Text="{Binding SelectedTask.StartDate, StringFormat='Scheduled for: {0:dddd, MMM dd, yyyy}'}" Style="{StaticResource BodyMedium}" TextColor="{StaticResource TextOnPrimary}" Opacity="0.9" />
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Main Content Grid -->
+            <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="*" RowSpacing="20" Padding="20,0">
+
+                <!-- Assigned Task Card -->
+                <Frame Grid.Row="0" Style="{StaticResource CardElevated}">
+                    <VerticalStackLayout Spacing="16">
+                        <Label Style="{StaticResource SubheadingLarge}">
+                            <Label.FormattedText>
+                                <FormattedString>
+                                    <Span Text="🔧 "/>
+                                    <Span Text="Your Assigned Task"/>
+                                </FormattedString>
+                            </Label.FormattedText>
+                        </Label>
+                        <Label Text="{Binding SelectedTask.Description}" Style="{StaticResource BodyLarge}" />
+
+                        <Frame CornerRadius="16" Padding="12,6" HasShadow="False" HorizontalOptions="Start" BackgroundColor="{StaticResource Info}">
+                            <Label Text="{Binding SelectedTask.Status}" Style="{StaticResource BodySmall}" TextColor="{StaticResource TextOnPrimary}" FontAttributes="Bold" />
+                        </Frame>
+                    </VerticalStackLayout>
+                </Frame>
+
+                <!-- Original Report Card -->
+                <Frame Grid.Row="1" Style="{StaticResource CardStyle}">
+                    <VerticalStackLayout Spacing="16">
+                        <Label Text="📋 Original Problem Report" Style="{StaticResource SubheadingLarge}" />
+
+                        <!-- Description -->
+                        <VerticalStackLayout Spacing="4">
+                            <Label Text="Description:" Style="{StaticResource BodyMedium}" FontAttributes="Bold" />
+                            <Label Text="{Binding OccurrenceDetails.Description}" Style="{StaticResource BodyMedium}" TextColor="{StaticResource TextSecondary}" />
+                        </VerticalStackLayout>
+
+                        <!-- Reporter -->
+                        <VerticalStackLayout Spacing="4">
+                            <Label Text="Reported By:" Style="{StaticResource BodyMedium}" FontAttributes="Bold" />
+                            <Label Text="{Binding OccurrenceDetails.ReportedByUserName}" Style="{StaticResource BodyMedium}" TextColor="{StaticResource TextSecondary}" />
+                        </VerticalStackLayout>
+
+                        <!-- Attached Image -->
+                        <VerticalStackLayout Spacing="12" IsVisible="{Binding OccurrenceDetails.ImageUrl, Converter={StaticResource IsNotNullConverter}}">
+                            <Label Text="Attached Photo:" Style="{StaticResource BodyMedium}" FontAttributes="Bold" />
+                            <Frame CornerRadius="12" Padding="0" HasShadow="False" BorderColor="{StaticResource BorderPrimary}">
+                                <Image Source="{Binding OccurrenceDetails.ImageUrl}" Aspect="AspectFill" HeightRequest="250" />
+                            </Frame>
+                        </VerticalStackLayout>
+                    </VerticalStackLayout>
+                </Frame>
+
+            </Grid>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

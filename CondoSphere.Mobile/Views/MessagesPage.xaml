@@ -1,113 +1,138 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<ContentPage x:Class="CondoSphere.Mobile.Views.MessagesPage"
-             xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:CondoSphere.Mobile.ViewModels"
              xmlns:services="clr-namespace:CondoSphere.Mobile.Services"
+             xmlns:converters="clr-namespace:CondoSphere.Mobile.Converters"
              x:DataType="vm:MessagesViewModel"
+             x:Class="CondoSphere.Mobile.Views.MessagesPage"
+             BackgroundColor="{StaticResource BackgroundSecondary}"
              Title="Messages">
 
     <ContentPage.ToolbarItems>
         <ToolbarItem Text="Compose" 
                      Command="{Binding ComposeMessageCommand}"
-                     IconImageSource="plus.png" />
+                     IconImageSource="plus_icon.png" />
+        <!-- Ensure plus_icon.png is in Resources/Images -->
     </ContentPage.ToolbarItems>
 
-    <Grid RowDefinitions="Auto,*">
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <converters:BoolToStringConverter x:Key="BoolToStringConverter" />
+            <converters:BoolToFontAttributesConverter x:Key="BoolToFontAttributesConverter" />
+            <converters:InverseBoolConverter x:Key="InverseBoolConverter" />
+            <converters:StringToBoolConverter x:Key="StringToBoolConverter" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
+    
+    <Grid RowDefinitions="Auto, Auto, *">
 
-        <!-- Header with Inbox/Sent toggle -->
-        <Grid Grid.Row="0" ColumnDefinitions="*,*" BackgroundColor="{StaticResource SurfacePrimary}" Padding="10">
+        <!-- Header -->
+        <Frame Grid.Row="0" BackgroundColor="{StaticResource Primary}" CornerRadius="24" HasShadow="False" Padding="24,40,24,24" Margin="0,0,0,20">
+            <VerticalStackLayout Spacing="8">
+                <Label Text="✉️ Messages" Style="{StaticResource HeadingMedium}" TextColor="{StaticResource TextOnPrimary}" />
+                <Label Text="Stay connected with management and staff." Style="{StaticResource BodyMedium}" TextColor="{StaticResource TextOnPrimary}" Opacity="0.9" />
+            </VerticalStackLayout>
+        </Frame>
 
+
+        <!-- Segmented Control for Inbox/Sent -->
+        <Grid Grid.Row="1" ColumnDefinitions="*,*" Padding="20,0" Margin="0,0,0,10">
             <Button Grid.Column="0"
                     Command="{Binding LoadInboxCommand}"
-                    BackgroundColor="{Binding IsInboxSelected, Converter={StaticResource BoolToColorConverter}, ConverterParameter='#667eea,Transparent'}"
-                    TextColor="{Binding IsInboxSelected, Converter={StaticResource BoolToColorConverter}, ConverterParameter='White,#6c757d'}"
-                    CornerRadius="20"
-                    Margin="5,0">
-                <Button.Text>
-                    <Binding Path="UnreadCount" StringFormat="Inbox ({0})" />
-                </Button.Text>
+                    Style="{StaticResource ButtonOutline}"
+                    HeightRequest="44"
+                    CornerRadius="22"
+                    BorderWidth="2"
+                    Text="{Binding UnreadCount, StringFormat='Inbox ({0})'}"
+                    BackgroundColor="{Binding IsInboxSelected, Converter={StaticResource BoolToColorConverter}, ConverterParameter={StaticResource Primary}}"
+                    TextColor="White">
                 <Button.Triggers>
                     <DataTrigger TargetType="Button" Binding="{Binding UnreadCount}" Value="0">
                         <Setter Property="Text" Value="Inbox" />
                     </DataTrigger>
                 </Button.Triggers>
             </Button>
-
             <Button Grid.Column="1"
                     Text="Sent"
                     Command="{Binding LoadSentCommand}"
-                    BackgroundColor="{Binding IsInboxSelected, Converter={StaticResource InverseBoolToColorConverter}, ConverterParameter='#667eea,Transparent'}"
-                    TextColor="{Binding IsInboxSelected, Converter={StaticResource InverseBoolToColorConverter}, ConverterParameter='White,#6c757d'}"
-                    CornerRadius="20"
-                    Margin="5,0" />
+                    Style="{StaticResource ButtonOutline}"
+                    HeightRequest="44"
+                    CornerRadius="22"
+                    BorderWidth="2"
+                    BackgroundColor="{Binding IsInboxSelected, Converter={StaticResource InverseBoolToColorConverter}, ConverterParameter={StaticResource Primary}}"
+                    TextColor="White" />
         </Grid>
 
-        <!-- Messages List -->
-        <RefreshView Grid.Row="1" Command="{Binding RefreshCommand}" IsRefreshing="{Binding IsBusy}">
-            <CollectionView ItemsSource="{Binding Messages}" 
-                           BackgroundColor="{StaticResource BackgroundPrimary}"
-                           SelectionMode="None">
 
+
+        <!-- Messages List -->
+        <RefreshView Grid.Row="2" Command="{Binding RefreshCommand}" IsRefreshing="{Binding IsBusy}">
+            <CollectionView ItemsSource="{Binding Messages}" 
+                           BackgroundColor="Transparent"
+                           SelectionMode="None"
+                           Margin="20,0,20,40">
                 <CollectionView.EmptyView>
-                    <StackLayout HorizontalOptions="Center" VerticalOptions="Center" Padding="40">
-                        <Label FontSize="48" HorizontalOptions="Center">
-                            <Label.Text>
-                                <Binding Path="IsInboxSelected" Converter="{StaticResource BoolToStringConverter}" ConverterParameter="📭,📤" />
-                            </Label.Text>
-                        </Label>
-                        <Label FontSize="18" HorizontalTextAlignment="Center" TextColor="{StaticResource Gray600}">
-                            <Label.Text>
-                                <Binding Path="IsInboxSelected" Converter="{StaticResource BoolToStringConverter}" ConverterParameter="No messages in your inbox,No sent messages" />
-                            </Label.Text>
-                        </Label>
-                        <Label FontSize="14" HorizontalTextAlignment="Center" TextColor="{StaticResource Gray500}" Margin="0,10,0,0">
-                            <Label.Text>
-                                <Binding Path="IsInboxSelected" Converter="{StaticResource BoolToStringConverter}" ConverterParameter="Pull to refresh or compose a new message,Send your first message" />
-                            </Label.Text>
-                        </Label>
-                    </StackLayout>
+                    <ContentView IsVisible="{Binding IsBusy, Converter={StaticResource InverseBoolConverter}}">
+                        <Frame Style="{StaticResource CardStyle}" Padding="40" Margin="0,40">
+                            <VerticalStackLayout Spacing="20" HorizontalOptions="Center">
+                                <Label Text="{Binding IsInboxSelected, Converter={StaticResource BoolToStringConverter}, ConverterParameter='📭,📤'}" FontSize="64" HorizontalOptions="Center" Opacity="0.5" />
+                                <Label Text="{Binding IsInboxSelected, Converter={StaticResource BoolToStringConverter}, ConverterParameter='No Messages in Your Inbox,No Sent Messages'}" Style="{StaticResource SubheadingLarge}" HorizontalTextAlignment="Center" />
+                                <Label Text="Pull to refresh or compose a new message." Style="{StaticResource BodyMedium}" HorizontalTextAlignment="Center" TextColor="{StaticResource TextSecondary}" />
+                            </VerticalStackLayout>
+                        </Frame>
+                    </ContentView>
                 </CollectionView.EmptyView>
+
+
+
 
                 <CollectionView.ItemTemplate>
                     <DataTemplate x:DataType="services:MessageListDto">
-                        <Grid Padding="15,10" BackgroundColor="{StaticResource SurfacePrimary}" Margin="10,5" 
-                              RowDefinitions="Auto,Auto,Auto" ColumnDefinitions="*,Auto">
-
-                            <Grid.GestureRecognizers>
+                        <Frame Style="{StaticResource CardStyle}" Margin="0,6" Padding="15">
+                            <Frame.GestureRecognizers>
                                 <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MessagesViewModel}}, Path=ViewMessageCommand}" 
-                                                     CommandParameter="{Binding .}" />
-                            </Grid.GestureRecognizers>
+                                                      CommandParameter="{Binding .}" />
+                            </Frame.GestureRecognizers>
 
-                            <!-- Unread indicator -->
-                            <BoxView Grid.Row="0" Grid.RowSpan="3" Grid.Column="0" 
-                                    WidthRequest="4" BackgroundColor="{StaticResource Primary}" 
-                                    HorizontalOptions="Start" IsVisible="{Binding IsRead, Converter={StaticResource InverseBoolConverter}}" />
+                            <Grid RowDefinitions="Auto, Auto, Auto" ColumnDefinitions="Auto, *">
+                                <!-- Unread Indicator -->
+                                <BoxView Grid.RowSpan="3"
+                                         BackgroundColor="{StaticResource Primary}"
+                                         WidthRequest="8"
+                                         HeightRequest="8"
+                                         CornerRadius="4"
+                                         VerticalOptions="Center"
+                                         HorizontalOptions="Start"
+                                         Margin="0,0,10,0"
+                                         IsVisible="{Binding IsRead, Converter={StaticResource InverseBoolConverter}}" />
 
-                            <!-- Sender/Receiver Name -->
-                            <Label Grid.Row="0" Grid.Column="0" 
-                                  Text="{Binding DisplayName}"
-                                  FontSize="16" FontAttributes="{Binding IsRead, Converter={StaticResource BoolToFontAttributesConverter}}"
-                                  TextColor="{StaticResource TextPrimary}" Margin="10,0,0,0" />
+                                <!-- From/To and Date Line -->
+                                <Label Grid.Column="1" Grid.Row="0" Style="{StaticResource BodySmall}" FontAttributes="Bold">
+                                    <Label.FormattedText>
+                                        <FormattedString>
+                                            <Span Text="{Binding IsInboxSelected, Source={RelativeSource AncestorType={x:Type vm:MessagesViewModel}}, Converter={StaticResource BoolToStringConverter}, ConverterParameter='From:,To:'}" />
+                                            <Span Text=" " />
+                                            <Span Text="{Binding DisplayName}" />
+                                        </FormattedString>
+                                    </Label.FormattedText>
+                                </Label>
+                                <Label Grid.Column="1" Grid.Row="0" Style="{StaticResource Caption}" Text="{Binding SentDate, StringFormat='{0:MMM dd, yyyy}'}" HorizontalOptions="End" />
 
-                            <!-- Date -->
-                            <Label Grid.Row="0" Grid.Column="1" 
-                                  Text="{Binding SentDate, StringFormat='{0:MMM dd}'}"
-                                  FontSize="12" TextColor="{StaticResource Gray600}" />
+                                <!-- Subject Line -->
+                                <Label Grid.Column="1" Grid.Row="1" 
+                                       Style="{StaticResource SubheadingMedium}"
+                                       FontAttributes="{Binding IsRead, Converter={StaticResource BoolToFontAttributesConverter}, ConverterParameter='None,Bold'}" 
+                                       Text="{Binding Subject}" />
 
-                            <!-- Subject -->
-                            <Label Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
-                                  Text="{Binding Subject}" FontSize="14" 
-                                  FontAttributes="{Binding IsRead, Converter={StaticResource BoolToFontAttributesConverter}}"
-                                  TextColor="{StaticResource TextSecondary}" Margin="10,2,0,0" />
-
-                            <!-- Building/Condominium -->
-                            <Label Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"
-                                  Text="{Binding CondominiumName, Converter={StaticResource StringFormatConverter}, ConverterParameter='Building: {0}'}"
-                                  FontSize="12" TextColor="{StaticResource Gray500}" Margin="10,2,0,0"
-                                  IsVisible="{Binding CondominiumName, Converter={StaticResource StringToBoolConverter}}" />
-
-                        </Grid>
+                                <!-- Building Line (if applicable) -->
+                                <Label Grid.Column="1" Grid.Row="2"
+                                       Style="{StaticResource BodySmall}" 
+                                       Text="{Binding CondominiumName}" 
+                                       IsVisible="{Binding CondominiumName, Converter={StaticResource StringToBoolConverter}}" 
+                                       TextColor="{StaticResource Primary}" />
+                            </Grid>
+                        </Frame>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
             </CollectionView>

@@ -26,7 +26,7 @@
                 </Frame.Shadow>
 
                 <VerticalStackLayout Spacing="16" 
-                                   Padding="40,60,40,40"
+                                   Padding="40,20,40,15"
                                    VerticalOptions="Center">
 
                     <!-- App Icon Placeholder -->

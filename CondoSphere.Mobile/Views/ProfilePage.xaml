@@ -1,10 +1,17 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:behaviors="clr-namespace:CondoSphere.Mobile.Behaviors;assembly=CondoSphere.Mobile"
              x:Class="CondoSphere.Mobile.Views.ProfilePage"
+             xmlns:vm="clr-namespace:CondoSphere.Mobile.ViewModels"
+             x:DataType="vm:ProfileViewModel"
              BackgroundColor="{StaticResource BackgroundSecondary}"
              Title="My Profile">
 
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="Close" Command="{Binding GoBackCommand}" Order="Primary" Priority="0" />
+    </ContentPage.ToolbarItems>
+    
     <Grid RowDefinitions="Auto,*">
 
         <!-- Header with User Info -->
@@ -30,24 +37,28 @@
                        Padding="0"
                        HasShadow="False"
                        BackgroundColor="{StaticResource TextOnPrimary}">
-                    <Label Text="👤" 
-                           FontSize="36"
-                           HorizontalOptions="Center"
-                           VerticalOptions="Center" />
+                    <Image Source="{Binding ProfilePictureUrl}" 
+                    Aspect="AspectFill"
+                    HeightRequest="64"
+                     WidthRequest="64">
+                        <Image.Clip>
+                            <EllipseGeometry RadiusX="32" RadiusY="32" Center="32,32"/>
+                        </Image.Clip>
+                    </Image>
                 </Frame>
 
                 <!-- User Info -->
                 <VerticalStackLayout Grid.Column="1" 
                                    Spacing="4"
                                    VerticalOptions="Center">
-                    <Label Text="John Silva" 
+                    <Label Text="{Binding FullName}"
                            Style="{StaticResource SubheadingLarge}"
                            TextColor="{StaticResource TextOnPrimary}" />
-                    <Label Text="Resident • Unit 4B"
+                    <Label Text="{Binding RoleAndUnit}"
                            Style="{StaticResource BodyMedium}"
                            TextColor="{StaticResource TextOnPrimary}"
                            Opacity="0.9" />
-                    <Label Text="john.silva@email.com"
+                    <Label Text="{Binding Email}"
                            Style="{StaticResource BodySmall}"
                            TextColor="{StaticResource TextOnPrimary}"
                            Opacity="0.8" />
@@ -62,7 +73,7 @@
                        Padding="0"
                        HasShadow="False">
                     <Frame.GestureRecognizers>
-                        <TapGestureRecognizer />
+                        <TapGestureRecognizer Command="{Binding GoToEditProfileCommand}" />
                     </Frame.GestureRecognizers>
                     <Label Text="✏️" 
                            FontSize="14"
@@ -89,7 +100,7 @@
                                   RowDefinitions="48"
                                   ColumnSpacing="16">
                                 <Grid.GestureRecognizers>
-                                    <TapGestureRecognizer />
+                                    <TapGestureRecognizer Command="{Binding GoToEditProfileCommand}" />
                                 </Grid.GestureRecognizers>
 
                                 <Frame CornerRadius="16"
@@ -132,7 +143,7 @@
                                   RowDefinitions="48"
                                   ColumnSpacing="16">
                                 <Grid.GestureRecognizers>
-                                    <TapGestureRecognizer />
+                                    <TapGestureRecognizer Command="{Binding GoToChangePasswordCommand}" />
                                 </Grid.GestureRecognizers>
 
                                 <Frame CornerRadius="16"
@@ -405,6 +416,7 @@
 
                             <!-- Logout Button -->
                             <Button Text="🚪 Sign Out" 
+                                    Command="{Binding SignOutCommand}"
                                     Style="{StaticResource ButtonOutline}"
                                     HeightRequest="44"
                                     BackgroundColor="{StaticResource Error}"

@@ -7,15 +7,14 @@ namespace CondoSphere.Mobile.ViewModels
         [ObservableProperty] private bool isResident;
         [ObservableProperty] private bool isManager;
         [ObservableProperty] private bool isAdmin;
+        [ObservableProperty] private bool isEmployee;
 
         // New: explicit auth flags
         [ObservableProperty] private bool isAuthenticated;
-        [ObservableProperty] private bool isUnauthenticated = true; // default
+        [ObservableProperty] private bool isUnauthenticated = true;
 
         public ShellViewModel()
         {
-            // IMPORTANT: do NOT auto-load roles/token here
-            // Keep the app unauthenticated on cold start.
         }
 
         // Call this ONLY after a successful login
@@ -24,6 +23,7 @@ namespace CondoSphere.Mobile.ViewModels
             IsResident = roles.Contains("CondoResident");
             IsManager = roles.Contains("CondoManager");
             IsAdmin = roles.Contains("CompanyAdmin");
+            IsEmployee = roles.Contains("Employee");
 
             IsAuthenticated = true;
             IsUnauthenticated = false;
@@ -35,7 +35,7 @@ namespace CondoSphere.Mobile.ViewModels
         // Call this on logout (or if login fails)
         public void ResetAuth()
         {
-            IsResident = IsManager = IsAdmin = false;
+            IsResident = IsManager = IsAdmin = IsEmployee = false;
             IsAuthenticated = false;
             IsUnauthenticated = true;
         }

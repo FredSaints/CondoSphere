@@ -5,7 +5,7 @@ using CondoSphere.Mobile.Services;
 
 namespace CondoSphere.Mobile.ViewModels
 {
-    public partial class AdminDashboardViewModel : ObservableObject
+    public partial class AdminDashboardViewModel : BaseViewModel
     {
         [ObservableProperty]
         private bool isBusy;
@@ -18,7 +18,6 @@ namespace CondoSphere.Mobile.ViewModels
         public AdminDashboardViewModel(ApiClient apiClient)
         {
             _apiClient = apiClient;
-            // Initialize with an empty object to avoid null reference issues in XAML
             Stats = new AdminDashboardDto();
         }
 
@@ -44,6 +43,31 @@ namespace CondoSphere.Mobile.ViewModels
             {
                 IsBusy = false;
             }
+        }
+
+        [RelayCommand]
+        private async Task GoToUsersAsync()
+        {
+            await Shell.Current.GoToAsync("admin/users");
+        }
+
+        [RelayCommand]
+        private async Task GoToPropertiesAsync()
+        {
+            await Shell.Current.GoToAsync("admin/properties");
+
+        }
+
+        [RelayCommand]
+        private async Task GoToReportsAsync()
+        {
+            await Shell.Current.DisplayAlert("Coming Soon", "The detailed reports feature is not yet implemented.", "OK");
+        }
+
+        [RelayCommand]
+        private async Task GoToSettingsAsync()
+        {
+            await Shell.Current.DisplayAlert("Coming Soon", "The settings feature is not yet implemented.", "OK");
         }
     }
 }

@@ -10,7 +10,7 @@
                 @{
                     var profilePictureUrl = User.FindFirstValue("profile_picture");
                 }
-                <img src="@(string.IsNullOrEmpty(profilePictureUrl) ? "/images/user-photos/default-profile.png" : profilePictureUrl)"
+                <img src="@(string.IsNullOrEmpty(profilePictureUrl) ? "/images/user-photos/default_profile.png" : profilePictureUrl)"
                      alt="Profile Picture"
                      class="rounded-circle"
                      style="object-fit: cover; margin-right: 8px;" />

@@ -3,7 +3,6 @@ using CommunityToolkit.Mvvm.Input;
 using CondoSphere.Core.DTOs.Condominiums;
 using CondoSphere.Core.DTOs.Occurrences;
 using CondoSphere.Mobile.Services;
-using CondoSphere.Mobile.Views;
 using System.Collections.ObjectModel;
 
 namespace CondoSphere.Mobile.ViewModels
@@ -89,6 +88,34 @@ namespace CondoSphere.Mobile.ViewModels
                 System.Diagnostics.Debug.WriteLine($"[DEBUG] Navigation to condos/occurrences/details FAILED: {ex}");
                 await Shell.Current.DisplayAlert("Navigation Error", ex.Message, "OK");
             }
+        }
+
+        [RelayCommand]
+        private async Task ManageUnitsAsync()
+        {
+            if (Condo == null) return;
+
+            await Shell.Current.GoToAsync($"condos/details/units?CondoId={Condo.Id}");
+        }
+
+        [RelayCommand]
+        private async Task SendNoticeAsync()
+        {
+            if (Condo == null) return;
+            await Shell.Current.GoToAsync($"condos/details/sendnotice?CondoId={Condo.Id}");
+        }
+
+        [RelayCommand]
+        private async Task AddExpenseAsync()
+        {
+            if (Condo == null) return;
+            await Shell.Current.GoToAsync($"condos/details/addexpense?CondoId={Condo.Id}");
+        }
+
+        [RelayCommand]
+        private async Task ViewReportsAsync()
+        {
+            await Shell.Current.DisplayAlert("Coming Soon", "Detailed property reports are not yet available in the mobile app.", "OK");
         }
     }
 }

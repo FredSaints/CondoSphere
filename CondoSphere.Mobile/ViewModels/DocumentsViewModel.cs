@@ -3,19 +3,22 @@ using CommunityToolkit.Mvvm.Input;
 using CondoSphere.Core.DTOs.Condominiums;
 using CondoSphere.Mobile.Services;
 using System.Collections.ObjectModel;
-using System.Threading.Tasks;
-using Microsoft.Maui.ApplicationModel;
 
 namespace CondoSphere.Mobile.ViewModels
 {
     public partial class DocumentsViewModel : ObservableObject
     {
+        private readonly ApiClient _apiClient;
+
+        private List<DocumentDto> _fullDocumentList = new();
+
         [ObservableProperty]
         private bool isBusy;
 
-        public ObservableCollection<DocumentDto> Documents { get; } = new();
+        [ObservableProperty]
+        private string selectedCategory = "All Files";
 
-        private readonly ApiClient _apiClient;
+        public ObservableCollection<DocumentDto> Documents { get; } = new();
 
         public DocumentsViewModel(ApiClient apiClient)
         {
@@ -26,17 +29,19 @@ namespace CondoSphere.Mobile.ViewModels
         private async Task LoadDataAsync()
         {
             if (IsBusy) return;
+
             IsBusy = true;
             try
             {
+                _fullDocumentList.Clear();
                 Documents.Clear();
+                SelectedCategory = "All Files";
+
                 var docs = await _apiClient.GetMyDocumentsAsync();
                 if (docs != null)
                 {
-                    foreach (var doc in docs)
-                    {
-                        Documents.Add(doc);
-                    }
+                    _fullDocumentList.AddRange(docs);
+                    ApplyFilter();
                 }
             }
             finally
@@ -46,18 +51,52 @@ namespace CondoSphere.Mobile.ViewModels
         }
 
         [RelayCommand]
+        private void FilterByCategory(string category)
+        {
+            SelectedCategory = category;
+            ApplyFilter();
+        }
+
+        private void ApplyFilter()
+        {
+            Documents.Clear();
+
+            if (string.IsNullOrEmpty(SelectedCategory) || SelectedCategory == "All Files")
+            {
+                foreach (var doc in _fullDocumentList)
+                {
+                    Documents.Add(doc);
+                }
+            }
+            else
+            {
+                var filteredDocs = _fullDocumentList.Where(d => d.Category == SelectedCategory);
+                foreach (var doc in filteredDocs)
+                {
+                    Documents.Add(doc);
+                }
+            }
+        }
+
+        [RelayCommand]
         private async Task OpenDocumentAsync(DocumentDto document)
         {
-            if (document == null) return;
-            var downloadUrl = $"{ApiClient.ApiBaseUrl}/api/documents/{document.Id}/download";
+            if (document == null || IsBusy) return;
 
+            IsBusy = true;
             try
             {
+                var downloadUrl = $"{ApiClient.WebBaseUrl}/portal/documents/{document.Id}/view";
+
                 await Launcher.OpenAsync(downloadUrl);
             }
-            catch (Exception ex)
+            catch (System.Exception ex)
             {
                 await Shell.Current.DisplayAlert("Error", $"Could not open document: {ex.Message}", "OK");
+            }
+            finally
+            {
+                IsBusy = false;
             }
         }
     }

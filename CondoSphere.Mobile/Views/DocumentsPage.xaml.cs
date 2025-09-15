@@ -12,28 +12,11 @@ public partial class DocumentsPage : ContentPage
         InitializeComponent();
         BindingContext = vm;
         _viewModel = vm;
-
-        // Find the CollectionView to attach the event handler
-        var collectionView = this.FindByName<CollectionView>("documentsCollectionView"); // Give your CV an x:Name
-        if (collectionView != null)
-        {
-            collectionView.SelectionChanged += OnDocumentSelected;
-        }
     }
 
     protected override void OnAppearing()
     {
         base.OnAppearing();
         _viewModel.LoadDataCommand.Execute(null);
-    }
-
-    private void OnDocumentSelected(object sender, SelectionChangedEventArgs e)
-    {
-        if (e.CurrentSelection.FirstOrDefault() is DocumentDto selectedDocument)
-        {
-            _viewModel.OpenDocumentCommand.Execute(selectedDocument);
-            // De-select the item
-            (sender as CollectionView).SelectedItem = null;
-        }
     }
 }

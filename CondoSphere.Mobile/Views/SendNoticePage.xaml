@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:CondoSphere.Mobile.ViewModels"
+             x:DataType="vm:SendNoticeViewModel"
+             x:Class="CondoSphere.Mobile.Views.SendNoticePage"
+             BackgroundColor="{StaticResource BackgroundSecondary}"
+             Title="Send Notice">
+
+    <Grid RowDefinitions="Auto,*">
+        <!-- Header -->
+        <Frame Grid.Row="0" BackgroundColor="{StaticResource Primary}" CornerRadius="24" HasShadow="False" Padding="24,40,24,24" Margin="0,0,0,20">
+            <VerticalStackLayout Spacing="8">
+                <Label Text="📢 Send Announcement" Style="{StaticResource HeadingMedium}" TextColor="{StaticResource TextOnPrimary}" />
+                <Label Text="Compose a notice for all residents of this property." Style="{StaticResource BodyMedium}" TextColor="{StaticResource TextOnPrimary}" Opacity="0.9" />
+            </VerticalStackLayout>
+        </Frame>
+
+        <!-- Form Content -->
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Spacing="24" Padding="20,0,20,40">
+                <Frame Style="{StaticResource CardStyle}">
+                    <VerticalStackLayout Spacing="16">
+                        <Entry Placeholder="Subject" Text="{Binding Subject}" Style="{StaticResource EntryDefault}" />
+                        <Editor Placeholder="Type your message here..." Text="{Binding Message}" AutoSize="TextChanges" HeightRequest="200" Style="{StaticResource EditorDefault}" />
+                    </VerticalStackLayout>
+                </Frame>
+
+                <Button Text="Send Announcement" Command="{Binding SendNoticeCommand}" Style="{StaticResource ButtonPrimary}" IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBoolConverter}}" />
+
+                <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" HorizontalOptions="Center" />
+            </VerticalStackLayout>
+        </ScrollView>
+    </Grid>
+</ContentPage>

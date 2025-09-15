@@ -138,16 +138,16 @@
 
                         <!-- View Reports -->
                         <Frame Grid.Row="0" Grid.Column="0" 
-                               Style="{StaticResource CardOutline}"
-                               Padding="16">
+                       Style="{StaticResource CardOutline}"
+                       Padding="16">
                             <Frame.GestureRecognizers>
-                                <TapGestureRecognizer />
+                                <TapGestureRecognizer Command="{Binding ViewReportsCommand}" />
                             </Frame.GestureRecognizers>
                             <VerticalStackLayout Spacing="8" HorizontalOptions="Center">
                                 <Label Text="📊" FontSize="24" HorizontalOptions="Center" />
                                 <Label Text="View Reports" 
-                                       Style="{StaticResource BodyMedium}"
-                                       HorizontalTextAlignment="Center" />
+                               Style="{StaticResource BodyMedium}"
+                               HorizontalTextAlignment="Center" />
                             </VerticalStackLayout>
                         </Frame>
 
@@ -156,7 +156,7 @@
                                Style="{StaticResource CardOutline}"
                                Padding="16">
                             <Frame.GestureRecognizers>
-                                <TapGestureRecognizer />
+                                <TapGestureRecognizer Command="{Binding ManageUnitsCommand}" />
                             </Frame.GestureRecognizers>
                             <VerticalStackLayout Spacing="8" HorizontalOptions="Center">
                                 <Label Text="🏠" FontSize="24" HorizontalOptions="Center" />
@@ -171,13 +171,11 @@
                                Style="{StaticResource CardOutline}"
                                Padding="16">
                             <Frame.GestureRecognizers>
-                                <TapGestureRecognizer />
+                                <TapGestureRecognizer Command="{Binding SendNoticeCommand}" />
                             </Frame.GestureRecognizers>
                             <VerticalStackLayout Spacing="8" HorizontalOptions="Center">
                                 <Label Text="📢" FontSize="24" HorizontalOptions="Center" />
-                                <Label Text="Send Notice" 
-                                       Style="{StaticResource BodyMedium}"
-                                       HorizontalTextAlignment="Center" />
+                                <Label Text="Send Notice" Style="{StaticResource BodyMedium}" HorizontalTextAlignment="Center" />
                             </VerticalStackLayout>
                         </Frame>
 
@@ -186,7 +184,7 @@
                                Style="{StaticResource CardOutline}"
                                Padding="16">
                             <Frame.GestureRecognizers>
-                                <TapGestureRecognizer />
+                                <TapGestureRecognizer Command="{Binding AddExpenseCommand}" />
                             </Frame.GestureRecognizers>
                             <VerticalStackLayout Spacing="8" HorizontalOptions="Center">
                                 <Label Text="💰" FontSize="24" HorizontalOptions="Center" />
@@ -213,8 +211,7 @@
 
                     <CollectionView x:Name="occurrencesCollectionView"
                                     ItemsSource="{Binding OpenOccurrences}"
-                                    SelectionMode="Single"
-                                    HeightRequest="300">
+                                    SelectionMode="Single">
 
                         <CollectionView.ItemTemplate>
                             <DataTemplate x:DataType="dto:OccurrenceDto">

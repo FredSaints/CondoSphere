@@ -8,7 +8,7 @@ using System.Collections.ObjectModel;
 
 namespace CondoSphere.Mobile.ViewModels
 {
-    public partial class ResidentPortalViewModel : ObservableObject
+    public partial class ResidentPortalViewModel : BaseViewModel
     {
         [ObservableProperty]
         private bool isBusy;

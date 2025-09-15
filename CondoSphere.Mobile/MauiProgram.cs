@@ -44,6 +44,16 @@ namespace CondoSphere.Mobile
             builder.Services.AddTransient<MessagesViewModel>();
             builder.Services.AddTransient<MessageDetailsViewModel>();
             builder.Services.AddTransient<ComposeMessageViewModel>();
+            builder.Services.AddTransient<ProfileViewModel>();
+            builder.Services.AddTransient<ChangePasswordViewModel>();
+            builder.Services.AddTransient<EditProfileViewModel>();
+            builder.Services.AddTransient<UserListAdminViewModel>();
+            builder.Services.AddTransient<PropertyListAdminViewModel>();
+            builder.Services.AddTransient<UnitListViewModel>();
+            builder.Services.AddTransient<SendNoticeViewModel>();
+            builder.Services.AddTransient<AddExpenseViewModel>();
+            builder.Services.AddTransient<EmployeeTasksViewModel>();
+            builder.Services.AddTransient<InterventionDetailsViewModel>();
 
             // Pages (Transients)
             builder.Services.AddTransient<LoginPage>();
@@ -59,7 +69,15 @@ namespace CondoSphere.Mobile
             builder.Services.AddTransient<MessagesPage>();
             builder.Services.AddTransient<MessageDetailsPage>();
             builder.Services.AddTransient<ComposeMessagePage>();
-
+            builder.Services.AddTransient<ChangePasswordPage>();
+            builder.Services.AddTransient<EditProfilePage>();
+            builder.Services.AddTransient<UserListAdminPage>();
+            builder.Services.AddTransient<PropertyListAdminPage>();
+            builder.Services.AddTransient<UnitListPage>();
+            builder.Services.AddTransient<SendNoticePage>();
+            builder.Services.AddTransient<AddExpensePage>();
+            builder.Services.AddTransient<EmployeeTasksPage>();
+            builder.Services.AddTransient<InterventionDetailsPage>();
 
             return builder.Build();
         }
