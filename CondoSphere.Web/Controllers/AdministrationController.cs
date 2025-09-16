@@ -1,6 +1,7 @@
 ﻿using CondoSphere.Core;
 using CondoSphere.Core.DTOs.Account;
 using CondoSphere.Core.DTOs.Condominiums;
+using CondoSphere.Core.DTOs.Reports;
 using CondoSphere.Web.Models;
 using CondoSphere.Web.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -23,13 +24,15 @@ namespace CondoSphere.Web.Controllers
         [HttpGet("")]
         public async Task<IActionResult> Index()
         {
-            var users = await _apiClient.GetUsersAsync();
-            var condominiums = await _apiClient.GetCondominiumsAsync();
+            var usersTask = _apiClient.GetUsersAsync();
+            var condominiumsTask = _apiClient.GetCondominiumsAsync();
+
+            await Task.WhenAll(usersTask, condominiumsTask);
 
             var viewModel = new ManagementDashboardViewModel
             {
-                Users = users ?? new List<UserListDto>(),
-                Condominiums = condominiums ?? new List<CondominiumDto>()
+                Users = await usersTask ?? new List<UserListDto>(),
+                Condominiums = await condominiumsTask ?? new List<CondominiumDto>()
             };
 
             var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
@@ -236,6 +239,126 @@ namespace CondoSphere.Web.Controllers
 
             ModelState.AddModelError(string.Empty, "An error occurred while updating the profile.");
             return View(model);
+        }
+
+        [HttpGet("dashboard")]
+        public async Task<IActionResult> Dashboard()
+        {
+            // 1. Start all API calls in parallel
+            var statsTask = _apiClient.GetAdminDashboardAsync();
+            var financialTrendTask = _apiClient.GetMonthlyFinancialsAsync();
+            var occurrenceSummaryTask = _apiClient.GetOccurrenceStatusSummaryAsync();
+            var hotspotsTask = _apiClient.GetCondoHotspotsAsync();
+
+            // 2. Wait for all of them to complete
+            await Task.WhenAll(statsTask, financialTrendTask, occurrenceSummaryTask, hotspotsTask);
+
+            // 3. Get the results from the completed tasks
+            var stats = await statsTask;
+            if (stats == null)
+            {
+                // If the main stats fail, we probably can't show a useful dashboard.
+                // You could show an error or a limited view. For now, we'll show an empty one.
+                return View(new AdminBiDashboardViewModel
+                {
+                    MainStats = new Core.DTOs.Reports.AdminDashboardDto(),
+                    FinancialTrend = new List<Core.DTOs.Reports.MonthlyFinancialsDto>(),
+                    OccurrenceSummary = new List<Core.DTOs.Reports.StatusSummaryDto>(),
+                    CondoHotspots = new List<Core.DTOs.Reports.CondoHotspotDto>()
+                });
+            }
+
+            // 4. Assemble the complete ViewModel
+            var viewModel = new AdminBiDashboardViewModel
+            {
+                MainStats = stats,
+                FinancialTrend = await financialTrendTask,
+                OccurrenceSummary = await occurrenceSummaryTask,
+                CondoHotspots = await hotspotsTask
+            };
+
+            return View(viewModel);
+        }
+
+        // GET: /administration/condominiums/{id}/edit
+        [HttpGet("condominiums/{id}/edit")]
+        public async Task<IActionResult> EditCondominium(int id)
+        {
+            var condo = await _apiClient.GetCondominiumDetailsAsync(id);
+            if (condo == null)
+            {
+                return NotFound();
+            }
+
+            // Create a DTO to pre-populate the form fields
+            var model = new CreateUpdateCondominiumDto
+            {
+                Name = condo.Name,
+                Address = condo.Address
+            };
+
+            ViewData["CondominiumName"] = condo.Name;
+            return View(model);
+        }
+
+        [HttpPost("condominiums/{id}/delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteCondominium(int id)
+        {
+            var (success, message) = await _apiClient.DeleteCondominiumAsync(id);
+
+            if (success)
+            {
+                TempData["SuccessMessage"] = message;
+            }
+            else
+            {
+                TempData["ErrorMessage"] = message;
+            }
+
+            return RedirectToAction("Index");
+        }
+
+        // POST: /administration/condominiums/{id}/edit
+        [HttpPost("condominiums/{id}/edit")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditCondominium(int id, CreateUpdateCondominiumDto dto)
+        {
+            if (!ModelState.IsValid)
+            {
+                var condo = await _apiClient.GetCondominiumDetailsAsync(id);
+                ViewData["CondominiumName"] = condo?.Name ?? "Condominium";
+                return View(dto);
+            }
+
+            var success = await _apiClient.UpdateCondominiumAsync(id, dto);
+
+            if (success)
+            {
+                TempData["SuccessMessage"] = "Condominium details updated successfully.";
+                return RedirectToAction("Index");
+            }
+
+            ModelState.AddModelError(string.Empty, "An error occurred while updating the condominium.");
+            var finalCondo = await _apiClient.GetCondominiumDetailsAsync(id);
+            ViewData["CondominiumName"] = finalCondo?.Name ?? "Condominium";
+            return View(dto);
+        }
+
+        [HttpPost("condominiums/{condominiumId}/unassign-manager")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UnassignManager(int condominiumId)
+        {
+            var success = await _apiClient.UnassignManagerAsync(condominiumId);
+            if (success)
+            {
+                TempData["SuccessMessage"] = "Manager has been un-assigned successfully.";
+            }
+            else
+            {
+                TempData["ErrorMessage"] = "Failed to un-assign manager.";
+            }
+            return RedirectToAction("Index");
         }
     }
 }

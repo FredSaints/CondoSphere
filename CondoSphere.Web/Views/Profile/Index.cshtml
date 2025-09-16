@@ -1,83 +1,149 @@
 ﻿@model MyProfileViewModel
 @{
     ViewData["Title"] = "My Profile";
+    ViewData["IsFullWidth"] = true;
 }
 
-<div class="row justify-content-center">
-    <div class="col-lg-8">
-        <div class="card shadow-lg border-0 mt-4">
-            <div class="card-header bg-primary text-white py-3">
-                <h2 class="mb-0 text-center"><i class="bi bi-person-gear me-2"></i>@ViewData["Title"]</h2>
-            </div>
+<style>
+    body {
+        background-color: var(--light-bg);
+    }
 
-            <div class="card-body p-4 p-md-5">
-                <form method="post" enctype="multipart/form-data" id="profileForm">
-                    @Html.AntiForgeryToken() <!-- preciso para o fetch -->
+    .profile-avatar-panel {
+        text-align: center;
+        padding-right: 2rem;
+        border-right: 1px solid var(--border-color);
+    }
 
-                    <input type="hidden" asp-for="CurrentProfileImageUrl" />
-                    <div asp-validation-summary="All" class="text-danger"></div>
+    @@media (max-width: 767px) {
+        .profile-avatar-panel {
+            border-right: none;
+            border-bottom: 1px solid var(--border-color);
+            padding-right: 0;
+            padding-bottom: 2rem;
+            margin-bottom: 2rem;
+        }
+    }
 
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label asp-for="FirstName" class="form-label"></label>
-                            <input asp-for="FirstName" class="form-control" />
-                            <span asp-validation-for="FirstName" class="text-danger small"></span>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label asp-for="LastName" class="form-label"></label>
-                            <input asp-for="LastName" class="form-control" />
-                            <span asp-validation-for="LastName" class="text-danger small"></span>
+    .profile-avatar {
+        width: 150px;
+        height: 150px;
+        object-fit: cover;
+        border: 4px solid white;
+        box-shadow: var(--shadow-sm);
+    }
+
+    .details-section-card {
+        background-color: var(--light-bg);
+        border: 1px solid var(--border-color);
+    }
+</style>
+
+<div class="container" style="margin-top: 6rem; margin-bottom: 3rem;">
+    <div class="row justify-content-center">
+        <div class="col-lg-11 col-xl-10">
+            <form method="post" enctype="multipart/form-data" id="profileForm">
+                @Html.AntiForgeryToken()
+                <input type="hidden" asp-for="CurrentProfileImageUrl" />
+
+                <div class="card shadow-lg border-0">
+                    <div class="card-header text-center py-4" style="background: var(--primary-gradient);">
+                        <h2 class="mb-0 text-white"><i class="bi bi-person-gear me-2"></i>@ViewData["Title"]</h2>
+                    </div>
+
+                    <div class="card-body p-4 p-md-5">
+                        <div class="row">
+                            <!-- Left Column: Profile Identity -->
+                            <div class="col-md-4 profile-avatar-panel">
+                                <img src="@(Model.CurrentProfileImageUrl ?? "/images/user-photos/default-profile.png")"
+                                     alt="Current Profile Image" class="rounded-circle profile-avatar mb-3" />
+                                <h4 class="mb-1">@Model.FirstName @Model.LastName</h4>
+                                <p class="text-muted">@User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value</p>
+
+                                <label asp-for="ProfileImage" class="form-label mt-3"></label>
+                                <input asp-for="ProfileImage" class="form-control" type="file" accept="image/*" />
+                                <span asp-validation-for="ProfileImage" class="text-danger small"></span>
+                            </div>
+
+                            <!-- Right Column: Details & Settings -->
+                            <div class="col-md-8">
+                                <div class="ps-md-3">
+                                    <div asp-validation-summary="All" class="text-danger mb-3"></div>
+
+                                    <!-- Personal Details Section -->
+                                    <div class="card details-section-card mb-4">
+                                        <div class="card-body">
+                                            <h5 class="mb-3"><i class="bi bi-person-lines-fill me-2"></i>Personal Details</h5>
+                                            <div class="row">
+                                                <div class="col-md-6 mb-3">
+                                                    <div class="form-floating">
+                                                        <input asp-for="FirstName" class="form-control" placeholder="First Name" />
+                                                        <label asp-for="FirstName"></label>
+                                                        <span asp-validation-for="FirstName" class="text-danger small"></span>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6 mb-3">
+                                                    <div class="form-floating">
+                                                        <input asp-for="LastName" class="form-control" placeholder="Last Name" />
+                                                        <label asp-for="LastName"></label>
+                                                        <span asp-validation-for="LastName" class="text-danger small"></span>
+                                                    </div>
+                                                </div>
+                                                <div class="col-12">
+                                                    <div class="form-floating">
+                                                        <input asp-for="PhoneNumber" class="form-control" placeholder="Phone Number" />
+                                                        <label asp-for="PhoneNumber"></label>
+                                                        <span asp-validation-for="PhoneNumber" class="text-danger small"></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Security Settings Section -->
+                                    <div class="card details-section-card">
+                                        <div class="card-body">
+                                            <h5 class="mb-3"><i class="bi bi-shield-lock-fill me-2"></i>Security Settings</h5>
+                                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                                <div>
+                                                    <label for="twoFactorSwitch" class="form-check-label">Two-Factor Authentication</label>
+                                                    <small class="text-muted d-block">Add an extra layer of security.</small>
+                                                </div>
+                                                <div class="form-check form-switch">
+                                                    <input class="form-check-input" type="checkbox" id="twoFactorSwitch"
+                                                           style="width: 3rem; height: 1.5rem;"
+                                                           @(Model.TwoFactorEnabled ? "checked" : "") />
+                                                </div>
+                                            </div>
+                                            <div id="twoFactorMsg" class="small mt-1"></div>
+                                            <hr />
+                                            <a asp-controller="Profile" asp-action="ChangePassword" class="btn btn-outline-secondary">
+                                                <i class="bi bi-key-fill me-1"></i> Change Password
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
-                    <hr class="my-4" />
-
-                    <div class="form-group">
-                        <label asp-for="PhoneNumber" class="control-label"></label>
-                        <input asp-for="PhoneNumber" class="form-control" />
-                        <span asp-validation-for="PhoneNumber" class="text-danger"></span>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label d-block mb-2">Two-step verification</label>
-                        <div class="form-check form-switch">
-                            <input class="form-check-input" type="checkbox" id="twoFactorSwitch"
-                            @(Model.TwoFactorEnabled ? "checked" : "") />
-                            <label class="form-check-label" for="twoFactorSwitch">
-                                Add a code (email/SMS) when logging in
-                            </label>
-                            <small class="text-muted d-block">Recommended for extra security.</small>
-                        </div>
-                        <div id="twoFactorMsg" class="small mt-2"></div>
-                    </div>
-
-                    <div class="row align-items-center mt-4">
-                        <div class="col-md-4 text-center">
-                            <img src="@(Model.CurrentProfileImageUrl ?? "/images/user-photos/default-profile.png")"
-                                 alt="Current Profile Image" class="img-thumbnail rounded-circle mb-2"
-                                 style="width: 150px; height: 150px; object-fit: cover;" />
-                            <small class="text-muted d-block">Current Image</small>
-                        </div>
-                        <div class="col-md-8">
-                            <label asp-for="ProfileImage" class="form-label"></label>
-                            <input asp-for="ProfileImage" class="form-control" type="file" accept="image/*" />
-                            <span asp-validation-for="ProfileImage" class="text-danger small"></span>
+                    <div class="card-footer bg-light p-3">
+                        <div class="d-flex justify-content-end">
+                            <button type="submit" form="profileForm" class="btn btn-primary btn-lg">
+                                <i class="bi bi-check-circle-fill me-2"></i>Save Changes
+                            </button>
                         </div>
                     </div>
-                </form>
-            </div>
-
-            <div class="card-footer bg-light p-3">
-                <div class="d-flex justify-content-end align-items-center gap-2">
-                    <a asp-controller="Profile" asp-action="ChangePassword" class="btn btn-secondary">Change Password</a>
-                    <button type="submit" form="profileForm" class="btn btn-primary">Save Changes</button>
                 </div>
-            </div>
+            </form>
         </div>
     </div>
 </div>
 
 @section Scripts {
+    <partial name="_ValidationScriptsPartial" />
     <script>
+        // JavaScript remains the same
         (function () {
           const sw = document.getElementById('twoFactorSwitch');
           const msg = document.getElementById('twoFactorMsg');
@@ -85,7 +151,7 @@
 
           function setMsg(text, ok) {
             msg.textContent = text || '';
-            msg.className = 'small mt-2 ' + (ok === true ? 'text-success' : ok === false ? 'text-danger' : 'text-muted');
+            msg.className = 'small mt-1 ' + (ok === true ? 'text-success' : ok === false ? 'text-danger' : 'text-muted');
           }
 
           sw?.addEventListener('change', async (e) => {
@@ -109,7 +175,6 @@
               if (res.ok) {
                 setMsg(payload.message || 'Two-step verification updated.', true);
               } else {
-                // revert switch on failure
                 sw.checked = !sw.checked;
                 setMsg(payload.message || 'Could not update two-step verification.', false);
               }

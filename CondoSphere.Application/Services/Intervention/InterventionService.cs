@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using CondoSphere.Application.Interfaces;
+using CondoSphere.Application.Services.Notifications;
 using CondoSphere.Core;
 using CondoSphere.Core.DTOs.Interventions;
 using CondoSphere.Core.Enums;
@@ -18,18 +19,21 @@ namespace CondoSphere.Application.Services.Intervention
         private readonly UserManager<CoreUser> _userManager;
         private readonly IAuthorizationService _authorizationService;
         private readonly ICurrentUserService _currentUserService;
+        private readonly INotificationService _notificationService;
 
         public InterventionService(
             IUnitOfWork unitOfWork,
             IMapper mapper, UserManager<CoreUser> userManager,
             IAuthorizationService authorizationService,
-            ICurrentUserService currentUserService)
+            ICurrentUserService currentUserService,
+            INotificationService notificationService)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _userManager = userManager;
             _authorizationService = authorizationService;
             _currentUserService = currentUserService;
+            _notificationService = notificationService;
         }
 
         public async Task<InterventionDto?> CreateInterventionAsync(CreateInterventionDto dto, int managerCompanyId)
@@ -55,6 +59,10 @@ namespace CondoSphere.Application.Services.Intervention
 
             await _unitOfWork.Interventions.AddAsync(newIntervention);
             await _unitOfWork.CompleteAsync();
+            if (newIntervention.AssignedToUserId.HasValue)
+            {
+                await _notificationService.NotifyEmployeeOfNewTaskAsync(newIntervention);
+            }
 
             return _mapper.Map<InterventionDto>(newIntervention);
         }

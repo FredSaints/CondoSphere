@@ -86,5 +86,12 @@ namespace CondoSphere.Infrastructure.Repositories
                 .IgnoreQueryFilters()
                 .FirstOrDefaultAsync(u => u.Id == userId);
         }
+
+        public async Task<int> GetCountByRoleAsync(string roleName, int companyId)
+        {
+            return await _context.Users
+                .CountAsync(u => u.CompanyId == companyId &&_context.UserRoles.Any(ur => ur.UserId == u.Id &&
+                            _context.Roles.Any(r => r.Id == ur.RoleId && r.Name == roleName)));
+        }
     }
 }

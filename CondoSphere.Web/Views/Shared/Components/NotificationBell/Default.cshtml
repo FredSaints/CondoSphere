@@ -1,0 +1,53 @@
+﻿@using CondoSphere.Core
+@model CondoSphere.Web.Models.NotificationBellViewModel
+
+<li class="nav-item dropdown" id="notification-dropdown-container">
+    <a class="nav-link" href="#" id="notificationDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+        <i class="bi bi-bell-fill"></i>
+
+        @if (Model.UnreadCount > 0)
+        {
+            <span class="position-absolute badge rounded-pill bg-danger" id="notification-badge">
+                @Model.UnreadCount
+                <span class="visually-hidden">unread notifications</span>
+            </span>
+        }
+    </a>
+    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="notificationDropdown" id="notification-list" style="width: 350px;">
+        @if (Model.Notifications.Any())
+        {
+            @foreach (var notification in Model.Notifications)
+            {
+                <li>
+                    <a class="dropdown-item text-wrap @(notification.IsRead ? "" : "fw-bold")" href="@notification.LinkUrl">
+                        <div class="small text-muted">@notification.SentDate.ToLocalTime().ToString("g")</div>
+                        @notification.Title
+                    </a>
+                </li>
+            }
+            <li><hr class="dropdown-divider"></li>
+            <li>
+                @{
+                    string controllerName = "Portal";
+                    if (User.IsInRole(RoleConstants.CondoManager))
+                    {
+                        controllerName = "CondoManagement";
+                    }
+                    else if (User.IsInRole(RoleConstants.CompanyAdmin))
+                    {
+                        controllerName = "Administration";
+                    }
+                    else if (User.IsInRole(RoleConstants.Employee))
+                    {
+                        controllerName = "Employee";
+                    }
+                }
+                <a class="dropdown-item text-center small" asp-controller="@controllerName" asp-action="AllNotifications">View All Notifications</a>
+            </li>
+        }
+        else
+        {
+            <li class="no-notifications-item"><span class="dropdown-item text-muted text-center">No new notifications.</span></li>
+        }
+    </ul>
+</li>

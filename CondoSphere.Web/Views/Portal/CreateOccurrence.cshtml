@@ -2,50 +2,73 @@
 
 @{
     ViewData["Title"] = "Report New Occurrence";
+    ViewData["IsFullWidth"] = true;
 }
 
-<h1>@ViewData["Title"]</h1>
-<p>Please provide a clear title, a detailed description of the issue, and an optional photo.</p>
-<hr />
+<style>
+    body {
+        background-color: var(--light-bg);
+    }
+</style>
 
-<div class="row">
-    <div class="col-md-8">
-        <form asp-action="CreateOccurrence" method="post" enctype="multipart/form-data">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+<div class="container my-5">
+    <div class="row justify-content-center align-items-center" style="min-height: 70vh;">
+        <div class="col-md-11 col-lg-9 col-xl-8">
 
-            @* ADD THIS DROPDOWN *@
-            <div class="form-floating mb-3">
-                <select asp-for="UnitId" asp-items="Model.AvailableUnits" class="form-select">
-                    <option value="">-- Select a Unit --</option>
-                </select>
-                <label asp-for="UnitId"></label>
-                <span asp-validation-for="UnitId" class="text-danger"></span>
+            <div class="card shadow-lg border-0">
+                <div class="card-header text-center py-4" style="background: var(--primary-gradient);">
+                    <h2 class="mb-1 text-white"><i class="bi bi-flag-fill me-2"></i>@ViewData["Title"]</h2>
+                    <p class="mb-0 small text-white-50">Describe the issue so we can help resolve it quickly.</p>
+                </div>
+
+                <div class="card-body p-4 p-md-5">
+                    <form asp-action="CreateOccurrence" method="post" enctype="multipart/form-data">
+                        @Html.AntiForgeryToken()
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-4"></div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <div class="form-floating">
+                                    <select asp-for="UnitId" asp-items="Model.AvailableUnits" class="form-select">
+                                        <option value="">-- Select a Unit --</option>
+                                    </select>
+                                    <label asp-for="UnitId"></label>
+                                    <span asp-validation-for="UnitId" class="text-danger small"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="form-floating">
+                                    <input asp-for="Title" class="form-control" placeholder="e.g., Leaky faucet in kitchen" />
+                                    <label asp-for="Title"></label>
+                                    <span asp-validation-for="Title" class="text-danger small"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-floating mb-3">
+                            <textarea asp-for="Description" class="form-control" placeholder="Describe the issue in detail..." style="height: 150px"></textarea>
+                            <label asp-for="Description"></label>
+                            <span asp-validation-for="Description" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="imageFile" class="form-label">Upload an Image (Optional)</label>
+                            <input name="imageFile" id="imageFile" class="form-control" type="file" accept="image/*" />
+                        </div>
+
+                        <div class="mb-3">
+                            <img id="imagePreview" src="#" alt="Image Preview" class="img-fluid rounded border" style="display: none; max-height: 300px; background-color: #f8f9fa;" />
+                        </div>
+
+                        <div class="d-grid gap-2 mt-4">
+                            <button type="submit" class="btn btn-success btn-lg">Submit Report</button>
+                            <a asp-action="Index" class="btn btn-secondary btn-lg">Cancel</a>
+                        </div>
+                    </form>
+                </div>
             </div>
 
-            <div class="form-floating mb-3">
-                <input asp-for="Title" class="form-control" placeholder="e.g., Leaky faucet in kitchen" />
-                <label asp-for="Title"></label>
-                <span asp-validation-for="Title" class="text-danger"></span>
-            </div>
-
-            <div class="form-floating mb-3">
-                <textarea asp-for="Description" class="form-control" placeholder="Describe the issue in detail..." style="height: 150px"></textarea>
-                <label asp-for="Description"></label>
-                <span asp-validation-for="Description" class="text-danger"></span>
-            </div>
-
-            <div class="mb-3">
-                <label for="imageFile" class="form-label">Upload an Image (Optional)</label>
-                <input name="imageFile" id="imageFile" class="form-control" type="file" accept="image/*" />
-            </div>
-
-            <div class="mb-3">
-                <img id="imagePreview" src="#" alt="Image Preview" class="img-fluid rounded" style="display: none; max-height: 300px;" />
-            </div>
-
-            <button type="submit" class="btn btn-success">Submit Report</button>
-            <a asp-action="Index" class="btn btn-secondary">Cancel</a>
-        </form>
+        </div>
     </div>
 </div>
 

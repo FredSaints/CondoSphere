@@ -20,6 +20,8 @@
         IAssemblyMessageRepository AssemblyMessages { get; }
         IAssemblyParticipantRepository AssemblyParticipants { get; }
 
+        INotificationRepository Notifications { get; }
+        IMessageRepository Messages { get; }
         Task<int> CompleteAsync();
 
     }

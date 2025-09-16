@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage x:Class="CondoSphere.Mobile.Views.MessageDetailsPage"
+             xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:CondoSphere.Mobile.ViewModels"
+             x:DataType="vm:MessageDetailsViewModel"
+             Title="{Binding Message.Subject}">
+
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="Reply" 
+                     Command="{Binding ReplyCommand}"
+                     IconImageSource="reply.png" />
+    </ContentPage.ToolbarItems>
+
+    <ScrollView BackgroundColor="{StaticResource BackgroundPrimary}">
+        <StackLayout Padding="20" Spacing="15">
+
+            <!-- Message Header -->
+            <Frame BackgroundColor="{StaticResource SurfacePrimary}" 
+                   BorderColor="Transparent" 
+                   CornerRadius="10" 
+                   Padding="15">
+
+                <StackLayout Spacing="10">
+                    <!-- From/To Info -->
+                    <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto" RowSpacing="8">
+
+                        <Label Grid.Row="0" Grid.Column="0" Text="From:" 
+                               FontAttributes="Bold" 
+                               TextColor="{StaticResource TextPrimary}" 
+                               WidthRequest="80" />
+                        <Label Grid.Row="0" Grid.Column="1" 
+                               Text="{Binding Message.SenderName}"
+                               TextColor="{StaticResource TextPrimary}" />
+
+                        <Label Grid.Row="1" Grid.Column="0" Text="To:" 
+                               FontAttributes="Bold" 
+                               TextColor="{StaticResource TextPrimary}" />
+                        <Label Grid.Row="1" Grid.Column="1" 
+                               Text="{Binding Message.ReceiverName}"
+                               TextColor="{StaticResource TextPrimary}" />
+
+                        <Label Grid.Row="2" Grid.Column="0" Text="Subject:" 
+                               FontAttributes="Bold" 
+                               TextColor="{StaticResource TextPrimary}" />
+                        <Label Grid.Row="2" Grid.Column="1" 
+                               Text="{Binding Message.Subject}"
+                               TextColor="{StaticResource TextPrimary}" 
+                               FontAttributes="Bold" />
+
+                        <Label Grid.Row="3" Grid.Column="0" Text="Date:" 
+                               FontAttributes="Bold" 
+                               TextColor="{StaticResource TextPrimary}" />
+                        <Label Grid.Row="3" Grid.Column="1" 
+                               Text="{Binding Message.SentDate, StringFormat='{0:dddd, MMMM dd, yyyy at HH:mm}'}"
+                               TextColor="{StaticResource Gray600}" 
+                               FontSize="14" />
+
+                    </Grid>
+
+                    <!-- Building Info (if applicable) -->
+                    <Grid ColumnDefinitions="Auto,*" 
+                          IsVisible="{Binding Message.CondominiumName, Converter={StaticResource StringToBoolConverter}}">
+                        <Label Grid.Column="0" Text="Building:" 
+                               FontAttributes="Bold" 
+                               TextColor="{StaticResource TextPrimary}"
+                               WidthRequest="80" />
+                        <Label Grid.Column="1" 
+                               Text="{Binding Message.CondominiumName}"
+                               TextColor="{StaticResource Primary}" 
+                               FontAttributes="Italic" />
+                    </Grid>
+
+                    <!-- Read Status -->
+                    <StackLayout Orientation="Horizontal" 
+                                IsVisible="{Binding Message.IsRead}">
+                        <Label Text="✓" TextColor="{StaticResource Success}" FontSize="16" />
+                        <Label Text="{Binding Message.ReadDate, StringFormat='Read on {0:MMM dd, yyyy at HH:mm}'}"
+                               TextColor="{StaticResource Success}" 
+                               FontSize="12" />
+                    </StackLayout>
+
+                </StackLayout>
+            </Frame>
+
+            <!-- Message Content -->
+            <Frame BackgroundColor="{StaticResource SurfacePrimary}" 
+                   BorderColor="Transparent" 
+                   CornerRadius="10" 
+                   Padding="20">
+
+                <StackLayout>
+                    <Label Text="Message:" 
+                           FontAttributes="Bold" 
+                           TextColor="{StaticResource TextPrimary}" 
+                           Margin="0,0,0,10" />
+
+                    <Label Text="{Binding Message.Content}"
+                           TextColor="{StaticResource TextPrimary}" 
+                           FontSize="16" 
+                           LineHeight="1.4" />
+                </StackLayout>
+            </Frame>
+
+            <!-- Action Buttons -->
+            <StackLayout Orientation="Horizontal" 
+                        HorizontalOptions="Center" 
+                        Spacing="15" 
+                        Margin="0,20,0,0">
+
+                <Button Text="Reply"
+                        Command="{Binding ReplyCommand}"
+                        BackgroundColor="{StaticResource Primary}"
+                        TextColor="White"
+                        CornerRadius="25"
+                        WidthRequest="120"
+                        HeightRequest="50" />
+
+                <Button Text="Back"
+                        Command="{Binding BackToMessagesCommand}"
+                        BackgroundColor="{StaticResource Gray200}"
+                        TextColor="{StaticResource TextPrimary}"
+                        CornerRadius="25"
+                        WidthRequest="120"
+                        HeightRequest="50" />
+
+            </StackLayout>
+
+            <!-- Loading indicator -->
+            <ActivityIndicator IsVisible="{Binding IsBusy}" 
+                              IsRunning="{Binding IsBusy}"
+                              Color="{StaticResource Primary}" 
+                              HorizontalOptions="Center" 
+                              Margin="0,20,0,0" />
+
+        </StackLayout>
+    </ScrollView>
+
+</ContentPage>

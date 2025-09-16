@@ -1,28 +1,118 @@
 ﻿@model CondoSphere.Web.Models.TwoFactorChooseMethodViewModel
 @{
-    ViewData["Title"] = "Escolher método de verificação";
+    ViewData["Title"] = "Two-Factor Authentication";
+    ViewData["IsFullWidth"] = true;
 }
 
-<h2>@ViewData["Title"]</h2>
-<p>Escolhe como queres receber o teu código de verificação.</p>
+<style>
+    body {
+        background: var(--light-bg);
+    }
 
-<form asp-action="ChooseTwoFactorMethod" method="post">
-    @Html.AntiForgeryToken()
-    <input type="hidden" asp-for="Email" />
+    /* Styles for the custom, clickable radio button cards */
+    .radio-option-card {
+        display: block;
+        border: 2px solid var(--border-color);
+        border-radius: 0.75rem;
+        padding: 1.5rem;
+        transition: all 0.2s ease-in-out;
+        cursor: pointer;
+        position: relative;
+    }
 
-    <div class="form-check mb-2">
-        <input class="form-check-input" type="radio" asp-for="SelectedMethod" id="optEmail" value="Email" checked />
-        <label class="form-check-label" for="optEmail">E-mail</label>
+        .radio-option-card:hover {
+            border-color: var(--primary-color);
+            transform: translateY(-2px);
+        }
+
+        /* Hide the default radio button */
+        .radio-option-card input[type="radio"] {
+            display: none;
+        }
+
+        /* Style the checkmark icon that appears when selected */
+        .radio-option-card .check-icon {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            font-size: 1.5rem;
+            color: var(--success-color);
+            opacity: 0;
+            transform: scale(0.5);
+            transition: all 0.2s ease-in-out;
+        }
+
+        /* The magic: when the card has a checked input inside it, change its style */
+        .radio-option-card:has(input:checked) {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px var(--primary-color);
+            background-color: #f7f7ff;
+        }
+
+            /* And show the checkmark icon */
+            .radio-option-card:has(input:checked) .check-icon {
+                opacity: 1;
+                transform: scale(1);
+            }
+</style>
+
+<div class="container">
+    <div class="row justify-content-center align-items-center" style="min-height: 70vh;">
+        <div class="col-md-11 col-lg-9 col-xl-8">
+
+            <div class="card shadow-lg border-0">
+                <div class="card-header text-center py-4" style="background: var(--primary-gradient);">
+                    <h2 class="mb-1 text-white"><i class="bi bi-shield-lock me-2"></i>@ViewData["Title"]</h2>
+                    <p class="mb-0 small text-white-50">Choose how to receive your verification code.</p>
+                </div>
+
+                <div class="card-body p-4 p-md-5">
+                    <form asp-action="ChooseTwoFactorMethod" method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" asp-for="Email" />
+
+                        <div class="text-danger mb-3" asp-validation-summary="ModelOnly"></div>
+
+                        <div class="vstack gap-3">
+                            <!-- Email Option -->
+                            <label for="optEmail" class="radio-option-card">
+                                <input class="form-check-input" type="radio" asp-for="SelectedMethod" id="optEmail" value="Email" checked />
+                                <div class="d-flex align-items-center">
+                                    <i class="bi bi-envelope-fill fs-2 me-3 text-primary"></i>
+                                    <div>
+                                        <h5 class="mb-0">E-mail</h5>
+                                        <p class="mb-0 text-muted">A code will be sent to your registered email address.</p>
+                                    </div>
+                                    <i class="bi bi-check-circle-fill check-icon"></i>
+                                </div>
+                            </label>
+
+                            <!-- SMS Option -->
+                            <label for="optSms" class="radio-option-card">
+                                <input class="form-check-input" type="radio" asp-for="SelectedMethod" id="optSms" value="Sms" />
+                                <div class="d-flex align-items-center">
+                                    <i class="bi bi-phone-fill fs-2 me-3 text-primary"></i>
+                                    <div>
+                                        <h5 class="mb-0">SMS</h5>
+                                        <p class="mb-0 text-muted">A code will be sent to your registered phone number.</p>
+                                        <small class="form-text">If you don't have a phone number configured, sending by SMS may fail.</small>
+                                    </div>
+                                    <i class="bi bi-check-circle-fill check-icon"></i>
+                                </div>
+                            </label>
+                        </div>
+
+                        <div class="d-grid mt-4">
+                            <button type="submit" class="btn btn-primary btn-lg">Continue</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="card-footer text-center py-3 bg-light">
+                    <a asp-action="Login" class="btn btn-link">Cancel and go back to login</a>
+                </div>
+            </div>
+
+        </div>
     </div>
-
-    <div class="form-check mb-3">
-        <input class="form-check-input" type="radio" asp-for="SelectedMethod" id="optSms" value="Sms" />
-        <label class="form-check-label" for="optSms">SMS</label>
-        <div class="form-text">Se não tiveres telemóvel configurado, o envio por SMS pode falhar.</div>
-    </div>
-
-    <button type="submit" class="btn btn-primary">Continuar</button>
-    <a asp-action="Login" class="btn btn-secondary">Cancelar</a>
-
-    <div class="text-danger mt-3" asp-validation-summary="All"></div>
-</form>
+</div>

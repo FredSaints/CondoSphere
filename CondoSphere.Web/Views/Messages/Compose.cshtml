@@ -1,0 +1,81 @@
+﻿@model CondoSphere.Core.DTOs.Messages.SendMessageDto
+@{
+    ViewData["Title"] = "Compose Message";
+    var contacts = ViewBag.Contacts as IEnumerable<CondoSphere.Core.DTOs.Account.SimpleUserDto> ?? new List<CondoSphere.Core.DTOs.Account.SimpleUserDto>();
+    var receiverId = ViewBag.ReceiverId as int?;
+    ViewData["IsFullWidth"] = true;
+}
+
+<style>
+    body {
+        background-color: var(--light-bg);
+    }
+
+    .compose-card .card-header {
+        padding-top: 1.5rem;
+        padding-bottom: 1.5rem;
+    }
+
+    .compose-card .card-body {
+        font-size: 1.2rem;
+    }
+
+    .compose-card .form-control, .compose-card .form-select {
+        font-size: 1.2rem;
+    }
+</style>
+
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-11 col-lg-9 col-xl-8">
+
+            <div class="card shadow-lg border-0 compose-card">
+                <div class="card-header d-flex justify-content-between align-items-center" style="background: var(--primary-gradient);">
+                    <h2 class="mb-0 text-white"><i class="bi bi-pencil-square me-2"></i>@ViewData["Title"]</h2>
+                    <a asp-action="Index" class="btn btn-close btn-close-white"></a>
+                </div>
+
+                <div class="card-body p-4 p-md-5">
+                    <form asp-action="Compose" method="post">
+                        @Html.AntiForgeryToken()
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-4"></div>
+
+                        <div class="form-floating mb-3">
+                            <select asp-for="ReceiverId" asp-items="@(new SelectList(contacts, "Id", "FullName", receiverId))" class="form-select">
+                                <option value="">Select recipient...</option>
+                            </select>
+                            <label asp-for="ReceiverId">To:</label>
+                            <span asp-validation-for="ReceiverId" class="text-danger small"></span>
+                        </div>
+
+                        <div class="form-floating mb-3">
+                            <input asp-for="Subject" class="form-control" placeholder="Enter message subject">
+                            <label asp-for="Subject">Subject:</label>
+                            <span asp-validation-for="Subject" class="text-danger small"></span>
+                        </div>
+
+                        <div class="form-floating mb-3">
+                            <textarea asp-for="Content" class="form-control" rows="8" placeholder="Type your message here..." style="min-height: 200px;"></textarea>
+                            <label asp-for="Content">Message:</label>
+                            <span asp-validation-for="Content" class="text-danger small"></span>
+                        </div>
+
+                        <div class="d-flex justify-content-end gap-2 mt-4">
+                            <a asp-action="Index" class="btn btn-secondary btn-lg">
+                                <i class="bi bi-x-circle me-1"></i> Discard
+                            </a>
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="bi bi-send-fill me-1"></i> Send Message
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

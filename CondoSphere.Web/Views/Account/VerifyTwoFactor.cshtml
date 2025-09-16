@@ -1,18 +1,68 @@
 ﻿@model CondoSphere.Web.Models.TwoFactorVerifyViewModel
 @{
     ViewData["Title"] = "Two-Factor Verification";
+
+    ViewData["IsFullWidth"] = true;
+    var verificationMethod = Model.SelectedMethod?.ToLowerInvariant() == "sms" ? "phone number" : "email address";
 }
-<h2>Two-Factor Verification</h2>
 
-<form asp-action="VerifyTwoFactor" method="post">
-    <input type="hidden" asp-for="Email" />
-    <input type="hidden" asp-for="SelectedMethod" />
+<style>
 
-    <div class="form-group">
-        <label asp-for="Code">Code</label>
-        <input asp-for="Code" class="form-control" autocomplete="one-time-code" />
-        <span asp-validation-for="Code" class="text-danger"></span>
+    body {
+        background: var(--light-bg);
+    }
+</style>
+
+<div class="container">
+    <div class="row justify-content-center align-items-center" style="min-height: 70vh;">
+        <div class="col-md-11 col-lg-9 col-xl-8">
+
+            <div class="card shadow-lg border-0">
+                <div class="card-header text-center py-4" style="background: var(--primary-gradient);">
+                    <h2 class="mb-1 text-white"><i class="bi bi-shield-check me-2"></i>Verify Your Identity</h2>
+                    <p class="mb-0 small text-white-50">This extra step helps keep your account secure.</p>
+                </div>
+
+                <div class="card-body p-4 p-md-5">
+                    <p class="text-muted text-center mb-4">
+                        A verification code has been sent to your @verificationMethod. Please enter it below to complete your sign-in.
+                    </p>
+                    <section>
+                        <form asp-action="VerifyTwoFactor" method="post">
+                            @Html.AntiForgeryToken()
+                            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                            <input type="hidden" asp-for="Email" />
+                            <input type="hidden" asp-for="SelectedMethod" />
+
+                            <!-- Verification Code with Icon -->
+                            <div class="mb-3">
+                                <label asp-for="Code" class="form-label fw-bold">Verification Code</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-hash"></i></span>
+                                    <div class="form-floating flex-grow-1">
+                                        <input asp-for="Code" class="form-control" placeholder="Verification Code" autocomplete="one-time-code" aria-required="true" />
+                                        <label asp-for="Code"></label>
+                                    </div>
+                                </div>
+                                <span asp-validation-for="Code" class="text-danger small mt-1 d-block"></span>
+                            </div>
+
+                            <div class="d-grid mt-4">
+                                <button type="submit" class="btn btn-primary btn-lg">Verify & Sign In</button>
+                            </div>
+                        </form>
+                    </section>
+                </div>
+
+                <div class="card-footer text-center py-3 bg-light">
+                    <a asp-action="ChooseTwoFactorMethod" asp-route-email="@Model.Email" class="btn btn-link">
+                        <i class="bi bi-arrow-left me-1"></i>
+                        Choose a different method
+                    </a>
+                </div>
+            </div>
+
+        </div>
     </div>
-
-    <button type="submit" class="btn btn-primary">Verify</button>
-</form>
+</div>

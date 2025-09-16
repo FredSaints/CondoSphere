@@ -1,29 +1,75 @@
 ﻿@model CondoSphere.Web.Models.ResendConfirmationEmailViewModel
 @{
-    ViewData["Title"] = "Reenviar Confirmação de Email";
+    ViewData["Title"] = "Resend Confirmation Email";
+    // This flag tells _Layout.cshtml not to render the white ".main-container" box
+    ViewData["IsFullWidth"] = true;
 }
 
-<h2>Reenviar Confirmação de Email</h2>
+<style>
+    /* Use a light grey background for this page */
+    body {
+        background: var(--light-bg);
+    }
+</style>
 
-@if (ViewData["Mensagem"] is string msg && !string.IsNullOrWhiteSpace(msg))
+<div class="container">
+    <div class="row justify-content-center align-items-center" style="min-height: 70vh;">
+        <div class="col-md-11 col-lg-9 col-xl-8">
 
-{
-    <div class="alert alert-info">@msg</div>
-}
+            <div class="card shadow-lg border-0">
+                <div class="card-header text-center py-4" style="background: var(--primary-gradient);">
+                    <h2 class="mb-1 text-white"><i class="bi bi-envelope-arrow-up-fill me-2"></i>@ViewData["Title"]</h2>
+                    <p class="mb-0 small text-white-50">Let's get your account verified.</p>
+                </div>
 
-<form asp-action="ResendConfirmationEmail" method="post">
-    @Html.AntiForgeryToken()
-    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="card-body p-4 p-md-5">
+                    @if (ViewData["Mensagem"] is string msg && !string.IsNullOrWhiteSpace(msg))
+                    {
+                        <div class="alert alert-info text-center">@msg</div>
+                    }
+                    else
+                    {
+                        <p class="text-muted text-center mb-4">
+                            Enter the email address you used to register and we'll send the confirmation link again.
+                        </p>
+                    }
 
-    <div class="form-group">
-        <label asp-for="Email"></label>
-        <input asp-for="Email" class="form-control" />
-        <span asp-validation-for="Email" class="text-danger"></span>
+                    <section>
+                        <form asp-action="ResendConfirmationEmail" method="post">
+                            @Html.AntiForgeryToken()
+                            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                            <!-- Email with Icon -->
+                            <div class="mb-3">
+                                <label asp-for="Email" class="form-label fw-bold"></label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-envelope-fill"></i></span>
+                                    <div class="form-floating flex-grow-1">
+                                        <input asp-for="Email" class="form-control" placeholder="Email" autocomplete="email" aria-required="true" />
+                                        <label asp-for="Email"></label>
+                                    </div>
+                                </div>
+                                <span asp-validation-for="Email" class="text-danger small mt-1 d-block"></span>
+                            </div>
+
+                            <div class="d-grid mt-4">
+                                <button type="submit" class="btn btn-primary btn-lg">Resend Email</button>
+                            </div>
+                        </form>
+                    </section>
+                </div>
+
+                <div class="card-footer text-center py-3 bg-light">
+                    <a asp-action="Login" class="btn btn-link">
+                        <i class="bi bi-arrow-left me-1"></i>
+                        Back to Login
+                    </a>
+                </div>
+            </div>
+
+        </div>
     </div>
-
-    <button type="submit" class="btn btn-primary mt-2">Reenviar Email</button>
-    <a asp-action="Login" class="btn btn-secondary mt-2">Voltar</a>
-</form>
+</div>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />

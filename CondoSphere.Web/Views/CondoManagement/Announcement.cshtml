@@ -1,0 +1,59 @@
+﻿@model CondoSphere.Core.DTOs.Notifications.AnnouncementDto
+@using CondoSphere.Core.DTOs.Condominiums
+
+@{
+    var condo = ViewData["Condominium"] as CondominiumDto;
+    ViewData["Title"] = "Send Announcement";
+    ViewData["IsFullWidth"] = true;
+}
+
+<style>
+    body {
+        background-color: var(--light-bg);
+    }
+</style>
+
+<div class="container my-5">
+    <div class="row justify-content-center align-items-center" style="min-height: 70vh;">
+        <div class="col-md-11 col-lg-9 col-xl-8">
+
+            <div class="card shadow-lg border-0">
+                <div class="card-header text-center py-4" style="background: var(--primary-gradient);">
+                    <h2 class="mb-1 text-white"><i class="bi bi-megaphone-fill me-2"></i>@ViewData["Title"]</h2>
+                    <p class="mb-0 small text-white-50">To all residents of: <strong>@condo.Name</strong></p>
+                </div>
+
+                <div class="card-body p-4 p-md-5">
+                    <p class="text-muted text-center mb-4">
+                        Compose your message below. It will be sent as an email and an in-app notification to all residents of this property.
+                    </p>
+                    <form asp-action="Announcement" asp-route-condominiumId="@condo.Id" method="post">
+                        @Html.AntiForgeryToken()
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                        <div class="form-floating mb-3">
+                            <input asp-for="Subject" class="form-control" placeholder="Announcement Subject" />
+                            <label asp-for="Subject"></label>
+                            <span asp-validation-for="Subject" class="text-danger small"></span>
+                        </div>
+
+                        <div class="form-floating mb-3">
+                            <textarea asp-for="Message" class="form-control" placeholder="Type your message here..." style="height: 200px;"></textarea>
+                            <label asp-for="Message"></label>
+                            <span asp-validation-for="Message" class="text-danger small"></span>
+                        </div>
+
+                        <div class="d-flex justify-content-end gap-2 mt-4">
+                            <a asp-action="Details" asp-route-id="@condo.Id" class="btn btn-secondary">Cancel</a>
+                            <button type="submit" class="btn btn-primary"><i class="bi bi-send-fill me-2"></i>Send Announcement</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

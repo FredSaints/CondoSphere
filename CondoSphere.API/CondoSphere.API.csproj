@@ -25,6 +25,7 @@
     <ProjectReference Include="..\CondoSphere.Application\CondoSphere.Application.csproj" />
     <ProjectReference Include="..\CondoSphere.Infrastructure\CondoSphere.Infrastructure.csproj" />
     <ProjectReference Include="..\CondoSphere.Core\CondoSphere.Core.csproj" />
+    <ProjectReference Include="..\CondoSphere.Shared.Hubs\CondoSphere.Shared.Hubs.csproj" />
   </ItemGroup>
 
 </Project>

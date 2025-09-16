@@ -13,5 +13,6 @@ namespace CondoSphere.Core.Entities.Users
         public DateTime SentDate { get; set; } = DateTime.UtcNow;
         public bool IsRead { get; set; }
         public DateTime? ReadDate { get; set; }
+        public int? RelatedEntityId { get; set; }
     }
 }

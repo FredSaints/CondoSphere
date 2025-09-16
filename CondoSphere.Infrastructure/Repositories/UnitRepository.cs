@@ -57,5 +57,28 @@ namespace CondoSphere.Infrastructure.Repositories
                 .AsNoTracking()
                 .ToListAsync();
         }
+
+        public async Task<IEnumerable<Unit>> GetByIdsAsync(IEnumerable<int> ids)
+        {
+            if (ids == null || !ids.Any())
+            {
+                return Enumerable.Empty<Unit>();
+            }
+
+            return await _context.Units
+                .Where(u => ids.Contains(u.Id))
+                .ToListAsync();
+        }
+
+        public async Task<int> GetCountByCondominiumIdsAsync(IEnumerable<int> condominiumIds)
+        {
+            if (condominiumIds == null || !condominiumIds.Any())
+            {
+                return 0;
+            }
+
+            return await _context.Units
+                .CountAsync(u => condominiumIds.Contains(u.CondominiumId));
+        }
     }
 }

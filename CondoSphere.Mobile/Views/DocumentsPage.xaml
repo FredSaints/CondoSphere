@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:CondoSphere.Mobile.ViewModels"
+             xmlns:dto="clr-namespace:CondoSphere.Core.DTOs.Condominiums;assembly=CondoSphere.Core"
+             x:DataType="vm:DocumentsViewModel"
+             x:Class="CondoSphere.Mobile.Views.DocumentsPage"
+             BackgroundColor="{StaticResource BackgroundSecondary}"
+             Title="Documents">
+
+    <ContentPage.Resources>
+        <!-- Inactive Style -->
+        <Style x:Key="InactiveCategoryCard" TargetType="Frame">
+            <Setter Property="Style" Value="{StaticResource CardOutline}" />
+        </Style>
+        <Style x:Key="InactiveCategoryLabel" TargetType="Label">
+            <Setter Property="TextColor" Value="{StaticResource TextSecondary}" />
+        </Style>
+
+        <!-- Active Style -->
+        <Style x:Key="ActiveCategoryCard" TargetType="Frame">
+            <Setter Property="BackgroundColor" Value="{StaticResource Primary}" />
+            <Setter Property="Style" Value="{StaticResource CardStyle}" />
+        </Style>
+        <Style x:Key="ActiveCategoryLabel" TargetType="Label">
+            <Setter Property="TextColor" Value="{StaticResource TextOnPrimary}" />
+        </Style>
+    </ContentPage.Resources>
+
+    <!-- UPDATED GRID: Now has 3 rows for Header, Filters, and List -->
+    <Grid RowDefinitions="Auto, Auto, *">
+
+        <!-- Loading Overlay -->
+        <Frame Grid.RowSpan="3" 
+               BackgroundColor="#80000000"
+               IsVisible="{Binding IsBusy}"
+               ZIndex="999"
+               Padding="0">
+            <ActivityIndicator IsRunning="{Binding IsBusy}" 
+                             Color="{StaticResource Primary}"
+                             HeightRequest="48"
+                             WidthRequest="48"
+                             VerticalOptions="Center" 
+                             HorizontalOptions="Center" />
+        </Frame>
+
+        <!-- Header -->
+        <Frame Grid.Row="0"
+               BackgroundColor="{StaticResource Primary}"
+               CornerRadius="24"
+               HasShadow="False"
+               Padding="24,40,24,24"
+               Margin="0,0,0,20">
+            <Frame.Shadow>
+                <Shadow Brush="{StaticResource ShadowDark}" 
+                        Offset="0,4" 
+                        Radius="12" 
+                        Opacity="0.15" />
+            </Frame.Shadow>
+            <Grid ColumnDefinitions="*,Auto">
+                <VerticalStackLayout Spacing="4">
+                    <Label Text="📋 Document Library" 
+                           Style="{StaticResource HeadingMedium}"
+                           TextColor="{StaticResource TextOnPrimary}" />
+                    <Label Text="Access your property documents and files"
+                           Style="{StaticResource BodyMedium}"
+                           TextColor="{StaticResource TextOnPrimary}"
+                           Opacity="0.9" />
+                </VerticalStackLayout>
+            </Grid>
+        </Frame>
+
+        <!-- Quick Access Filters) -->
+        <VerticalStackLayout Grid.Row="1" Spacing="12" Padding="20,0,20,10">
+            <Label Text="📁 Quick Access" Style="{StaticResource SubheadingMedium}" />
+            <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never">
+                <HorizontalStackLayout Spacing="12" Padding="4,0">
+
+                    <!-- All Documents -->
+                    <Frame Padding="16,12" WidthRequest="120" Style="{StaticResource InactiveCategoryCard}">
+                        <Frame.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding FilterByCategoryCommand}" CommandParameter="All Files" />
+                        </Frame.GestureRecognizers>
+                        <Frame.Triggers>
+                            <DataTrigger TargetType="Frame" Binding="{Binding SelectedCategory}" Value="All Files">
+                                <Setter Property="Style" Value="{StaticResource ActiveCategoryCard}" />
+                            </DataTrigger>
+                        </Frame.Triggers>
+                        <VerticalStackLayout Spacing="4" HorizontalOptions="Center">
+                            <Label Text="📄" FontSize="20" HorizontalOptions="Center" />
+                            <Label Text="All Files" Style="{StaticResource BodySmall}" HorizontalTextAlignment="Center">
+                                <Label.Triggers>
+                                    <DataTrigger TargetType="Label" Binding="{Binding Source={RelativeSource AncestorType={x:Type Frame}}, Path=Style}" Value="{StaticResource ActiveCategoryCard}">
+                                        <Setter Property="Style" Value="{StaticResource ActiveCategoryLabel}" />
+                                    </DataTrigger>
+                                </Label.Triggers>
+                            </Label>
+                        </VerticalStackLayout>
+                    </Frame>
+
+                    <!-- Minutes -->
+                    <Frame Padding="16,12" WidthRequest="120" Style="{StaticResource InactiveCategoryCard}">
+                        <Frame.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding FilterByCategoryCommand}" CommandParameter="Meeting Minutes" />
+                        </Frame.GestureRecognizers>
+                        <Frame.Triggers>
+                            <DataTrigger TargetType="Frame" Binding="{Binding SelectedCategory}" Value="Meeting Minutes">
+                                <Setter Property="Style" Value="{StaticResource ActiveCategoryCard}" />
+                            </DataTrigger>
+                        </Frame.Triggers>
+                        <VerticalStackLayout Spacing="4" HorizontalOptions="Center">
+                            <Label Text="📝" FontSize="20" HorizontalOptions="Center" />
+                            <Label Text="Minutes" Style="{StaticResource BodySmall}" HorizontalTextAlignment="Center">
+                                <Label.Triggers>
+                                    <DataTrigger TargetType="Label" Binding="{Binding Source={RelativeSource AncestorType={x:Type Frame}}, Path=Style}" Value="{StaticResource ActiveCategoryCard}">
+                                        <Setter Property="Style" Value="{StaticResource ActiveCategoryLabel}" />
+                                    </DataTrigger>
+                                </Label.Triggers>
+                            </Label>
+                        </VerticalStackLayout>
+                    </Frame>
+
+                    <!-- Budget -->
+                    <Frame Padding="16,12" WidthRequest="120" Style="{StaticResource InactiveCategoryCard}">
+                        <Frame.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding FilterByCategoryCommand}" CommandParameter="Budget" />
+                        </Frame.GestureRecognizers>
+                        <Frame.Triggers>
+                            <DataTrigger TargetType="Frame" Binding="{Binding SelectedCategory}" Value="Budget">
+                                <Setter Property="Style" Value="{StaticResource ActiveCategoryCard}" />
+                            </DataTrigger>
+                        </Frame.Triggers>
+                        <VerticalStackLayout Spacing="4" HorizontalOptions="Center">
+                            <Label Text="💰" FontSize="20" HorizontalOptions="Center" />
+                            <Label Text="Budget" Style="{StaticResource BodySmall}" HorizontalTextAlignment="Center">
+                                <Label.Triggers>
+                                    <DataTrigger TargetType="Label" Binding="{Binding Source={RelativeSource AncestorType={x:Type Frame}}, Path=Style}" Value="{StaticResource ActiveCategoryCard}">
+                                        <Setter Property="Style" Value="{StaticResource ActiveCategoryLabel}" />
+                                    </DataTrigger>
+                                </Label.Triggers>
+                            </Label>
+                        </VerticalStackLayout>
+                    </Frame>
+
+                    <!-- Regulations -->
+                    <Frame Padding="16,12" WidthRequest="120" Style="{StaticResource InactiveCategoryCard}">
+                        <Frame.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding FilterByCategoryCommand}" CommandParameter="Regulations" />
+                        </Frame.GestureRecognizers>
+                        <Frame.Triggers>
+                            <DataTrigger TargetType="Frame" Binding="{Binding SelectedCategory}" Value="Regulations">
+                                <Setter Property="Style" Value="{StaticResource ActiveCategoryCard}" />
+                            </DataTrigger>
+                        </Frame.Triggers>
+                        <VerticalStackLayout Spacing="4" HorizontalOptions="Center">
+                            <Label Text="⚖️" FontSize="20" HorizontalOptions="Center" />
+                            <Label Text="Rules" Style="{StaticResource BodySmall}" HorizontalTextAlignment="Center">
+                                <Label.Triggers>
+                                    <DataTrigger TargetType="Label" Binding="{Binding Source={RelativeSource AncestorType={x:Type Frame}}, Path=Style}" Value="{StaticResource ActiveCategoryCard}">
+                                        <Setter Property="Style" Value="{StaticResource ActiveCategoryLabel}" />
+                                    </DataTrigger>
+                                </Label.Triggers>
+                            </Label>
+                        </VerticalStackLayout>
+                    </Frame>
+
+                </HorizontalStackLayout>
+            </ScrollView>
+        </VerticalStackLayout>
+
+        <!-- Main Content -->
+        <RefreshView Grid.Row="2" 
+                     Command="{Binding LoadDataCommand}" 
+                     IsRefreshing="{Binding IsBusy}">
+            <CollectionView x:Name="documentsCollectionView" 
+                            ItemsSource="{Binding Documents}"
+                            SelectionMode="Single"
+                            Margin="20,0,20,40">
+
+                <CollectionView.Header>
+                    <Label Text="📋 Recent Documents" 
+                           Style="{StaticResource SubheadingMedium}"
+                           Margin="4,8,0,0" />
+                </CollectionView.Header>
+
+                <!-- Document Items -->
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="dto:DocumentDto">
+                        <Frame Style="{StaticResource CardStyle}" Margin="0,6">
+                            <Frame.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:DocumentsViewModel}}, Path=OpenDocumentCommand}" 
+                                                      CommandParameter="{Binding .}"/>
+                            </Frame.GestureRecognizers>
+                            <Grid ColumnDefinitions="Auto,*,Auto" 
+                                  RowDefinitions="Auto,Auto,Auto"
+                                  ColumnSpacing="16"
+                                  RowSpacing="4">
+                                <Frame Grid.RowSpan="3" CornerRadius="20" HeightRequest="40" WidthRequest="40" Padding="0" HasShadow="False" BackgroundColor="{StaticResource Info}">
+                                    <Label Text="📄" FontSize="18" HorizontalOptions="Center" VerticalOptions="Center" />
+                                </Frame>
+                                <Label Grid.Column="1" Text="{Binding Title}" Style="{StaticResource SubheadingMedium}" />
+                                <Label Grid.Column="1" Grid.Row="1" Text="{Binding Category}" Style="{StaticResource BodySmall}" TextColor="{StaticResource Primary}" FontAttributes="Bold" />
+                                <Grid Grid.Column="1" Grid.Row="2" ColumnDefinitions="Auto,Auto,*" ColumnSpacing="12">
+                                    <Label Text="{Binding UploadDate, StringFormat='{0:MMM dd, yyyy}'}" Style="{StaticResource BodySmall}" TextColor="{StaticResource TextSecondary}" />
+                                    <Label Grid.Column="1" Text="•" Style="{StaticResource BodySmall}" TextColor="{StaticResource TextSecondary}" />
+                                    <Label Grid.Column="2" Text="{Binding UploadedByUserName}" Style="{StaticResource BodySmall}" TextColor="{StaticResource TextSecondary}" />
+                                </Grid>
+                                <Frame Grid.Column="2" Grid.RowSpan="3" CornerRadius="16" HeightRequest="32" WidthRequest="32" Padding="0" HasShadow="False" BackgroundColor="{StaticResource Success}">
+                                    <Label Text="⬇️" FontSize="14" HorizontalOptions="Center" VerticalOptions="Center" />
+                                </Frame>
+                            </Grid>
+                        </Frame>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+
+                <!-- Empty State -->
+                <CollectionView.EmptyView>
+                    <Frame Style="{StaticResource CardStyle}" Padding="40" Margin="0,40">
+                        <VerticalStackLayout Spacing="20" HorizontalOptions="Center">
+                            <Label Text="📁" FontSize="64" HorizontalOptions="Center" Opacity="0.5" />
+                            <Label Text="No Documents Available" Style="{StaticResource SubheadingLarge}" HorizontalTextAlignment="Center" />
+                            <Label Text="Documents for the selected category will appear here." Style="{StaticResource BodyMedium}" HorizontalTextAlignment="Center" TextColor="{StaticResource TextSecondary}" />
+                        </VerticalStackLayout>
+                    </Frame>
+                </CollectionView.EmptyView>
+            </CollectionView>
+        </RefreshView>
+    </Grid>
+</ContentPage>

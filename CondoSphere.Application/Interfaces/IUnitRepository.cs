@@ -36,5 +36,7 @@ namespace CondoSphere.Application.Interfaces
         /// </summary>
         Task<IEnumerable<Unit>> GetUnitsByResidentIdAsync(int residentId);
         Task<IEnumerable<Unit>> GetByResidentIdAsync(int residentId);
+        Task<IEnumerable<Unit>> GetByIdsAsync(IEnumerable<int> ids);
+        Task<int> GetCountByCondominiumIdsAsync(IEnumerable<int> condominiumIds);
     }
 }

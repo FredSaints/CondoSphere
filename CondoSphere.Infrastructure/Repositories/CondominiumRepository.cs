@@ -69,5 +69,13 @@ namespace CondoSphere.Infrastructure.Repositories
                 .Where(c => ids.Contains(c.Id))
                 .ToListAsync();
         }
+
+        public async Task<IEnumerable<Condominium>> GetAllForCompanyAsync(int companyId)
+        {
+            return await _context.Condominiums
+                .Where(c => c.CompanyId == companyId)
+                .AsNoTracking()
+                .ToListAsync();
+        }
     }
 }

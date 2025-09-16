@@ -2,154 +2,675 @@
 @using CondoSphere.Core
 
 @{
+    ViewData["IsFullWidth"] = true;
     ViewData["Title"] = "Admin Dashboard";
     var currentUserId = (int)ViewData["CurrentUserId"];
 }
 
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <div>
-        <h1>@ViewData["Title"]</h1>
-        <p class="text-muted">Manage your company's condominiums and users.</p>
-    </div>
-    <div>
-        <a class="btn btn-secondary" asp-action="CompanyProfile">
-            <i class="bi bi-buildings-fill me-1"></i> Company Profile
-        </a>
-        <a class="btn btn-primary" asp-action="RegisterManager">
-            <i class="bi bi-person-plus-fill me-1"></i> Register New Manager
-        </a>
-        <a class="btn btn-info" asp-action="RegisterEmployee">
-            <i class="bi bi-person-plus me-1"></i> Register Employee
-        </a>
-        <a class="btn btn-success" asp-action="CreateCondominium">
-            <i class="bi bi-building-fill-add me-1"></i> Create Condominium
-        </a>
-    </div>
+<style>
+    /* Modern Admin Dashboard Styles */
+    :root {
+        --primary-color: #6366f1;
+        --primary-dark: #4f46e5;
+        --secondary-color: #8b5cf6;
+        --success-color: #10b981;
+        --warning-color: #f59e0b;
+        --danger-color: #ef4444;
+        --dark-color: #1e293b;
+        --light-bg: #f8fafc;
+        --card-bg: #ffffff;
+        --text-primary: #1e293b;
+        --text-secondary: #64748b;
+        --border-color: #e2e8f0;
+        --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    }
+
+    .admin-dashboard {
+        background: var(--light-bg);
+        min-height: 100vh;
+        margin: 0;
+        padding: 0;
+    }
+
+    /* Hero Section */
+    .hero-section {
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+        padding: 1rem 20rem;
+        box-shadow: var(--shadow-xl);
+        position: relative;
+        overflow: hidden;
+
+    }
+
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            animation: float 20s ease-in-out infinite;
+        }
+
+    @@keyframes float {
+        0%, 100% {
+            transform: translateY(0);
+        }
+
+        50% {
+            transform: translateY(-20px);
+        }
+    }
+
+    .hero-content {
+        position: relative;
+        z-index: 1;
+        padding: 0 5rem;
+        text-align: center;
+    }
+
+    .welcome-title {
+        color: white;
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        animation: slideInLeft 0.6s ease-out;
+    }
+
+    .welcome-subtitle {
+        color: rgba(255, 255, 255, 0.9);
+        font-size: 1.1rem;
+        margin-bottom: 0;
+        animation: slideInLeft 0.8s ease-out;
+    }
+
+    @@keyframes slideInLeft {
+        from {
+            opacity: 0;
+            transform: translateX(-30px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+
+    /* Quick Actions Bar */
+    .quick-actions {
+        padding: 1.5rem 0;
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+        .quick-actions::-webkit-scrollbar {
+            display: none;
+        }
+
+    .action-btn {
+        padding: 1rem 2rem; /* Increased padding */
+        border-radius: 0.75rem;
+        font-weight: 600;
+        font-size: 1.1rem; /* Increased text size */
+        display: inline-flex;
+        align-items: center;
+        gap: 0.6rem;
+        transition: all 0.3s ease;
+        white-space: nowrap;
+        text-decoration: none;
+        position: relative;
+        overflow: hidden;
+    }
+
+        .action-btn i {
+            font-size: 1.3rem; /* Increased icon size */
+        }
+
+        .action-btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .action-btn:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .action-btn.primary {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: white;
+        }
+
+        .action-btn.success {
+            background: linear-gradient(135deg, var(--success-color), #059669);
+            color: white;
+        }
+
+        .action-btn.info {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            color: white;
+        }
+
+        .action-btn.dark {
+            background: linear-gradient(135deg, var(--dark-color), #0f172a);
+            color: white;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+    /* Main Content Area */
+    .content-area {
+        padding: 2rem 5rem;
+    }
+
+    /* Modern Cards */
+    .modern-card {
+        background: white;
+        border-radius: 1rem;
+        box-shadow: var(--shadow-md);
+        overflow: hidden;
+        transition: all 0.3s ease;
+        margin-bottom: 2rem;
+    }
+
+        .modern-card:hover {
+            box-shadow: var(--shadow-lg);
+        }
+
+    .card-header-gradient {
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        padding: 1.25rem 1.5rem;
+        border-bottom: none;
+    }
+
+        .card-header-gradient h5 {
+            color: white;
+            font-weight: 600;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+    /* Enhanced Table */
+    .modern-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+
+        .modern-table thead {
+            background: var(--light-bg);
+        }
+
+        .modern-table th {
+            padding: 1rem 1.5rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.05em;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .modern-table td {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            transition: all 0.2s ease;
+        }
+
+        .modern-table tbody tr:hover {
+            background: var(--light-bg);
+        }
+
+    /* Status & Role Badges */
+    .status-badge {
+        padding: 0.25rem 0.75rem;
+        border-radius: 9999px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        display: inline-block;
+        text-transform: uppercase;
+    }
+
+        .status-badge.active {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+        }
+
+        .status-badge.inactive {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+        }
+
+        .status-badge.unassigned {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+        }
+
+    .role-badge {
+        padding: 0.35rem 0.85rem;
+        border-radius: 0.5rem;
+        font-size: 0.8rem;
+        font-weight: 600;
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        color: white;
+    }
+
+    /* Action Buttons in Tables */
+    .action-group {
+        display: flex;
+        gap: 0.5rem;
+        justify-content: flex-end;
+    }
+
+    .btn-action {
+        padding: 0.4rem 0.8rem;
+        border-radius: 0.5rem;
+        border: none;
+        font-size: 0.875rem;
+        font-weight: 500;
+        transition: all 0.2s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+        cursor: pointer;
+    }
+
+        .btn-action.edit {
+            background: var(--light-bg);
+            color: var(--primary-color);
+            border: 1px solid var(--border-color);
+        }
+
+            .btn-action.edit:hover {
+                background: var(--primary-color);
+                color: white;
+                transform: translateY(-2px);
+            }
+
+        .btn-action.assign {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: white;
+        }
+
+        .btn-action.delete {
+            background: var(--light-bg);
+            color: var(--danger-color);
+            border: 1px solid var(--border-color);
+        }
+
+            .btn-action.delete:hover {
+                background: var(--danger-color);
+                color: white;
+                transform: translateY(-2px);
+            }
+
+    /* Empty State */
+    .empty-state {
+        text-align: center;
+        padding: 3rem 1.5rem;
+    }
+
+    .empty-icon {
+        font-size: 3rem;
+        color: var(--text-secondary);
+        margin-bottom: 1rem;
+    }
+
+    .empty-title {
+        color: var(--text-primary);
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+
+    .empty-subtitle {
+        color: var(--text-secondary);
+        margin-bottom: 1.5rem;
+    }
+
+    /* Modal */
+    .modal-content {
+        border-radius: 1rem;
+        border: none;
+        overflow: hidden;
+    }
+
+    .modal-header {
+        background: linear-gradient(135deg, var(--danger-color), #dc2626);
+        border: none;
+        padding: 1.5rem;
+    }
+
+    .modal-title {
+        font-weight: 600;
+        color: white;
+    }
+
+    .modal-body {
+        padding: 2rem;
+    }
+
+    .modal-footer {
+        border: none;
+        padding: 1.5rem;
+        background: var(--light-bg);
+    }
+</style>
+
+<div class="admin-dashboard">
+    <!-- Hero Section -->
+    <div class="hero-section">
+        <div class="hero-content">
+            <h1 class="welcome-title">
+                <i class="bi bi-shield-check me-2"></i>Admin Dashboard
+            </h1>
+            <p class="welcome-subtitle">Manage your company's users and condominium portfolio</p>
+</div>
 </div>
 
-<div class="row">
-    <div class="col-lg-7">
-        <div class="card shadow-sm mb-4">
-            <div class="card-header">
-                <h5 class="mb-0">Managed Condominiums</h5>
+    <!-- Main Content Area -->
+    <div class="content-area">
+
+        <!-- Quick Actions Bar (Moved inside content area) -->
+        <div class="quick-actions">
+            <a class="action-btn dark" asp-action="Dashboard">
+                <i class="bi bi-bar-chart-line-fill"></i>
+                BI Dashboard
+            </a>
+            <a class="action-btn info" asp-action="CompanyProfile">
+                <i class="bi bi-buildings-fill"></i>
+                Company Profile
+            </a>
+            <a class="action-btn primary" asp-action="RegisterManager">
+                <i class="bi bi-person-plus-fill"></i>
+                New Manager
+            </a>
+            <a class="action-btn primary" asp-action="RegisterEmployee">
+                <i class="bi bi-person-plus"></i>
+                New Employee
+            </a>
+            <a class="action-btn success" asp-action="CreateCondominium">
+                <i class="bi bi-building-fill-add"></i>
+                New Condominium
+            </a>
+        </div>
+
+        <div class="row mt-4">
+            <!-- Condominiums Section -->
+            <div class="col-lg-7">
+                <div class="modern-card">
+                    <div class="card-header-gradient">
+                        <h5><i class="bi bi-building"></i> Managed Condominiums</h5>
+                    </div>
+                    <div class="card-body p-0">
+                        @if (Model.Condominiums.Any())
+                        {
+                            <div class="table-responsive">
+                                <table class="modern-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Address</th>
+                                            <th>Manager</th>
+                                            <th class="text-end">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var condo in Model.Condominiums)
+                                        {
+                                            <tr>
+                                                <td>
+                                                    <strong>@condo.Name</strong>
+                                                </td>
+                                                <td>
+                                                    <span class="text-muted">@condo.Address</span>
+                                                </td>
+                                                <td>
+                                                    @if (!string.IsNullOrEmpty(condo.ManagerName))
+                                                    {
+                                                        <span class="status-badge active">@condo.ManagerName</span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="status-badge unassigned">Unassigned</span>
+                                                    }
+                                                </td>
+                                                <td>
+                                                    <div class="action-group">
+                                                        <a asp-action="EditCondominium" asp-route-id="@condo.Id" class="btn-action edit">
+                                                            <i class="bi bi-pencil-fill"></i>
+                                                            Edit
+                                                        </a>
+
+                                                        @if (string.IsNullOrEmpty(condo.ManagerName))
+                                                        {
+                                                            <a asp-action="AssignManager" asp-route-condominiumId="@condo.Id" class="btn-action assign">
+                                                                <i class="bi bi-person-plus-fill"></i>
+                                                                Assign
+                                                            </a>
+                                                        }
+                                                        else
+                                                        {
+                                                            <div class="btn-group">
+                                                                <a asp-action="AssignManager" asp-route-condominiumId="@condo.Id" class="btn-action edit">
+                                                                    <i class="bi bi-person-check-fill"></i>
+                                                                    Re-assign
+                                                                </a>
+                                                                <button type="button" class="btn-action edit dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+                                                                    <span class="visually-hidden">Toggle Dropdown</span>
+                                                                </button>
+                                                                <ul class="dropdown-menu">
+                                                                    <li>
+                                                                        <form asp-action="UnassignManager" asp-route-condominiumId="@condo.Id" method="post">
+                                                                            @Html.AntiForgeryToken()
+                                                                            <button type="submit" class="dropdown-item text-danger">
+                                                                                <i class="bi bi-person-x-fill me-1"></i> Un-assign Manager
+                                                                            </button>
+                                                                        </form>
+                                                                    </li>
+                                                                </ul>
+                                                            </div>
+                                                        }
+
+                                                        <form asp-action="DeleteCondominium" asp-route-id="@condo.Id" method="post" id="deleteForm-@condo.Id" class="d-inline">
+                                                            @Html.AntiForgeryToken()
+                                                            <button type="button" class="btn-action delete"
+                                                                    data-bs-toggle="modal"
+                                                                    data-bs-target="#confirmDeleteModal"
+                                                                    data-form-id="#deleteForm-@condo.Id"
+                                                                    data-message="Are you sure you want to permanently delete the condominium '@condo.Name'? This can only be done if it is empty and has no manager assigned.">
+                                                                <i class="bi bi-trash-fill"></i>
+                                                                Delete
+                                                            </button>
+                                                        </form>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="empty-state">
+                                <div class="empty-icon">
+                                    <i class="bi bi-building"></i>
+                                </div>
+                                <div class="empty-title">No Condominiums Yet</div>
+                                <div class="empty-subtitle">Create your first condominium to get started</div>
+                                <a asp-action="CreateCondominium" class="action-btn success">
+                                    <i class="bi bi-plus-circle"></i>
+                                    Create Condominium
+                                </a>
+                            </div>
+                        }
+                    </div>
+                </div>
             </div>
-            <div class="card-body p-0">
-                @if (Model.Condominiums.Any())
-                {
-                    <div class="table-responsive">
-                        <table class="table table-hover mb-0 align-middle">
-                            <thead>
-                                <tr>
-                                    <th scope="col">Name</th>
-                                    <th scope="col">Address</th>
-                                    <th scope="col">Assigned Manager</th>
-                                    <th scope="col" class="text-end">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var condo in Model.Condominiums)
-                                {
-                                    <tr>
-                                        <td>@condo.Name</td>
-                                        <td>@condo.Address</td>
-                                        <td>
-                                            @if (!string.IsNullOrEmpty(condo.ManagerName))
-                                            {
-                                                <span class="text-muted">@condo.ManagerName</span>
-                                            }
-                                        </td>
-                                        <td class="text-end">
-                                            @if (string.IsNullOrEmpty(condo.ManagerName))
-                                            {
-                                                <a asp-action="AssignManager" asp-route-condominiumId="@condo.Id" class="btn btn-sm btn-primary">Assign Manager</a>
-                                            }
-                                            else
-                                            {
-                                                <a asp-action="AssignManager" asp-route-condominiumId="@condo.Id" class="btn btn-sm btn-outline-secondary">Re-assign</a>
-                                            }
-                                        </td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
+
+            <!-- Users Section -->
+            <div class="col-lg-5">
+                <div class="modern-card">
+                    <div class="card-header-gradient">
+                        <h5><i class="bi bi-people"></i> Company Users</h5>
                     </div>
-                }
-                else
-                {
-                    <div class="text-center p-4">
-                        <p class="text-muted mb-0">No condominiums have been created yet. Click the "Create Condominium" button to get started.</p>
+                    <div class="card-body p-0">
+                        @if (Model.Users.Any())
+                        {
+                            <div class="table-responsive">
+                                <table class="modern-table">
+                                    <thead>
+                                        <tr>
+                                            <th>User</th>
+                                            <th>Role</th>
+                                            <th>Status</th>
+                                            <th class="text-end">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var user in Model.Users)
+                                        {
+                                            <tr>
+                                                <td>
+                                                    <div>
+                                                        <strong>@user.FirstName @user.LastName</strong><br />
+                                                        <small class="text-muted">@user.Email</small>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <span class="role-badge">@user.Role</span>
+                                                </td>
+                                                <td>
+                                                    @if (user.IsActive)
+                                                    {
+                                                        <span class="status-badge active">Active</span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="status-badge inactive">Inactive</span>
+                                                    }
+                                                </td>
+                                                <td class="text-end">
+                                                    @if (user.Id != currentUserId)
+                                                    {
+                                                        if (user.IsActive)
+                                                        {
+                                                            <form asp-action="DeactivateUser" asp-route-userId="@user.Id" method="post" id="deactivateForm-@user.Id" class="d-inline">
+                                                                @Html.AntiForgeryToken()
+                                                                <button type="button" class="btn-action delete"
+                                                                        data-bs-toggle="modal"
+                                                                        data-bs-target="#confirmDeleteModal"
+                                                                        data-form-id="#deactivateForm-@user.Id"
+                                                                        data-message="Are you sure you want to deactivate the user '@(user.FirstName) @(user.LastName)'? Their access will be revoked immediately.">
+                                                                    Deactivate
+                                                                </button>
+                                                            </form>
+                                                        }
+                                                        else
+                                                        {
+                                                            <form asp-action="ActivateUser" asp-route-userId="@user.Id" method="post" class="d-inline">
+                                                                @Html.AntiForgeryToken()
+                                                                <button type="submit" class="btn-action assign">Activate</button>
+                                                            </form>
+                                                        }
+                                                    }
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="empty-state">
+                                <div class="empty-icon">
+                                    <i class="bi bi-people"></i>
+                                </div>
+                                <div class="empty-title">No Users Found</div>
+                                <div class="empty-subtitle">Start by adding managers and employees</div>
+                            </div>
+                        }
                     </div>
-                }
+                </div>
             </div>
         </div>
     </div>
+</div>
 
-    <div class="col-lg-5">
-        <div class="card shadow-sm mb-4">
-            <div class="card-header">
-                <h5 class="mb-0">Company Users</h5>
+<!-- Enhanced Confirmation Modal -->
+<div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmDeleteModalLabel">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                    Confirm Action
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="card-body p-0">
-                @if (Model.Users.Any())
-                {
-                    <div class="table-responsive">
-                        <table class="table table-hover mb-0 align-middle">
-                            <thead>
-                                <tr>
-                                    <th scope="col">Name</th>
-                                    <th scope="col">Role</th>
-                                    <th scope="col">Status</th>
-                                    <th scope="col">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var user in Model.Users)
-                                {
-                                    <tr>
-                                        <td>@user.FirstName @user.LastName<br /><small class="text-muted">@user.Email</small></td>
-                                        <td><span class="badge bg-secondary">@user.Role</span></td>
-                                        <td>
-                                            @if (user.IsActive)
-                                            {
-                                                <span class="badge bg-success">Active</span>
-                                            }
-                                            else
-                                            {
-                                                <span class="badge bg-danger">Inactive</span>
-                                            }
-                                        </td>
-                                        <td>
-                                            @if (user.Id != currentUserId)
-                                            {
-                                                if (user.IsActive)
-                                                {
-                                                    <form asp-action="DeactivateUser" asp-route-userId="@user.Id" method="post" onsubmit="return confirm('Are you sure you want to deactivate this user?');">
-                                                        @Html.AntiForgeryToken()
-                                                        <button type="submit" class="btn btn-sm btn-outline-warning">Deactivate</button>
-                                                    </form>
-                                                }
-                                                else
-                                                {
-                                                    <form asp-action="ActivateUser" asp-route-userId="@user.Id" method="post">
-                                                        @Html.AntiForgeryToken()
-                                                        <button type="submit" class="btn btn-sm btn-outline-success">Activate</button>
-                                                    </form>
-                                                }
-                                            }
-                                        </td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
-                    </div>
-                }
-                else
-                {
-                    <div class="text-center p-4">
-                        <p class="text-muted mb-0">No users found.</p>
-                    </div>
-                }
+            <div class="modal-body" id="confirmDeleteModalBody">
+                <!-- Message will be inserted here by JavaScript -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="bi bi-x-circle me-1"></i>
+                    Cancel
+                </button>
+                <button type="button" class="btn btn-danger" id="confirmDeleteButton">
+                    <i class="bi bi-check-circle me-1"></i>
+                    Confirm
+                </button>
             </div>
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Confirmation Modal Logic
+            const confirmDeleteModal = document.getElementById('confirmDeleteModal');
+            if (confirmDeleteModal) {
+                let formToSubmit = null;
+
+                confirmDeleteModal.addEventListener('show.bs.modal', function (event) {
+                    const button = event.relatedTarget;
+                    const message = button.getAttribute('data-message');
+                    const formId = button.getAttribute('data-form-id');
+                    const modalBody = confirmDeleteModal.querySelector('#confirmDeleteModalBody');
+                    modalBody.textContent = message;
+                    formToSubmit = document.querySelector(formId);
+                });
+
+                const confirmButton = document.getElementById('confirmDeleteButton');
+                confirmButton.addEventListener('click', function () {
+                    if (formToSubmit) {
+                        formToSubmit.submit();
+                    }
+                });
+            }
+        });
+    </script>
+}

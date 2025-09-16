@@ -3,92 +3,120 @@
 
 @{
     ViewData["Title"] = "Task Details";
-    // Flag to determine if the intervention is in a non-editable state.
     bool isTerminalState = Model.Intervention.Status == InterventionStatus.Completed || Model.Intervention.Status == InterventionStatus.Cancelled;
 }
 
-<h1>@Model.Occurrence.Title</h1>
-<p class="text-muted">Task scheduled for @Model.Intervention.StartDate.ToLocalTime().ToString("f")</p>
-<hr />
+<style>
+    .task-card .card-header {
+        background: var(--primary-gradient);
+        color: white;
+    }
+</style>
 
-<div class="row">
-    <div class="col-md-8">
-        @* ===== CARD 1: THE TASK (INTERVENTION) & STATUS UPDATE FORM ===== *@
-        <div class="card shadow-sm mb-4">
-            <div class="card-header">
+<!-- Page Header -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="mb-0">@Model.Occurrence.Title</h1>
+        <p class="text-muted mb-0">Task scheduled for @Model.Intervention.StartDate.ToLocalTime().ToString("f")</p>
+    </div>
+    <a asp-action="Index" class="btn btn-secondary">
+        <i class="bi bi-arrow-left me-1"></i> Back to My Tasks
+    </a>
+</div>
+
+
+
+
+<div class="row g-4">
+
+    <!-- Full-Width Top Card: Assigned Task -->
+    <div class="col-12">
+        <div class="card shadow-lg border-0 task-card">
+            <div class="card-header d-flex align-items-center">
+                <i class="bi bi-wrench-adjustable-circle-fill me-2 fs-4"></i>
                 <h5 class="mb-0">Your Assigned Task</h5>
             </div>
-            <div class="card-body">
+            <div class="card-body p-4">
                 @if (isTerminalState)
                 {
-                    @* If task is completed or cancelled, show static, non-interactive details *@
-                    <dl class="row align-items-center">
-                        <dt class="col-sm-3">Task Description</dt>
-                        <dd class="col-sm-9">@Model.Intervention.Description</dd>
-                        <dt class="col-sm-3">Final Status</dt>
-                        <dd class="col-sm-9">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted mb-1">Task Description</h6>
+                            <p class="mb-0 fs-5">@Model.Intervention.Description</p>
+                        </div>
+                        <div class="text-end ps-3">
+                            <h6 class="text-muted mb-1">Final Status</h6>
                             @{
                                 var statusClass = Model.Intervention.Status == InterventionStatus.Completed ? "bg-success" : "bg-danger";
+                                var iconClass = Model.Intervention.Status == InterventionStatus.Completed ? "bi-check-circle-fill" : "bi-x-circle-fill";
                             }
-                            <span class="badge @statusClass fs-6">@Model.Intervention.Status</span>
-                        </dd>
-                    </dl>
+                            <span class="badge @statusClass fs-6 d-inline-flex align-items-center">
+                                <i class="bi @iconClass me-2"></i>
+                                @Model.Intervention.Status
+                            </span>
+                        </div>
+                    </div>
                 }
                 else
                 {
-                    @* Otherwise, show the interactive update form *@
+                    <h6 class="text-muted">Task Description</h6>
+                    <p>@Model.Intervention.Description</p>
+
+                    <hr class="my-4" />
+
                     <form id="updateStatusForm" asp-action="UpdateStatus" asp-route-interventionId="@Model.Intervention.Id" method="post">
                         @Html.AntiForgeryToken()
-                        <dl class="row align-items-center">
-                            <dt class="col-sm-3">Task Description</dt>
-                            <dd class="col-sm-9">@Model.Intervention.Description</dd>
-
-                            <dt class="col-sm-3">Update Status</dt>
-                            <dd class="col-sm-9">
-                                <div class="input-group" style="max-width: 300px;">
-                                    <select asp-for="StatusUpdate.Status" asp-items="Html.GetEnumSelectList<InterventionStatus>()" class="form-select"></select>
-                                    <button type="submit" class="btn btn-primary">Update Status</button>
+                        <div class="row align-items-center">
+                            <div class="col-md-5">
+                                <label for="StatusUpdate_Status" class="form-label fw-bold">Update Task Status:</label>
+                            </div>
+                            <div class="col-md-7">
+                                <div class="input-group">
+                                    <select asp-for="StatusUpdate.Status" asp-items="Html.GetEnumSelectList<InterventionStatus>()" class="form-select form-select-lg"></select>
+                                    <button type="submit" class="btn btn-primary">Update</button>
                                 </div>
                                 <span asp-validation-for="StatusUpdate.Status" class="text-danger"></span>
-                            </dd>
-                        </dl>
+                            </div>
+                        </div>
                     </form>
                 }
             </div>
         </div>
+    </div>
 
-        @* ===== CARD 2: THE ORIGINAL PROBLEM REPORT (OCCURRENCE) ===== *@
-        <div class="card shadow-sm">
-            <div class="card-header">
-                <h5 class="mb-0">Original Problem Report Details</h5>
+
+
+    <!-- Side-by-Side Bottom Cards -->
+    <div class="col-lg-7">
+        <!-- CARD 2: THE ORIGINAL PROBLEM REPORT -->
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-header d-flex align-items-center bg-light">
+                <i class="bi bi-file-earmark-text-fill me-2 fs-5 text-secondary"></i>
+                <h5 class="mb-0 text-dark">Original Problem Report</h5>
             </div>
             <div class="card-body">
                 <dl class="row">
-                    <dt class="col-sm-3">Reported On</dt>
-                    <dd class="col-sm-9">@Model.Occurrence.ReportedDate.ToLocalTime().ToString("f")</dd>
+                    <dt class="col-sm-4">Reported On:</dt>
+                    <dd class="col-sm-8">@Model.Occurrence.ReportedDate.ToLocalTime().ToString("f")</dd>
 
-                    <dt class="col-sm-3">Reported By</dt>
-                    <dd class="col-sm-9">@Model.Occurrence.ReportedByUserName</dd>
+                    <dt class="col-sm-4">Reported By:</dt>
+                    <dd class="col-sm-8">@Model.Occurrence.ReportedByUserName</dd>
                 </dl>
                 <hr />
-                <h5>Original Description</h5>
-                <p>@Model.Occurrence.Description</p>
+                <h6>Original Description:</h6>
+                <p class="text-muted">@Model.Occurrence.Description</p>
             </div>
         </div>
-
-        <div class="mt-3">
-            <a asp-action="Index" class="btn btn-secondary">
-                <i class="bi bi-arrow-left me-1"></i> Back to My Tasks
-            </a>
-        </div>
     </div>
-    <div class="col-md-4">
-        @* ===== CARD 3: THE ATTACHED IMAGE ===== *@
+
+    <div class="col-lg-5">
+        <!-- CARD 3: THE ATTACHED IMAGE -->
         @if (!string.IsNullOrEmpty(Model.Occurrence.ImageUrl))
         {
-            <div class="card shadow-sm">
-                <div class="card-header">
-                    Attached Image
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-header d-flex align-items-center bg-light">
+                    <i class="bi bi-image-fill me-2 fs-5 text-secondary"></i>
+                    <h5 class="mb-0 text-dark">Attached Image</h5>
                 </div>
                 <div class="card-body p-1">
                     <a href="@Model.Occurrence.ImageUrl" target="_blank" title="Click to view full size">
@@ -99,30 +127,34 @@
         }
         else
         {
-            <div class="card bg-light shadow-sm">
-                <div class="card-body text-center text-muted">
+            <div class="card bg-light h-100">
+                <div class="card-body text-center text-muted d-flex flex-column justify-content-center">
                     <i class="bi bi-image-alt fs-1"></i>
-                    <p>No image was provided.</p>
+                    <p class="mt-2">No image was provided.</p>
                 </div>
             </div>
         }
     </div>
 </div>
 
-@* ===== MODAL FOR CONFIRMATION ===== *@
+
+
+
+
+<!-- MODAL FOR CONFIRMATION -->
 <div class="modal fade" id="statusConfirmModal" tabindex="-1" aria-labelledby="statusConfirmModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="statusConfirmModalLabel">Confirm Status Change</h5>
+            <div class="modal-header bg-warning">
+                <h5 class="modal-title" id="statusConfirmModalLabel"><i class="bi bi-exclamation-triangle-fill me-2"></i>Confirm Status Change</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                Are you sure you want to mark this task as <strong id="newStatusText"></strong>? This is a final action.
+                Are you sure you want to mark this task as <strong id="newStatusText"></strong>? This is a final action and may not be reversible.
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-success" id="confirmStatusChangeBtn">Yes, Confirm</button>
+                <button type="button" class="btn btn-warning" id="confirmStatusChangeBtn">Yes, Confirm</button>
             </div>
         </div>
     </div>
@@ -134,38 +166,31 @@
     @if (!isTerminalState)
     {
         <script>
+            // This script remains the same as it's for functionality, not style.
             document.addEventListener('DOMContentLoaded', function () {
                 const statusForm = document.getElementById('updateStatusForm');
                 const statusSelect = statusForm.querySelector('select');
                 const confirmModal = new bootstrap.Modal(document.getElementById('statusConfirmModal'));
                 const newStatusText = document.getElementById('newStatusText');
                 const confirmBtn = document.getElementById('confirmStatusChangeBtn');
-
-                // Store the original status in case the user cancels the confirmation
+                
                 const originalStatus = statusSelect.value;
 
                 statusForm.addEventListener('submit', function (event) {
                     const selectedValue = statusSelect.options[statusSelect.selectedIndex];
                     const newStatus = selectedValue.text;
 
-                    // Check if the new status requires confirmation
                     if (newStatus === '@InterventionStatus.Completed.ToString()' || newStatus === '@InterventionStatus.Cancelled.ToString()') {
-                        // Prevent the form from submitting immediately
                         event.preventDefault();
-
-                        // Show the confirmation modal
                         newStatusText.textContent = newStatus.toLowerCase();
                         confirmModal.show();
                     }
-                    // Otherwise, the form submits normally without confirmation
                 });
 
                 confirmBtn.addEventListener('click', function () {
-                    // When the user confirms, submit the form programmatically
                     statusForm.submit();
                 });
 
-                // If the user closes the modal (e.g., clicks 'Cancel' or the 'x'), reset the dropdown to its original value
                 document.getElementById('statusConfirmModal').addEventListener('hidden.bs.modal', function () {
                     statusSelect.value = originalStatus;
                 });

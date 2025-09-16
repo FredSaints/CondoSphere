@@ -2,42 +2,73 @@
 
 @{
     ViewData["Title"] = "Register New Employee";
+    ViewData["IsFullWidth"] = true;
 }
 
-<h1>@ViewData["Title"]</h1>
-<hr />
+<style>
+    body {
+        background-color: var(--light-bg);
+    }
+</style>
 
-<div class="row">
-    <div class="col-md-6">
-        <form asp-action="RegisterEmployee" method="post">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+<div class="container my-5">
+    <div class="row justify-content-center align-items-center" style="min-height: 70vh;">
+        <div class="col-md-11 col-lg-9 col-xl-8">
 
-            <div class="form-floating mb-3">
-                <input asp-for="FirstName" class="form-control" />
-                <label asp-for="FirstName"></label>
-                <span asp-validation-for="FirstName" class="text-danger"></span>
+            <div class="card shadow-lg border-0">
+                <div class="card-header text-center py-4" style="background: var(--primary-gradient);">
+                    <h2 class="mb-1 text-white"><i class="bi bi-person-plus-fill me-2"></i>@ViewData["Title"]</h2>
+                    <p class="mb-0 small text-white-50">Create an account for a new staff member.</p>
+                </div>
+
+                <div class="card-body p-4 p-md-5">
+                    <form asp-action="RegisterEmployee" method="post">
+                        @Html.AntiForgeryToken()
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-4"></div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <div class="form-floating">
+                                    <input asp-for="FirstName" class="form-control" placeholder="First Name" />
+                                    <label asp-for="FirstName"></label>
+                                    <span asp-validation-for="FirstName" class="text-danger small"></span>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <div class="form-floating">
+                                    <input asp-for="LastName" class="form-control" placeholder="Last Name" />
+                                    <label asp-for="LastName"></label>
+                                    <span asp-validation-for="LastName" class="text-danger small"></span>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <div class="form-floating">
+                                    <input asp-for="Email" class="form-control" placeholder="Email Address" />
+                                    <label asp-for="Email"></label>
+                                    <span asp-validation-for="Email" class="text-danger small"></span>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <div class="form-floating">
+                                    <input asp-for="PhoneNumber" class="form-control" placeholder="Phone Number" />
+                                    <label asp-for="PhoneNumber"></label>
+                                    <span asp-validation-for="PhoneNumber" class="text-danger small"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2 mt-4">
+                            <button type="submit" class="btn btn-primary btn-lg">Register Employee</button>
+                            <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
             </div>
 
-            <div class="form-floating mb-3">
-                <input asp-for="LastName" class="form-control" />
-                <label asp-for="LastName"></label>
-                <span asp-validation-for="LastName" class="text-danger"></span>
-            </div>
-
-            <div class="form-floating mb-3">
-                <input asp-for="Email" class="form-control" />
-                <label asp-for="Email"></label>
-                <span asp-validation-for="Email" class="text-danger"></span>
-            </div>
-            <div class="form-floating mb-3">
-                <input asp-for="PhoneNumber" class="form-control" />
-                <label asp-for="PhoneNumber"></label>
-                <span asp-validation-for="PhoneNumber" class="text-danger"></span>
-            </div>
-
-            <button type="submit" class="btn btn-primary">Register Employee</button>
-            <a asp-action="Index" class="btn btn-secondary">Cancel</a>
-        </form>
+        </div>
     </div>
 </div>
 

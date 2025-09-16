@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using CondoSphere.Application.Interfaces;
+using CondoSphere.Application.Services.Notifications;
 using CondoSphere.Core.DTOs.Occurrences;
 using CondoSphere.Core.Enums;
 using Microsoft.AspNetCore.Http;
@@ -18,19 +19,22 @@ namespace CondoSphere.Application.Services.Occurrence
         private readonly IMapper _mapper;
         private readonly IConfiguration _configuration;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly INotificationService _notificationService;
 
         public OccurrenceService(
             IUnitOfWork unitOfWork,
             UserManager<CoreUser> userManager,
             IMapper mapper,
             IConfiguration configuration,
-             IHttpContextAccessor httpContextAccessor)
+             IHttpContextAccessor httpContextAccessor,
+             INotificationService notificationService)
         {
             _unitOfWork = unitOfWork;
             _userManager = userManager;
             _mapper = mapper;
             _configuration = configuration;
             _httpContextAccessor = httpContextAccessor;
+            _notificationService = notificationService;
         }
 
         public async Task<IEnumerable<OccurrenceDto>> GetOccurrencesForCondominiumAsync(int condominiumId)
@@ -90,9 +94,7 @@ namespace CondoSphere.Application.Services.Occurrence
                 {
                     uploadRoot = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), uploadRoot));
                 }
-
-                // >>> CHANGED: route occurrence photos to a subfolder inside CondoSphere_Uploads
-                var subfolder = "occurences-photos"; // per your requested folder name
+                var subfolder = "occurences-photos";
                 var occurrenceFolder = Path.Combine(uploadRoot, subfolder);
                 if (!Directory.Exists(occurrenceFolder))
                 {
@@ -110,7 +112,6 @@ namespace CondoSphere.Application.Services.Occurrence
                 var request = _httpContextAccessor.HttpContext.Request;
                 var baseUrl = $"{request.Scheme}://{request.Host}";
 
-                // >>> CHANGED: URL now includes the subfolder
                 newOccurrence.ImageUrl = $"{baseUrl}/uploads/{subfolder}/{uniqueFileName}";
             }
 
@@ -119,12 +120,13 @@ namespace CondoSphere.Application.Services.Occurrence
             newOccurrence.Status = OccurrenceStatus.Open;
             newOccurrence.ReportedByUserId = residentUserId;
             // The UnitId is already mapped from the DTO.
-            newOccurrence.CondominiumId = unit.CondominiumId; // Get context from the verified unit.
-            newOccurrence.CompanyId = unit.CompanyId;       // Get context from the verified unit.
+            newOccurrence.CondominiumId = unit.CondominiumId;
+            newOccurrence.CompanyId = unit.CompanyId;       
 
             // 6. Add the new entity and save the changes.
             await _unitOfWork.Occurrences.AddAsync(newOccurrence);
             await _unitOfWork.CompleteAsync();
+            await _notificationService.NotifyManagerOfNewOccurrenceAsync(newOccurrence);
 
             // 7. Map the newly created entity back to a DTO to return to the caller.
             // We need to enrich it with the reporter's name.
@@ -182,6 +184,7 @@ namespace CondoSphere.Application.Services.Occurrence
             occurrence.Status = newStatus;
             _unitOfWork.Occurrences.Update(occurrence);
             await _unitOfWork.CompleteAsync();
+            await _notificationService.NotifyResidentOfStatusChangeAsync(occurrence);
             return true;
         }
     }

@@ -118,13 +118,13 @@ namespace CondoSphere.API.Controllers
                 return Unauthorized("Company information is missing from the token.");
             }
 
-            var success = await _condominiumService.DeleteCondominiumAsync(id, companyId.Value);
-            if (!success)
-            {
-                return NotFound();
-            }
+            var (success, message) = await _condominiumService.DeleteCondominiumAsync(id, companyId.Value);
 
-            return NoContent();
+            if (success)
+            {
+                return NoContent();
+            }
+            return BadRequest(new { message });
         }
 
         [HttpPatch("{condominiumId}/assign-manager")]
@@ -158,6 +158,38 @@ namespace CondoSphere.API.Controllers
             // We need a new service method for this. Let's add it.
             var condominiums = await _condominiumService.GetCondominiumsByManagerIdAsync(managerId.Value);
 
+            return Ok(condominiums);
+        }
+
+        [HttpPatch("{condominiumId}/unassign-manager")]
+        [Authorize(Roles = RoleConstants.CompanyAdmin)]
+        public async Task<IActionResult> UnassignManager(int condominiumId)
+        {
+            var companyId = _currentUserService.CompanyId;
+            if (companyId == null) return Unauthorized();
+
+            // We need a new service method for this
+            var success = await _condominiumService.UnassignManagerAsync(condominiumId, companyId.Value);
+
+            if (!success)
+            {
+                return BadRequest(new { message = "Failed to un-assign manager." });
+            }
+
+            return NoContent();
+        }
+
+        [HttpGet("for-admin")]
+        [Authorize(Roles = RoleConstants.CompanyAdmin)]
+        public async Task<IActionResult> GetAllForAdmin()
+        {
+            var companyId = _currentUserService.CompanyId;
+            if (companyId == null)
+            {
+                return Unauthorized("Company information is missing from the token.");
+            }
+
+            var condominiums = await _condominiumService.GetAllCondominiumsAsync(companyId.Value, 1, 1000);
             return Ok(condominiums);
         }
     }

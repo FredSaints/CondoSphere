@@ -61,17 +61,42 @@ namespace CondoSphere.API.Controllers
             return Ok(interventions);
         }
 
+        // [Authorize(Roles = RoleConstants.Employee)]
         [HttpGet("api/interventions/my-tasks")]
-        [Authorize(Roles = RoleConstants.Employee)]
+        [Authorize] // Keep the generic Authorize for now
         public async Task<IActionResult> GetMyTasks()
         {
+            // Use System.Diagnostics.Debug for simple, universal logging
+            System.Diagnostics.Debug.WriteLine("--- [API] GetMyTasks endpoint HIT ---");
+
+            var isAuthenticated = User.Identity?.IsAuthenticated ?? false;
+            System.Diagnostics.Debug.WriteLine($"[API] User IsAuthenticated: {isAuthenticated}");
+
+            if (!isAuthenticated)
+            {
+                System.Diagnostics.Debug.WriteLine("[API] REJECTED: User is not authenticated.");
+                return Unauthorized("User not authenticated.");
+            }
+
+            // Log all claims to see what's in the token
+            foreach (var claim in User.Claims)
+            {
+                System.Diagnostics.Debug.WriteLine($"[API] Claim: Type='{claim.Type}', Value='{claim.Value}'");
+            }
+
             var employeeId = _currentUserService.UserId;
+            System.Diagnostics.Debug.WriteLine($"[API] _currentUserService.UserId resolved to: {employeeId?.ToString() ?? "NULL"}");
+
             if (employeeId == null)
             {
+                System.Diagnostics.Debug.WriteLine("[API] REJECTED: Could not determine User ID from token.");
                 return Unauthorized("User ID could not be determined from token.");
             }
 
             var interventions = await _interventionService.GetMyInterventionsAsync(employeeId.Value);
+            System.Diagnostics.Debug.WriteLine($"[API] _interventionService.GetMyInterventionsAsync returned: {interventions?.Count() ?? 0} items.");
+            System.Diagnostics.Debug.WriteLine("--- [API] GetMyTasks endpoint FINISHED ---");
+
             return Ok(interventions);
         }
 

@@ -4,6 +4,40 @@
     ViewData["Title"] = "My Portal";
 }
 
+<style>
+    .portal-container-scaled {
+        --portal-scale-factor: 1.1;
+        font-size: calc(1rem * var(--portal-scale-factor));
+    }
+
+        .portal-container-scaled .btn {
+            padding: calc(0.5em * var(--portal-scale-factor)) calc(1em * var(--portal-scale-factor));
+            font-size: calc(0.8em * var(--portal-scale-factor));
+        }
+
+    .portal-tabs .nav-pills .nav-link {
+        padding: calc(0.75rem * var(--portal-scale-factor)) calc(1.5rem * var(--portal-scale-factor));
+        border-radius: 0.75rem;
+        font-weight: 500;
+        color: var(--text-secondary);
+        background-color: transparent;
+        border: 2px solid transparent;
+        font-size: 1em;
+    }
+
+        .portal-tabs .nav-pills .nav-link.active,
+        .portal-tabs .nav-pills .show > .nav-pills .nav-link {
+            color: var(--primary-color);
+            background-color: #f0f0ff;
+            border-color: var(--primary-color);
+            font-weight: 600;
+        }
+
+    .tab-content {
+        padding-top: 1.5rem;
+    }
+</style>
+
 <!-- Header -->
 <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
@@ -15,31 +49,30 @@
     </a>
 </div>
 
-<!-- Tabbed Interface -->
-<div class="card shadow-sm">
-    <div class="card-header">
-        <ul class="nav nav-tabs card-header-tabs" id="portalTab" role="tablist">
+<div class="portal-container-scaled">
+    <!-- Tabbed Interface -->
+    <div class="portal-tabs">
+        <!-- Navigation Pills -->
+        <ul class="nav nav-pills" id="portalTab" role="tablist">
             <li class="nav-item" role="presentation">
-                <button class="nav-link active" id="account-tab" data-bs-toggle="tab" data-bs-target="#account-pane" type="button" role="tab" aria-controls="account-pane" aria-selected="true">
+                <button class="nav-link active" id="account-tab" data-bs-toggle="pill" data-bs-target="#account-pane" type="button" role="tab" aria-controls="account-pane" aria-selected="true">
                     <i class="bi bi-wallet2 me-1"></i> My Account
                 </button>
             </li>
             <li class="nav-item" role="presentation">
-                <button class="nav-link" id="issues-tab" data-bs-toggle="tab" data-bs-target="#issues-pane" type="button" role="tab" aria-controls="issues-pane" aria-selected="false">
+                <button class="nav-link" id="issues-tab" data-bs-toggle="pill" data-bs-target="#issues-pane" type="button" role="tab" aria-controls="issues-pane" aria-selected="false">
                     <i class="bi bi-flag me-1"></i> My Issues
                 </button>
             </li>
             <li class="nav-item" role="presentation">
-                <button class="nav-link" id="info-tab" data-bs-toggle="tab" data-bs-target="#info-pane" type="button" role="tab" aria-controls="info-pane" aria-selected="false">
+                <button class="nav-link" id="info-tab" data-bs-toggle="pill" data-bs-target="#info-pane" type="button" role="tab" aria-controls="info-pane" aria-selected="false">
                     <i class="bi bi-info-circle me-1"></i> Documents & Info
                 </button>
             </li>
         </ul>
-    </div>
 
-    <div class="card-body p-0">
+        <!-- Tab Content -->
         <div class="tab-content" id="portalTabContent">
-
             <!-- My Account / Financials Tab Pane -->
             <div class="tab-pane fade show active" id="account-pane" role="tabpanel" aria-labelledby="account-tab" tabindex="0">
                 @await Html.PartialAsync("_PortalFinancialsPartial", Model)
@@ -51,10 +84,9 @@
             </div>
 
             <!-- Documents & Info Tab Pane -->
-            <div class="tab-pane fade p-4" id="info-pane" role="tabpanel" aria-labelledby="info-tab" tabindex="0">
+            <div class="tab-pane fade" id="info-pane" role="tabpanel" aria-labelledby="info-tab" tabindex="0">
                 @await Html.PartialAsync("_PortalInfoPartial", Model)
             </div>
-
         </div>
     </div>
 </div>

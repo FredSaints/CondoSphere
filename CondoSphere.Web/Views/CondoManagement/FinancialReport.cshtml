@@ -1,0 +1,143 @@
+﻿@model CondoSphere.Core.DTOs.Reports.FinancialStatementDto
+@using CondoSphere.Core.DTOs.Condominiums
+
+@{
+    var condo = ViewData["Condominium"] as CondominiumDto;
+    ViewData["Title"] = "Financial Statement";
+
+    var selectedMonth = Context.Request.Query.ContainsKey("month") ? int.Parse(Context.Request.Query["month"]) : DateTime.Now.Month;
+    var selectedYear = Context.Request.Query.ContainsKey("year") ? int.Parse(Context.Request.Query["year"]) : DateTime.Now.Year;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="mb-0">@ViewData["Title"]</h1>
+        <p class="text-muted mb-0">For Condominium: <strong>@condo.Name</strong></p>
+    </div>
+    <a asp-action="Details" asp-route-id="@condo.Id" class="btn btn-secondary print-hide">
+        <i class="bi bi-arrow-left me-1"></i> Back to Dashboard
+    </a>
+</div>
+
+<!-- Selection Form -->
+<div class="card shadow-sm mb-4 print-hide">
+    <div class="card-body">
+        <form method="get">
+            <div class="row g-3 align-items-end">
+                <input type="hidden" name="condominiumId" value="@condo.Id" />
+                <div class="col-md">
+                    <label for="month" class="form-label fw-bold">Select Month</label>
+                    <select name="month" id="month" class="form-select form-select-lg">
+                        @for (int i = 1; i <= 12; i++)
+                        {
+                            <option value="@i" selected="@(i == selectedMonth)">@System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(i)</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md">
+                    <label for="year" class="form-label fw-bold">Enter Year</label>
+                    <input name="year" id="year" type="number" class="form-control form-control-lg" value="@selectedYear" />
+                </div>
+                <div class="col-md-auto">
+                    <button type="submit" class="btn btn-primary btn-lg w-100">
+                        <i class="bi bi-search me-1"></i> Generate Report
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+@if (Model != null)
+{
+    <div id="report-container" class="card shadow-lg border-0">
+        <div class="card-header d-flex justify-content-between align-items-center print-hide">
+            <div>
+                <h5 class="mb-0">Statement for @(new DateTime(Model.Year, Model.Month, 1).ToString("MMMM yyyy"))</h5>
+                <small class="text-muted">Report generated on @Model.ReportDate.ToLocalTime().ToString("g")</small>
+            </div>
+            <button onclick="window.print()" class="btn btn-outline-secondary">
+                <i class="bi bi-printer-fill me-1"></i> Print
+            </button>
+        </div>
+        <div class="card-body p-4">
+            <!-- Summary Row -->
+            <div class="row g-3 text-center mb-4">
+                <div class="col-md-4">
+                    <div class="card bg-light border-success border-2 h-100">
+                        <div class="card-body">
+                            <h6 class="card-title text-success">Total Income</h6>
+                            <p class="card-text h3 fw-bold">@Model.TotalIncome.ToString("C")</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card bg-light border-danger border-2 h-100">
+                        <div class="card-body">
+                            <h6 class="card-title text-danger">Total Expenses</h6>
+                            <p class="card-text h3 fw-bold">@Model.TotalExpenses.ToString("C")</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card @(Model.Balance >= 0 ? "bg-success-subtle" : "bg-danger-subtle") h-100">
+                        <div class="card-body">
+                            <h6 class="card-title">Final Balance</h6>
+                            <p class="card-text h3 fw-bold">@Model.Balance.ToString("C")</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Details Tables -->
+            <div class="row mt-4">
+                <div class="col-lg-6">
+                    <h5 class="mb-3"><i class="bi bi-arrow-down-circle-fill text-success me-2"></i>Income Details</h5>
+                    <div class="table-responsive">
+                        <table class="table table-sm table-bordered table-hover">
+                            <thead class="table-light"><tr><th>Date</th><th>Unit</th><th>Description</th><th class="text-end">Amount</th></tr></thead>
+                            <tbody>
+                                @foreach (var item in Model.IncomeItems)
+                                {
+                                    <tr><td>@item.PaymentDate.ToString("d")</td><td>@item.UnitIdentifier</td><td>@item.Description</td><td class="text-end">@item.Amount.ToString("C")</td></tr>
+                                }
+                            </tbody>
+                            <tfoot>
+                                <tr class="fw-bold">
+                                    <td colspan="3">Total Income</td>
+                                    <td class="text-end">@Model.TotalIncome.ToString("C")</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <h5 class="mb-3"><i class="bi bi-arrow-up-circle-fill text-danger me-2"></i>Expense Details</h5>
+                    <div class="table-responsive">
+                        <table class="table table-sm table-bordered table-hover">
+                            <thead class="table-light"><tr><th>Date</th><th>Title</th><th class="text-end">Amount</th></tr></thead>
+                            <tbody>
+                                @foreach (var item in Model.ExpenseItems.OrderBy(e => e.ExpenseDate == DateTime.MinValue).ThenBy(e => e.ExpenseDate))
+                                {
+                                    <tr><td>@(item.ExpenseDate == DateTime.MinValue ? "Recurring" : item.ExpenseDate.ToString("d"))</td><td>@item.Title</td><td class="text-end">@item.Amount.ToString("C")</td></tr>
+                                }
+                            </tbody>
+                            <tfoot>
+                                <tr class="fw-bold">
+                                    <td colspan="2">Total Expenses</td>
+                                    <td class="text-end">@Model.TotalExpenses.ToString("C")</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+else if (Context.Request.Query.ContainsKey("year"))
+{
+    <div class="alert alert-warning text-center">
+        <i class="bi bi-exclamation-triangle-fill fs-4 me-2"></i> No financial data found for the selected period.
+    </div>
+}

@@ -1,47 +1,80 @@
 ﻿@model CondoSphere.Core.DTOs.Account.CompanyProfileDto
 @{
     ViewData["Title"] = "Company Profile";
+    ViewData["IsFullWidth"] = true;
 }
 
-<h1>@ViewData["Title"]</h1>
-<p class="text-muted">Update your company's information.</p>
-<hr />
+<style>
+    body {
+        background-color: var(--light-bg);
+    }
+</style>
 
-<div class="row">
-    <div class="col-md-8">
-        <form asp-action="CompanyProfile" method="post">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+<div class="container my-5">
+    <div class="row justify-content-center align-items-center" style="min-height: 70vh;">
+        <div class="col-md-11 col-lg-9 col-xl-8">
 
-            <div class="form-floating mb-3">
-                <input asp-for="Name" class="form-control" />
-                <label asp-for="Name"></label>
-                <span asp-validation-for="Name" class="text-danger"></span>
-            </div>
-            <div class="form-floating mb-3">
-                <input asp-for="Email" class="form-control" />
-                <label asp-for="Email"></label>
-                <span asp-validation-for="Email" class="text-danger"></span>
-            </div>
-            <div class="row">
-                <div class="col-md-6 form-floating mb-3">
-                    <input asp-for="PhoneNumber" class="form-control" />
-                    <label asp-for="PhoneNumber"></label>
-                    <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+            <div class="card shadow-lg border-0">
+                <div class="card-header text-center py-4" style="background: var(--primary-gradient);">
+                    <h2 class="mb-1 text-white"><i class="bi bi-buildings-fill me-2"></i>@ViewData["Title"]</h2>
+                    <p class="mb-0 small text-white-50">Update your company's information.</p>
                 </div>
-                <div class="col-md-6 form-floating mb-3">
-                    <input asp-for="VatNumber" class="form-control" />
-                    <label asp-for="VatNumber"></label>
-                    <span asp-validation-for="VatNumber" class="text-danger"></span>
+
+                <div class="card-body p-4 p-md-5">
+                    <form asp-action="CompanyProfile" method="post">
+                        @Html.AntiForgeryToken()
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-4"></div>
+
+                        <div class="row">
+                            <div class="col-12 mb-3">
+                                <div class="form-floating">
+                                    <input asp-for="Name" class="form-control" placeholder="Company Name" />
+                                    <label asp-for="Name"></label>
+                                    <span asp-validation-for="Name" class="text-danger small"></span>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <div class="form-floating">
+                                    <input asp-for="Email" class="form-control" placeholder="Company Email" />
+                                    <label asp-for="Email"></label>
+                                    <span asp-validation-for="Email" class="text-danger small"></span>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <div class="form-floating">
+                                    <input asp-for="PhoneNumber" class="form-control" placeholder="Company Phone Number" />
+                                    <label asp-for="PhoneNumber"></label>
+                                    <span asp-validation-for="PhoneNumber" class="text-danger small"></span>
+                                </div>
+                            </div>
+
+                            <div class="col-12 mb-3">
+                                <div class="form-floating">
+                                    <input asp-for="Address" class="form-control" placeholder="Company Address" />
+                                    <label asp-for="Address"></label>
+                                    <span asp-validation-for="Address" class="text-danger small"></span>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <div class="form-floating">
+                                    <input asp-for="VatNumber" class="form-control" placeholder="VAT Number" />
+                                    <label asp-for="VatNumber"></label>
+                                    <span asp-validation-for="VatNumber" class="text-danger small"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-end gap-2 mt-4">
+                            <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+                            <button type="submit" class="btn btn-primary">Save Changes</button>
+                        </div>
+                    </form>
                 </div>
             </div>
-            <div class="form-floating mb-3">
-                <input asp-for="Address" class="form-control" />
-                <label asp-for="Address"></label>
-                <span asp-validation-for="Address" class="text-danger"></span>
-            </div>
 
-            <button type="submit" class="btn btn-primary">Save Changes</button>
-            <a asp-action="Index" class="btn btn-secondary">Cancel</a>
-        </form>
+        </div>
     </div>
 </div>

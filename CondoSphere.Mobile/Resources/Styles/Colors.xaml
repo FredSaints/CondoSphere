@@ -1,0 +1,64 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+<ResourceDictionary xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
+
+    <!-- Primary Brand Colors -->
+    <Color x:Key="Primary">#2563EB</Color>
+    <Color x:Key="PrimaryDark">#1D4ED8</Color>
+    <Color x:Key="PrimaryLight">#3B82F6</Color>
+
+    <!-- Secondary Colors -->
+    <Color x:Key="Secondary">#10B981</Color>
+    <Color x:Key="SecondaryDark">#059669</Color>
+    <Color x:Key="SecondaryLight">#34D399</Color>
+
+    <!-- Accent Colors -->
+    <Color x:Key="Accent">#F59E0B</Color>
+    <Color x:Key="AccentDark">#D97706</Color>
+    <Color x:Key="AccentLight">#FCD34D</Color>
+
+    <!-- Status Colors -->
+    <Color x:Key="Success">#10B981</Color>
+    <Color x:Key="Warning">#F59E0B</Color>
+    <Color x:Key="Error">#EF4444</Color>
+    <Color x:Key="Info">#3B82F6</Color>
+
+    <!-- Neutral Colors -->
+    <Color x:Key="Gray50">#F9FAFB</Color>
+    <Color x:Key="Gray100">#F3F4F6</Color>
+    <Color x:Key="Gray200">#E5E7EB</Color>
+    <Color x:Key="Gray300">#D1D5DB</Color>
+    <Color x:Key="Gray400">#9CA3AF</Color>
+    <Color x:Key="Gray500">#6B7280</Color>
+    <Color x:Key="Gray600">#4B5563</Color>
+    <Color x:Key="Gray700">#374151</Color>
+    <Color x:Key="Gray800">#1F2937</Color>
+    <Color x:Key="Gray900">#111827</Color>
+
+    <!-- Background Colors -->
+    <Color x:Key="BackgroundPrimary">White</Color>
+    <Color x:Key="BackgroundSecondary">#F9FAFB</Color>
+    <Color x:Key="BackgroundTertiary">#F3F4F6</Color>
+
+    <!-- Surface Colors -->
+    <Color x:Key="SurfacePrimary">White</Color>
+    <Color x:Key="SurfaceSecondary">#FFFFFF</Color>
+    <Color x:Key="SurfaceElevated">#FFFFFF</Color>
+
+    <!-- Text Colors -->
+    <Color x:Key="TextPrimary">#111827</Color>
+    <Color x:Key="TextSecondary">#6B7280</Color>
+    <Color x:Key="TextTertiary">#9CA3AF</Color>
+    <Color x:Key="TextOnPrimary">White</Color>
+    <Color x:Key="TextOnSecondary">White</Color>
+
+    <!-- Border Colors -->
+    <Color x:Key="BorderPrimary">#E5E7EB</Color>
+    <Color x:Key="BorderSecondary">#D1D5DB</Color>
+    <Color x:Key="BorderFocus">#3B82F6</Color>
+
+    <!-- Shadow Colors -->
+    <Color x:Key="Shadow">#00000010</Color>
+    <Color x:Key="ShadowDark">#00000020</Color>
+
+</ResourceDictionary>

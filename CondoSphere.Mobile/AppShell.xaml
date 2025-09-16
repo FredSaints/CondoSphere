@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Shell
+    x:Class="CondoSphere.Mobile.AppShell"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:views="clr-namespace:CondoSphere.Mobile.Views"
+    xmlns:vm="clr-namespace:CondoSphere.Mobile.ViewModels"
+    Shell.FlyoutBehavior="Disabled"
+    Title="CondoSphere">
+
+    <Shell.BindingContext>
+        <vm:ShellViewModel />
+    </Shell.BindingContext>
+
+    <!-- Shell Visual States -->
+    <Shell.Resources>
+        <Style TargetType="TabBar">
+            <Setter Property="Shell.TabBarBackgroundColor" Value="{StaticResource SurfacePrimary}" />
+            <Setter Property="Shell.TabBarTitleColor" Value="{StaticResource TextPrimary}" />
+            <Setter Property="Shell.TabBarUnselectedColor" Value="{StaticResource Gray500}" />
+            <Setter Property="Shell.TabBarForegroundColor" Value="{StaticResource Primary}" />
+        </Style>
+
+        <Style TargetType="Tab">
+            <Setter Property="Shell.TabBarTitleColor" Value="{StaticResource TextSecondary}" />
+            <Setter Property="Shell.TabBarUnselectedColor" Value="{StaticResource Gray400}" />
+        </Style>
+    </Shell.Resources>
+
+    <!-- Login Screen (Unauthenticated) -->
+    <TabBar Route="auth" IsVisible="{Binding IsUnauthenticated}">
+        <Tab Title="Welcome" Route="login">
+            <ShellContent Shell.NavBarIsVisible="False"
+                          ContentTemplate="{DataTemplate views:LoginPage}" />
+        </Tab>
+    </TabBar>
+
+    <!-- Resident Navigation -->
+    <TabBar Route="resident" IsVisible="{Binding IsResident}">
+        <Tab Title="Portal" Route="portal">
+            <Tab.Icon>
+                <FontImageSource FontFamily="MaterialIcons" Glyph="🏠" Color="{StaticResource Primary}" />
+            </Tab.Icon>
+            <ShellContent ContentTemplate="{DataTemplate views:ResidentPortalPage}" />
+        </Tab>
+
+        <Tab Title="Documents" Route="documents">
+            <Tab.Icon>
+                <FontImageSource FontFamily="MaterialIcons" Glyph="📄" Color="{StaticResource Primary}" />
+            </Tab.Icon>
+            <ShellContent ContentTemplate="{DataTemplate views:DocumentsPage}" />
+        </Tab>
+
+        <Tab Title="Messages">
+            <Tab.Icon>
+                <FontImageSource FontFamily="MaterialIcons" Glyph="✉" Color="{StaticResource Primary}" />
+            </Tab.Icon>
+            <ShellContent Route="messages" ContentTemplate="{DataTemplate views:MessagesPage}" />
+        </Tab>
+
+
+    </TabBar>
+
+    <!-- Manager Navigation -->
+    <TabBar Route="manager" IsVisible="{Binding IsManager}">
+        <Tab Title="Properties" Route="condos">
+            <Tab.Icon>
+                <FontImageSource FontFamily="MaterialIcons" Glyph="🏢" Color="{StaticResource Primary}" />
+            </Tab.Icon>
+            <ShellContent ContentTemplate="{DataTemplate views:CondoListPage}" />
+        </Tab>
+        <Tab Title="Messages">
+            <Tab.Icon>
+                <FontImageSource FontFamily="MaterialIcons" Glyph="✉️" Color="{StaticResource Primary}" />
+            </Tab.Icon>
+            <ShellContent Route="messages" ContentTemplate="{DataTemplate views:MessagesPage}" />
+        </Tab>
+    </TabBar>
+
+    <!-- Admin Navigation -->
+    <TabBar Route="admin" IsVisible="{Binding IsAdmin}">
+        <Tab Title="Dashboard" Route="dashboard">
+            <Tab.Icon>
+                <FontImageSource FontFamily="MaterialIcons" Glyph="📊" Color="{StaticResource Primary}" />
+            </Tab.Icon>
+            <ShellContent ContentTemplate="{DataTemplate views:AdminDashboardPage}" />
+        </Tab>
+        <Tab Title="Messages">
+            <Tab.Icon>
+                <FontImageSource FontFamily="MaterialIcons" Glyph="✉️" Color="{StaticResource Primary}" />
+            </Tab.Icon>
+            <ShellContent Route="messages" ContentTemplate="{DataTemplate views:MessagesPage}" />
+        </Tab>
+    </TabBar>
+
+    <TabBar Route="employee" IsVisible="{Binding IsEmployee}">
+        <Tab Title="My Tasks" Route="tasks">
+            <Tab.Icon>
+                <FontImageSource FontFamily="MaterialIcons" Glyph="🔧" Color="{StaticResource Primary}" />
+            </Tab.Icon>
+            <ShellContent ContentTemplate="{DataTemplate views:EmployeeTasksPage}" />
+        </Tab>
+        <Tab Title="Messages">
+            <Tab.Icon>
+                <FontImageSource FontFamily="MaterialIcons" Glyph="✉️" Color="{StaticResource Primary}" />
+            </Tab.Icon>
+            <ShellContent Route="messages" ContentTemplate="{DataTemplate views:MessagesPage}" />
+        </Tab>
+    </TabBar>
+</Shell>

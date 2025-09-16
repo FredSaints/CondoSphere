@@ -252,5 +252,12 @@ namespace CondoSphere.Web.Controllers
             }
             return NotFound();
         }
+
+        [HttpGet("~/portal/notifications")]
+        public async Task<IActionResult> AllNotifications()
+        {
+            var notifications = await _apiClient.GetAllMyNotificationsAsync();
+            return View(notifications);
+        }
     }
 }

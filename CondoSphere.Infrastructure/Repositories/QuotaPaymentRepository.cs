@@ -17,5 +17,22 @@ namespace CondoSphere.Infrastructure.Repositories
                 .Where(p => quotaIds.Contains(p.UnitQuotaId))
                 .ToListAsync();
         }
+
+        public async Task<IEnumerable<QuotaPayment>> GetPaymentsForPeriodAsync(int condominiumId, int year, int month)
+        {
+            var startDate = new DateTime(year, month, 1);
+            var endDate = startDate.AddMonths(1);
+
+            return await _context.QuotaPayments
+                .Where(p => p.CondominiumId == condominiumId && p.PaymentDate >= startDate && p.PaymentDate < endDate)
+                .ToListAsync();
+        }
+
+        public async Task<decimal> GetTotalIncomeForPeriodAsync(int companyId, DateTime start, DateTime end)
+        {
+            return await _context.QuotaPayments
+                .Where(p => p.CompanyId == companyId && p.PaymentDate >= start && p.PaymentDate < end)
+                .SumAsync(p => p.Amount);
+        }
     }
 }
