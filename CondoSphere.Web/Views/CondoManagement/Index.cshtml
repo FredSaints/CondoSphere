@@ -11,22 +11,27 @@
     </div>
 </div>
 
+
 @if (Model.Any())
 {
     <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
         @foreach (var condo in Model)
         {
             <div class="col">
-                <div class="card h-100 shadow-sm">
-                    <div class="card-body">
-                        <h5 class="card-title">@condo.Name</h5>
-                        <p class="card-text text-muted">@condo.Address</p>
-                    </div>
-                    <div class="card-footer bg-transparent border-top-0 text-end">
-                        <a asp-controller="CondoManagement" asp-action="Details" asp-route-id="@condo.Id" class="btn btn-primary">
-                            <i class="bi bi-gear-fill me-1"></i> Manage
-                        </a>
-                    </div>
+                <div class="card-footer bg-transparent border-top-0 text-end">
+                    <a asp-controller="CondoManagement"
+                       asp-action="Details"
+                       asp-route-id="@condo.Id"
+                       class="btn btn-primary">
+                        <i class="bi bi-gear-fill me-1"></i> Manage
+                    </a>
+
+                    <a asp-controller="Assemblies"
+                       asp-action="Index"
+                       asp-route-condominiumId="@condo.Id"
+                       class="btn btn-outline-primary ms-2">
+                        Assemblies
+                    </a>
                 </div>
             </div>
         }

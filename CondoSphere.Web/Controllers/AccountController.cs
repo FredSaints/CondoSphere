@@ -31,7 +31,7 @@ namespace CondoSphere.Web.Controllers
             return View();
         }
 
-        // using ... (mantém os teus usings)
+  
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -40,17 +40,17 @@ namespace CondoSphere.Web.Controllers
             if (!ModelState.IsValid)
                 return View(model);
 
-            // 1) email confirmado?
+    
             var (isConfirmed, _) = await _apiClient.IsEmailConfirmedAsync(model.Email);
             if (!isConfirmed)
                 return RedirectToAction("ResendConfirmationEmail", "Account", new { email = model.Email });
 
-            // 2) verificar se o utilizador tem 2SV ativo
+
             var twoFactorOn = await _apiClient.IsTwoFactorEnabledAsync(new EmailDto { Email = model.Email });
 
             if (twoFactorOn)
             {
-                // NÃO enviar código aqui.
+
                 TempData["PendingLogin"] = System.Text.Json.JsonSerializer.Serialize(model);
                 TempData["ReturnUrl"] = returnUrl;
                 TempData.Keep("PendingLogin");

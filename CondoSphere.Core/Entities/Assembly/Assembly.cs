@@ -1,6 +1,4 @@
-﻿using CondoSphere.Core;
-
-namespace CondoSphere.Core.Entities.Condominiums
+﻿namespace CondoSphere.Core.Entities.Assembly
 {
     public class Assembly : IEntity
     {

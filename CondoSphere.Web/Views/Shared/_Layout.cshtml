@@ -37,6 +37,7 @@
                                     <a class="nav-link text-dark" asp-controller="Administration" asp-action="Index">Admin Dashboard</a>
                                 </li>
                             }
+
                             if (User.IsInRole(RoleConstants.CondoManager))
                             {
                                 <li class="nav-item">
@@ -48,6 +49,22 @@
                                 <li class="nav-item">
                                     @* This is a placeholder for a future feature *@
                                     <a class="nav-link text-dark" asp-controller="Portal" asp-action="Index">My Portal</a>
+                                </li>
+                            }
+                            if (User.IsInRole(RoleConstants.CompanyAdmin))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark"
+                                       asp-controller="Assemblies"
+                                       asp-action="All">Assemblies</a>
+                                </li>
+                            }
+                            if (User.IsInRole(RoleConstants.CondoManager))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark"
+                                       asp-controller="Assemblies"
+                                       asp-action="SelectCondo">Assemblies</a>
                                 </li>
                             }
                             if(User.IsInRole(RoleConstants.Employee))

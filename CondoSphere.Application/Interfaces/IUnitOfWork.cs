@@ -13,6 +13,13 @@
         IQuotaPaymentRepository QuotaPayments { get; }
         IReceiptRepository Receipts { get; }
         IDocumentRepository Documents { get; }
+
+
+        IAssemblyRepository Assemblies { get; }
+        IAssemblyInviteRepository AssemblyInvites { get; }
+        IAssemblyMessageRepository AssemblyMessages { get; }
+        IAssemblyParticipantRepository AssemblyParticipants { get; }
+
         Task<int> CompleteAsync();
 
     }

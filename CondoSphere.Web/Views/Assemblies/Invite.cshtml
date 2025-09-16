@@ -1,0 +1,76 @@
+﻿@model CondoSphere.Core.DTOs.Assemblies.SendAssemblyInvitesDto
+@{
+    ViewData["Title"] = "Enviar Convites";
+    var condominiumId = (int)ViewData["CondominiumId"];
+    var assemblyId = (int)ViewData["AssemblyId"];
+}
+<h2>@ViewData["Title"]</h2>
+
+<form asp-action="Invite" method="post"
+      asp-route-condominiumId="@condominiumId" asp-route-assemblyId="@assemblyId">
+    <div class="form-check mb-2">
+        <input class="form-check-input" asp-for="InviteAllResidents" />
+        <label class="form-check-label" asp-for="InviteAllResidents">Convidar todos os residentes</label>
+    </div>
+    <div class="form-check mb-3">
+        <input class="form-check-input" asp-for="IncludeEmployees" />
+        <label class="form-check-label" asp-for="IncludeEmployees">Incluir empregados</label>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">IDs de utilizador (separados por vírgulas)</label>
+        <input class="form-control" name="UserIdsCsv" value="" />
+        <small class="text-muted">Opcional. Ex.: 12,15,22</small>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Emails (um por linha)</label>
+        <textarea class="form-control" name="EmailsText" rows="3"></textarea>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Telemóveis (um por linha)</label>
+        <textarea class="form-control" name="PhoneNumbersText" rows="3"></textarea>
+    </div>
+
+    <hr />
+    <div class="mb-3">
+        <label asp-for="EmailSubject" class="form-label"></label>
+        <input asp-for="EmailSubject" class="form-control" />
+    </div>
+    <div class="mb-3">
+        <label asp-for="EmailBody" class="form-label"></label>
+        <textarea asp-for="EmailBody" class="form-control" rows="3"></textarea>
+    </div>
+    <div class="mb-3">
+        <label asp-for="SmsBody" class="form-label"></label>
+        <input asp-for="SmsBody" class="form-control" />
+    </div>
+
+    @* mapear os campos livres para as listas do DTO *@
+    @{
+        // converte POST de campos livres
+        var idsCsv = Context.Request.HasFormContentType ? Context.Request.Form["UserIdsCsv"].ToString() : "";
+        if (!string.IsNullOrWhiteSpace(idsCsv))
+            Model.UserIds = idsCsv.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .Select(s => int.TryParse(s, out var id) ? id : (int?)null)
+            .Where(id => id.HasValue).Select(id => id!.Value).ToList();
+
+        var emailsText = Context.Request.HasFormContentType ? Context.Request.Form["EmailsText"].ToString() : "";
+        if (!string.IsNullOrWhiteSpace(emailsText))
+            Model.Emails = emailsText.Split('\n', StringSplitOptions.RemoveEmptyEntries)
+            .Select(s => s.Trim()).ToList();
+
+        var phonesText = Context.Request.HasFormContentType ? Context.Request.Form["PhoneNumbersText"].ToString() : "";
+        if (!string.IsNullOrWhiteSpace(phonesText))
+            Model.PhoneNumbers = phonesText.Split('\n', StringSplitOptions.RemoveEmptyEntries)
+            .Select(s => s.Trim()).ToList();
+    }
+
+    <button class="btn btn-primary" type="submit">Enviar</button>
+    <a class="btn btn-secondary" asp-action="Index" asp-route-condominiumId="@condominiumId">Voltar</a>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

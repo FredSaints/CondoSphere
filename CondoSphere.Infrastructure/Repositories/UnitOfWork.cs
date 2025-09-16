@@ -20,6 +20,10 @@ namespace CondoSphere.Infrastructure.Repositories
         public IQuotaPaymentRepository QuotaPayments { get; private set; }
         public IReceiptRepository Receipts { get; private set; }
         public IDocumentRepository Documents { get; private set; }
+        public IAssemblyRepository Assemblies { get; private set; }
+        public IAssemblyInviteRepository AssemblyInvites { get; private set; }
+        public IAssemblyMessageRepository AssemblyMessages { get; private set; }
+        public IAssemblyParticipantRepository AssemblyParticipants { get; private set; }
 
         public UnitOfWork(UserManagementDbContext userContext, CondominiumDbContext condoContext, FinancialsDbContext financialsContext)
         {
@@ -38,6 +42,10 @@ namespace CondoSphere.Infrastructure.Repositories
             QuotaPayments = new QuotaPaymentRepository(_financialsContext);
             Receipts = new ReceiptRepository(_financialsContext);
             Documents = new DocumentRepository(_condoContext);
+            Assemblies = new AssemblyRepository(_condoContext);
+            AssemblyInvites = new AssemblyInviteRepository(_condoContext);
+            AssemblyMessages = new AssemblyMessageRepository(_condoContext);
+            AssemblyParticipants = new AssemblyParticipantRepository(_condoContext);
         }
 
         public async Task<int> CompleteAsync()

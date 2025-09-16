@@ -1,0 +1,41 @@
+﻿@model IEnumerable<CondoSphere.Core.DTOs.Assemblies.AssemblyDto>
+@{
+    ViewData["Title"] = "Todas as Assembleias";
+}
+<h2>@ViewData["Title"]</h2>
+
+@if (TempData["SuccessMessage"] != null)
+{
+     <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+     <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+}
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Data</th>
+            <th>Título</th>
+            <th>Condomínio</th>
+            <th>Atas</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var a in Model.OrderByDescending(x => x.ScheduledAt))
+        {
+            <tr>
+                <td>@a.ScheduledAt.ToLocalTime():g</td>
+                <td>@a.Title</td>
+                <td>@a.CondominiumId</td>
+                <td>
+                    @if (!string.IsNullOrWhiteSpace(a.MinutesUrl))
+                    {
+                        <a href="@a.MinutesUrl" target="_blank">Abrir</a>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

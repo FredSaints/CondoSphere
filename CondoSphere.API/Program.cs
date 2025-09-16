@@ -26,6 +26,11 @@ using Microsoft.OpenApi.Models;
 using CondoSphere.Infrastructure.Notifications;
 using System;
 using System.Text;
+using CondoSphere.Application.Interfaces;
+using CondoSphere.Application.Services.Assembly;        
+using CondoSphere.Infrastructure.Repositories;           
+using CondoSphere.Application.Mappings;
+
 
 namespace CondoSphere.API
 {
@@ -108,7 +113,12 @@ namespace CondoSphere.API
             builder.Services.AddScoped<IAuthorizationHandler, CanManageInterventionHandler>();
             builder.Services.AddScoped<ISmsService, TwilioSmsService>();
             builder.Services.AddScoped<IPhoneNumberService, PhoneNumberService>();
+            builder.Services.AddScoped<IAssemblyService, AssemblyService>();
 
+            builder.Services.AddScoped<IAssemblyRepository, AssemblyRepository>();
+            builder.Services.AddScoped<IAssemblyInviteRepository, AssemblyInviteRepository>();
+            builder.Services.AddScoped<IAssemblyMessageRepository, AssemblyMessageRepository>();
+            builder.Services.AddScoped<IAssemblyParticipantRepository, AssemblyParticipantRepository>();
             builder.Services.AddAutoMapper(cfg =>
             {
                 cfg.AddMaps(typeof(CondoSphere.Application.Mappings.CondominiumProfile).Assembly);
@@ -116,6 +126,7 @@ namespace CondoSphere.API
                 cfg.AddMaps(typeof(CondoSphere.Application.Mappings.InterventionProfile).Assembly);
                 cfg.AddMaps(typeof(CondoSphere.Application.Mappings.FinancialsProfile).Assembly);
                 cfg.AddMaps(typeof(CondoSphere.Application.Mappings.UserProfile).Assembly);
+                cfg.AddMaps(typeof(AssemblyProfile).Assembly);
             });
             builder.Services.AddAuthorization(options =>
             {

@@ -7,6 +7,7 @@ using CondoSphere.Web.Models;
 using Microsoft.AspNetCore.WebUtilities;
 using System.Globalization;
 using System.Text.Json;
+using CondoSphere.Core.DTOs.Assemblies;
 
 namespace CondoSphere.Web.Services
 {
@@ -750,6 +751,59 @@ namespace CondoSphere.Web.Services
             //TODO rever isto 
             return false;
         }
+
+        public async Task<IEnumerable<AssemblyDto>> GetAssembliesForCondominiumAsync(int condominiumId)
+        {
+            return await _httpClient.GetFromJsonAsync<IEnumerable<AssemblyDto>>(
+                $"/api/assemblies/condominium/{condominiumId}")  
+                ?? Enumerable.Empty<AssemblyDto>();
+        }
+
+        public async Task<AssemblyDto?> CreateAssemblyAsync(CreateAssemblyDto dto)
+        {
+            var response = await _httpClient.PostAsJsonAsync("/api/assemblies", dto);
+            if (!response.IsSuccessStatusCode) return null;
+            return await response.Content.ReadFromJsonAsync<AssemblyDto>();
+        }
+
+        public async Task<int> SendAssemblyInvitesAsync(int assemblyId, SendAssemblyInvitesDto dto)
+        {
+            var response = await _httpClient.PostAsJsonAsync($"/api/assemblies/{assemblyId}/invites", dto);
+            if (!response.IsSuccessStatusCode) return 0;
+            var body = await response.Content.ReadAsStringAsync();
+            // tenta desserializar um inteiro; se não der, assume 0
+            if (int.TryParse(body, out var sent)) return sent;
+            try
+            {
+                var payload = await response.Content.ReadFromJsonAsync<Dictionary<string, int>>();
+                return payload != null && payload.TryGetValue("sent", out var v) ? v : 0;
+            }
+            catch { return 0; }
+        }
+
+        public async Task<IEnumerable<AssemblyMessageDto>> GetAssemblyMessagesAsync(int assemblyId)
+        {
+            return await _httpClient.GetFromJsonAsync<IEnumerable<AssemblyMessageDto>>($"/api/assemblies/{assemblyId}/messages")
+                   ?? Enumerable.Empty<AssemblyMessageDto>();
+        }
+
+        public async Task<AssemblyMessageDto?> PostAssemblyMessageAsync(int assemblyId, PostAssemblyMessageDto dto)
+        {
+            var response = await _httpClient.PostAsJsonAsync($"/api/assemblies/{assemblyId}/messages", dto);
+            if (!response.IsSuccessStatusCode) return null;
+            return await response.Content.ReadFromJsonAsync<AssemblyMessageDto>();
+        }
+        public async Task<IEnumerable<AssemblyDto>> GetCompanyAssembliesAsync()
+        {
+            var resp = await _httpClient.GetAsync("/api/assemblies/company");
+            if (!resp.IsSuccessStatusCode)
+            {
+                var raw = await resp.Content.ReadAsStringAsync();
+                throw new HttpRequestException($"GET /api/assemblies/company => {(int)resp.StatusCode} {resp.StatusCode}: {raw}");
+            }
+            return await resp.Content.ReadFromJsonAsync<IEnumerable<AssemblyDto>>() ?? Enumerable.Empty<AssemblyDto>();
+        }
+
 
     }
 }

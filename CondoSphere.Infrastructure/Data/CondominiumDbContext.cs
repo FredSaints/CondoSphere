@@ -1,4 +1,5 @@
-﻿using CondoSphere.Core.Entities.Condominiums;
+﻿using CondoSphere.Core.Entities.Assembly;
+using CondoSphere.Core.Entities.Condominiums;
 using CondoSphere.Core.Entities.Users;
 using Microsoft.EntityFrameworkCore;
 
@@ -12,8 +13,9 @@ namespace CondoSphere.Infrastructure.Data
         public DbSet<Occurrence> Occurrences { get; set; }
         public DbSet<Intervention> Interventions { get; set; }
         public DbSet<Assembly> Assemblies { get; set; }
-
-        // TODO: Add DbSets for the virtual assembly features later
+        public DbSet<AssemblyParticipant> AssemblyParticipants { get; set; }
+        public DbSet<AssemblyMessage> AssemblyMessages { get; set; }
+        public DbSet<CondoSphere.Core.Entities.Assembly.AssemblyInvite> AssemblyInvites { get; set; }
 
         public CondominiumDbContext(DbContextOptions<CondominiumDbContext> options)
             : base(options)
