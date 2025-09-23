@@ -83,12 +83,27 @@
                 <div class="tab-pane fade" id="financials-pane" role="tabpanel" aria-labelledby="financials-tab" tabindex="0">
                     @await Html.PartialAsync("_CondoMgmtFinancialsPartial", Model)
                 </div>
+
+                <!-- Documents Tab Pane -->
                 <div class="tab-pane fade" id="documents-pane" role="tabpanel" tabindex="0">
                     @await Html.PartialAsync("_CondoMgmtDocumentsPartial", Model)
                 </div>
+
+                <!-- Communications Tab Pane -->
                 <div class="tab-pane fade" id="communications-pane" role="tabpanel">
                     <h5 class="mb-3">Communication Tools</h5>
                     <p class="text-muted">Send announcements and manage communications with residents.</p>
+
+                    <!-- Assemblies button (novo) -->
+                    <div class="d-flex justify-content-end mb-3">
+                        <a class="btn btn-outline-primary"
+                           asp-controller="Assemblies"
+                           asp-action="Unified"
+                           asp-route-condominiumId="@Model.Condominium.Id">
+                            <i class="bi bi-people me-1"></i> Assemblies
+                        </a>
+                    </div>
+
                     <a class="btn btn-primary" asp-action="Announcement" asp-route-condominiumId="@Model.Condominium.Id">
                         <i class="bi bi-megaphone-fill me-1"></i> Send New Announcement
                     </a>
@@ -110,6 +125,7 @@
     }
 
     @if (!string.IsNullOrEmpty(activeTab))
+
     {
         <script>
             document.addEventListener('DOMContentLoaded', function () {
@@ -120,4 +136,4 @@
             });
         </script>
     }
-}
+    }

@@ -5,10 +5,6 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CondoSphere.Infrastructure.Repositories
 {
-    /// <summary>
-    /// Implements the ICondominiumRepository using Entity Framework Core.
-    /// This repository modifies the change tracker but does not save to the database.
-    /// </summary>
     public class CondominiumRepository : ICondominiumRepository
     {
         private readonly CondominiumDbContext _context;
@@ -18,64 +14,78 @@ namespace CondoSphere.Infrastructure.Repositories
             _context = context;
         }
 
-        public async Task AddAsync(Condominium condominium)
+        // ========== CRUD ==========
+        public async Task AddAsync(Condominium entity)
         {
-            await _context.Condominiums.AddAsync(condominium);
+            await _context.Condominiums.AddAsync(entity);
         }
 
-        public async Task<IEnumerable<Condominium>> GetAllAsync(int companyId, int pageNumber, int pageSize)
+        public void Update(Condominium entity)
         {
-            var query = _context.Condominiums
-                .Where(c => c.CompanyId == companyId);
-
-            var pagedQuery = query.Skip((pageNumber - 1) * pageSize).Take(pageSize);
-
-            return await pagedQuery.AsNoTracking().ToListAsync();
+            _context.Condominiums.Update(entity);
         }
 
+        public void Remove(Condominium entity)
+        {
+            _context.Condominiums.Remove(entity);
+        }
+
+        // ========== READ ==========
         public async Task<Condominium?> GetByIdAsync(int id, int companyId)
         {
             return await _context.Condominiums
+                .AsNoTracking()
                 .FirstOrDefaultAsync(c => c.Id == id && c.CompanyId == companyId);
         }
 
-        public void Remove(Condominium condominium)
+        public async Task<IReadOnlyList<Condominium>> GetAllAsync(int companyId, int pageNumber, int pageSize)
         {
-            _context.Condominiums.Remove(condominium);
-        }
+            if (pageNumber < 1) pageNumber = 1;
+            if (pageSize < 1) pageSize = 10;
 
-        public void Update(Condominium condominium)
-        {
-            // This marks the entity for update in EF Core's change tracker.
-            _context.Entry(condominium).State = EntityState.Modified;
-        }
-
-        public async Task<IEnumerable<Condominium>> GetByManagerIdAsync(int managerId)
-        {
             return await _context.Condominiums
-                .Where(c => c.ManagerId == managerId)
                 .AsNoTracking()
+                .Where(c => c.CompanyId == companyId)
+                .OrderBy(c => c.Name)          // ou .OrderByDescending(c => c.Id) se preferires
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
                 .ToListAsync();
         }
 
-        public async Task<IEnumerable<Condominium>> GetByIdsAsync(IEnumerable<int> ids)
+        public async Task<IReadOnlyList<Condominium>> GetAllForCompanyAsync(int companyId)
         {
-            if (ids == null || !ids.Any())
-            {
-                return Enumerable.Empty<Condominium>();
-            }
+            return await _context.Condominiums
+                .AsNoTracking()
+                .Where(c => c.CompanyId == companyId)
+                .OrderBy(c => c.Name)
+                .ToListAsync();
+        }
+
+        public async Task<IReadOnlyList<Condominium>> GetByManagerIdAsync(int managerId)
+        {
+            return await _context.Condominiums
+                .AsNoTracking()
+                .Where(c => c.ManagerId == managerId)
+                .OrderBy(c => c.Name)
+                .ToListAsync();
+        }
+
+        public async Task<IReadOnlyList<Condominium>> GetByIdsAsync(IEnumerable<int> ids)
+        {
+            var set = ids?.Distinct().ToList() ?? new List<int>();
+            if (set.Count == 0) return new List<Condominium>();
 
             return await _context.Condominiums
-                .Where(c => ids.Contains(c.Id))
+                .AsNoTracking()
+                .Where(c => set.Contains(c.Id))
                 .ToListAsync();
         }
 
-        public async Task<IEnumerable<Condominium>> GetAllForCompanyAsync(int companyId)
+        public async Task<int> CountAsync(int companyId)
         {
             return await _context.Condominiums
                 .Where(c => c.CompanyId == companyId)
-                .AsNoTracking()
-                .ToListAsync();
+                .CountAsync();
         }
     }
 }

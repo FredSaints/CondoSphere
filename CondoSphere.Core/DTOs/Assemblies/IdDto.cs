@@ -4,12 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CondoSphere.Core.Enums
+namespace CondoSphere.Core.DTOs.Assemblies
 {
-    public enum AssemblyInvitationChannel
+    public class IdDto :IEntity
     {
-        Email = 1,
-        Sms = 2,
-        Both = 3
+        public int Id { get; set; }
     }
 }

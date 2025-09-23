@@ -93,5 +93,11 @@ namespace CondoSphere.Infrastructure.Repositories
                 .CountAsync(u => u.CompanyId == companyId &&_context.UserRoles.Any(ur => ur.UserId == u.Id &&
                             _context.Roles.Any(r => r.Id == ur.RoleId && r.Name == roleName)));
         }
+
+        public Task<int> GetPrimaryCondominiumIdAsync(int userId)
+        {
+
+            return Task.FromResult(0);
+        }
     }
 }

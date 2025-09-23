@@ -1,76 +1,69 @@
 ﻿@model CondoSphere.Core.DTOs.Assemblies.SendAssemblyInvitesDto
 @{
-    ViewData["Title"] = "Enviar Convites";
-    var condominiumId = (int)ViewData["CondominiumId"];
-    var assemblyId = (int)ViewData["AssemblyId"];
+    ViewData["Title"] = "Invite Participants";
+    var condominiumId = (int)(ViewData["CondominiumId"] ?? 0);
+    var assemblyId = (int)(ViewData["AssemblyId"] ?? 0);
+    var residents = ViewBag.Residents as List<SelectListItem> ?? new();
 }
-<h2>@ViewData["Title"]</h2>
 
-<form asp-action="Invite" method="post"
-      asp-route-condominiumId="@condominiumId" asp-route-assemblyId="@assemblyId">
-    <div class="form-check mb-2">
-        <input class="form-check-input" asp-for="InviteAllResidents" />
-        <label class="form-check-label" asp-for="InviteAllResidents">Convidar todos os residentes</label>
+<div class="container my-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <div class="card shadow-sm">
+        <div class="card-header"><h3 class="mb-0"><i class="bi bi-envelope me-2"></i>Invite Participants</h3></div>
+        <div class="card-body">
+          <form asp-action="Invite" asp-route-condominiumId="@condominiumId" asp-route-assemblyId="@assemblyId" method="post">
+                        @Html.AntiForgeryToken()
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+            <div class="form-check form-switch mb-3">
+              <input class="form-check-input" asp-for="InviteAllResidents" />
+              <label class="form-check-label" asp-for="InviteAllResidents">Invite all residents</label>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Select residents</label>
+              <select asp-for="SelectedResidentIds"
+                      asp-items="residents"
+                      multiple
+                      class="form-select"
+                      size="8">
+              </select>
+              <span class="form-text">Mantém Ctrl/Cmd para seleção múltipla.</span>
+            </div>
+
+            <div class="form-check form-switch mb-4">
+              <input class="form-check-input" asp-for="IncludeEmployees" />
+              <label class="form-check-label" asp-for="IncludeEmployees">Include employees</label>
+            </div>
+
+            <div class="form-floating mb-3">
+              <input asp-for="EmailSubject" class="form-control" placeholder="Subject" />
+              <label asp-for="EmailSubject">Email Subject</label>
+            </div>
+
+            <div class="form-floating mb-3">
+              <textarea asp-for="EmailBody" class="form-control" style="height:140px" placeholder="Custom email body (optional)"></textarea>
+              <label asp-for="EmailBody">Email Body (optional)</label>
+            </div>
+
+            <div class="form-floating mb-4">
+              <textarea asp-for="SmsBody" class="form-control" style="height:100px" placeholder="Custom SMS body (optional)"></textarea>
+              <label asp-for="SmsBody">SMS Body (optional)</label>
+            </div>
+
+            <div class="d-flex gap-2">
+              <button type="submit" class="btn btn-primary">
+                <i class="bi bi-send-check me-1"></i>Send Invites
+              </button>
+              <a asp-action="Unified" asp-route-condominiumId="@condominiumId" class="btn btn-secondary">Back</a>
+            </div>
+          </form>
+        </div>
+      </div>
     </div>
-    <div class="form-check mb-3">
-        <input class="form-check-input" asp-for="IncludeEmployees" />
-        <label class="form-check-label" asp-for="IncludeEmployees">Incluir empregados</label>
-    </div>
-
-    <div class="mb-3">
-        <label class="form-label">IDs de utilizador (separados por vírgulas)</label>
-        <input class="form-control" name="UserIdsCsv" value="" />
-        <small class="text-muted">Opcional. Ex.: 12,15,22</small>
-    </div>
-
-    <div class="mb-3">
-        <label class="form-label">Emails (um por linha)</label>
-        <textarea class="form-control" name="EmailsText" rows="3"></textarea>
-    </div>
-
-    <div class="mb-3">
-        <label class="form-label">Telemóveis (um por linha)</label>
-        <textarea class="form-control" name="PhoneNumbersText" rows="3"></textarea>
-    </div>
-
-    <hr />
-    <div class="mb-3">
-        <label asp-for="EmailSubject" class="form-label"></label>
-        <input asp-for="EmailSubject" class="form-control" />
-    </div>
-    <div class="mb-3">
-        <label asp-for="EmailBody" class="form-label"></label>
-        <textarea asp-for="EmailBody" class="form-control" rows="3"></textarea>
-    </div>
-    <div class="mb-3">
-        <label asp-for="SmsBody" class="form-label"></label>
-        <input asp-for="SmsBody" class="form-control" />
-    </div>
-
-    @* mapear os campos livres para as listas do DTO *@
-    @{
-        // converte POST de campos livres
-        var idsCsv = Context.Request.HasFormContentType ? Context.Request.Form["UserIdsCsv"].ToString() : "";
-        if (!string.IsNullOrWhiteSpace(idsCsv))
-            Model.UserIds = idsCsv.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
-            .Select(s => int.TryParse(s, out var id) ? id : (int?)null)
-            .Where(id => id.HasValue).Select(id => id!.Value).ToList();
-
-        var emailsText = Context.Request.HasFormContentType ? Context.Request.Form["EmailsText"].ToString() : "";
-        if (!string.IsNullOrWhiteSpace(emailsText))
-            Model.Emails = emailsText.Split('\n', StringSplitOptions.RemoveEmptyEntries)
-            .Select(s => s.Trim()).ToList();
-
-        var phonesText = Context.Request.HasFormContentType ? Context.Request.Form["PhoneNumbersText"].ToString() : "";
-        if (!string.IsNullOrWhiteSpace(phonesText))
-            Model.PhoneNumbers = phonesText.Split('\n', StringSplitOptions.RemoveEmptyEntries)
-            .Select(s => s.Trim()).ToList();
-    }
-
-    <button class="btn btn-primary" type="submit">Enviar</button>
-    <a class="btn btn-secondary" asp-action="Index" asp-route-condominiumId="@condominiumId">Voltar</a>
-</form>
-
+  </div>
+</div>
 @section Scripts {
-    <partial name="_ValidationScriptsPartial" />
+     <partial name="_ValidationScriptsPartial" />
 }

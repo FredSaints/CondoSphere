@@ -17,7 +17,7 @@
 
         IAssemblyRepository Assemblies { get; }
         IAssemblyInviteRepository AssemblyInvites { get; }
-        IAssemblyMessageRepository AssemblyMessages { get; }
+
         IAssemblyParticipantRepository AssemblyParticipants { get; }
 
         INotificationRepository Notifications { get; }

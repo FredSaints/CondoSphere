@@ -1,12 +1,12 @@
-﻿using System.Linq;
-using AutoMapper;
-using CondoSphere.Application.Interfaces;
+﻿using CondoSphere.Application.Interfaces;
+using CondoSphere.Application.Services.Messages;
 using CondoSphere.Core;
 using CondoSphere.Core.DTOs.Assemblies;
-using Microsoft.Extensions.Configuration;
-using CoreAssembly = CondoSphere.Core.Entities.Assembly.Assembly;
+using CondoSphere.Core.DTOs.Messages;
 using CondoSphere.Core.Entities.Assembly;
 using CondoSphere.Core.Enums;
+using Microsoft.Extensions.Configuration;
+using AssemblyEntity = CondoSphere.Core.Entities.Assembly.Assembly;
 
 namespace CondoSphere.Application.Services.Assembly
 {
@@ -15,296 +15,374 @@ namespace CondoSphere.Application.Services.Assembly
         private readonly IUnitOfWork _uow;
         private readonly IAssemblyRepository _assemblies;
         private readonly IAssemblyInviteRepository _invites;
-        private readonly IAssemblyMessageRepository _messages;
         private readonly IAssemblyParticipantRepository _participants;
         private readonly ICurrentUserService _current;
-        private readonly IMapper _mapper;
         private readonly IMailService _mail;
         private readonly ISmsService _sms;
         private readonly IPhoneNumberService _phone;
+        private readonly IInAppNotificationService _inAppNotify;
         private readonly IConfiguration _cfg;
+        private readonly IResidentRepository _residents;
+        private readonly IMessageService _messages;                
+
 
         public AssemblyService(
-            IUnitOfWork uow,
-            IAssemblyRepository assemblies,
-            IAssemblyInviteRepository invites,
-            IAssemblyMessageRepository messages,
-            IAssemblyParticipantRepository participants,
-            ICurrentUserService current,
-            IMapper mapper,
-            IMailService mail,
-            ISmsService sms,
-            IPhoneNumberService phone,
-            IConfiguration cfg)
+              IUnitOfWork uow,
+              IAssemblyRepository assemblies,
+              IAssemblyInviteRepository invites,
+              IAssemblyParticipantRepository participants,
+              ICurrentUserService current,
+              IMailService mail,
+              ISmsService sms,
+              IMessageService messages,
+              IPhoneNumberService phone,
+              IInAppNotificationService inAppNotify,
+              IConfiguration cfg,
+              IResidentRepository residents)              
         {
             _uow = uow;
             _assemblies = assemblies;
             _invites = invites;
-            _messages = messages;
             _participants = participants;
             _current = current;
-            _mapper = mapper;
             _mail = mail;
             _sms = sms;
+            _messages = messages;
             _phone = phone;
+            _inAppNotify = inAppNotify;
             _cfg = cfg;
+            _residents = residents;                     
         }
 
+        // ========= CREATE =========
         public async Task<AssemblyDto?> CreateAsync(CreateAssemblyDto dto)
         {
-            var userId = _current.UserId;
-            var companyId = _current.CompanyId;
-            if (userId == null || companyId == null) return null;
+            var userCompany = _current.CompanyId;
+            if (userCompany == null) return null;
 
-            var condo = await _uow.Condominiums.GetByIdAsync(dto.CondominiumId, companyId.Value);
-            if (condo == null) return null;
-
-            var isAdmin = _current.IsInRole(RoleConstants.CompanyAdmin);
-            var isManager = _current.IsInRole(RoleConstants.CondoManager) && condo.ManagerId == userId.Value;
-            if (!isAdmin && !isManager) return null;
-
-            var entity = new CoreAssembly
+            var entity = new AssemblyEntity
             {
+                CompanyId = userCompany.Value,
                 CondominiumId = dto.CondominiumId,
-                CompanyId = condo.CompanyId,
-                Date = dto.ScheduledAt,
-                Topic = dto.Title,
-                MinutesUrl = null
+                Date = dto.Date,
+                Topic = dto.Topic
             };
+
+            entity.JitsiRoomName = $"condosphere-c{entity.CompanyId}-cd{entity.CondominiumId}-a{Guid.NewGuid():N}";
+            entity.JitsiRoomPassword = null;
 
             await _assemblies.AddAsync(entity);
             await _uow.CompleteAsync();
 
-            return _mapper.Map<AssemblyDto>(entity);
+            var dtoOut = Map(entity);
+
+            // preencher nome do condomínio (Opção B) — precisa do companyId
+            var condo = await _uow.Condominiums.GetByIdAsync(entity.CondominiumId, entity.CompanyId);
+            dtoOut.CondominiumName = condo?.Name;
+
+            return dtoOut;
         }
 
+        public Task<IEnumerable<AssemblyDto>> GetByCondominiumAsync(int condominiumId)
+            => GetForCondominiumAsync(condominiumId);
+
+        // ========= LISTS =========
         public async Task<IEnumerable<AssemblyDto>> GetForCondominiumAsync(int condominiumId)
         {
             var list = await _assemblies.GetByCondominiumAsync(condominiumId);
-            return list.Select(_mapper.Map<AssemblyDto>);
+
+            // buscar nome do condomínio uma única vez (scoped à empresa atual)
+            var companyId = _current.CompanyId ?? 0;
+            string? condoName = null;
+            if (companyId > 0)
+            {
+                var condo = await _uow.Condominiums.GetByIdAsync(condominiumId, companyId);
+                condoName = condo?.Name;
+            }
+
+            return list.Select(a => new AssemblyDto
+            {
+                Id = a.Id,
+                CompanyId = a.CompanyId,
+                CondominiumId = a.CondominiumId,
+                CondominiumName = condoName,
+                Date = a.Date,
+                Topic = a.Topic ?? string.Empty,
+                JitsiRoomName = a.JitsiRoomName,
+                JitsiRoomPassword = a.JitsiRoomPassword,
+            });
         }
 
         public async Task<IEnumerable<AssemblyDto>> GetAllForCompanyAsync(int companyId)
         {
             var list = await _assemblies.GetAllForCompanyAsync(companyId);
-            return list.Select(_mapper.Map<AssemblyDto>);
+
+            // lookup de nomes de condomínios (evita N+1)
+            var condoIds = list.Select(a => a.CondominiumId).Distinct().ToList();
+            var condos = await _uow.Condominiums.GetByIdsAsync(condoIds);
+            var condoNameById = condos.ToDictionary(c => c.Id, c => c.Name);
+
+            return list.Select(a => new AssemblyDto
+            {
+                Id = a.Id,
+                CompanyId = a.CompanyId,
+                CondominiumId = a.CondominiumId,
+                CondominiumName = condoNameById.TryGetValue(a.CondominiumId, out var n) ? n : null,
+                Date = a.Date,
+                Topic = a.Topic ?? string.Empty,
+                JitsiRoomName = a.JitsiRoomName,
+                JitsiRoomPassword = a.JitsiRoomPassword,
+            });
+        }
+
+        // ========= READ =========
+        public async Task<AssemblyDto?> GetByIdAsync(int id)
+        {
+            var a = await _assemblies.GetByIdAsync(id);
+            if (a == null) return null;
+
+            var dto = Map(a);
+
+            // trazer o nome do condomínio (precisa de companyId da própria entidade)
+            var condo = await _uow.Condominiums.GetByIdAsync(a.CondominiumId, a.CompanyId);
+            dto.CondominiumName = condo?.Name;
+
+            return dto;
+        }
+
+        // ========= UPDATE =========
+        public async Task<AssemblyDto?> UpdateAsync(int id, AssemblyDto dto)
+        {
+            var existing = await _assemblies.GetByIdAsync(id);
+            if (existing == null) return null;
+
+            if (_current.CompanyId.HasValue && existing.CompanyId != _current.CompanyId.Value)
+                return null;
+
+            existing.Topic = dto.Topic;
+            existing.Date = dto.Date;
+
+            if (dto.CondominiumId > 0 && dto.CondominiumId != existing.CondominiumId)
+            {
+                existing.CondominiumId = dto.CondominiumId;
+                // (opcional) regenerar JitsiRoomName se quiseres atar ao condomínio
+                // existing.JitsiRoomName = $"condosphere-c{existing.CompanyId}-cd{existing.CondominiumId}-a{existing.Id}";
+            }
+
+            _assemblies.Update(existing);
+            await _uow.CompleteAsync();
+
+            var outDto = Map(existing);
+            var condo = await _uow.Condominiums.GetByIdAsync(existing.CondominiumId, existing.CompanyId);
+            outDto.CondominiumName = condo?.Name;
+            return outDto;
         }
 
         public async Task<int> SendInvitesAsync(int assemblyId, SendAssemblyInvitesDto dto)
         {
-            var userId = _current.UserId;
-            var companyId = _current.CompanyId;
-            if (userId == null || companyId == null) return 0;
+            var asm = await _assemblies.GetByIdAsync(assemblyId);
+            if (asm == null) return 0;
 
-            var assembly = await _assemblies.GetByIdAsync(assemblyId);
-            if (assembly == null || assembly.CompanyId != companyId.Value) return 0;
+            var recipients = new List<(string? Email, string? PhoneE164, int? UserId)>();
 
-            var isAdmin = _current.IsInRole(RoleConstants.CompanyAdmin);
-
-            var condo = await _uow.Condominiums.GetByIdAsync(assembly.CondominiumId, companyId.Value);
-            var isManager = _current.IsInRole(RoleConstants.CondoManager) && condo?.ManagerId == userId.Value;
-
-            if (!isAdmin && !isManager) return 0;
-
-            // (UserId, Email, PhoneRaw)
-            var recipients = new List<(int? UserId, string? Email, string? Phone)>();
-
-            // 1) Todos os residentes do condomínio
+            // a) Residentes
+            var condoResidents = await _residents.GetByCondominiumAsync(asm.CondominiumId);
             if (dto.InviteAllResidents)
             {
-                var units = await _uow.Units.GetAllAsync(assembly.CondominiumId);
-                var residentIds = units
-                    .Where(u => u.ResidentId.HasValue)
-                    .Select(u => u.ResidentId!.Value)
-                    .Distinct()
-                    .ToList();
-
-                if (residentIds.Count > 0)
+                recipients.AddRange(condoResidents.Select(r => (r.Email, _phone.Normalize(r.PhoneNumber), (int?)r.Id)));
+            }
+            else
+            {
+                var selectedIds = (dto.SelectedResidentIds ?? dto.UserIds?.ToList() ?? new List<int>())
+                    .Distinct().ToHashSet();
+                if (selectedIds.Count > 0)
                 {
-                    var residents = await _uow.Users.GetUsersByIdsAsync(residentIds);
-                    recipients.AddRange(residents.Select(r => ((int?)r.Id, r.Email, (string?)null)));
+                    recipients.AddRange(
+                        condoResidents.Where(r => selectedIds.Contains(r.Id))
+                                      .Select(r => (r.Email, _phone.Normalize(r.PhoneNumber), (int?)r.Id)));
                 }
             }
 
-            // 2) Funcionários
+            // b) Funcionários (role Employee)
             if (dto.IncludeEmployees)
             {
-                var employees = await _uow.Users.GetUsersInRoleAsync(RoleConstants.Employee, companyId.Value);
-                recipients.AddRange(employees.Select(e => ((int?)e.Id, e.Email, (string?)null)));
+                var emps = await _uow.Users.GetUsersInRoleAsync(RoleConstants.Employee, asm.CompanyId);
+                recipients.AddRange(emps.Select(e => (e.Email, (string?)null, (int?)e.Id)));
             }
 
-            // 3) UserIds explícitos
-            if (dto.UserIds != null && dto.UserIds.Any())
+            // c) Ad-hoc
+            if (dto.Emails != null)
+                recipients.AddRange(dto.Emails.Where(e => !string.IsNullOrWhiteSpace(e))
+                    .Select(e => (e.Trim(), (string?)null, (int?)null)));
+
+            if (dto.PhoneNumbers != null)
+                recipients.AddRange(dto.PhoneNumbers.Where(p => !string.IsNullOrWhiteSpace(p))
+                    .Select(p => ((string?)null, _phone.Normalize(p), (int?)null)));
+
+            // Distintos/válidos
+            var emails = recipients.Select(x => x.Email).Where(s => !string.IsNullOrWhiteSpace(s))
+                .Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+            var phones = recipients.Select(x => x.PhoneE164).Where(s => !string.IsNullOrWhiteSpace(s))
+                .Distinct().ToList();
+            var userIds = recipients.Select(x => x.UserId).Where(id => id.HasValue)
+                .Select(id => id!.Value).Distinct().ToList();
+
+            if (emails.Count == 0 && phones.Count == 0 && userIds.Count == 0) return 0;
+
+            // Conteúdo com link direto Jitsi
+            var room = string.IsNullOrWhiteSpace(asm.JitsiRoomName)
+                ? $"condosphere-c{asm.CompanyId}-cd{asm.CondominiumId}-a{asm.Id}"
+                : asm.JitsiRoomName!;
+            var jitsiBase = _cfg["Jitsi:PublicBaseUrl"]?.TrimEnd('/') ?? "https://meet.jit.si";
+            var joinUrl = $"{jitsiBase}/{room}";
+
+            var subject = string.IsNullOrWhiteSpace(dto.EmailSubject)
+                ? $"Convocatória: {asm.Topic} – {asm.Date:dd/MM/yyyy HH:mm}"
+                : dto.EmailSubject!;
+            var emailBody = string.IsNullOrWhiteSpace(dto.EmailBody)
+                ? $"<p>Olá,</p><p>Está convocado(a) para a assembleia <strong>\"{asm.Topic}\"</strong> em {asm.Date:dd/MM/yyyy HH:mm}.</p><p>Entrar: <a href=\"{joinUrl}\">{joinUrl}</a></p>"
+                : dto.EmailBody!;
+            var smsBody = string.IsNullOrWhiteSpace(dto.SmsBody)
+                ? $"Assembleia \"{asm.Topic}\" {asm.Date:dd/MM HH:mm}. Entrar: {joinUrl}"
+                : dto.SmsBody!;
+
+            // versão plaintext para Mensagens internas
+            var messageContent =
+                $"Está convocado(a) para a assembleia \"{asm.Topic}\" em {asm.Date:dd/MM/yyyy HH:mm}." +
+                $"\nEntrar: {joinUrl}";
+
+            // Envio: Email
+            var sent = 0;
+            foreach (var e in emails)
             {
-                var users = await _uow.Users.GetUsersByIdsAsync(dto.UserIds);
-                recipients.AddRange(users.Select(u => ((int?)u.Id, u.Email, (string?)null)));
+                await _mail.SendEmailAsync(e!, subject, emailBody);
+                sent++;
             }
 
-            // 4) Emails / Telefones diretos (filtrar vazios)
-            var emails = (dto.Emails ?? Enumerable.Empty<string>())
-                .Where(e => !string.IsNullOrWhiteSpace(e))
-                .Select(e => e.Trim());
-
-            var phones = (dto.PhoneNumbers ?? Enumerable.Empty<string>())
-                .Where(p => !string.IsNullOrWhiteSpace(p))
-                .Select(p => p.Trim());
-
-            recipients.AddRange(emails.Select(e => ((int?)null, (string?)e, (string?)null)));
-            recipients.AddRange(phones.Select(p => ((int?)null, (string?)null, (string?)p)));
-
-            // 5) Deduplicar por UserId / email normalizado / telemóvel E.164
-            //    - ignorar registos sem nenhum identificador
-            recipients = recipients
-                .Where(r => r.UserId.HasValue || !string.IsNullOrWhiteSpace(r.Email) || !string.IsNullOrWhiteSpace(r.Phone))
-                .GroupBy(r =>
-                {
-                    if (r.UserId.HasValue) return $"U:{r.UserId.Value}";
-                    if (!string.IsNullOrWhiteSpace(r.Email)) return $"E:{r.Email!.Trim().ToLowerInvariant()}";
-                    var norm = string.IsNullOrWhiteSpace(r.Phone) ? null : _phone.Normalize(r.Phone);
-                    return $"P:{norm}";
-                })
-                .Select(g => g.First())
-                .ToList();
-
-            var webBase = _cfg["ClientSettings:WebAppBaseUrl"]?.TrimEnd('/');
-            var joinUrl = string.IsNullOrWhiteSpace(webBase)
-                ? $"/assemblies/{assemblyId}"
-                : $"{webBase}/assemblies/{assemblyId}";
-
-            var invites = new List<AssemblyInvite>();
-            int sent = 0;
-
-            foreach (var r in recipients)
+            // Envio: SMS
+            foreach (var p in phones)
             {
-                // Normalizar phone para E.164 (se existir)
-                string? e164 = !string.IsNullOrWhiteSpace(r.Phone) ? _phone.Normalize(r.Phone) : null;
-                string? email = string.IsNullOrWhiteSpace(r.Email) ? null : r.Email!.Trim();
+                var res = await _sms.SendSmsAsync(p!, smsBody);
+                if (res.Success) sent++;
+            }
 
-                var channel =
-                    (!string.IsNullOrWhiteSpace(email) && !string.IsNullOrWhiteSpace(e164))
-                        ? AssemblyInvitationChannel.Both
-                        : (!string.IsNullOrWhiteSpace(email))
-                            ? AssemblyInvitationChannel.Email
-                            : AssemblyInvitationChannel.Sms;
-
-                var invite = new AssemblyInvite
+            // Envio: Mensagens internas + Notificação in-app (apenas para destinatários com UserId)
+            if (_current.UserId != null)
+            {
+                foreach (var uid in userIds)
                 {
-                    AssemblyId = assemblyId,
-                    InvitedUserId = r.UserId,
-                    Email = email,
-                    PhoneE164 = e164,
-                    InvitedByUserId = userId.Value,
-                    Channel = channel,
-                    Status = AssemblyInviteStatus.Pending
-                };
+                    // Inbox (Messages)
+                    await _messages.SendMessageAsync(
+                        new SendMessageDto
+                        {
+                            ReceiverId = uid,
+                            CondominiumId = asm.CondominiumId,
+                            Subject = subject,
+                            Content = messageContent
+                        },
+                        _current.UserId.Value,
+                        asm.CompanyId
+                    );
 
-                invites.Add(invite);
-
-                // Enviar email
-                if (!string.IsNullOrWhiteSpace(email))
-                {
-                    var subject = dto.EmailSubject ?? "Convite para Assembleia do Condomínio";
-                    var body = (dto.EmailBody ?? "Foi convidado para a assembleia.")
-                             + $"<p>Data: {assembly.Date:dd/MM/yyyy HH:mm}</p>"
-                             + $"<p>Título: {assembly.Topic}</p>"
-                             + $"<p><a href=\"{joinUrl}\">Entrar na sala</a></p>";
-
-                    await _mail.SendEmailAsync(email, subject, body);
-                    sent++;
-                }
-
-                // Enviar SMS
-                if (!string.IsNullOrWhiteSpace(e164))
-                {
-                    var sms = (dto.SmsBody ?? "Convite para assembleia.")
-                            + $" {assembly.Topic} {assembly.Date:dd/MM HH:mm} {joinUrl}";
-
-                    var res = await _sms.SendSmsAsync(e164, sms);
-                    if (res.Success) sent++;
+                    // Sino/Push (NotificationHub)
+                    await _inAppNotify.NotifyAsync(
+                        uid,
+                        subject,
+                        $"Clique para entrar na reunião: {asm.Topic}",
+                        joinUrl
+                    );
                 }
             }
 
-            if (invites.Count > 0)
-                await _invites.AddRangeAsync(invites); // ✅ sem o erro de “..” e sem duplicar inserções
+            // Audit trail (AssemblyInvites)
+            var inviteRows = new List<AssemblyInvite>();
+            inviteRows.AddRange(emails.Select(e => new AssemblyInvite
+            {
+                AssemblyId = asm.Id,
+                CompanyId = asm.CompanyId,
+                CondominiumId = asm.CondominiumId,
+                Email = e,
+                InvitedByUserId = _current.UserId ?? 0,
+                Channel = AssemblyInvitationChannel.Email,
+                SentAt = DateTime.UtcNow
+            }));
+            inviteRows.AddRange(phones.Select(p => new AssemblyInvite
+            {
+                AssemblyId = asm.Id,
+                CompanyId = asm.CompanyId,
+                CondominiumId = asm.CondominiumId,
+                PhoneE164 = p,
+                InvitedByUserId = _current.UserId ?? 0,
+                Channel = AssemblyInvitationChannel.Sms,
+                SentAt = DateTime.UtcNow
+            }));
+            if (inviteRows.Count > 0)
+            {
+                await _invites.AddRangeAsync(inviteRows);
+                await _uow.CompleteAsync();
+            }
 
-            await _uow.CompleteAsync();
-
-            return sent; // ✅ devolve o total de mensagens enviadas
+            return sent;
         }
 
 
 
-        public async Task<IEnumerable<AssemblyMessageDto>> GetMessagesAsync(int assemblyId)
-        {
-            if (!await IsAuthorizedForAssemblyAsync(assemblyId, allowInvited: true))
-                return Enumerable.Empty<AssemblyMessageDto>();
 
-            var msgs = await _messages.GetByAssemblyAsync(assemblyId);
-            return msgs.Select(m => new AssemblyMessageDto
-            {
-                Id = m.Id,
-                AssemblyId = m.AssemblyId,
-                SenderUserId = m.SenderUserId,
-                SenderName = m.SenderName,
-                Message = m.Message,
-                CreatedAt = m.CreatedAt
-            });
+
+        // ========= CHAT (placeholders) =========
+        public Task<IEnumerable<AssemblyMessageDto>> GetMessagesAsync(int assemblyId)
+        {
+            IEnumerable<AssemblyMessageDto> empty = new List<AssemblyMessageDto>();
+            return Task.FromResult(empty);
         }
 
-        public async Task<AssemblyMessageDto?> PostMessageAsync(int assemblyId, PostAssemblyMessageDto dto)
+        public Task<AssemblyMessageDto?> PostMessageAsync(int assemblyId, PostAssemblyMessageDto dto)
         {
-            var userId = _current.UserId;
-            if (userId == null) return null;
+            if (_current.UserId is null) return Task.FromResult<AssemblyMessageDto?>(null);
 
-            if (!await IsAuthorizedForAssemblyAsync(assemblyId, allowInvited: true))
-                return null;
-
-            var profile = await _uow.Users.GetUserByIdAsync(userId.Value);
-            var name = (profile?.FirstName + " " + profile?.LastName)?.Trim() ?? "User";
-
-            var msg = new AssemblyMessage
+            var msg = new AssemblyMessageDto
             {
+                Id = 0,
                 AssemblyId = assemblyId,
-                SenderUserId = userId.Value,
-                SenderName = name,
-                Message = dto.Message
+                UserId = _current.UserId.Value,
+                UserName = _current.UserEmail ?? "user",
+                Message = dto.Message ?? string.Empty,
+                SentAt = DateTime.UtcNow
             };
-
-            await _messages.AddAsync(msg);
-            await _uow.CompleteAsync();
-
-            return new AssemblyMessageDto
-            {
-                Id = msg.Id,
-                AssemblyId = msg.AssemblyId,
-                SenderUserId = msg.SenderUserId,
-                SenderName = msg.SenderName,
-                Message = msg.Message,
-                CreatedAt = msg.CreatedAt
-            };
+            return Task.FromResult<AssemblyMessageDto?>(msg);
         }
 
-        private async Task<bool> IsAuthorizedForAssemblyAsync(int assemblyId, bool allowInvited)
+        // ========= ROOM INFO =========
+        public async Task<AssemblyRoomInfoDto?> GetRoomInfoAsync(int assemblyId)
         {
-            var userId = _current.UserId;
-            var companyId = _current.CompanyId;
-            if (userId == null || companyId == null) return false;
+            var asm = await _assemblies.GetByIdAsync(assemblyId);
+            if (asm == null || asm.CompanyId != _current.CompanyId) return null;
 
-            var assembly = await _assemblies.GetByIdAsync(assemblyId);
-            if (assembly == null || assembly.CompanyId != companyId.Value) return false;
+            var room = string.IsNullOrWhiteSpace(asm.JitsiRoomName)
+                ? $"condosphere-c{asm.CompanyId}-cd{asm.CondominiumId}-a{asm.Id}"
+                : asm.JitsiRoomName!;
 
-            if (_current.IsInRole(RoleConstants.CompanyAdmin)) return true;
-
-            var condo = await _uow.Condominiums.GetByIdAsync(assembly.CondominiumId, companyId.Value);
-            if (_current.IsInRole(RoleConstants.CondoManager) && condo?.ManagerId == userId.Value) return true;
-
-            if (allowInvited)
+            var joinUrl = $"https://meet.jit.si/{room}";
+            return new AssemblyRoomInfoDto
             {
-                var parts = await _participants.GetByAssemblyAsync(assemblyId);
-                if (parts.Any(p => p.UserId == userId.Value)) return true;
-            }
-
-            return false;
+                AssemblyId = asm.Id,
+                RoomName = room,
+                JoinUrl = joinUrl,
+                Password = asm.JitsiRoomPassword,
+                CanPostMessages = true
+            };
         }
+
+        // ========= MAP =========
+        private static AssemblyDto Map(AssemblyEntity a) => new()
+        {
+            Id = a.Id,
+            CompanyId = a.CompanyId,
+            CondominiumId = a.CondominiumId,
+            Date = a.Date,
+            Topic = a.Topic ?? string.Empty,
+            JitsiRoomName = a.JitsiRoomName,
+            JitsiRoomPassword = a.JitsiRoomPassword
+        };
     }
 }

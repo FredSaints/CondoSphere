@@ -134,12 +134,14 @@ namespace CondoSphere.API
             builder.Services.AddScoped<IPhoneNumberService, PhoneNumberService>();
             builder.Services.AddScoped<IMessageService, MessageService>();
             builder.Services.AddScoped<IMessageRepository, MessageRepository>();
-            builder.Services.AddScoped<IAssemblyService, AssemblyService>();
-
+            builder.Services.AddScoped<IAssemblyService, AssemblyService>(); 
+            builder.Services.AddScoped<IInAppNotificationService, InAppNotificationService>();
             builder.Services.AddScoped<IAssemblyRepository, AssemblyRepository>();
             builder.Services.AddScoped<IAssemblyInviteRepository, AssemblyInviteRepository>();
-            builder.Services.AddScoped<IAssemblyMessageRepository, AssemblyMessageRepository>();
             builder.Services.AddScoped<IAssemblyParticipantRepository, AssemblyParticipantRepository>();
+            builder.Services.AddScoped<IResidentRepository, ResidentRepository>();
+            builder.Services.AddScoped<ICondominiumService, CondominiumService>();
+
             builder.Services.AddAutoMapper(cfg =>
             {
                 cfg.AddMaps(typeof(CondoSphere.Application.Mappings.CondominiumProfile).Assembly);
@@ -248,6 +250,7 @@ namespace CondoSphere.API
 
             app.MapControllers();
             app.MapHub<NotificationHub>("/notificationHub");
+            app.MapHub<AssemblyChatHub>("/assemblyChatHub");
 
             app.Run();
         }

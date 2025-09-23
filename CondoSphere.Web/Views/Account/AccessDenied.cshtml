@@ -1,0 +1,23 @@
+﻿@{
+    ViewData["Title"] = "Access Denied";
+    var returnUrl = ViewData["ReturnUrl"] as string;
+}
+<div class="container my-5">
+    <div class="alert alert-danger d-flex align-items-center" role="alert">
+        <i class="bi bi-shield-lock me-2"></i>
+        <div>Não tens permissões para aceder a esta página.</div>
+    </div>
+
+    @if (!string.IsNullOrWhiteSpace(returnUrl))
+    {
+        <a class="btn btn-outline-secondary" href="@returnUrl">
+            <i class="bi bi-arrow-left"></i> Voltar
+        </a>
+    }
+    else
+    {
+        <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary">
+            <i class="bi bi-house"></i> Ir para o início
+        </a>
+    }
+</div>

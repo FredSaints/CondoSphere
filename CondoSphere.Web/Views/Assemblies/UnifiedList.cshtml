@@ -1,0 +1,121 @@
+﻿@model IEnumerable<CondoSphere.Core.DTOs.Assemblies.AssemblyDto>
+@using CondoSphere.Core
+
+@{
+    ViewData["Title"] = "Assemblies";
+
+    // obter condominiumId (ViewData → QueryString)
+    int condominiumId =
+        (ViewData["CondominiumId"] as int?) ??
+        (ViewData["condominiumId"] as int?) ??
+        (int.TryParse(Context?.Request?.Query["condominiumId"], out var q) ? q : 0);
+
+    // regras de quem pode criar
+    bool isManager = User.IsInRole(RoleConstants.CondoManager);
+    bool isCompanyAdmin = User.IsInRole(RoleConstants.CompanyAdmin);
+    bool canCreate = (isManager || isCompanyAdmin) && condominiumId > 0;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="mb-0">Assemblies</h1>
+
+    @if (canCreate)
+    {
+            <a asp-controller="Assemblies"
+               asp-action="Create"
+               asp-route-condominiumId="@condominiumId"
+               class="btn btn-primary">
+                <i class="bi bi-plus-circle me-1"></i> New Assembly
+            </a>
+    }
+</div>
+
+@if (Model != null && Model.Any())
+{
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Topic</th>
+                        <th>Date</th>
+                        <th>Condominium</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @foreach (var a in Model)
+                {
+                    // IMPORTANTE: assumimos que a.Date está em UTC
+                    bool expired = a.Date <= DateTime.UtcNow;
+
+                            <tr class="@(expired ? "table-light" : "")">
+                                <td>
+                            @a.Topic
+                            @if (expired)
+                            {
+                                            <span class="badge bg-secondary ms-2">Ended</span>
+                            }
+                                </td>
+                                <td>@a.Date.ToLocalTime().ToString("yyyy-MM-dd HH:mm")</td>
+                                <td>@a.CondominiumName</td>
+                                <td class="text-end">
+                            @if (!expired)
+                            {
+                                            <a asp-controller="Assemblies"
+                                               asp-action="Room"
+                                               asp-route-assemblyId="@a.Id"
+                                               class="btn btn-sm btn-outline-secondary">
+                                                <i class="bi bi-chat-dots"></i> Room
+                                            </a>
+                            }
+                            else
+                            {
+                                            <button class="btn btn-sm btn-outline-secondary" disabled title="Meeting ended">
+                                                <i class="bi bi-chat-dots"></i> Room
+                                            </button>
+                            }
+
+                            @* Só managers podem convidar, e apenas antes da data *@
+                            @if (isManager)
+                            {
+                                if (!expired)
+                                {
+                                                    <a asp-controller="Assemblies"
+                                                       asp-action="Invite"
+                                                       asp-route-condominiumId="@a.CondominiumId"
+                                                       asp-route-assemblyId="@a.Id"
+                                                       class="btn btn-sm btn-outline-primary ms-2">
+                                                        <i class="bi bi-envelope"></i> Invite
+                                                    </a>
+                                }
+                                else
+                                {
+                                                    <button class="btn btn-sm btn-outline-primary ms-2" disabled title="Meeting ended">
+                                                        <i class="bi bi-envelope"></i> Invite
+                                                    </button>
+                                }
+                            }
+                                </td>
+                            </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+}
+else
+{
+        <div class="text-center text-muted p-5 border rounded">
+            <i class="bi bi-people display-4 d-block mb-2"></i>
+            <div class="mb-3">No assemblies to show.</div>
+
+        @if (canCreate)
+        {
+                    <a asp-controller="Assemblies"
+                       asp-action="Create"
+                       asp-route-condominiumId="@condominiumId"
+                       class="btn btn-primary">
+                        <i class="bi bi-plus-circle me-1"></i> New Assembly
+                    </a>
+        }
+        </div>
+}

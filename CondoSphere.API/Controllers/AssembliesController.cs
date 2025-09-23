@@ -4,6 +4,7 @@ using CondoSphere.Core;
 using CondoSphere.Core.DTOs.Assemblies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 
 namespace CondoSphere.API.Controllers
 {
@@ -14,23 +15,41 @@ namespace CondoSphere.API.Controllers
     {
         private readonly IAssemblyService _svc;
         private readonly ICurrentUserService _current;
-        public AssembliesController(IAssemblyService svc, ICurrentUserService current)
+        private readonly IHubContext<CondoSphere.Shared.Hubs.AssemblyChatHub> _hub;
+        public AssembliesController(
+         IAssemblyService svc,
+         ICurrentUserService current,
+         IHubContext<CondoSphere.Shared.Hubs.AssemblyChatHub> hub)
         {
-            _svc = svc; _current = current;
+            _svc = svc;
+            _current = current;
+            _hub = hub;
         }
-
         [HttpPost]
         [Authorize(Roles = $"{RoleConstants.CompanyAdmin},{RoleConstants.CondoManager}")]
-        public async Task<ActionResult<AssemblyDto>> Create(CreateAssemblyDto dto)
+        public async Task<ActionResult<AssemblyDto>> Create([FromBody] CreateAssemblyDto dto)
         {
-            var res = await _svc.CreateAsync(dto);
-            if (res == null) return Forbid();
-            return CreatedAtAction(nameof(GetForCondominium), new { condominiumId = res.CondominiumId }, res);
+            var created = await _svc.CreateAsync(dto);
+            if (created == null) return Forbid();
+            return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
         }
 
         [HttpGet("condominium/{condominiumId:int}")]
         public async Task<ActionResult<IEnumerable<AssemblyDto>>> GetForCondominium(int condominiumId)
-            => Ok(await _svc.GetForCondominiumAsync(condominiumId));
+        {
+            var list = await _svc.GetByCondominiumAsync(condominiumId);
+            return Ok(list);
+        }
+        
+        [HttpGet("{id:int}")]
+        public async Task<ActionResult<AssemblyDto>> GetById(int id)
+        {
+            var dto = await _svc.GetByIdAsync(id);
+            if (dto == null) return NotFound();
+            return Ok(dto);
+        }
+
+
 
         [HttpGet("company")]
         [Authorize(Roles = RoleConstants.CompanyAdmin)]
@@ -54,20 +73,24 @@ namespace CondoSphere.API.Controllers
         [Authorize(Roles = $"{RoleConstants.CompanyAdmin},{RoleConstants.CondoManager}")]
         public async Task<ActionResult> SendInvites(int assemblyId, SendAssemblyInvitesDto dto)
         {
+            if (await IsExpiredAsync(assemblyId)) return Forbid(); // ou return BadRequest("Meeting ended");
             var sent = await _svc.SendInvitesAsync(assemblyId, dto);
             return Ok(new { sent });
         }
 
-        [HttpGet("{assemblyId:int}/messages")]
-        public async Task<ActionResult<IEnumerable<AssemblyMessageDto>>> GetMessages(int assemblyId)
-            => Ok(await _svc.GetMessagesAsync(assemblyId));
-
-        [HttpPost("{assemblyId:int}/messages")]
-        public async Task<ActionResult<AssemblyMessageDto>> PostMessage(int assemblyId, PostAssemblyMessageDto dto)
+        [HttpGet("{assemblyId:int}/room-info")]
+        public async Task<ActionResult<AssemblyRoomInfoDto>> GetRoomInfo(int assemblyId)
         {
-            var msg = await _svc.PostMessageAsync(assemblyId, dto);
-            if (msg == null) return Forbid();
-            return Ok(msg);
+            if (await IsExpiredAsync(assemblyId)) return Forbid();
+            var info = await _svc.GetRoomInfoAsync(assemblyId);
+            return info is null ? Forbid() : Ok(info);
+        }
+        private async Task<bool> IsExpiredAsync(int assemblyId)
+        {
+            var dto = await _svc.GetByIdAsync(assemblyId);
+            if (dto == null) return true;             
+                                               
+            return dto.Date <= DateTime.UtcNow;
         }
     }
 }

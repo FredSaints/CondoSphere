@@ -14,5 +14,10 @@ namespace CondoSphere.Core.Entities.Users
         public bool IsRead { get; set; }
         public DateTime? ReadDate { get; set; }
         public int? RelatedEntityId { get; set; }
+
+        public string? LinkUrl
+        {
+            get; set;
+        }
     }
 }

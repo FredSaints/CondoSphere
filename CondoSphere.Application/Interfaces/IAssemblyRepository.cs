@@ -1,15 +1,14 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using CoreAssembly = CondoSphere.Core.Entities.Assembly.Assembly;
+﻿using CondoSphere.Core.Entities.Assembly;
 
 namespace CondoSphere.Application.Interfaces
 {
     public interface IAssemblyRepository
     {
-        Task AddAsync(CoreAssembly assembly);
-        Task<CoreAssembly?> GetByIdAsync(int id);
-        Task<IEnumerable<CoreAssembly>> GetByCondominiumAsync(int condominiumId);
-        Task<IEnumerable<CoreAssembly>> GetAllForCompanyAsync(int companyId);
-        void Update(CoreAssembly assembly);
+        Task AddAsync(Assembly entity);
+        void Update(Assembly entity);
+        Task<Assembly?> GetByIdAsync(int id);
+
+        Task<IReadOnlyList<Assembly>> GetByCondominiumAsync(int condominiumId);
+        Task<IReadOnlyList<Assembly>> GetAllForCompanyAsync(int companyId);
     }
 }

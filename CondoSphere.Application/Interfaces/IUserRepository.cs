@@ -9,7 +9,10 @@ namespace CondoSphere.Application.Interfaces
         /// Bypasses the IsActive filter to allow admins to see deactivated users.
         /// </summary>
         Task<IEnumerable<UserListDto>> GetCompanyUsersWithRolesAsync(int companyId);
-
+        /// <summary>
+        /// Devolve o CondominiumId “principal” do utilizador, ou 0 se não existir.
+        /// </summary>
+        Task<int> GetPrimaryCondominiumIdAsync(int userId);
         /// <summary>
         /// Gets a list of all active users within a specific company who have a given role.
         /// </summary>

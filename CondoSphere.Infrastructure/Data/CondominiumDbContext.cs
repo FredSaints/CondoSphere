@@ -2,6 +2,7 @@
 using CondoSphere.Core.Entities.Condominiums;
 using CondoSphere.Core.Entities.Users;
 using Microsoft.EntityFrameworkCore;
+using AssemblyEntity = CondoSphere.Core.Entities.Assembly.Assembly;
 
 namespace CondoSphere.Infrastructure.Data
 {
@@ -12,9 +13,9 @@ namespace CondoSphere.Infrastructure.Data
         public DbSet<Document> Documents { get; set; }
         public DbSet<Occurrence> Occurrences { get; set; }
         public DbSet<Intervention> Interventions { get; set; }
-        public DbSet<Assembly> Assemblies { get; set; }
+        public DbSet<AssemblyEntity> Assemblies { get; set; } = null!;
         public DbSet<AssemblyParticipant> AssemblyParticipants { get; set; }
-        public DbSet<AssemblyMessage> AssemblyMessages { get; set; }
+
         public DbSet<CondoSphere.Core.Entities.Assembly.AssemblyInvite> AssemblyInvites { get; set; }
 
         public CondominiumDbContext(DbContextOptions<CondominiumDbContext> options)

@@ -607,6 +607,9 @@ namespace CondoSphere.Mobile.Services
                 System.Diagnostics.Debug.WriteLine($"[ApiClient] <== FAILED to get occurrence details for ID {occurrenceId}. Exception: {ex.Message}");
                 return null;
             }
+
+          
         }
+     
     }
 }

@@ -28,7 +28,7 @@
 		<FrameworkReference Include="Microsoft.AspNetCore.App" />
 	</ItemGroup>
 	
-  </ItemGroup>
+
 
   <ItemGroup>
     <Folder Include="Services\NewFolder\" />

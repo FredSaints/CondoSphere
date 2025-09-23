@@ -2,6 +2,12 @@
 using CondoSphere.Core.Entities.Users;
 using CondoSphere.Infrastructure.Data;
 
+using System.Threading.Tasks;
+
+
+
+
+
 namespace CondoSphere.Infrastructure.Repositories
 {
     public class UnitOfWork : IUnitOfWork
@@ -22,11 +28,16 @@ namespace CondoSphere.Infrastructure.Repositories
         public IReceiptRepository Receipts { get; private set; }
         public IDocumentRepository Documents { get; private set; }
         public IAssemblyRepository Assemblies { get; private set; }
-        public IAssemblyInviteRepository AssemblyInvites { get; private set; }
-        public IAssemblyMessageRepository AssemblyMessages { get; private set; }
-        public IAssemblyParticipantRepository AssemblyParticipants { get; private set; }
+     
         public INotificationRepository Notifications { get; private set; }
         public IMessageRepository Messages { get; private set; }
+
+        IAssemblyInviteRepository AssemblyInvites { get; }
+        IAssemblyParticipantRepository AssemblyParticipants { get; }
+
+        IAssemblyInviteRepository IUnitOfWork.AssemblyInvites => throw new NotImplementedException();
+
+        IAssemblyParticipantRepository IUnitOfWork.AssemblyParticipants => throw new NotImplementedException();
 
         public UnitOfWork(UserManagementDbContext userContext, CondominiumDbContext condoContext, FinancialsDbContext financialsContext)
         {
@@ -49,7 +60,6 @@ namespace CondoSphere.Infrastructure.Repositories
             Messages = new MessageRepository(_userContext);
             Assemblies = new AssemblyRepository(_condoContext);
             AssemblyInvites = new AssemblyInviteRepository(_condoContext);
-            AssemblyMessages = new AssemblyMessageRepository(_condoContext);
             AssemblyParticipants = new AssemblyParticipantRepository(_condoContext);
         }
 

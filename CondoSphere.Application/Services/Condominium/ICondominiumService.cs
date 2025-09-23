@@ -12,5 +12,6 @@ namespace CondoSphere.Application.Services.Condominium
         Task<bool> AssignManagerAsync(int condominiumId, int managerId, int companyId);
         Task<IEnumerable<CondominiumDto>> GetCondominiumsByManagerIdAsync(int managerId);
         Task<bool> UnassignManagerAsync(int condominiumId, int companyId);
+        Task<IReadOnlyList<ResidentDto>> GetResidentsAsync(int condominiumId);
     }
 }

@@ -22,6 +22,42 @@ namespace CondoSphere.Infrastructure.Data.Migrations.UserManagement
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("CondoSphere.Core.Entities.Assembly.Assembly", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CompanyId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("CondominiumId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("JitsiRoomName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("JitsiRoomPassword")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Topic")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("participants")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Assemblies");
+                });
+
             modelBuilder.Entity("CondoSphere.Core.Entities.Messages.Message", b =>
                 {
                     b.Property<int>("Id")
@@ -117,6 +153,9 @@ namespace CondoSphere.Infrastructure.Data.Migrations.UserManagement
 
                     b.Property<bool>("IsRead")
                         .HasColumnType("bit");
+
+                    b.Property<string>("LinkUrl")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Message")
                         .IsRequired()

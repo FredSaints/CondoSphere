@@ -1,24 +1,21 @@
 ﻿using CondoSphere.Core.Enums;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CondoSphere.Core.Entities.Assembly
 {
-    public class AssemblyInvite
+    public class AssemblyInvite : IEntity
     {
         public int Id { get; set; }
+
         public int AssemblyId { get; set; }
-        public int? InvitedUserId { get; set; }
-        public string? Email { get; set; }
-        public string? PhoneE164 { get; set; }
-        public AssemblyInviteStatus Status { get; set; } = AssemblyInviteStatus.Pending;
-        public int InvitedByUserId { get; set; }
-        public AssemblyInvitationChannel Channel { get; set; } = AssemblyInvitationChannel.Both;
-        public string Token { get; set; } = Guid.NewGuid().ToString("N");
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-        public DateTime? RespondedAt { get; set; }
+        public int CompanyId { get; set; }
+        public int CondominiumId { get; set; }
+
+        public string? Email { get; set; }           // destino por email
+        public string? PhoneE164 { get; set; }       // destino por SMS (E.164)
+
+        public int InvitedByUserId { get; set; }     // quem enviou
+        public DateTime SentAt { get; set; } = DateTime.UtcNow;
+
+        public AssemblyInvitationChannel Channel { get; set; }
     }
 }

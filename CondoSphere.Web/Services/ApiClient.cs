@@ -6,11 +6,15 @@ using CondoSphere.Core.DTOs.Messages;
 using CondoSphere.Core.DTOs.Notifications;
 using CondoSphere.Core.DTOs.Occurrences;
 using CondoSphere.Core.DTOs.Reports;
-using CondoSphere.Web.Models;
-using Microsoft.AspNetCore.WebUtilities;
-using System.Globalization;
-using System.Text.Json;
 using CondoSphere.Core.DTOs.Assemblies;
+using CondoSphere.Web.Models;
+
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.WebUtilities;
+
+using System.Globalization;
+using System.Net.Http.Json;
+using System.Text.Json;
 
 namespace CondoSphere.Web.Services
 {
@@ -18,574 +22,378 @@ namespace CondoSphere.Web.Services
     {
         private readonly HttpClient _httpClient;
 
-        public ApiClient(HttpClient httpClient)
-        {
-            _httpClient = httpClient;
-        }
+        public ApiClient(HttpClient httpClient) => _httpClient = httpClient;
 
+        // ---------- Accounts / Auth ----------
         public async Task<UserDto?> LoginAsync(LoginDto loginDto)
         {
             var response = await _httpClient.PostAsJsonAsync("/api/accounts/login", loginDto);
-
             if (response.IsSuccessStatusCode)
-            {
                 return await response.Content.ReadFromJsonAsync<UserDto>();
-            }
-
             return null;
-        }
-
-        public async Task<bool> RegisterManagerAsync(RegisterManagerDto registerDto)
-        {
-            // We need to send the token with this request. This is the next major step.
-            var response = await _httpClient.PostAsJsonAsync("/api/accounts/register-manager", registerDto);
-            return response.IsSuccessStatusCode;
-        }
-
-        public async Task<IEnumerable<CondominiumDto>> GetCondominiumsAsync()
-        {
-            return await _httpClient.GetFromJsonAsync<IEnumerable<CondominiumDto>>("/api/condominiums");
-        }
-
-        public async Task<IEnumerable<UserListDto>> GetUsersAsync()
-        {
-            return await _httpClient.GetFromJsonAsync<IEnumerable<UserListDto>>("/api/accounts/company-users");
-        }
-
-        public async Task<IEnumerable<CondominiumDto>> GetMyManagedCondominiumsAsync()
-        {
-            return await _httpClient.GetFromJsonAsync<IEnumerable<CondominiumDto>>("/api/condominiums/my-managed");
-        }
-
-        public async Task<CondominiumDto> GetCondominiumDetailsAsync(int id)
-        {
-            return await _httpClient.GetFromJsonAsync<CondominiumDto>($"/api/condominiums/{id}");
-        }
-
-        public async Task<IEnumerable<UnitDto>> GetUnitsForCondominiumAsync(int condominiumId)
-        {
-            return await _httpClient.GetFromJsonAsync<IEnumerable<UnitDto>>($"/api/condominiums/{condominiumId}/units");
-        }
-
-        public async Task<bool> RegisterResidentAsync(int condominiumId, RegisterResidentDto dto)
-        {
-            var response = await _httpClient.PostAsJsonAsync($"/api/condominiums/{condominiumId}/residents", dto);
-            return response.IsSuccessStatusCode;
         }
 
         public async Task<(bool Success, string Message)> SetPasswordAsync(SetPasswordDto dto)
         {
             var response = await _httpClient.PostAsJsonAsync("/api/accounts/set-password", dto);
             var responseContent = await response.Content.ReadFromJsonAsync<object>();
-
             if (response.IsSuccessStatusCode)
             {
                 var message = responseContent?.GetType().GetProperty("message")?.GetValue(responseContent)?.ToString();
                 return (true, message ?? "Password set successfully.");
             }
-
             return (false, "Failed to set password. The link may have expired or the password may not meet complexity requirements.");
         }
 
-        public async Task<bool> CreateCondominiumAsync(CreateUpdateCondominiumDto dto)
-        {
-            var response = await _httpClient.PostAsJsonAsync("/api/condominiums", dto);
-            return response.IsSuccessStatusCode;
-        }
-
-        public async Task<IEnumerable<UserListDto>> GetAvailableManagersAsync()
-        {
-            return await _httpClient.GetFromJsonAsync<IEnumerable<UserListDto>>("/api/accounts/managers");
-        }
-
-        public async Task<bool> AssignManagerAsync(int condominiumId, AssignManagerDto dto)
-        {
-            var response = await _httpClient.PatchAsJsonAsync($"/api/condominiums/{condominiumId}/assign-manager", dto);
-            return response.IsSuccessStatusCode;
-        }
-        public async Task<bool> CreateUnitAsync(int condominiumId, CreateUpdateUnitDto dto)
-        {
-            var response = await _httpClient.PostAsJsonAsync($"/api/condominiums/{condominiumId}/units", dto);
-            return response.IsSuccessStatusCode;
-        }
+        public async Task<bool> RegisterManagerAsync(RegisterManagerDto registerDto)
+            => (await _httpClient.PostAsJsonAsync("/api/accounts/register-manager", registerDto)).IsSuccessStatusCode;
 
         public async Task<(bool Success, string Message)> RegisterCompanyAdminAsync(RegisterDto dto)
         {
             var response = await _httpClient.PostAsJsonAsync("/api/accounts/register-admin", dto);
-
             var responseContent = await response.Content.ReadFromJsonAsync<object>();
-
             if (response.IsSuccessStatusCode)
             {
                 var message = responseContent?.GetType().GetProperty("message")?.GetValue(responseContent)?.ToString();
                 return (true, message ?? "Registration successful! Please check your email to confirm your account.");
             }
-            else
-            {
-                return (false, "Registration failed. The email address may already be in use.");
-            }
+            return (false, "Registration failed. The email address may already be in use.");
         }
 
         public async Task<(bool Success, string Message)> ConfirmEmailAsync(string userId, string token)
         {
-            var path = "/api/accounts/confirm-email";
-
-            var queryParams = new Dictionary<string, string>
+            var uri = QueryHelpers.AddQueryString("/api/accounts/confirm-email", new Dictionary<string, string>
             {
-                { "userId", userId },
-                { "token", token }
-            };
-
-            var uri = QueryHelpers.AddQueryString(path, queryParams);
-
+                { "userId", userId }, { "token", token }
+            });
             var response = await _httpClient.GetAsync(uri);
-
-            if (response.IsSuccessStatusCode)
-            {
-                return (true, "Your email has been successfully confirmed! You can now log in.");
-            }
-            else
-            {
-                return (false, "Email could not be confirmed. The link may be invalid or have expired.");
-            }
+            return response.IsSuccessStatusCode
+                ? (true, "Your email has been successfully confirmed! You can now log in.")
+                : (false, "Email could not be confirmed. The link may be invalid or have expired.");
         }
 
-        public async Task<IEnumerable<UserListDto>> GetAvailableResidentsAsync()
+        public async Task<(bool Confirmed, string RawMessage)> IsEmailConfirmedAsync(string email)
         {
-            return await _httpClient.GetFromJsonAsync<IEnumerable<UserListDto>>("/api/accounts/available-residents");
+            var response = await _httpClient.PostAsJsonAsync("/api/accounts/IsEmailConfirmed", new { Email = email });
+            var body = await response.Content.ReadAsStringAsync();
+            if (!response.IsSuccessStatusCode) return (false, body);
+            try
+            {
+                using var json = JsonDocument.Parse(body);
+                return (json.RootElement.GetProperty("confirmed").GetBoolean(), body);
+            }
+            catch { return (false, body); }
         }
+
+        public async Task<(bool Success, string RawMessage)> ResendConfirmationEmailAsync(string email)
+        {
+            var response = await _httpClient.PostAsJsonAsync("/api/accounts/ResendConfirmationEmail", new { Email = email });
+            var body = await response.Content.ReadAsStringAsync();
+            return (response.IsSuccessStatusCode, body);
+        }
+
+        // ---------- 2FA ----------
+        public async Task<(bool Success, string Message)> SwitchTwoFactorAsync(ToggleTwoFactorDto dto)
+        {
+            var resp = await _httpClient.PostAsJsonAsync("/api/accounts/2fa/switch", dto);
+            var raw = await resp.Content.ReadAsStringAsync();
+            if (resp.IsSuccessStatusCode)
+            {
+                try
+                {
+                    using var json = JsonDocument.Parse(raw);
+                    return (true, json.RootElement.TryGetProperty("message", out var m) ? m.GetString() ?? "Two-factor switched." : "Two-factor switched.");
+                }
+                catch { return (true, "Two-factor switched."); }
+            }
+            try
+            {
+                using var json = JsonDocument.Parse(raw);
+                return (false, json.RootElement.TryGetProperty("message", out var m) ? m.GetString() ?? raw : raw);
+            }
+            catch { return (false, raw); }
+        }
+
+        public async Task<(bool Success, string Message)> SendTwoFactorCodeAsync(SendTwoFactorCodeDto dto)
+        {
+            var resp = await _httpClient.PostAsJsonAsync("/api/accounts/2fa/send-code", dto);
+            var raw = await resp.Content.ReadAsStringAsync();
+            if (resp.IsSuccessStatusCode)
+            {
+                try
+                {
+                    using var json = JsonDocument.Parse(raw);
+                    return (true, json.RootElement.TryGetProperty("message", out var m) ? m.GetString() ?? "Two-factor code sent." : "Two-factor code sent.");
+                }
+                catch { return (true, "Two-factor code sent."); }
+            }
+            try
+            {
+                using var json = JsonDocument.Parse(raw);
+                return (false, json.RootElement.TryGetProperty("message", out var m) ? m.GetString() ?? raw : raw);
+            }
+            catch { return (false, raw); }
+        }
+
+        public async Task<(bool Success, string Message)> VerifyTwoFactorCodeAsync(VerifyTwoFactorCodeDto dto)
+        {
+            var resp = await _httpClient.PostAsJsonAsync("/api/accounts/2fa/verify", dto);
+            var raw = await resp.Content.ReadAsStringAsync();
+            return resp.IsSuccessStatusCode ? (true, "Two-factor code verified.")
+                                            : (false, TryExtractMessage(raw));
+        }
+
+        public async Task<bool> IsTwoFactorEnabledAsync(EmailDto dto)
+        {
+            var response = await _httpClient.PostAsJsonAsync("/api/accounts/2fa/IsEnable", dto);
+            if (!response.IsSuccessStatusCode) return false;
+            var raw = await response.Content.ReadAsStringAsync();
+            if (bool.TryParse(raw.Trim().Trim('"'), out var b)) return b;
+            try
+            {
+                using var doc = JsonDocument.Parse(raw);
+                var root = doc.RootElement;
+                if (root.TryGetProperty("enabled", out var e) && e.ValueKind is JsonValueKind.True or JsonValueKind.False) return e.GetBoolean();
+                if (root.TryGetProperty("isEnabled", out var ie) && ie.ValueKind is JsonValueKind.True or JsonValueKind.False) return ie.GetBoolean();
+                if (root.TryGetProperty("twoFactorEnabled", out var tfe) && tfe.ValueKind is JsonValueKind.True or JsonValueKind.False) return tfe.GetBoolean();
+            }
+            catch { }
+            return false;
+        }
+
+        // ---------- Me ----------
+        public async Task<int> GetMyCondominiumIdAsync()
+        {
+            var resp = await _httpClient.GetAsync("/api/me/condominium-id");
+            if (resp.StatusCode == System.Net.HttpStatusCode.NotFound)
+                return 0;
+
+            if (!resp.IsSuccessStatusCode)
+                return 0; // ou lançar uma exceção com mensagem mais amigável
+
+            var dto = await resp.Content.ReadFromJsonAsync<IdDto>();
+            return dto?.Id ?? 0;
+        }
+
+        // ---------- Condominiums / Users / Units ----------
+        public Task<IEnumerable<CondominiumDto>> GetCondominiumsAsync()
+            => _httpClient.GetFromJsonAsync<IEnumerable<CondominiumDto>>("/api/condominiums");
+
+        public Task<IEnumerable<UserListDto>> GetUsersAsync()
+            => _httpClient.GetFromJsonAsync<IEnumerable<UserListDto>>("/api/accounts/company-users");
+
+        public Task<IEnumerable<CondominiumDto>> GetMyManagedCondominiumsAsync()
+            => _httpClient.GetFromJsonAsync<IEnumerable<CondominiumDto>>("/api/condominiums/my-managed");
+
+        public Task<CondominiumDto> GetCondominiumDetailsAsync(int id)
+            => _httpClient.GetFromJsonAsync<CondominiumDto>($"/api/condominiums/{id}");
+
+        public Task<IEnumerable<UnitDto>> GetUnitsForCondominiumAsync(int condominiumId)
+            => _httpClient.GetFromJsonAsync<IEnumerable<UnitDto>>($"/api/condominiums/{condominiumId}/units");
+
+        public async Task<bool> RegisterResidentAsync(int condominiumId, RegisterResidentDto dto)
+            => (await _httpClient.PostAsJsonAsync($"/api/condominiums/{condominiumId}/residents", dto)).IsSuccessStatusCode;
+
+        public Task<IEnumerable<UserListDto>> GetAvailableResidentsAsync()
+            => _httpClient.GetFromJsonAsync<IEnumerable<UserListDto>>("/api/accounts/available-residents")!;
 
         public async Task<bool> AssignResidentAsync(int condominiumId, int unitId, AssignResidentDto dto)
+            => (await _httpClient.PatchAsJsonAsync($"/api/condominiums/{condominiumId}/units/{unitId}/assign-resident", dto)).IsSuccessStatusCode;
+
+        public Task<IEnumerable<UserListDto>> GetAvailableManagersAsync()
+            => _httpClient.GetFromJsonAsync<IEnumerable<UserListDto>>("/api/accounts/managers")!;
+
+        public async Task<bool> AssignManagerAsync(int condominiumId, AssignManagerDto dto)
+            => (await _httpClient.PatchAsJsonAsync($"/api/condominiums/{condominiumId}/assign-manager", dto)).IsSuccessStatusCode;
+
+        public async Task<bool> UnassignManagerAsync(int condominiumId)
+            => (await _httpClient.PatchAsync($"/api/condominiums/{condominiumId}/unassign-manager", null)).IsSuccessStatusCode;
+
+        public async Task<bool> CreateCondominiumAsync(CreateUpdateCondominiumDto dto)
+            => (await _httpClient.PostAsJsonAsync("/api/condominiums", dto)).IsSuccessStatusCode;
+
+        public async Task<bool> UpdateCondominiumAsync(int id, CreateUpdateCondominiumDto dto)
+            => (await _httpClient.PutAsJsonAsync($"/api/condominiums/{id}", dto)).IsSuccessStatusCode;
+
+        public async Task<(bool Success, string Message)> DeleteCondominiumAsync(int id)
         {
-            var response = await _httpClient.PatchAsJsonAsync($"/api/condominiums/{condominiumId}/units/{unitId}/assign-resident", dto);
-            return response.IsSuccessStatusCode;
+            var response = await _httpClient.DeleteAsync($"/api/condominiums/{id}");
+            if (response.IsSuccessStatusCode) return (true, "Condominium deleted successfully.");
+            var error = await response.Content.ReadFromJsonAsync<JsonElement>();
+            return (false, error.GetProperty("message").GetString() ?? "An unknown error occurred.");
         }
+
+        public async Task<bool> RegisterEmployeeAsync(RegisterManagerDto registerDto)
+            => (await _httpClient.PostAsJsonAsync("/api/accounts/register-employee", registerDto)).IsSuccessStatusCode;
+
+        public Task<IEnumerable<UserListDto>> GetAvailableEmployeesAsync()
+            => _httpClient.GetFromJsonAsync<IEnumerable<UserListDto>>("/api/accounts/employees")!;
+
+        public Task<IEnumerable<UnitDto>> GetMyUnitsAsync()
+            => _httpClient.GetFromJsonAsync<IEnumerable<UnitDto>>("/api/users/my-units")!;
 
         public async Task<bool> DeactivateUserAsync(int userId)
-        {
-            var response = await _httpClient.PostAsync($"/api/accounts/users/{userId}/deactivate", null);
-            return response.IsSuccessStatusCode;
-        }
+            => (await _httpClient.PostAsync($"/api/accounts/users/{userId}/deactivate", null)).IsSuccessStatusCode;
 
         public async Task<bool> ActivateUserAsync(int userId)
+            => (await _httpClient.PostAsync($"/api/accounts/users/{userId}/activate", null)).IsSuccessStatusCode;
+
+        public async Task<UnitDto?> GetUnitByIdAsync(int unitId)
         {
-            var response = await _httpClient.PostAsync($"/api/accounts/users/{userId}/activate", null);
-            return response.IsSuccessStatusCode;
+            var resp = await _httpClient.GetAsync($"/api/units/{unitId}");
+            return resp.IsSuccessStatusCode ? await resp.Content.ReadFromJsonAsync<UnitDto>() : null;
         }
 
-        public async Task<IEnumerable<OccurrenceDto>> GetOccurrencesForCondominiumAsync(int condominiumId)
-        {
-            return await _httpClient.GetFromJsonAsync<IEnumerable<OccurrenceDto>>($"/api/condominiums/{condominiumId}/occurrences");
-        }
+        public async Task<bool> CreateUnitAsync(int condominiumId, CreateUpdateUnitDto dto)
+            => (await _httpClient.PostAsJsonAsync($"/api/condominiums/{condominiumId}/units", dto)).IsSuccessStatusCode;
 
-        public async Task<IEnumerable<OccurrenceDto>> GetMyOccurrencesAsync()
-        {
-            return await _httpClient.GetFromJsonAsync<IEnumerable<OccurrenceDto>>("/api/occurrences/my-occurrences") ?? new List<OccurrenceDto>();
-        }
+        // ---------- Occurrences / Interventions / Expenses ----------
+        public Task<IEnumerable<OccurrenceDto>> GetOccurrencesForCondominiumAsync(int condominiumId)
+            => _httpClient.GetFromJsonAsync<IEnumerable<OccurrenceDto>>($"/api/condominiums/{condominiumId}/occurrences")!;
+
+        public Task<IEnumerable<OccurrenceDto>> GetMyOccurrencesAsync()
+            => _httpClient.GetFromJsonAsync<IEnumerable<OccurrenceDto>>("/api/occurrences/my-occurrences")!;
 
         public async Task<OccurrenceDto?> CreateOccurrenceAsync(CreateOccurrenceDto dto, IFormFile? imageFile)
         {
             using var formData = new MultipartFormDataContent();
-            formData.Add(new StringContent(dto.Title), name: nameof(CreateOccurrenceDto.Title));
-            formData.Add(new StringContent(dto.Description), name: nameof(CreateOccurrenceDto.Description));
-            formData.Add(new StringContent(dto.UnitId.ToString()), name: nameof(CreateOccurrenceDto.UnitId));
-
-            if (imageFile != null && imageFile.Length > 0)
+            formData.Add(new StringContent(dto.Title), nameof(CreateOccurrenceDto.Title));
+            formData.Add(new StringContent(dto.Description), nameof(CreateOccurrenceDto.Description));
+            formData.Add(new StringContent(dto.UnitId.ToString()), nameof(CreateOccurrenceDto.UnitId));
+            if (imageFile is { Length: > 0 })
             {
                 var fileContent = new StreamContent(imageFile.OpenReadStream());
                 fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(imageFile.ContentType);
-                formData.Add(fileContent, name: "imageFile", fileName: imageFile.FileName);
+                formData.Add(fileContent, "imageFile", imageFile.FileName);
             }
-
-            var response = await _httpClient.PostAsync("/api/occurrences", formData);
-
-            if (response.IsSuccessStatusCode)
-            {
-                return await response.Content.ReadFromJsonAsync<OccurrenceDto>();
-            }
-            return null;
+            var resp = await _httpClient.PostAsync("/api/occurrences", formData);
+            return resp.IsSuccessStatusCode ? await resp.Content.ReadFromJsonAsync<OccurrenceDto>() : null;
         }
 
-        public async Task<OccurrenceDto?> GetOccurrenceDetailsAsync(int occurrenceId)
-        {
-            return await _httpClient.GetFromJsonAsync<OccurrenceDto>($"/api/occurrences/{occurrenceId}");
-        }
-
-        public async Task<(bool Success, string Message)> ForgotPasswordAsync(string email)
-        {
-            var requestDto = new ForgotPasswordDto { Email = email };
-            var response = await _httpClient.PostAsJsonAsync("/api/accounts/forgot-password", requestDto);
-            var message = await response.Content.ReadAsStringAsync();
-            return (response.IsSuccessStatusCode, message);
-        }
-
-        public async Task<(bool Success, string Message, string? NewToken)> UpdateProfileAsync(UpdateProfileDto dto)
-        {
-            var response = await _httpClient.PutAsJsonAsync("/api/profile", dto);
-            var responseBody = await response.Content.ReadAsStringAsync();
-
-            if (!response.IsSuccessStatusCode)
-            {
-                return (false, responseBody, null);
-            }
-
-            try
-            {
-                using var jsonDoc = JsonDocument.Parse(responseBody);
-                jsonDoc.RootElement.TryGetProperty("token", out var tokenElement);
-                return (true, "Profile updated successfully.", tokenElement.GetString());
-            }
-            catch { return (true, "Profile updated successfully.", null); }
-        }
-
-        public async Task<(bool Success, string Message)> ChangePasswordAsync(ChangePasswordViewModel model)
-        {
-            var response = await _httpClient.PostAsJsonAsync("/api/profile/change-password", model);
-            var message = await response.Content.ReadAsStringAsync();
-            return (response.IsSuccessStatusCode, message);
-        }
-
-        public async Task<UserProfileDto?> GetMyProfileAsync()
-        {
-            return await _httpClient.GetFromJsonAsync<UserProfileDto>("/api/profile");
-        }
+        public Task<OccurrenceDto?> GetOccurrenceDetailsAsync(int occurrenceId)
+            => _httpClient.GetFromJsonAsync<OccurrenceDto>($"/api/occurrences/{occurrenceId}");
 
         public async Task<(bool Success, string Message)> UpdateOccurrenceStatusAsync(int occurrenceId, UpdateOccurrenceStatusDto dto)
         {
-            var response = await _httpClient.PatchAsJsonAsync($"/api/occurrences/{occurrenceId}/status", dto);
-            var message = await response.Content.ReadAsStringAsync();
-
-            if (!string.IsNullOrWhiteSpace(message) && message.StartsWith("\"") && message.EndsWith("\""))
-            {
-                message = message.Trim('"');
-            }
-
-            return (response.IsSuccessStatusCode, string.IsNullOrWhiteSpace(message)
-                ? (response.IsSuccessStatusCode ? "Occurrence status has been updated." : "Failed to update status.")
+            var resp = await _httpClient.PatchAsJsonAsync($"/api/occurrences/{occurrenceId}/status", dto);
+            var message = (await resp.Content.ReadAsStringAsync()).Trim('"');
+            return (resp.IsSuccessStatusCode, string.IsNullOrWhiteSpace(message)
+                ? (resp.IsSuccessStatusCode ? "Occurrence status has been updated." : "Failed to update status.")
                 : message);
         }
 
         public async Task<IEnumerable<InterventionDto>> GetInterventionsForOccurrenceAsync(int occurrenceId)
         {
-            var response = await _httpClient.GetAsync($"/api/occurrences/{occurrenceId}/interventions");
-            if (!response.IsSuccessStatusCode)
-            {
-                return new List<InterventionDto>();
-            }
-            return await response.Content.ReadFromJsonAsync<IEnumerable<InterventionDto>>() ?? new List<InterventionDto>();
+            var resp = await _httpClient.GetAsync($"/api/occurrences/{occurrenceId}/interventions");
+            return resp.IsSuccessStatusCode
+                ? await resp.Content.ReadFromJsonAsync<IEnumerable<InterventionDto>>() ?? new List<InterventionDto>()
+                : new List<InterventionDto>();
         }
 
         public async Task<InterventionDto?> CreateInterventionAsync(CreateInterventionDto dto)
         {
-            var response = await _httpClient.PostAsJsonAsync("/api/interventions", dto);
-            if (response.IsSuccessStatusCode)
-            {
-                return await response.Content.ReadFromJsonAsync<InterventionDto>();
-            }
-            return null;
+            var resp = await _httpClient.PostAsJsonAsync("/api/interventions", dto);
+            return resp.IsSuccessStatusCode ? await resp.Content.ReadFromJsonAsync<InterventionDto>() : null;
         }
 
-        public async Task<bool> RegisterEmployeeAsync(RegisterManagerDto registerDto)
-        {
-            var response = await _httpClient.PostAsJsonAsync("/api/accounts/register-employee", registerDto);
-            return response.IsSuccessStatusCode;
-        }
-
-        public async Task<IEnumerable<UserListDto>> GetAvailableEmployeesAsync()
-        {
-            return await _httpClient.GetFromJsonAsync<IEnumerable<UserListDto>>("/api/accounts/employees") ?? new List<UserListDto>();
-        }
-
-        public async Task<IEnumerable<InterventionDto>> GetMyInterventionsAsync()
-        {
-            return await _httpClient.GetFromJsonAsync<IEnumerable<InterventionDto>>("/api/interventions/my-tasks") ?? new List<InterventionDto>();
-        }
-
-        public async Task<(bool Confirmed, string RawMessage)> IsEmailConfirmedAsync(string email)
-        {
-            var payload = new { Email = email };
-            var response = await _httpClient.PostAsJsonAsync("/api/accounts/IsEmailConfirmed", payload);
-            var body = await response.Content.ReadAsStringAsync();
-
-            if (!response.IsSuccessStatusCode)
-                return (false, body);
-
-            try
-            {
-                using var json = JsonDocument.Parse(body);
-                bool confirmed = json.RootElement.GetProperty("confirmed").GetBoolean();
-                return (confirmed, body);
-            }
-            catch
-            {
-                return (false, body);
-            }
-        }
-
-        public async Task<(bool Success, string RawMessage)> ResendConfirmationEmailAsync(string email)
-        {
-            var payload = new { Email = email };
-            var response = await _httpClient.PostAsJsonAsync("/api/accounts/ResendConfirmationEmail", payload);
-            var body = await response.Content.ReadAsStringAsync();
-            return (response.IsSuccessStatusCode, body);
-        }
-
+        public Task<IEnumerable<InterventionDto>> GetMyInterventionsAsync()
+            => _httpClient.GetFromJsonAsync<IEnumerable<InterventionDto>>("/api/interventions/my-tasks")!;
 
         public async Task<bool> UpdateInterventionStatusAsync(int interventionId, UpdateInterventionStatusDto dto)
-        {
-            var response = await _httpClient.PatchAsJsonAsync($"/api/interventions/{interventionId}/status", dto);
-            return response.IsSuccessStatusCode;
-        }
+            => (await _httpClient.PatchAsJsonAsync($"/api/interventions/{interventionId}/status", dto)).IsSuccessStatusCode;
 
         public async Task<InterventionDto?> GetInterventionDetailsAsync(int interventionId)
         {
-            var response = await _httpClient.GetAsync($"/api/interventions/{interventionId}");
-            if (response.IsSuccessStatusCode)
-            {
-                return await response.Content.ReadFromJsonAsync<InterventionDto>();
-            }
-            return null;
+            var resp = await _httpClient.GetAsync($"/api/interventions/{interventionId}");
+            return resp.IsSuccessStatusCode ? await resp.Content.ReadFromJsonAsync<InterventionDto>() : null;
         }
 
-        public async Task<IEnumerable<ExpenseDto>> GetExpensesForOccurrenceAsync(int occurrenceId)
-        {
-            return await _httpClient.GetFromJsonAsync<IEnumerable<ExpenseDto>>($"/api/occurrences/{occurrenceId}/expenses") ?? new List<ExpenseDto>();
-        }
+        public Task<IEnumerable<ExpenseDto>> GetExpensesForOccurrenceAsync(int occurrenceId)
+            => _httpClient.GetFromJsonAsync<IEnumerable<ExpenseDto>>($"/api/occurrences/{occurrenceId}/expenses")!;
 
         public async Task<(ExpenseDto? Expense, string? Error)> CreateExpenseAsync(CreateExpenseDto dto, List<IFormFile> attachmentFiles)
         {
-            Console.WriteLine($"[WEB.ApiClient] Start CreateExpenseAsync. Files={(attachmentFiles == null ? "null" : attachmentFiles.Count.ToString())}");
-               if (attachmentFiles != null)
-                       foreach (var f in attachmentFiles)
-                Console.WriteLine($"[WEB.ApiClient] File part => FileName='{f.FileName}', Length={f.Length}, ContentType='{f.ContentType}'");
             using var formData = new MultipartFormDataContent();
-
             formData.Add(new StringContent(dto.Title), nameof(dto.Title));
             formData.Add(new StringContent(dto.Description ?? string.Empty), nameof(dto.Description));
             formData.Add(new StringContent(dto.Amount.ToString(CultureInfo.InvariantCulture)), nameof(dto.Amount));
             formData.Add(new StringContent(dto.ExpenseDate.ToString("o")), nameof(dto.ExpenseDate));
             formData.Add(new StringContent(dto.CondominiumId.ToString()), nameof(dto.CondominiumId));
-
             if (dto.OccurrenceId.HasValue)
-            {
                 formData.Add(new StringContent(dto.OccurrenceId.Value.ToString()), nameof(dto.OccurrenceId));
-            }
-
             if (attachmentFiles != null)
-            {
                 foreach (var file in attachmentFiles)
-                {
                     if (file.Length > 0)
                     {
-                        var fileContent = new StreamContent(file.OpenReadStream());
-                        fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(file.ContentType);
-                        formData.Add(fileContent, "attachmentFiles", file.FileName);
+                        var fc = new StreamContent(file.OpenReadStream());
+                        fc.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(file.ContentType);
+                        formData.Add(fc, "attachmentFiles", file.FileName);
                     }
-                }
-            }
-            Console.WriteLine("[WEB.ApiClient] POST /api/expenses ...");
-            var response = await _httpClient.PostAsync("/api/expenses", formData);
-            Console.WriteLine($"[WEB.ApiClient] Response {(int)response.StatusCode} {response.ReasonPhrase}");
 
-            if (response.IsSuccessStatusCode)
-            {
-                var expense = await response.Content.ReadFromJsonAsync<ExpenseDto>();
-                return (expense, null);
-            }
-
-            var errorBody = await response.Content.ReadAsStringAsync();
-            var errorText = string.IsNullOrWhiteSpace(errorBody) ? response.ReasonPhrase : errorBody;
-            return (null, errorText);
+            var resp = await _httpClient.PostAsync("/api/expenses", formData);
+            if (resp.IsSuccessStatusCode)
+                return (await resp.Content.ReadFromJsonAsync<ExpenseDto>(), null);
+            var err = await resp.Content.ReadAsStringAsync();
+            return (null, string.IsNullOrWhiteSpace(err) ? resp.ReasonPhrase : err);
         }
 
-        public async Task<IEnumerable<UserListDto>> GetResidentsForCondominiumAsync(int condominiumId)
-        {
-            return await _httpClient.GetFromJsonAsync<IEnumerable<UserListDto>>($"/api/condominiums/{condominiumId}/residents")
-                   ?? new List<UserListDto>();
-        }
-
-        public async Task<bool> UnassignResidentFromUnitAsync(int residentId, int unitId)
-        {
-            var response = await _httpClient.PostAsync($"/api/residents/{residentId}/unassign-from/{unitId}", null);
-            return response.IsSuccessStatusCode;
-        }
-
-        public async Task<UnitDto?> GetUnitByIdAsync(int unitId)
-        {
-            var response = await _httpClient.GetAsync($"/api/units/{unitId}");
-            if (response.IsSuccessStatusCode)
-            {
-                return await response.Content.ReadFromJsonAsync<UnitDto>();
-            }
-            return null;
-        }
-
-        public async Task<IEnumerable<UnitDto>> GetMyUnitsAsync()
-        {
-            return await _httpClient.GetFromJsonAsync<IEnumerable<UnitDto>>("/api/users/my-units") ?? new List<UnitDto>();
-        }
-
-        public async Task<ExpenseDto?> GetExpenseDetailsAsync(int expenseId)
-        {
-            var response = await _httpClient.GetAsync($"/api/expenses/{expenseId}");
-            if (response.IsSuccessStatusCode)
-            {
-                return await response.Content.ReadFromJsonAsync<ExpenseDto>();
-            }
-            return null;
-        }
-
-        public async Task<IEnumerable<ExpenseDto>> GetFixedExpensesAsync(int condominiumId)
-        {
-            return await _httpClient.GetFromJsonAsync<IEnumerable<ExpenseDto>>($"/api/condominiums/{condominiumId}/fixed-expenses")
-                   ?? new List<ExpenseDto>();
-        }
-
-        public async Task<ExpenseDto?> CreateFixedExpenseAsync(int condominiumId, CreateUpdateFixedExpenseDto dto)
-        {
-            var response = await _httpClient.PostAsJsonAsync($"/api/condominiums/{condominiumId}/fixed-expenses", dto);
-            if (response.IsSuccessStatusCode)
-            {
-                return await response.Content.ReadFromJsonAsync<ExpenseDto>();
-            }
-            return null;
-        }
-
-        public async Task<ExpenseDto?> UpdateFixedExpenseAsync(int expenseId, int condominiumId, CreateUpdateFixedExpenseDto dto)
-        {
-            var response = await _httpClient.PutAsJsonAsync($"/api/condominiums/{condominiumId}/fixed-expenses/{expenseId}", dto);
-            if (response.IsSuccessStatusCode)
-            {
-                return await response.Content.ReadFromJsonAsync<ExpenseDto>();
-            }
-            return null;
-        }
-
-        public async Task<bool> ToggleFixedExpenseStatusAsync(int expenseId, int condominiumId)
-        {
-            var response = await _httpClient.PatchAsync($"/api/condominiums/{condominiumId}/fixed-expenses/{expenseId}/toggle-status", null);
-            return response.IsSuccessStatusCode;
-        }
-
-        public async Task<bool> DeleteFixedExpenseAsync(int expenseId, int condominiumId)
-        {
-            var response = await _httpClient.DeleteAsync($"/api/condominiums/{condominiumId}/fixed-expenses/{expenseId}");
-            return response.IsSuccessStatusCode;
-        }
-        public async Task<IEnumerable<UnitQuotaDto>> GetMyQuotasAsync()
-        {
-            return await _httpClient.GetFromJsonAsync<IEnumerable<UnitQuotaDto>>("/api/users/my-quotas")
-                   ?? new List<UnitQuotaDto>();
-        }
+        // ---------- Financials ----------
+        public Task<IEnumerable<UnitQuotaDto>> GetMyQuotasAsync()
+            => _httpClient.GetFromJsonAsync<IEnumerable<UnitQuotaDto>>("/api/users/my-quotas")!;
 
         public async Task<(bool Success, string Message)> GenerateMonthlyQuotasAsync(int condominiumId, int year, int month)
         {
-            var payload = new { year, month };
-            var response = await _httpClient.PostAsJsonAsync($"/api/financials/condominiums/{condominiumId}/generate-quotas", payload);
-            var responseBody = await response.Content.ReadFromJsonAsync<JsonElement>();
-            var message = responseBody.GetProperty("message").GetString() ?? "An unknown error occurred.";
-
-            return (response.IsSuccessStatusCode, message);
+            var resp = await _httpClient.PostAsJsonAsync($"/api/financials/condominiums/{condominiumId}/generate-quotas", new { year, month });
+            var body = await resp.Content.ReadFromJsonAsync<JsonElement>();
+            return (resp.IsSuccessStatusCode, body.GetProperty("message").GetString() ?? "An unknown error occurred.");
         }
 
-        public async Task<QuotaBreakdownDto?> GetQuotaBreakdownAsync(int quotaId)
-        {
-            var response = await _httpClient.GetAsync($"/api/financials/quotas/{quotaId}/breakdown");
-            if (response.IsSuccessStatusCode)
-            {
-                return await response.Content.ReadFromJsonAsync<QuotaBreakdownDto>();
-            }
-            return null;
-        }
+        public Task<QuotaBreakdownDto?> GetQuotaBreakdownAsync(int quotaId)
+            => _httpClient.GetFromJsonAsync<QuotaBreakdownDto>($"/api/financials/quotas/{quotaId}/breakdown");
 
         public async Task<UnitQuotaDto?> SubmitPaymentProofAsync(int quotaId, IFormFile proofFile)
         {
             using var formData = new MultipartFormDataContent();
-
             var fileContent = new StreamContent(proofFile.OpenReadStream());
             fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(proofFile.ContentType);
-
-            formData.Add(fileContent, name: "proofFile", fileName: proofFile.FileName);
-
-            var response = await _httpClient.PostAsync($"/api/financials/quotas/{quotaId}/submit-payment-proof", formData);
-
-            if (response.IsSuccessStatusCode)
-            {
-                return await response.Content.ReadFromJsonAsync<UnitQuotaDto>();
-            }
-            return null;
+            formData.Add(fileContent, "proofFile", proofFile.FileName);
+            var resp = await _httpClient.PostAsync($"/api/financials/quotas/{quotaId}/submit-payment-proof", formData);
+            return resp.IsSuccessStatusCode ? await resp.Content.ReadFromJsonAsync<UnitQuotaDto>() : null;
         }
 
         public async Task<(bool Success, string Message)> ConfirmPaymentAsync(int quotaId)
         {
-            var response = await _httpClient.PostAsync($"/api/financials/quotas/{quotaId}/confirm-payment", null);
-
-            if (response.IsSuccessStatusCode)
+            var resp = await _httpClient.PostAsync($"/api/financials/quotas/{quotaId}/confirm-payment", null);
+            if (resp.IsSuccessStatusCode)
             {
-                var responseBody = await response.Content.ReadFromJsonAsync<JsonElement>();
-                var message = responseBody.GetProperty("message").GetString() ?? "Payment confirmed.";
-                return (true, message);
+                var ok = await resp.Content.ReadFromJsonAsync<JsonElement>();
+                return (true, ok.GetProperty("message").GetString() ?? "Payment confirmed.");
             }
-
-            var errorBody = await response.Content.ReadFromJsonAsync<JsonElement>();
-            var errorMessage = errorBody.GetProperty("message").GetString() ?? "Failed to confirm payment.";
-            return (false, errorMessage);
+            var err = await resp.Content.ReadFromJsonAsync<JsonElement>();
+            return (false, err.GetProperty("message").GetString() ?? "Failed to confirm payment.");
         }
 
-        public async Task<IEnumerable<UnitQuotaDto>> GetQuotasForCondominiumAsync(int condominiumId)
-        {
-            return await _httpClient.GetFromJsonAsync<IEnumerable<UnitQuotaDto>>($"/api/financials/condominiums/{condominiumId}/quotas")
-                ?? new List<UnitQuotaDto>();
-        }
+        public Task<IEnumerable<UnitQuotaDto>> GetQuotasForCondominiumAsync(int condominiumId)
+            => _httpClient.GetFromJsonAsync<IEnumerable<UnitQuotaDto>>($"/api/financials/condominiums/{condominiumId}/quotas")!;
 
         public async Task<string?> CreateStripeCheckoutSessionAsync(int quotaId)
         {
-            var response = await _httpClient.PostAsync($"/api/financials/quotas/{quotaId}/create-checkout-session", null);
-            if (response.IsSuccessStatusCode)
-            {
-                var body = await response.Content.ReadFromJsonAsync<JsonElement>();
-                return body.GetProperty("sessionId").GetString();
-            }
-            return null;
+            var resp = await _httpClient.PostAsync($"/api/financials/quotas/{quotaId}/create-checkout-session", null);
+            if (!resp.IsSuccessStatusCode) return null;
+            var body = await resp.Content.ReadFromJsonAsync<JsonElement>();
+            return body.GetProperty("sessionId").GetString();
         }
 
         public async Task<bool> MarkQuotaAsPaidAsync(int quotaId)
-        {
-            var response = await _httpClient.PostAsync($"/api/financials/quotas/{quotaId}/mark-as-paid", null);
-            return response.IsSuccessStatusCode;
-        }
+            => (await _httpClient.PostAsync($"/api/financials/quotas/{quotaId}/mark-as-paid", null)).IsSuccessStatusCode;
 
-        public async Task<ReceiptDto?> GetReceiptDetailsForResidentAsync(int receiptId)
-        {
-            var response = await _httpClient.GetAsync($"/api/financials/receipts/{receiptId}");
-            if (response.IsSuccessStatusCode)
-            {
-                return await response.Content.ReadFromJsonAsync<ReceiptDto>();
-            }
-            return null;
-        }
+        public Task<ReceiptDto?> GetReceiptDetailsForResidentAsync(int receiptId)
+            => _httpClient.GetFromJsonAsync<ReceiptDto>($"/api/financials/receipts/{receiptId}");
 
-        public async Task<ReceiptDto?> GetReceiptDetailsForManagerAsync(int receiptId)
-        {
-            var response = await _httpClient.GetAsync($"/api/financials/manager/receipts/{receiptId}");
-            if (response.IsSuccessStatusCode)
-            {
-                return await response.Content.ReadFromJsonAsync<ReceiptDto>();
-            }
-            return null;
-        }
+        public Task<ReceiptDto?> GetReceiptDetailsForManagerAsync(int receiptId)
+            => _httpClient.GetFromJsonAsync<ReceiptDto>($"/api/financials/manager/receipts/{receiptId}");
 
-        public async Task<CompanyProfileDto?> GetCompanyProfileAsync()
-        {
-            return await _httpClient.GetFromJsonAsync<CompanyProfileDto>("/api/company/my-profile");
-        }
-
-        public async Task<bool> UpdateCompanyProfileAsync(CompanyProfileDto dto)
-        {
-            var response = await _httpClient.PutAsJsonAsync("/api/company/my-profile", dto);
-            return response.IsSuccessStatusCode;
-        }
-
+        // ---------- Documents ----------
         public async Task<DocumentDto?> UploadDocumentAsync(int condominiumId, CreateDocumentDto dto, IFormFile file)
         {
             using var formData = new MultipartFormDataContent();
@@ -595,375 +403,103 @@ namespace CondoSphere.Web.Services
 
             var fileContent = new StreamContent(file.OpenReadStream());
             fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(file.ContentType);
-            formData.Add(fileContent, name: "file", fileName: file.FileName);
+            formData.Add(fileContent, "file", file.FileName);
 
-            var response = await _httpClient.PostAsync($"/api/condominiums/{condominiumId}/documents", formData);
-
-            if (response.IsSuccessStatusCode)
-            {
-                return await response.Content.ReadFromJsonAsync<DocumentDto>();
-            }
-            return null;
+            var resp = await _httpClient.PostAsync($"/api/condominiums/{condominiumId}/documents", formData);
+            return resp.IsSuccessStatusCode ? await resp.Content.ReadFromJsonAsync<DocumentDto>() : null;
         }
 
-        public async Task<IEnumerable<DocumentDto>> GetDocumentsForCondominiumAsync(int condominiumId)
-        {
-            return await _httpClient.GetFromJsonAsync<IEnumerable<DocumentDto>>($"/api/condominiums/{condominiumId}/documents")
-                ?? new List<DocumentDto>();
-        }
+        public Task<IEnumerable<DocumentDto>> GetDocumentsForCondominiumAsync(int condominiumId)
+            => _httpClient.GetFromJsonAsync<IEnumerable<DocumentDto>>($"/api/condominiums/{condominiumId}/documents")!;
 
         public async Task<bool> DeleteDocumentAsync(int documentId)
-        {
-            var response = await _httpClient.DeleteAsync($"/api/documents/{documentId}");
-            return response.IsSuccessStatusCode;
-        }
+            => (await _httpClient.DeleteAsync($"/api/documents/{documentId}")).IsSuccessStatusCode;
 
-        public async Task<HttpResponseMessage> DownloadDocumentAsync(int documentId)
-        {
-            return await _httpClient.GetAsync($"/api/documents/{documentId}/download");
-        }
+        public Task<HttpResponseMessage> DownloadDocumentAsync(int documentId)
+            => _httpClient.GetAsync($"/api/documents/{documentId}/download");
 
-        public async Task<IEnumerable<DocumentDto>> GetMyDocumentsAsync()
-        {
-            return await _httpClient.GetFromJsonAsync<IEnumerable<DocumentDto>>("/api/users/my-documents")
-                ?? new List<DocumentDto>();
-        }
+        public Task<IEnumerable<DocumentDto>> GetMyDocumentsAsync()
+            => _httpClient.GetFromJsonAsync<IEnumerable<DocumentDto>>("/api/users/my-documents")!;
 
-        public async Task<(bool Success, string Message)> SendAnnouncementAsync(int condominiumId, AnnouncementDto dto)
-        {
-            var response = await _httpClient.PostAsJsonAsync($"/api/condominiums/{condominiumId}/announcements", dto);
-            if (response.IsSuccessStatusCode)
-            {
-                var result = await response.Content.ReadFromJsonAsync<JsonElement>();
-                return (true, result.GetProperty("message").GetString() ?? "Success");
-            }
-            var error = await response.Content.ReadAsStringAsync();
-            return (false, error);
-        }
-
-        public async Task<IEnumerable<NotificationDto>> GetMyNotificationsAsync()
-        {
-            return await _httpClient.GetFromJsonAsync<IEnumerable<NotificationDto>>("/api/notifications/my-notifications")
-                ?? new List<NotificationDto>();
-        }
-
-        public async Task MarkAllNotificationsAsReadAsync()
-        {
-            await _httpClient.PostAsync("/api/notifications/mark-all-as-read", null);
-        }
-
-        public async Task<IEnumerable<NotificationDto>> GetAllMyNotificationsAsync()
-        {
-            return await _httpClient.GetFromJsonAsync<IEnumerable<NotificationDto>>("/api/notifications/my-notifications-all")
-                ?? new List<NotificationDto>();
-        }
-
-        public async Task<(bool Success, string Message)> RejectPaymentProofAsync(int quotaId, RejectPaymentDto dto)
-        {
-            var response = await _httpClient.PostAsJsonAsync($"/api/financials/quotas/{quotaId}/reject-payment", dto);
-            var responseBody = await response.Content.ReadFromJsonAsync<JsonElement>();
-            var message = responseBody.GetProperty("message").GetString() ?? "An unknown error occurred.";
-            return (response.IsSuccessStatusCode, message);
-        }
-
-        public async Task<FinancialStatementDto?> GetFinancialStatementAsync(int condominiumId, int year, int month)
-        {
-            var url = $"/api/reports/condominiums/{condominiumId}/financial-statement?year={year}&month={month}";
-            var response = await _httpClient.GetAsync(url);
-
-            if (response.IsSuccessStatusCode)
-            {
-                return await response.Content.ReadFromJsonAsync<FinancialStatementDto>();
-            }
-
-            return null;
-        }
-
-        public async Task<AdminDashboardDto?> GetAdminDashboardAsync()
-        {
-            var response = await _httpClient.GetAsync("/api/reports/admin-dashboard");
-            response.EnsureSuccessStatusCode();
-            if (response.IsSuccessStatusCode)
-            {
-                return await response.Content.ReadFromJsonAsync<AdminDashboardDto>();
-            }
-            return null;
-        }
-        public async Task<IEnumerable<MonthlyFinancialsDto>> GetMonthlyFinancialsAsync()
-        {
-            return await _httpClient.GetFromJsonAsync<IEnumerable<MonthlyFinancialsDto>>("/api/reports/monthly-financials")
-                ?? new List<MonthlyFinancialsDto>();
-        }
-
-        public async Task<IEnumerable<StatusSummaryDto>> GetOccurrenceStatusSummaryAsync()
-        {
-            return await _httpClient.GetFromJsonAsync<IEnumerable<StatusSummaryDto>>("/api/reports/occurrence-status-summary")
-                ?? new List<StatusSummaryDto>();
-        }
-
-        public async Task<IEnumerable<CondoHotspotDto>> GetCondoHotspotsAsync()
-        {
-            return await _httpClient.GetFromJsonAsync<IEnumerable<CondoHotspotDto>>("/api/reports/condo-hotspots")
-                ?? new List<CondoHotspotDto>();
-        }
-
-        public async Task<bool> UpdateCondominiumAsync(int id, CreateUpdateCondominiumDto dto)
-        {
-            var response = await _httpClient.PutAsJsonAsync($"/api/condominiums/{id}", dto);
-            return response.IsSuccessStatusCode;
-        }
-
-        public async Task<(bool Success, string Message)> DeleteCondominiumAsync(int id)
-        {
-            var response = await _httpClient.DeleteAsync($"/api/condominiums/{id}");
-
-            if (response.IsSuccessStatusCode)
-            {
-                return (true, "Condominium deleted successfully.");
-            }
-            else
-            {
-                var errorResponse = await response.Content.ReadFromJsonAsync<JsonElement>();
-                var message = errorResponse.GetProperty("message").GetString() ?? "An unknown error occurred.";
-                return (false, message);
-            }
-        }
-
-        public async Task<bool> UnassignManagerAsync(int condominiumId)
-        {
-            var response = await _httpClient.PatchAsync($"/api/condominiums/{condominiumId}/unassign-manager", null);
-            return response.IsSuccessStatusCode;
-        }
-        // --- Two-Factor (2SV) ---
-        public async Task<(bool Success, string Message)> SwitchTwoFactorAsync(ToggleTwoFactorDto dto)
-        {
-            var response = await _httpClient.PostAsJsonAsync("/api/accounts/2fa/switch", dto);
-            var raw = await response.Content.ReadAsStringAsync();
-
-            if (response.IsSuccessStatusCode)
-            {
-                try
-                {
-                    using var json = JsonDocument.Parse(raw);
-                    var msg = json.RootElement.TryGetProperty("message", out var m) ? m.GetString() : "Two-factor switched.";
-                    return (true, msg ?? "Two-factor switched.");
-                }
-                catch
-                {
-                    return (true, "Two-factor switched.");
-                }
-            }
-
-            try
-            {
-                using var json = JsonDocument.Parse(raw);
-                var msg = json.RootElement.TryGetProperty("message", out var m) ? m.GetString() : raw;
-                return (false, msg ?? raw);
-            }
-            catch
-            {
-                return (false, raw);
-            }
-        }
-
-        public async Task<(bool Success, string Message)> SendTwoFactorCodeAsync(SendTwoFactorCodeDto dto)
-        {
-            var response = await _httpClient.PostAsJsonAsync("/api/accounts/2fa/send-code", dto);
-            var raw = await response.Content.ReadAsStringAsync();
-
-            if (response.IsSuccessStatusCode)
-            {
-                try
-                {
-                    using var json = JsonDocument.Parse(raw);
-                    var msg = json.RootElement.TryGetProperty("message", out var m) ? m.GetString() : "Two-factor code sent.";
-                    return (true, msg ?? "Two-factor code sent.");
-                }
-                catch
-                {
-                    return (true, "Two-factor code sent.");
-                }
-            }
-
-            try
-            {
-                using var json = JsonDocument.Parse(raw);
-                var msg = json.RootElement.TryGetProperty("message", out var m) ? m.GetString() : raw;
-                return (false, msg ?? raw);
-            }
-            catch
-            {
-                return (false, raw);
-            }
-        }
-
-        public async Task<(bool Success, string Message)> VerifyTwoFactorCodeAsync(VerifyTwoFactorCodeDto dto)
-        {
-            var response = await _httpClient.PostAsJsonAsync("/api/accounts/2fa/verify", dto);
-            var raw = await response.Content.ReadAsStringAsync();
-
-            if (response.IsSuccessStatusCode)
-            {
-                // O teu endpoint devolve 200 OK sem body
-                return (true, "Two-factor code verified.");
-            }
-
-            try
-            {
-                using var json = JsonDocument.Parse(raw);
-                var msg = json.RootElement.TryGetProperty("message", out var m) ? m.GetString() : raw;
-                return (false, msg ?? raw);
-            }
-            catch
-            {
-                return (false, raw);
-            }
-        }
-
-        public async Task<bool> IsTwoFactorEnabledAsync(EmailDto dto)
-        {
-            // 1) envia um objeto JSON com a propriedade Email (não envies só a string)
-            var response = await _httpClient.PostAsJsonAsync("/api/accounts/2fa/IsEnable", dto);
-
-            if (!response.IsSuccessStatusCode)
-                return false;
-
-            // 2) lê o corpo como string e tenta várias formas de interpretar
-            var raw = await response.Content.ReadAsStringAsync();
-
-            try
-            {
-                // a) se for um booleano puro: true/false (JSON)
-                //    também cobre o caso de vir "true"/"false" como string
-                if (bool.TryParse(raw.Trim().Trim('"'), out var directBool))
-                    return directBool;
-
-                // b) se for um objeto: { "enabled": true }, { "isEnabled": true }, { "twoFactorEnabled": true }
-                using var doc = JsonDocument.Parse(raw);
-                var root = doc.RootElement;
-                if (root.ValueKind == JsonValueKind.Object)
-                {
-                    if (root.TryGetProperty("enabled", out var e) && e.ValueKind == JsonValueKind.True || e.ValueKind == JsonValueKind.False)
-                        return e.GetBoolean();
-
-                    if (root.TryGetProperty("isEnabled", out var ie) && (ie.ValueKind == JsonValueKind.True || ie.ValueKind == JsonValueKind.False))
-                        return ie.GetBoolean();
-
-                    if (root.TryGetProperty("twoFactorEnabled", out var tfe) && (tfe.ValueKind == JsonValueKind.True || tfe.ValueKind == JsonValueKind.False))
-                        return tfe.GetBoolean();
-                }
-            }
-            catch
-            {
-                // ignora parsing errors e cai para false
-            }
-            //TODO rever isto 
-            return false;
-        }
-
-        public async Task<IEnumerable<AssemblyDto>> GetAssembliesForCondominiumAsync(int condominiumId)
-        {
-            return await _httpClient.GetFromJsonAsync<IEnumerable<AssemblyDto>>(
-                $"/api/assemblies/condominium/{condominiumId}")  
-                ?? Enumerable.Empty<AssemblyDto>();
-        }
-
-        public async Task<AssemblyDto?> CreateAssemblyAsync(CreateAssemblyDto dto)
-        {
-            var response = await _httpClient.PostAsJsonAsync("/api/assemblies", dto);
-            if (!response.IsSuccessStatusCode) return null;
-            return await response.Content.ReadFromJsonAsync<AssemblyDto>();
-        }
-
-        public async Task<int> SendAssemblyInvitesAsync(int assemblyId, SendAssemblyInvitesDto dto)
-        {
-            var response = await _httpClient.PostAsJsonAsync($"/api/assemblies/{assemblyId}/invites", dto);
-            if (!response.IsSuccessStatusCode) return 0;
-            var body = await response.Content.ReadAsStringAsync();
-            // tenta desserializar um inteiro; se não der, assume 0
-            if (int.TryParse(body, out var sent)) return sent;
-            try
-            {
-                var payload = await response.Content.ReadFromJsonAsync<Dictionary<string, int>>();
-                return payload != null && payload.TryGetValue("sent", out var v) ? v : 0;
-            }
-            catch { return 0; }
-        }
-
-        public async Task<IEnumerable<AssemblyMessageDto>> GetAssemblyMessagesAsync(int assemblyId)
-        {
-            return await _httpClient.GetFromJsonAsync<IEnumerable<AssemblyMessageDto>>($"/api/assemblies/{assemblyId}/messages")
-                   ?? Enumerable.Empty<AssemblyMessageDto>();
-        }
-
+        // ---------- Messages ----------
         public async Task<IEnumerable<MessageListDto>> GetInboxAsync(int pageNumber = 1, int pageSize = 20)
         {
-            var response = await _httpClient.GetAsync($"/api/messages/inbox?pageNumber={pageNumber}&pageSize={pageSize}");
-            if (response.IsSuccessStatusCode)
-            {
-                return await response.Content.ReadFromJsonAsync<IEnumerable<MessageListDto>>() ?? new List<MessageListDto>();
-            }
-            return new List<MessageListDto>();
+            var resp = await _httpClient.GetAsync($"/api/messages/inbox?pageNumber={pageNumber}&pageSize={pageSize}");
+            return resp.IsSuccessStatusCode
+                ? await resp.Content.ReadFromJsonAsync<IEnumerable<MessageListDto>>() ?? new List<MessageListDto>()
+                : new List<MessageListDto>();
         }
 
         public async Task<IEnumerable<MessageListDto>> GetSentMessagesAsync(int pageNumber = 1, int pageSize = 20)
         {
-            var response = await _httpClient.GetAsync($"/api/messages/sent?pageNumber={pageNumber}&pageSize={pageSize}");
-            if (response.IsSuccessStatusCode)
-            {
-                return await response.Content.ReadFromJsonAsync<IEnumerable<MessageListDto>>() ?? new List<MessageListDto>();
-            }
-            return new List<MessageListDto>();
+            var resp = await _httpClient.GetAsync($"/api/messages/sent?pageNumber={pageNumber}&pageSize={pageSize}");
+            return resp.IsSuccessStatusCode
+                ? await resp.Content.ReadFromJsonAsync<IEnumerable<MessageListDto>>() ?? new List<MessageListDto>()
+                : new List<MessageListDto>();
         }
 
         public async Task<MessageDto?> GetMessageAsync(int messageId)
         {
-            var response = await _httpClient.GetAsync($"/api/messages/{messageId}");
-            if (response.IsSuccessStatusCode)
-            {
-                return await response.Content.ReadFromJsonAsync<MessageDto>();
-            }
-            return null;
+            var resp = await _httpClient.GetAsync($"/api/messages/{messageId}");
+            return resp.IsSuccessStatusCode ? await resp.Content.ReadFromJsonAsync<MessageDto>() : null;
         }
 
         public async Task<bool> SendMessageAsync(SendMessageDto dto)
-        {
-            var response = await _httpClient.PostAsJsonAsync("/api/messages", dto);
-            return response.IsSuccessStatusCode;
-        }
+            => (await _httpClient.PostAsJsonAsync("/api/messages", dto)).IsSuccessStatusCode;
 
         public async Task<int> GetUnreadMessageCountAsync()
         {
-            var response = await _httpClient.GetAsync("/api/messages/unread-count");
-            if (response.IsSuccessStatusCode)
+            var resp = await _httpClient.GetAsync("/api/messages/unread-count");
+            if (!resp.IsSuccessStatusCode) return 0;
+            try
             {
-                var result = await response.Content.ReadFromJsonAsync<dynamic>();
-                return result?.unreadCount ?? 0;
+                var json = await resp.Content.ReadFromJsonAsync<JsonElement>();
+                if (json.ValueKind == JsonValueKind.Object && json.TryGetProperty("unreadCount", out var uc))
+                    return uc.GetInt32();
             }
+            catch { }
             return 0;
         }
 
         public async Task<IEnumerable<SimpleUserDto>> GetContactsAsync()
         {
-            var response = await _httpClient.GetAsync("/api/messages/contacts");
-            if (response.IsSuccessStatusCode)
-            {
-                return await response.Content.ReadFromJsonAsync<IEnumerable<SimpleUserDto>>() ?? new List<SimpleUserDto>();
-            }
-            return new List<SimpleUserDto>();
+            var resp = await _httpClient.GetAsync("/api/messages/contacts");
+            return resp.IsSuccessStatusCode
+                ? await resp.Content.ReadFromJsonAsync<IEnumerable<SimpleUserDto>>() ?? new List<SimpleUserDto>()
+                : new List<SimpleUserDto>();
         }
 
         public async Task<bool> MarkMessageAsReadAsync(int messageId)
+            => (await _httpClient.PostAsync($"/api/messages/{messageId}/mark-read", null)).IsSuccessStatusCode;
+
+        // ---------- Assemblies ----------
+        public async Task<IEnumerable<AssemblyDto>> GetAssembliesForCondominiumAsync(int condominiumId)
+            => await _httpClient.GetFromJsonAsync<IEnumerable<AssemblyDto>>($"/api/assemblies/condominium/{condominiumId}")
+               ?? Enumerable.Empty<AssemblyDto>();
+
+        public async Task<AssemblyDto?> CreateAssemblyAsync(CreateAssemblyDto dto)
         {
-            var response = await _httpClient.PostAsync($"/api/messages/{messageId}/mark-read", null);
-            return response.IsSuccessStatusCode;
+            var resp = await _httpClient.PostAsJsonAsync("/api/assemblies", dto);
+            return resp.IsSuccessStatusCode ? await resp.Content.ReadFromJsonAsync<AssemblyDto>() : null;
         }
-        public async Task<AssemblyMessageDto?> PostAssemblyMessageAsync(int assemblyId, PostAssemblyMessageDto dto)
+
+        public async Task<int> SendAssemblyInvitesAsync(int assemblyId, SendAssemblyInvitesDto dto)
         {
-            var response = await _httpClient.PostAsJsonAsync($"/api/assemblies/{assemblyId}/messages", dto);
-            if (!response.IsSuccessStatusCode) return null;
-            return await response.Content.ReadFromJsonAsync<AssemblyMessageDto>();
+            var resp = await _httpClient.PostAsJsonAsync($"/api/assemblies/{assemblyId}/invites", dto);
+            if (!resp.IsSuccessStatusCode) return 0;
+            var raw = await resp.Content.ReadAsStringAsync();
+            if (int.TryParse(raw, out var sent)) return sent;
+            try
+            {
+                var payload = await resp.Content.ReadFromJsonAsync<Dictionary<string, int>>();
+                return payload != null && payload.TryGetValue("sent", out var v) ? v : 0;
+            }
+            catch { return 0; }
         }
+
+
+
+
         public async Task<IEnumerable<AssemblyDto>> GetCompanyAssembliesAsync()
         {
             var resp = await _httpClient.GetAsync("/api/assemblies/company");
@@ -975,6 +511,252 @@ namespace CondoSphere.Web.Services
             return await resp.Content.ReadFromJsonAsync<IEnumerable<AssemblyDto>>() ?? Enumerable.Empty<AssemblyDto>();
         }
 
+        public Task<AssemblyRoomInfoDto?> GetAssemblyRoomInfoAsync(int assemblyId)
+            => _httpClient.GetFromJsonAsync<AssemblyRoomInfoDto>($"/api/assemblies/{assemblyId}/room-info");
+
+        // ---------- Reports / Notifications / Company ----------
+        public async Task<AdminDashboardDto?> GetAdminDashboardAsync()
+        {
+            var resp = await _httpClient.GetAsync("/api/reports/admin-dashboard");
+            resp.EnsureSuccessStatusCode();
+            return await resp.Content.ReadFromJsonAsync<AdminDashboardDto>();
+        }
+
+        public Task<IEnumerable<MonthlyFinancialsDto>> GetMonthlyFinancialsAsync()
+            => _httpClient.GetFromJsonAsync<IEnumerable<MonthlyFinancialsDto>>("/api/reports/monthly-financials")!;
+
+        public Task<IEnumerable<StatusSummaryDto>> GetOccurrenceStatusSummaryAsync()
+            => _httpClient.GetFromJsonAsync<IEnumerable<StatusSummaryDto>>("/api/reports/occurrence-status-summary")!;
+
+        public Task<IEnumerable<CondoHotspotDto>> GetCondoHotspotsAsync()
+            => _httpClient.GetFromJsonAsync<IEnumerable<CondoHotspotDto>>("/api/reports/condo-hotspots")!;
+
+        public Task<CompanyProfileDto?> GetCompanyProfileAsync()
+            => _httpClient.GetFromJsonAsync<CompanyProfileDto>("/api/company/my-profile");
+
+        public async Task<bool> UpdateCompanyProfileAsync(CompanyProfileDto dto)
+            => (await _httpClient.PutAsJsonAsync("/api/company/my-profile", dto)).IsSuccessStatusCode;
+
+        public Task<IEnumerable<NotificationDto>> GetMyNotificationsAsync()
+            => _httpClient.GetFromJsonAsync<IEnumerable<NotificationDto>>("/api/notifications/my-notifications")!;
+
+        public Task MarkAllNotificationsAsReadAsync()
+            => _httpClient.PostAsync("/api/notifications/mark-all-as-read", null);
+
+        public Task<IEnumerable<NotificationDto>> GetAllMyNotificationsAsync()
+            => _httpClient.GetFromJsonAsync<IEnumerable<NotificationDto>>("/api/notifications/my-notifications-all")!;
+
+        // ---------- Helpers ----------
+        private static string TryExtractMessage(string raw)
+        {
+            try
+            {
+                using var json = JsonDocument.Parse(raw);
+                return json.RootElement.TryGetProperty("message", out var m) ? m.GetString() ?? raw : raw;
+            }
+            catch { return raw; }
+        }
+
+        public async Task<bool> UnassignResidentFromUnitAsync(int residentId, int unitId)
+        {
+            var response = await _httpClient.PostAsync($"/api/residents/{residentId}/unassign-from/{unitId}", null);
+            return response.IsSuccessStatusCode;
+        }
+        public async Task<ExpenseDto?> GetExpenseDetailsAsync(int expenseId)
+        {
+            var response = await _httpClient.GetAsync($"/api/expenses/{expenseId}");
+            if (response.IsSuccessStatusCode)
+                return await response.Content.ReadFromJsonAsync<ExpenseDto>();
+            return null;
+        }
+        // Lista de despesas fixas do condomínio
+        public async Task<IEnumerable<ExpenseDto>> GetFixedExpensesAsync(int condominiumId)
+        {
+            return await _httpClient.GetFromJsonAsync<IEnumerable<ExpenseDto>>(
+                       $"/api/condominiums/{condominiumId}/fixed-expenses")
+                   ?? new List<ExpenseDto>();
+        }
+        // ----------------- Fixed Expenses -----------------
+
+
+
+        // Criar nova despesa fixa
+        public async Task<ExpenseDto?> CreateFixedExpenseAsync(int condominiumId, CreateUpdateFixedExpenseDto dto)
+        {
+            var response = await _httpClient.PostAsJsonAsync(
+                $"/api/condominiums/{condominiumId}/fixed-expenses", dto);
+            if (response.IsSuccessStatusCode)
+            {
+                return await response.Content.ReadFromJsonAsync<ExpenseDto>();
+            }
+            return null;
+        }
+
+        // Atualizar despesa fixa
+        public async Task<ExpenseDto?> UpdateFixedExpenseAsync(int expenseId, int condominiumId, CreateUpdateFixedExpenseDto dto)
+        {
+            var response = await _httpClient.PutAsJsonAsync(
+                $"/api/condominiums/{condominiumId}/fixed-expenses/{expenseId}", dto);
+            if (response.IsSuccessStatusCode)
+            {
+                return await response.Content.ReadFromJsonAsync<ExpenseDto>();
+            }
+            return null;
+        }
+
+        // Ativar/desativar despesa fixa
+        public async Task<bool> ToggleFixedExpenseStatusAsync(int expenseId, int condominiumId)
+        {
+            var response = await _httpClient.PatchAsync(
+                $"/api/condominiums/{condominiumId}/fixed-expenses/{expenseId}/toggle-status", null);
+            return response.IsSuccessStatusCode;
+        }
+
+        // Apagar despesa fixa
+        public async Task<bool> DeleteFixedExpenseAsync(int expenseId, int condominiumId)
+        {
+            var response = await _httpClient.DeleteAsync(
+                $"/api/condominiums/{condominiumId}/fixed-expenses/{expenseId}");
+            return response.IsSuccessStatusCode;
+        }
+        // Enviar anúncio / comunicado para um condomínio
+        public async Task<(bool Success, string Message)> SendAnnouncementAsync(int condominiumId, AnnouncementDto dto)
+        {
+            var resp = await _httpClient.PostAsJsonAsync($"/api/condominiums/{condominiumId}/announcements", dto);
+
+            if (resp.IsSuccessStatusCode)
+            {
+                try
+                {
+                    var json = await resp.Content.ReadFromJsonAsync<JsonElement>();
+                    var msg = json.TryGetProperty("message", out var m) ? m.GetString() : null;
+                    return (true, msg ?? "Announcement sent.");
+                }
+                catch
+                {
+                    return (true, "Announcement sent.");
+                }
+            }
+
+            // erro → tenta extrair mensagem
+            try
+            {
+                var json = await resp.Content.ReadFromJsonAsync<JsonElement>();
+                var msg = json.TryGetProperty("message", out var m) ? m.GetString() : null;
+                return (false, msg ?? (resp.ReasonPhrase ?? "Failed to send announcement."));
+            }
+            catch
+            {
+                var raw = await resp.Content.ReadAsStringAsync();
+                return (false, string.IsNullOrWhiteSpace(raw) ? (resp.ReasonPhrase ?? "Failed to send announcement.") : raw);
+            }
+        }
+        // Rejeitar comprovativo de pagamento de uma quota
+        public async Task<(bool Success, string Message)> RejectPaymentProofAsync(int quotaId, RejectPaymentDto dto)
+        {
+            var resp = await _httpClient.PostAsJsonAsync($"/api/financials/quotas/{quotaId}/reject-payment", dto);
+
+            if (resp.IsSuccessStatusCode)
+            {
+                try
+                {
+                    var ok = await resp.Content.ReadFromJsonAsync<JsonElement>();
+                    var msg = ok.TryGetProperty("message", out var m) ? m.GetString() : null;
+                    return (true, msg ?? "Payment rejected.");
+                }
+                catch
+                {
+                    return (true, "Payment rejected.");
+                }
+            }
+
+            try
+            {
+                var err = await resp.Content.ReadFromJsonAsync<JsonElement>();
+                var msg = err.TryGetProperty("message", out var m) ? m.GetString() : null;
+                return (false, msg ?? (resp.ReasonPhrase ?? "Failed to reject payment."));
+            }
+            catch
+            {
+                var raw = await resp.Content.ReadAsStringAsync();
+                return (false, string.IsNullOrWhiteSpace(raw) ? (resp.ReasonPhrase ?? "Failed to reject payment.") : raw);
+            }
+        }
+
+        // Relatório financeiro mensal de um condomínio
+        public async Task<FinancialStatementDto?> GetFinancialStatementAsync(int condominiumId, int year, int month)
+        {
+            var url = $"/api/reports/condominiums/{condominiumId}/financial-statement?year={year}&month={month}";
+            var resp = await _httpClient.GetAsync(url);
+            if (!resp.IsSuccessStatusCode) return null;
+            return await resp.Content.ReadFromJsonAsync<FinancialStatementDto>();
+        }
+        // Alterar password do utilizador autenticado
+        public async Task<(bool Success, string Message)> ChangePasswordAsync(ChangePasswordViewModel model)
+        {
+            var response = await _httpClient.PostAsJsonAsync("/api/profile/change-password", model);
+            var message = await response.Content.ReadAsStringAsync();
+            return (response.IsSuccessStatusCode, message);
+        }
+        // Pedido de recuperação de password (envia email com link)
+        public async Task<(bool Success, string RawMessage)> ForgotPasswordAsync(string email)
+        {
+            var payload = new ForgotPasswordDto { Email = email };
+            var resp = await _httpClient.PostAsJsonAsync("/api/accounts/forgot-password", payload);
+            var body = await resp.Content.ReadAsStringAsync(); // devolvemos o corpo bruto p/ o controller tratar a mensagem
+            return (resp.IsSuccessStatusCode, body);
+        }
+        // Atualizar o perfil do utilizador (devolve msg e, se houver, novo JWT)
+        public async Task<(bool Success, string Message, string? NewToken)> UpdateProfileAsync(UpdateProfileDto dto)
+        {
+            var response = await _httpClient.PutAsJsonAsync("/api/profile", dto);
+            var responseBody = await response.Content.ReadAsStringAsync();
+
+            if (!response.IsSuccessStatusCode)
+                return (false, responseBody, null);
+
+            try
+            {
+                using var jsonDoc = JsonDocument.Parse(responseBody);
+                jsonDoc.RootElement.TryGetProperty("token", out var tokenElement);
+                return (true, "Profile updated successfully.", tokenElement.GetString());
+            }
+            catch
+            {
+                // endpoint pode não devolver token; considera só a msg de sucesso
+                return (true, "Profile updated successfully.", null);
+            }
+        }
+        public async Task<IReadOnlyList<CondominiumDto>> GetManagedCondominiumsAsync()
+        {
+            return await _httpClient.GetFromJsonAsync<IReadOnlyList<CondominiumDto>>("/api/condominiums/managed")
+                   ?? Array.Empty<CondominiumDto>();
+        }
+        public async Task<IReadOnlyList<AssemblyDto>> GetCondominiumAssembliesAsync(int condominiumId)
+        {
+            var url = $"/api/assemblies/condominium/{condominiumId}";
+            var resp = await _httpClient.GetAsync(url);
+
+            if (!resp.IsSuccessStatusCode)
+            {
+                var raw = await resp.Content.ReadAsStringAsync();
+                throw new HttpRequestException($"GET {url} => {(int)resp.StatusCode} {resp.ReasonPhrase}: {raw}");
+            }
+
+            var data = await resp.Content.ReadFromJsonAsync<IReadOnlyList<AssemblyDto>>();
+            return data ?? Array.Empty<AssemblyDto>();
+        }
+        public async Task<IReadOnlyList<ResidentDto>> GetCondominiumResidentsAsync(int condominiumId)
+        {
+            var url = $"/api/condominiums/{condominiumId}/residents";
+            var resp = await _httpClient.GetAsync(url);
+            if (!resp.IsSuccessStatusCode)
+            {
+                var raw = await resp.Content.ReadAsStringAsync();
+                throw new HttpRequestException($"GET {url} => {(int)resp.StatusCode} {resp.ReasonPhrase}: {raw}");
+            }
+            return await resp.Content.ReadFromJsonAsync<IReadOnlyList<ResidentDto>>() ?? Array.Empty<ResidentDto>();
+        }
 
     }
 }

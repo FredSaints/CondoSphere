@@ -1,20 +1,25 @@
 ﻿using CondoSphere.Core.DTOs.Assemblies;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace CondoSphere.Application.Services.Assembly
+namespace CondoSphere.Application.Interfaces
 {
     public interface IAssemblyService
     {
-        Task<AssemblyDto?> CreateAsync(CreateAssemblyDto dto); 
-        Task<IEnumerable<AssemblyDto>> GetForCondominiumAsync(int condominiumId); 
-        Task<IEnumerable<AssemblyDto>> GetAllForCompanyAsync(int companyId); 
+        // CRUD básico
+        Task<AssemblyDto?> CreateAsync(CreateAssemblyDto dto);
+        Task<AssemblyDto?> GetByIdAsync(int id);
+        Task<AssemblyDto?> UpdateAsync(int id, AssemblyDto dto);
 
-        Task<int> SendInvitesAsync(int assemblyId, SendAssemblyInvitesDto dto); 
-        Task<IEnumerable<AssemblyMessageDto>> GetMessagesAsync(int assemblyId); 
-        Task<AssemblyMessageDto?> PostMessageAsync(int assemblyId, PostAssemblyMessageDto dto); 
+        // Listagens
+        Task<IEnumerable<AssemblyDto>> GetForCondominiumAsync(int condominiumId);
+        Task<IEnumerable<AssemblyDto>> GetAllForCompanyAsync(int companyId);
+        Task<IEnumerable<AssemblyDto>> GetByCondominiumAsync(int condominiumId);
+
+        // Convites
+        Task<int> SendInvitesAsync(int assemblyId, SendAssemblyInvitesDto dto);
+
+        // Chat / Sala (placeholders + info Jitsi)
+        Task<IEnumerable<AssemblyMessageDto>> GetMessagesAsync(int assemblyId);
+        Task<AssemblyMessageDto?> PostMessageAsync(int assemblyId, PostAssemblyMessageDto dto);
+        Task<AssemblyRoomInfoDto?> GetRoomInfoAsync(int assemblyId);
     }
 }

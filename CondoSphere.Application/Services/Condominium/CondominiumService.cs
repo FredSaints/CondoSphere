@@ -15,15 +15,17 @@ namespace CondoSphere.Application.Services.Condominium
         private readonly IUnitOfWork _unitOfWork;
         private readonly UserManager<CoreUser> _userManager;
         private readonly IMapper _mapper;
+        private readonly IResidentRepository _residents;
 
         public CondominiumService(
             IUnitOfWork unitOfWork,
             UserManager<CoreUser> userManager,
-            IMapper mapper)
+            IMapper mapper, IResidentRepository residents)
         {
             _unitOfWork = unitOfWork;
             _userManager = userManager;
             _mapper = mapper;
+            _residents = residents;
         }
 
         public async Task<CondominiumDto> CreateCondominiumAsync(CreateUpdateCondominiumDto condominiumDto, int companyId)
@@ -157,6 +159,26 @@ namespace CondoSphere.Application.Services.Condominium
             await _unitOfWork.CompleteAsync();
 
             return true;
+        }
+        public async Task<IReadOnlyList<ResidentDto>> GetResidentsAsync(int condominiumId)
+        {
+            var people = await _residents.GetByCondominiumAsync(condominiumId);
+
+            // mapeamento simples para a combo
+            var list = people
+                .Select(r => new ResidentDto
+                {
+                    Id = r.Id,
+                    FullName = string.IsNullOrWhiteSpace(r.FirstName)
+                        ? r.Name // fallback se o teu entity tiver "Name"
+                        : $"{r.FirstName} {r.LastName}".Trim(),
+                    Email = r.Email,
+                    Phone = r.PhoneNumber ?? r.PhoneNumber // ajusta aos campos reais
+                })
+                .OrderBy(x => x.FullName)
+                .ToList();
+
+            return list;
         }
     }
 }

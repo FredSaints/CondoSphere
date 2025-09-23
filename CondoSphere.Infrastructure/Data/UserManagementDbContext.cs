@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
+using AssemblyEntity = CondoSphere.Core.Entities.Assembly.Assembly;
+
 namespace CondoSphere.Infrastructure.Data
 {
     /// <summary>
@@ -23,6 +25,11 @@ namespace CondoSphere.Infrastructure.Data
         /// Represents the 'Messages' table.
         /// </summary>
         public DbSet<Message> Messages { get; set; }
+
+        /// <summary>
+        /// Represents the 'assemblies' table.
+        /// </summary>
+        public DbSet<AssemblyEntity> Assemblies { get; set; } = null!;
 
         /// <summary>
         /// Represents the 'Notifications' table.

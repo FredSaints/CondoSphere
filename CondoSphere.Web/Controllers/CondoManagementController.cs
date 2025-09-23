@@ -12,6 +12,8 @@ using CondoSphere.Web.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using CondoSphere.Web.Services;
+using CondoSphere.Core.DTOs.Financials;
 
 namespace CondoSphere.Web.Controllers
 {

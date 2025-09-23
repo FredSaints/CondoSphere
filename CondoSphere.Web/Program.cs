@@ -51,6 +51,8 @@ var app = builder.Build();
 //app.UseHttpsRedirection();
 //app.UseStaticFiles();
 
+
+
 if (app.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();

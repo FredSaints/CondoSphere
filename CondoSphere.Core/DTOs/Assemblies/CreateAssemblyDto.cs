@@ -1,10 +1,6 @@
-﻿using CondoSphere.Core.ValidationAttributes;
+﻿// CondoSphere.Core/DTOs/Assemblies/CreateAssemblyDto.cs
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CondoSphere.Core.DTOs.Assemblies
 {
@@ -13,14 +9,10 @@ namespace CondoSphere.Core.DTOs.Assemblies
         [Required]
         public int CondominiumId { get; set; }
 
-        [Required, DateNotInPast]
-        public DateTime ScheduledAt { get; set; }
+        [Required]
+        public DateTime Date { get; set; }
 
-        [Required, StringLength(200)]
-        public string Title { get; set; } = string.Empty;
-
-        [StringLength(2000)]
-        public string? Agenda { get; set; }
+        [Required, StringLength(150)]
+        public string Topic { get; set; } = string.Empty;
     }
-
 }

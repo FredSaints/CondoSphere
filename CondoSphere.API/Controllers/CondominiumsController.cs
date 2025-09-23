@@ -192,5 +192,14 @@ namespace CondoSphere.API.Controllers
             var condominiums = await _condominiumService.GetAllCondominiumsAsync(companyId.Value, 1, 1000);
             return Ok(condominiums);
         }
+
+        [HttpGet("{condominiumId:int}/residents")]
+        [Authorize(Roles = $"{RoleConstants.CompanyAdmin},{RoleConstants.CondoManager}")]
+        public async Task<ActionResult<IEnumerable<ResidentDto>>> GetResidents(int condominiumId)
+        {
+            var list = await _condominiumService.GetResidentsAsync(condominiumId); // usa o teu service/repo
+            return Ok(list);
+        }
+
     }
 }

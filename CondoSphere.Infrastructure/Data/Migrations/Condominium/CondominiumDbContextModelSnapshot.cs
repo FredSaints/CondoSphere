@@ -39,10 +39,17 @@ namespace CondoSphere.Infrastructure.Data.Migrations.Condominium
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("MinutesUrl")
+                    b.Property<string>("JitsiRoomName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("JitsiRoomPassword")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Topic")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("participants")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -65,8 +72,11 @@ namespace CondoSphere.Infrastructure.Data.Migrations.Condominium
                     b.Property<int>("Channel")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
+                    b.Property<int>("CompanyId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("CondominiumId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Email")
                         .HasColumnType("nvarchar(max)");
@@ -74,55 +84,15 @@ namespace CondoSphere.Infrastructure.Data.Migrations.Condominium
                     b.Property<int>("InvitedByUserId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("InvitedUserId")
-                        .HasColumnType("int");
-
                     b.Property<string>("PhoneE164")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime?>("RespondedAt")
+                    b.Property<DateTime>("SentAt")
                         .HasColumnType("datetime2");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Token")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
                     b.ToTable("AssemblyInvites");
-                });
-
-            modelBuilder.Entity("CondoSphere.Core.Entities.Assembly.AssemblyMessage", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("AssemblyId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Message")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("SenderName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("SenderUserId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("AssemblyMessages");
                 });
 
             modelBuilder.Entity("CondoSphere.Core.Entities.Assembly.AssemblyParticipant", b =>
@@ -142,16 +112,16 @@ namespace CondoSphere.Infrastructure.Data.Migrations.Condominium
                     b.Property<int>("CondominiumId")
                         .HasColumnType("int");
 
-                    b.Property<bool>("IsAccepted")
-                        .HasColumnType("bit");
+                    b.Property<string>("ExternalName")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("IsEmployee")
-                        .HasColumnType("bit");
+                    b.Property<DateTime?>("JoinedAt")
+                        .HasColumnType("datetime2");
 
-                    b.Property<bool>("IsInvited")
-                        .HasColumnType("bit");
+                    b.Property<DateTime?>("LeftAt")
+                        .HasColumnType("datetime2");
 
-                    b.Property<int>("UserId")
+                    b.Property<int?>("UserId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
