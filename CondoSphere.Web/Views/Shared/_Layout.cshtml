@@ -43,6 +43,11 @@
             padding: calc(0.25rem * var(--navbar-scale-factor)) calc(0.75rem * var(--navbar-scale-factor));
         }
 
+        .modern-navbar .nav-btn {
+            font-size: calc(1rem * var(--navbar-scale-factor));
+            padding: calc(0.7rem * var(--navbar-scale-factor)) calc(1rem * var(--navbar-scale-factor));
+            line-height: 1;
+        }
 
         #notificationDropdown {
             position: relative;
@@ -137,32 +142,19 @@
                                 </li>
                             }
                             if (User.IsInRole(RoleConstants.Employee))
-                            if (User.IsInRole(RoleConstants.CompanyAdmin))
-                            {
-                                <li class="nav-item">
-                                    <a class="nav-link text-dark"
-                                       asp-controller="Assemblies"
-                                       asp-action="All">Assemblies</a>
-                                </li>
-                            }
-                            if (User.IsInRole(RoleConstants.CondoManager))
-                            {
-                                <a class="nav-link" asp-controller="Assemblies" asp-action="Unified">
-                                    <i class="bi bi-people"></i> Assemblies
-                                </a>
-                            }
-                            if(User.IsInRole(RoleConstants.Employee))
                             {
                                 <li class="nav-item">
                                     <a class="nav-link" asp-controller="Employee" asp-action="Index">
                                         <i class="bi bi-list-task me-1"></i> My Tasks
                                     </a>
                                 </li>
-                            }   
-                            <a class="btn btn-primary"
-                               href="https://drive.google.com/uc?export=download&id=FILE_ID">
-                                Download our mobile app 
-                            </a>
+                            }
+                            <li class="nav-item">
+                                <a class="btn btn-primary nav-btn"
+                                   href="https://drive.google.com/uc?export=download&id=FILE_ID">
+                                    <i class="bi bi-download me-1"></i> Download our mobile app
+                                </a>
+                            </li>
                         }
                     </ul>
 

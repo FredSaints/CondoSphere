@@ -55,8 +55,13 @@
                         <div class="row">
                             <!-- Left Column: Profile Identity -->
                             <div class="col-md-4 profile-avatar-panel">
-                                <img src="@(Model.CurrentProfileImageUrl ?? "/images/user-photos/default-profile.png")"
-                                     alt="Current Profile Image" class="rounded-circle profile-avatar mb-3" />
+                                <img class="rounded-circle profile-avatar mb-3"
+                                     alt="Current Profile Image"
+                                     src="@(string.IsNullOrWhiteSpace(Model.CurrentProfileImageUrl)
+                                        ? Url.Content("~/images/user-photos/default_profile.png")  
+                                        : Url.Content(Model.CurrentProfileImageUrl))"
+                                     onerror="this.onerror=null;this.src='@Url.Content("~/images/user-photos/default_profile.png")';"  
+                                asp-append-version="true" />
                                 <h4 class="mb-1">@Model.FirstName @Model.LastName</h4>
                                 <p class="text-muted">@User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value</p>
 
