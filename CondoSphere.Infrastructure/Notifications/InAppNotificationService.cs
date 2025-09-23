@@ -1,8 +1,7 @@
 ﻿using CondoSphere.Application.Interfaces;
 using CondoSphere.Core.Entities.Users;
-using CondoSphere.Infrastructure.Repositories;
-using Microsoft.AspNetCore.SignalR;
 using CondoSphere.Shared.Hubs;
+using Microsoft.AspNetCore.SignalR;
 
 public class InAppNotificationService : IInAppNotificationService
 {
@@ -17,7 +16,7 @@ public class InAppNotificationService : IInAppNotificationService
         _uow = uow;
     }
 
-    public async Task<int> NotifyAsync(int userId, string title, string message, string linkUrl)
+    public async Task<int> NotifyAsync(int userId, string title, string message, string? linkUrl, string type, int? relatedEntityId)
     {
         var n = new Notification
         {
@@ -25,12 +24,14 @@ public class InAppNotificationService : IInAppNotificationService
             Title = title,
             Message = message,
             LinkUrl = linkUrl,
+            Type = type,
+            RelatedEntityId = relatedEntityId,
             IsRead = false,
             SentDate = DateTime.UtcNow
         };
 
         await _repo.AddAsync(n);
-        await _uow.CompleteAsync(); // <— em vez de _repo.SaveChangesAsync()
+        await _uow.CompleteAsync();
 
         await _hub.Clients.User(userId.ToString())
             .SendAsync("ReceiveNotification", new
@@ -43,5 +44,4 @@ public class InAppNotificationService : IInAppNotificationService
 
         return n.Id;
     }
-
 }

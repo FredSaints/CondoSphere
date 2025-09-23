@@ -23,7 +23,7 @@ namespace CondoSphere.Application.Services.Assembly
         private readonly IInAppNotificationService _inAppNotify;
         private readonly IConfiguration _cfg;
         private readonly IResidentRepository _residents;
-        private readonly IMessageService _messages;                
+        private readonly IMessageService _messages;
 
 
         public AssemblyService(
@@ -38,7 +38,7 @@ namespace CondoSphere.Application.Services.Assembly
               IPhoneNumberService phone,
               IInAppNotificationService inAppNotify,
               IConfiguration cfg,
-              IResidentRepository residents)              
+              IResidentRepository residents)
         {
             _uow = uow;
             _assemblies = assemblies;
@@ -51,7 +51,7 @@ namespace CondoSphere.Application.Services.Assembly
             _phone = phone;
             _inAppNotify = inAppNotify;
             _cfg = cfg;
-            _residents = residents;                     
+            _residents = residents;
         }
 
         // ========= CREATE =========
@@ -286,11 +286,13 @@ namespace CondoSphere.Application.Services.Assembly
 
                     // Sino/Push (NotificationHub)
                     await _inAppNotify.NotifyAsync(
-                        uid,
-                        subject,
-                        $"Clique para entrar na reunião: {asm.Topic}",
-                        joinUrl
-                    );
+                    uid,
+                    subject,
+                    $"Click to join the meeting: {asm.Topic}",
+                    null,
+                    "Assembly Invitation",
+                    asm.Id
+                     );
                 }
             }
 

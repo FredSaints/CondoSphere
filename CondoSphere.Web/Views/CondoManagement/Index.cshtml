@@ -1,98 +1,188 @@
 ﻿@model IEnumerable<CondoSphere.Core.DTOs.Condominiums.CondominiumDto>
-
 @{
     ViewData["Title"] = "My Managed Condominiums";
 }
 
-
 <style>
     .condo-card {
-        transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-        border: 2.5px solid #d1d5db;
-        border-radius: 0.75rem;
+        transition: all 0.3s ease-in-out;
+        border: 2px solid #e5e7eb;
+        border-radius: 1rem;
+        background: linear-gradient(145deg, #ffffff, #f8fafc);
+        overflow: hidden;
     }
 
         .condo-card:hover {
-            transform: translateY(-5px);
-            box-shadow: var(--shadow-lg) !important;
+            transform: translateY(-8px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            border-color: #3b82f6;
         }
 
         .condo-card .card-body {
+            padding: 2rem;
             display: flex;
             flex-direction: column;
-            padding: 2rem;
+            height: 100%;
         }
 
         .condo-card .card-title {
-            font-weight: 600;
-            color: var(--text-primary);
-            font-size: 2rem;
+            font-weight: 700;
+            color: #1f2937;
+            font-size: 1.5rem;
+            margin-bottom: 0.75rem;
+            line-height: 1.2;
         }
 
-        .condo-card .btn {
+        .condo-card .card-text {
+            color: #6b7280;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .condo-card .card-footer {
+            background: #f9fafb;
+            border-top: 1px solid #e5e7eb;
+            padding: 1.5rem 2rem;
+            margin-top: auto;
+        }
+
+    .location-info {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.75rem 1rem;
+        background: #f3f4f6;
+        border-radius: 0.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+        .location-info i {
+            color: #ef4444;
             font-size: 1.1rem;
-            padding-top: 0.75rem;
-            padding-bottom: 0.75rem;
+        }
+
+    .btn-manage {
+        background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+        border: none;
+        border-radius: 0.5rem;
+        font-weight: 600;
+        padding: 0.75rem 1.5rem;
+        transition: all 0.2s ease;
+    }
+
+        .btn-manage:hover {
+            background: linear-gradient(135deg, #1d4ed8, #1e40af);
+            transform: translateY(-1px);
+        }
+
+    .btn-secondary-custom {
+        background: transparent;
+        border: 2px solid #e5e7eb;
+        color: #6b7280;
+        border-radius: 0.5rem;
+        font-weight: 500;
+        padding: 0.75rem 1.5rem;
+        transition: all 0.2s ease;
+    }
+
+        .btn-secondary-custom:hover {
+            border-color: #3b82f6;
+            color: #3b82f6;
+            background: #eff6ff;
+        }
+
+    .page-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 3rem 0;
+        margin: -1rem -15px 3rem -15px;
+        border-radius: 0 0 2rem 2rem;
+    }
+
+    .empty-state {
+        background: linear-gradient(145deg, #f8fafc, #ffffff);
+        border: 2px dashed #d1d5db;
+        border-radius: 1rem;
+        padding: 4rem 2rem;
+        text-align: center;
+    }
+
+        .empty-state i {
+            font-size: 4rem;
+            color: #9ca3af;
+            margin-bottom: 1.5rem;
         }
 </style>
 
-
-
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <div>
-        <h1 class="mb-0">@ViewData["Title"]</h1>
-        <p class="text-muted mb-0">Select a property to manage its units, residents, and finances.</p>
+<div class="page-header">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <h1 class="display-4 mb-2">@ViewData["Title"]</h1>
+                <p class="lead mb-0">Select a property to manage its units, residents, and finances</p>
+            </div>
+        </div>
     </div>
 </div>
 
-
-@if (Model.Any())
-{
-    <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4">
-        @foreach (var condo in Model)
-        {
-            <div class="col">
-                <div class="card-footer bg-transparent border-top-0 text-end">
-                    <a asp-controller="CondoManagement"
-                       asp-action="Details"
-                       asp-route-id="@condo.Id"
-                       class="btn btn-primary">
-                        <i class="bi bi-gear-fill me-1"></i> Manage
-                    </a>
-
-                    <a asp-controller="Assemblies"
-                       asp-action="Unified"
-                       asp-route-condominiumId="@condo.Id"
-                       class="btn btn-outline-primary ms-2">
-                        Assemblies
-                    </a>
-                </div>
-            </div>
-                <div class="card h-100 shadow-sm condo-card">
-                    <div class="card-body">
-                        <div class="mb-3">
+<div class="container">
+    @if (Model.Any())
+    {
+        <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4">
+            @foreach (var condo in Model)
+            {
+                <div class="col">
+                    <div class="card h-100 condo-card">
+                        <div class="card-body">
                             <h5 class="card-title">@condo.Name</h5>
-                            <p class="card-text text-muted small">
-                                <i class="bi bi-geo-alt-fill me-1"></i>
-                                @condo.Address
-                            </p>
+
+                            <div class="location-info">
+                                <i class="bi bi-geo-alt-fill"></i>
+                                <span class="card-text">@condo.Address</span>
+                            </div>
+
+                            <div class="mt-auto pt-3">
+                                <div class="d-grid gap-2">
+                                    <a asp-controller="CondoManagement"
+                                       asp-action="Details"
+                                       asp-route-id="@condo.Id"
+                                       class="btn btn-primary btn-manage">
+                                        <i class="bi bi-gear-fill me-2"></i>
+                                        Manage Property
+                                    </a>
+                                </div>
+                            </div>
                         </div>
-                        <div class="mt-auto">
-                            <a asp-controller="CondoManagement" asp-action="Details" asp-route-id="@condo.Id" class="btn btn-primary w-100">
-                                <i class="bi bi-gear-fill me-1"></i> Manage Property
-                            </a>
+
+                        <div class="card-footer">
+                            <div class="d-flex gap-2">
+                                <a asp-controller="Assemblies"
+                                   asp-action="Unified"
+                                   asp-route-condominiumId="@condo.Id"
+                                   class="btn btn-secondary-custom flex-fill">
+                                    <i class="bi bi-people-fill me-1"></i>
+                                    Assemblies
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>
-       
-        }
-    </div>
-}
-else
-{
-    <div class="text-center p-5 border rounded bg-light">
-        <i class="bi bi-building-slash" style="font-size: 3rem; color: var(--text-secondary);"></i>
-        <h4 class="mt-3">No Condominiums Assigned</h4>
-        <p class="text-muted">You have not been assigned to manage any properties yet. Please contact your company administrator.</p>
-    </div>
-}
+            }
+        </div>
+    }
+    else
+    {
+        <div class="empty-state">
+            <i class="bi bi-building-slash"></i>
+            <h3 class="text-dark mb-3">No Condominiums Assigned</h3>
+            <p class="text-muted mb-4">
+                You have not been assigned to manage any properties yet.<br>
+                Please contact your company administrator to get started.
+            </p>
+            <a href="#" class="btn btn-primary btn-manage">
+                <i class="bi bi-envelope-fill me-2"></i>
+                Contact Administrator
+            </a>
+        </div>
+    }
+</div>

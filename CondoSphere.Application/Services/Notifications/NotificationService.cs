@@ -346,6 +346,9 @@ namespace CondoSphere.Application.Services.Notifications
                 case "Payment Rejected":
                     return $"/portal/quotas/{notification.RelatedEntityId}/details";
 
+                case "Assembly Invitation":
+                    return $"/assemblies/{notification.RelatedEntityId}/room";
+
                 case "New Document":
                     return "/portal?activeTab=info-tab";
 

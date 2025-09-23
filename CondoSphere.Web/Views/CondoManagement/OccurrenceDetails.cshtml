@@ -7,6 +7,8 @@
     ViewData["Title"] = "Occurrence Details";
     var minDateTime = DateTime.Now.ToString("yyyy-MM-ddTHH:mm");
     var employeesExist = (ViewData["AvailableEmployees"] as SelectList)?.Any() ?? false;
+    // Variable to check if the occurrence is in a terminal state
+    var isClosed = Model.Occurrence.Status == OccurrenceStatus.Closed;
 }
 
 <h1>@Model.Occurrence.Title</h1>
@@ -20,23 +22,27 @@
             <div class="card-header d-flex justify-content-between align-items-center">
                 <h5 class="mb-0">Details</h5>
                 <div class="d-flex align-items-center gap-2">
-                    @if (Model.Occurrence.Status == OccurrenceStatus.Resolved || Model.Occurrence.Status == OccurrenceStatus.Closed)
+                    @if (!isClosed)
                     {
-                        <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#addExpenseModal">
-                            <i class="bi bi-currency-dollar me-1"></i> Record Expense
-                        </button>
+                        if (Model.Occurrence.Status == OccurrenceStatus.Resolved)
+                        {
+                            <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#addExpenseModal">
+                                <i class="bi bi-currency-dollar me-1"></i> Record Expense
+                            </button>
+                        }
+                        <form asp-action="UpdateOccurrenceStatus"
+                              id="updateStatusForm"
+                              asp-route-condominiumId="@Model.Occurrence.CondominiumId"
+                              asp-route-occurrenceId="@Model.Occurrence.Id"
+                              method="post" class="d-flex align-items-center gap-2">
+                            @Html.AntiForgeryToken()
+                            <select name="Status" class="form-select form-select-sm w-auto"
+                                    asp-for="Occurrence.Status"
+                                    asp-items="Html.GetEnumSelectList<OccurrenceStatus>()">
+                            </select>
+                            <button type="submit" class="btn btn-primary btn-sm">Update</button>
+                        </form>
                     }
-                    <form asp-action="UpdateOccurrenceStatus"
-                          asp-route-condominiumId="@Model.Occurrence.CondominiumId"
-                          asp-route-occurrenceId="@Model.Occurrence.Id"
-                          method="post" class="d-flex align-items-center gap-2">
-                        @Html.AntiForgeryToken()
-                        <select name="Status" class="form-select form-select-sm w-auto"
-                                asp-for="Occurrence.Status"
-                                asp-items="Html.GetEnumSelectList<OccurrenceStatus>()">
-                        </select>
-                        <button type="submit" class="btn btn-primary btn-sm">Update</button>
-                    </form>
                 </div>
             </div>
             <div class="card-body">
@@ -70,19 +76,22 @@
         <div class="card shadow-sm mb-4">
             <div class="card-header d-flex justify-content-between align-items-center">
                 <h5 class="mb-0">Interventions</h5>
-                @if (employeesExist)
+                @if (!isClosed)
                 {
-                    <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addInterventionModal">
-                        <i class="bi bi-plus-circle-fill me-1"></i> Add Intervention
-                    </button>
-                }
-                else
-                {
-                    <span class="d-inline-block" tabindex="0" data-bs-toggle="tooltip" title="You must register an employee before you can create an intervention.">
-                        <button type="button" class="btn btn-primary btn-sm" disabled>
+                    @if (employeesExist)
+                    {
+                        <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addInterventionModal">
                             <i class="bi bi-plus-circle-fill me-1"></i> Add Intervention
                         </button>
-                    </span>
+                    }
+                    else
+                    {
+                        <span class="d-inline-block" tabindex="0" data-bs-toggle="tooltip" title="You must register an employee before you can create an intervention.">
+                            <button type="button" class="btn btn-primary btn-sm" disabled>
+                                <i class="bi bi-plus-circle-fill me-1"></i> Add Intervention
+                            </button>
+                        </span>
+                    }
                 }
             </div>
             <div class="card-body p-0">
@@ -115,24 +124,32 @@
                                             }
                                         </td>
                                         <td>
-                                            @if (intervention.Status == InterventionStatus.Cancelled)
+                                            @if (intervention.Status == InterventionStatus.Cancelled || isClosed)
                                             {
-                                                <span class="badge bg-danger">@intervention.Status</span>
+                                                var interventionStatusClass = "bg-secondary";
+                                                switch (intervention.Status)
+                                                {
+                                                    case InterventionStatus.Scheduled: interventionStatusClass = "bg-info"; break;
+                                                    case InterventionStatus.InProgress: interventionStatusClass = "bg-warning text-dark"; break;
+                                                    case InterventionStatus.Completed: interventionStatusClass = "bg-success"; break;
+                                                    case InterventionStatus.Cancelled: interventionStatusClass = "bg-danger"; break;
+                                                }
+                                                <span class="badge @interventionStatusClass">@intervention.Status</span>
                                             }
                                             else
                                             {
                                                 <div class="intervention-status-container">
                                                     <div class="status-display">
                                                         @{
-                                                            var interventionStatusClass = "bg-secondary";
+                                                            var currentStatusClass = "bg-secondary";
                                                             switch (intervention.Status)
                                                             {
-                                                                case InterventionStatus.Scheduled: interventionStatusClass = "bg-info"; break;
-                                                                case InterventionStatus.InProgress: interventionStatusClass = "bg-warning text-dark"; break;
-                                                                case InterventionStatus.Completed: interventionStatusClass = "bg-success"; break;
+                                                                case InterventionStatus.Scheduled: currentStatusClass = "bg-info"; break;
+                                                                case InterventionStatus.InProgress: currentStatusClass = "bg-warning text-dark"; break;
+                                                                case InterventionStatus.Completed: currentStatusClass = "bg-success"; break;
                                                             }
                                                         }
-                                                        <span class="badge @interventionStatusClass">@intervention.Status</span>
+                                                        <span class="badge @currentStatusClass">@intervention.Status</span>
                                                         <button type="button" class="btn btn-link btn-sm p-0 ms-2 edit-status-btn" title="Change Status">
                                                             <i class="bi bi-pencil-square"></i>
                                                         </button>
@@ -361,6 +378,26 @@
     </div>
 </div>
 
+@* ===== MODAL: CONFIRM CLOSE OCCURRENCE ===== *@
+<div class="modal fade" id="confirmCloseModal" tabindex="-1" aria-labelledby="confirmCloseModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-warning">
+                <h5 class="modal-title" id="confirmCloseModalLabel"><i class="bi bi-exclamation-triangle-fill me-2"></i>Confirm Action</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to close this occurrence?</p>
+                <p class="fw-bold text-danger">Once closed, you will not be able to add new interventions, record expenses, or change its status again.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-warning" id="confirmCloseBtn">Yes, Close Occurrence</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
 
@@ -376,7 +413,28 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
+            // Logic for the close confirmation modal
+            const statusForm = document.getElementById('updateStatusForm');
+            if (statusForm) {
+                const statusSelect = statusForm.querySelector('select[name="Status"]');
+                const initialStatus = statusSelect.value;
+                const confirmModal = new bootstrap.Modal(document.getElementById('confirmCloseModal'));
+                const confirmBtn = document.getElementById('confirmCloseBtn');
 
+                statusForm.addEventListener('submit', function (event) {
+                    const newStatus = statusSelect.value;
+                    if (newStatus === '@OccurrenceStatus.Closed.ToString()' && initialStatus !== '@OccurrenceStatus.Closed.ToString()') {
+                        event.preventDefault();
+                        confirmModal.show();
+                    }
+                });
+
+                confirmBtn.addEventListener('click', function () {
+                    statusForm.submit();
+                });
+            }
+
+            // Logic to reopen modals on validation failure
             const modalFlags = document.getElementById('modal-flags');
             const openInterventionModal = modalFlags.getAttribute('data-open-intervention') === 'true';
             const openExpenseModal = modalFlags.getAttribute('data-open-expense') === 'true';
@@ -391,11 +449,13 @@
                 expenseModal.show();
             }
 
+            // Logic for tooltips
             var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
             var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
                 return new bootstrap.Tooltip(tooltipTriggerEl)
             });
 
+            // Logic for inline editing of intervention status
             const containers = document.querySelectorAll('.intervention-status-container');
             containers.forEach(container => {
                 const displayDiv = container.querySelector('.status-display');
@@ -418,6 +478,7 @@
                 }
             });
 
+            // Logic for file attachments in the expense modal
             const addFilesBtn = document.getElementById('add-files-btn');
             const fileInput = document.getElementById('file-upload-input');
             const fileListContainer = document.getElementById('file-list-container');
@@ -435,9 +496,7 @@
                     for (let i = 0; i < event.target.files.length; i++) {
                         dataTransfer.items.add(event.target.files[i]);
                     }
-
                     fileInput.files = dataTransfer.files;
-
                     renderFileList();
                 });
             }
@@ -450,9 +509,7 @@
 
             function renderFileList() {
                 if (!fileListContainer) return;
-
                 fileListContainer.innerHTML = '';
-
                 if (dataTransfer.files.length > 0) {
                      fileListContainer.innerHTML = '<p class="text-muted small mt-2 mb-1">Files to be uploaded:</p>';
                 }
@@ -479,12 +536,10 @@
                                 newFiles.items.add(dataTransfer.files[j]);
                             }
                         }
-
                         dataTransfer.items.clear();
                         for(let k = 0; k < newFiles.files.length; k++){
                             dataTransfer.items.add(newFiles.files[k]);
                         }
-
                         fileInput.files = dataTransfer.files;
                         renderFileList();
                     });
