@@ -85,10 +85,14 @@ namespace CondoSphere.Web.Controllers
         [Authorize(Roles = RoleConstants.CondoManager)]
         public IActionResult Create(int condominiumId)
         {
+            // default: amanhã, sem segundos
+            var d = DateTime.Now.AddDays(1);
+            d = new DateTime(d.Year, d.Month, d.Day, d.Hour, d.Minute, 0, DateTimeKind.Local);
+
             return View(new CreateAssemblyDto
             {
                 CondominiumId = condominiumId,
-                Date = DateTime.Now.AddDays(1)
+                Date = d
             });
         }
 
@@ -97,12 +101,26 @@ namespace CondoSphere.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(int condominiumId, CreateAssemblyDto dto)
         {
-            if (!ModelState.IsValid) return View(dto);
             dto.CondominiumId = condominiumId;
 
+            // normaliza para minutos (ss=00, fff=000)
+            dto.Date = new DateTime(dto.Date.Year, dto.Date.Month, dto.Date.Day,
+                                    dto.Date.Hour, dto.Date.Minute, 0,
+                                    dto.Date.Kind == DateTimeKind.Unspecified ? DateTimeKind.Local : dto.Date.Kind);
+
+            // valida futuro (UTC)
+            var whenUtc = dto.Date.Kind == DateTimeKind.Utc ? dto.Date : dto.Date.ToUniversalTime();
+            if (whenUtc <= DateTime.UtcNow)
+                ModelState.AddModelError(nameof(dto.Date), "A data/hora tem de ser no futuro.");
+
+            if (!ModelState.IsValid)
+                return View(dto);
+
             var created = await _apiClient.CreateAssemblyAsync(dto);
+
             TempData[created is null ? "ErrorMessage" : "SuccessMessage"] =
                 created is null ? "Falha ao criar a assembleia." : "Assembleia criada com sucesso.";
+
             return RedirectToAction(nameof(Index), new { condominiumId });
         }
 

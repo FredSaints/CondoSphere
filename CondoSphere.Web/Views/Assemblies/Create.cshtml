@@ -3,47 +3,74 @@
     ViewData["Title"] = "Create Assembly";
     var condominiumId = Model?.CondominiumId ?? (int)(ViewData["CondominiumId"] ?? 0);
 }
+
 <div class="container my-5">
-    <div class="row justify-content-center">
-        <div class="col-lg-7">
-            <div class="card shadow-sm">
-                <div class="card-header">
-                    <h3 class="mb-0"><i class="bi bi-plus-circle me-2"></i>Create Assembly</h3>
-                </div>
-                <div class="card-body">
-                    <form asp-action="Create" asp-route-condominiumId="@condominiumId" method="post">
-                        @Html.AntiForgeryToken()
-                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+  <div class="row justify-content-center">
+    <div class="col-lg-7">
+      <div class="card shadow-sm">
+        <div class="card-header">
+          <h3 class="mb-0"><i class="bi bi-plus-circle me-2"></i>Create Assembly</h3>
+        </div>
 
-                        <input type="hidden" asp-for="CondominiumId" />
+        <div class="card-body">
+          <form asp-action="Create" asp-route-condominiumId="@condominiumId" method="post">
+            @Html.AntiForgeryToken()
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+            <input type="hidden" asp-for="CondominiumId" />
+
+            <div class="form-floating mb-3">
+              <input asp-for="Topic" class="form-control" />
+              <label asp-for="Topic"></label>
+              <span asp-validation-for="Topic" class="text-danger small"></span>
+            </div>
 
                         <div class="form-floating mb-3">
-                            <input asp-for="Topic" class="form-control" placeholder="Topic" />
-                            <label asp-for="Topic"></label>
-                            <span asp-validation-for="Topic" class="text-danger small"></span>
-                        </div>
-
-                        <div class="form-floating mb-3">
-                            <input asp-for="Date" class="form-control" type="datetime-local" />
+                            <input asp-for="Date"
+                                   class="form-control"
+                                   type="datetime-local"
+                                   step="60"
+                                   asp-format="{0:yyyy-MM-ddTHH:mm}" />
                             <label asp-for="Date"></label>
                             <span asp-validation-for="Date" class="text-danger small"></span>
                         </div>
 
-                        <div class="d-flex gap-2">
-                            <button type="submit" class="btn btn-primary">
-                                <i class="bi bi-check2-circle me-1"></i>Create
-                            </button>
-                            <a asp-action="Unified" class="btn btn-secondary">Cancel</a>
-                        </div>
-                    </form>
-                </div>
+            <div class="d-flex gap-2">
+              <button type="submit" class="btn btn-primary">
+                <i class="bi bi-check2-circle me-1"></i>Create
+              </button>
+              <a asp-action="Index" asp-route-condominiumId="@condominiumId" class="btn btn-secondary">Cancel</a>
             </div>
-            <small class="text-muted d-block mt-3">
-                After creating, you can invite residents and open the room from the list.
-            </small>
+          </form>
+
+          <small class="text-muted d-block mt-3">
+            After creating, you can invite residents and open the room from the list.
+          </small>
         </div>
+      </div>
     </div>
+  </div>
 </div>
+
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script>
+        (function () {
+            const el = document.querySelector('input[name="Date"]');
+            if (!el) return;
+            const p = n => String(n).padStart(2, '0');
+            const now = new Date(); now.setSeconds(0, 0);
+            const min = `${now.getFullYear()}-${p(now.getMonth() + 1)}-${p(now.getDate())}T${p(now.getHours())}:${p(now.getMinutes())}`;
+            el.min = min;
+
+            el.addEventListener('change', e => {
+                const d = new Date(e.target.value);
+                if (!isNaN(d)) {
+                    d.setSeconds(0, 0);
+                    e.target.value = `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}T${p(d.getHours())}:${p(d.getMinutes())}`;
+                }
+            });
+        })();
+    </script>
 }
+

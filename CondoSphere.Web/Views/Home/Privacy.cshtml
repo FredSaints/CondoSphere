@@ -1,6 +1,114 @@
 ﻿@{
     ViewData["Title"] = "Privacy Policy";
 }
-<h1>@ViewData["Title"]</h1>
 
-<p>Use this page to detail your site's privacy policy.</p>
+<div class="container py-4">
+    <div class="card shadow-sm">
+        <div class="card-body">
+            @{
+                ViewData["Title"] = "Privacy Policy";
+            }
+
+            <div class="container py-4 privacy-policy">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h1 class="h3 mb-3 pp-title">Política de Privacidade</h1>
+                        <p class="text-muted">Última atualização: <!-- data --></p>
+
+                        <h2 class="pp-section">Quem somos</h2>
+                        <p>
+                            Esta plataforma é operada por <strong>CondoShepe</strong>, com sede em <strong>Pólo de Educação e Formação D. João de Castro, R. Jau, 1300-312 Lisboa</strong>.
+                            Contacto: <a href="mailto:[EMAIL_DE_CONTACTO]">contact@condosphere.com</a>.
+                        </p>
+
+                        <h2 class="pp-section">Âmbito</h2>
+                        <p>Aplica-se ao site, Web App e APIs, à App móvel e aos serviços (notificações, reuniões virtuais e pagamentos).</p>
+
+                        <h2 class="pp-section">Dados que recolhemos</h2>
+                        <ul class="list-emphasis">
+                            <li><strong>Conta e perfis:</strong> nome, email, telefone, hash da palavra-passe, role e empresa/condomínio.</li>
+                            <li><strong>Dados de condomínio:</strong> frações, ocorrências, intervenções, documentos e atas.</li>
+                            <li><strong>Pagamentos:</strong> montantes, referências, estado; <em>não</em> guardamos dados de cartão.</li>
+                            <li><strong>Comunicações:</strong> mensagens, avisos, email/SMS/push e preferências.</li>
+                            <li><strong>Reuniões virtuais:</strong> ID da sala (ex. Jitsi), participantes, horas; não gravamos áudio/vídeo por defeito.</li>
+                            <li><strong>Registos técnicos:</strong> IP, user-agent, timestamps, cookies essenciais e (opcional) analíticos.</li>
+                            <li><strong>Download da App (APK):</strong> registamos cliques e redirecionamos para Google Drive (pode haver aviso de ficheiro grande).</li>
+                        </ul>
+
+                        <h2 class="pp-section">Finalidades e bases legais</h2>
+                        <ul class="list-emphasis">
+                            <li><strong>Prestação do serviço:</strong> execução de contrato (gestão, reuniões, comunicações, pagamentos).</li>
+                            <li><strong>Segurança:</strong> logs, auditoria, 2FA — interesse legítimo.</li>
+                            <li><strong>Comunicações opcionais:</strong> marketing — consentimento.</li>
+                            <li><strong>Obrigação legal:</strong> conservação contabilística e fiscal.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+
+            <h2 class="h5 mt-4">5. Partilha com terceiros</h2>
+            <ul>
+                <li><strong>Provedores de pagamento</strong> (ex.: gateway PSP) para processar taxas/quotas; partilhamos apenas o indispensável.</li>
+                <li><strong>Email/SMS push</strong> para notificações automáticas (ex.: convites de reuniões, avisos).</li>
+                <li><strong>Reuniões virtuais</strong> (ex.: Jitsi Meet, self-hosted ou cloud) — os metadados de ligação são tratados para estabelecer a chamada; áudio/vídeo é trafegado em tempo real.</li>
+                <li><strong>Cloud/hosting/backup</strong> — alojamento e cópias de segurança.</li>
+                <li><strong>Autoridades</strong> quando exigido por lei.</li>
+            </ul>
+
+            <h2 class="h5 mt-4">6. Transferências internacionais</h2>
+            <p>
+                Se algum fornecedor tratar dados fora do EEE, aplicamos salvaguardas adequadas (cláusulas-tipo da UE
+                e medidas suplementares).
+            </p>
+
+            <h2 class="h5 mt-4">7. Conservação</h2>
+            <ul>
+                <li><strong>Conta e dados do condomínio:</strong> enquanto a conta estiver ativa ou conforme necessário para o serviço.</li>
+                <li><strong>Documentos e faturação:</strong> até <strong>10 anos</strong> (obrigações legais).</li>
+                <li><strong>Logs de acesso e segurança:</strong> tipicamente <strong>12 meses</strong>.</li>
+            </ul>
+
+            <h2 class="h5 mt-4">8. Segurança</h2>
+            <ul>
+                <li>Comunicações cifradas (HTTPS/TLS) e armazenamento de palavras-passe com hash robusto.</li>
+                <li>Controlo de acessos por perfis (administrador de empresa, gestor de condomínio, condómino) e 2FA.</li>
+                <li>Auditoria, backups e princípios de mínimo privilégio.</li>
+            </ul>
+
+            <h2 class="h5 mt-4">9. Cookies</h2>
+            <p>
+                Usamos cookies <strong>estritamente necessários</strong> para login/sessão. Cookies analíticos e de
+                preferência são opcionais e apenas usados com o teu consentimento (quando aplicável).
+            </p>
+
+            <h2 class="h5 mt-4">10. App móvel & APK</h2>
+            <p>
+                O APK pode ser disponibilizado via Google Drive. O download é feito por HTTPS e poderá surgir
+                um aviso do Google em ficheiros grandes. Não controlamos esse aviso. Podemos registar estatísticas
+                anónimas de cliques no nosso endpoint de download.
+            </p>
+
+            <h2 class="h5 mt-4">11. Os teus direitos</h2>
+            <p>
+                Tens direito de acesso, retificação, apagamento, portabilidade, limitação e oposição. Para exercer,
+                contacta <a href="mailto:[EMAIL_DE_CONTACTO]">contact@condosphere.com]</a>. Tens também o direito de reclamar
+                junto da autoridade de controlo (CNPD – Portugal).
+            </p>
+
+            <h2 class="h5 mt-4">12. Como falar connosco</h2>
+            <p>
+                Email: <a href="mailto:[EMAIL_DE_CONTACTO]">contact@condosphere.com</a> | Morada: <strong>Pólo de Educação e Formação D. João de Castro, R. Jau, 1300-312 Lisboa</strong>| Telemovel: (351) 211234567
+            </p>
+
+            <h2 class="h5 mt-4">13. Alterações a esta política</h2>
+            <p>
+                Podemos atualizar esta política para refletir alterações técnicas, legais ou de negócio. Publicaremos
+                a versão atualizada nesta página e indicaremos a data de atualização.
+            </p>
+
+            <hr />
+            <p class="small text-muted mb-0">Nota: este texto é um modelo informativo e não substitui aconselhamento jurídico.</p>
+        </div>
+    </div>
+</div>
