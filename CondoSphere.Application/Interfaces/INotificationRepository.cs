@@ -9,5 +9,6 @@ namespace CondoSphere.Application.Interfaces
         Task<IEnumerable<Notification>> GetUnreadByUserIdAsync(int userId);
         void Update(Notification notification);
         Task<IEnumerable<Notification>> GetAllByUserIdAsync(int userId);
+        Task<bool> MarkAsReadAsync(int userId, int notificationId);
     }
 }

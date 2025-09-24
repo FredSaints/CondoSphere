@@ -1,12 +1,14 @@
 ﻿using AutoMapper;
 using CondoSphere.Application.Interfaces;
+using CondoSphere.Application.Services.Messages;
 using CondoSphere.Application.Services.Notifications;
-using CondoSphere.Core;
 using CondoSphere.Core.DTOs.Interventions;
+using CondoSphere.Core.DTOs.Messages;
 using CondoSphere.Core.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using CoreIntervention = CondoSphere.Core.Entities.Condominiums.Intervention;
 using CoreUser = CondoSphere.Core.Entities.Users.User;
 
@@ -20,13 +22,17 @@ namespace CondoSphere.Application.Services.Intervention
         private readonly IAuthorizationService _authorizationService;
         private readonly ICurrentUserService _currentUserService;
         private readonly INotificationService _notificationService;
+        private readonly IMessageService _messageService;
+        private readonly IConfiguration _configuration;
 
         public InterventionService(
             IUnitOfWork unitOfWork,
             IMapper mapper, UserManager<CoreUser> userManager,
             IAuthorizationService authorizationService,
             ICurrentUserService currentUserService,
-            INotificationService notificationService)
+            INotificationService notificationService,
+            IMessageService messageService,
+            IConfiguration configuration)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
@@ -34,6 +40,8 @@ namespace CondoSphere.Application.Services.Intervention
             _authorizationService = authorizationService;
             _currentUserService = currentUserService;
             _notificationService = notificationService;
+            _messageService = messageService;
+            _configuration = configuration;
         }
 
         public async Task<InterventionDto?> CreateInterventionAsync(CreateInterventionDto dto, int managerCompanyId)
@@ -59,9 +67,37 @@ namespace CondoSphere.Application.Services.Intervention
 
             await _unitOfWork.Interventions.AddAsync(newIntervention);
             await _unitOfWork.CompleteAsync();
+
             if (newIntervention.AssignedToUserId.HasValue)
             {
+                // This sends the email/push notification
                 await _notificationService.NotifyEmployeeOfNewTaskAsync(newIntervention);
+                
+                // --- Send Inbox Message to Employee ---
+                try
+                {
+                    var managerId = _currentUserService.UserId;
+                    if (managerId.HasValue)
+                    {
+                        var webAppBaseUrl = _configuration["ClientSettings:WebAppBaseUrl"];
+                        var taskLink = $"{webAppBaseUrl}/employee/{newIntervention.Id}";
+                        var occurrence = await _unitOfWork.Occurrences.GetByIdAsync(newIntervention.OccurrenceId);
+
+                        var messageDto = new SendMessageDto
+                        {
+                            ReceiverId = newIntervention.AssignedToUserId.Value,
+                            Subject = $"New Task Assigned: {occurrence.Title}",
+                            Content = $"You have been assigned a new task: '{newIntervention.Description}'.\n\nPlease review the details here: {taskLink}",
+                            CondominiumId = newIntervention.CondominiumId
+                        };
+                        await _messageService.SendMessageAsync(messageDto, managerId.Value, newIntervention.CompanyId);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    // Log the error but don't fail the entire operation
+                    // For example: _logger.LogError(ex, "Failed to send inbox message for new task {InterventionId}", newIntervention.Id);
+                }
             }
 
             return _mapper.Map<InterventionDto>(newIntervention);
@@ -122,6 +158,43 @@ namespace CondoSphere.Application.Services.Intervention
             intervention.Status = newStatus;
             _unitOfWork.Interventions.Update(intervention);
             await _unitOfWork.CompleteAsync();
+            
+            // --- Send Notification and Message on Completion ---
+            if (newStatus == InterventionStatus.Completed)
+            {
+                // Send email/push notification to manager
+                await _notificationService.NotifyManagerOfTaskCompletionAsync(intervention);
+
+                // Send inbox message to manager
+                try
+                {
+                    var condo = await _unitOfWork.Condominiums.GetByIdAsync(intervention.CondominiumId, intervention.CompanyId);
+                    if (condo?.ManagerId != null)
+                    {
+                        var employee = await _unitOfWork.Users.GetUserByIdAsync(intervention.AssignedToUserId ?? 0);
+                        var occurrence = await _unitOfWork.Occurrences.GetByIdAsync(intervention.OccurrenceId);
+
+                        var webAppBaseUrl = _configuration["ClientSettings:WebAppBaseUrl"];
+                        var occurrenceLink = $"{webAppBaseUrl}/condo-management/{intervention.CondominiumId}/occurrences/{intervention.OccurrenceId}";
+
+                        var messageDto = new SendMessageDto
+                        {
+                            ReceiverId = condo.ManagerId.Value,
+                            Subject = $"Task Completed: {occurrence.Title}",
+                            Content = $"The task '{intervention.Description}' has been marked as complete by {employee?.FirstName} {employee?.LastName}.\n\nYou can review the occurrence details here: {occurrenceLink}",
+                            CondominiumId = intervention.CondominiumId
+                        };
+                        // The sender is the employee who completed the task
+                        await _messageService.SendMessageAsync(messageDto, employee.Id, intervention.CompanyId);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    // Log the error
+                    // For example: _logger.LogError(ex, "Failed to send inbox message for completed task {InterventionId}", intervention.Id);
+                }
+            }
+
             return true;
         }
 

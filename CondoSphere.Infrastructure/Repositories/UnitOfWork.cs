@@ -1,12 +1,6 @@
 ﻿using CondoSphere.Application.Interfaces;
-using CondoSphere.Core.Entities.Users;
 using CondoSphere.Infrastructure.Data;
-
 using System.Threading.Tasks;
-
-
-
-
 
 namespace CondoSphere.Infrastructure.Repositories
 {
@@ -28,16 +22,10 @@ namespace CondoSphere.Infrastructure.Repositories
         public IReceiptRepository Receipts { get; private set; }
         public IDocumentRepository Documents { get; private set; }
         public IAssemblyRepository Assemblies { get; private set; }
-     
         public INotificationRepository Notifications { get; private set; }
         public IMessageRepository Messages { get; private set; }
-
-        IAssemblyInviteRepository AssemblyInvites { get; }
-        IAssemblyParticipantRepository AssemblyParticipants { get; }
-
-        IAssemblyInviteRepository IUnitOfWork.AssemblyInvites => throw new NotImplementedException();
-
-        IAssemblyParticipantRepository IUnitOfWork.AssemblyParticipants => throw new NotImplementedException();
+        public IAssemblyInviteRepository AssemblyInvites { get; private set; }
+        public IAssemblyParticipantRepository AssemblyParticipants { get; private set; }
 
         public UnitOfWork(UserManagementDbContext userContext, CondominiumDbContext condoContext, FinancialsDbContext financialsContext)
         {
@@ -68,9 +56,7 @@ namespace CondoSphere.Infrastructure.Repositories
             var userDbResult = await _userContext.SaveChangesAsync();
             var condoDbResult = await _condoContext.SaveChangesAsync();
             var financialsDbResult = await _financialsContext.SaveChangesAsync();
-            var messagingDbResult = await _userContext.SaveChangesAsync();
-
-            return userDbResult + condoDbResult + financialsDbResult + messagingDbResult;
+            return userDbResult + condoDbResult + financialsDbResult;
         }
 
         public async ValueTask DisposeAsync()

@@ -16,9 +16,11 @@ namespace CondoSphere.Application.Services.Notifications
         Task NotifyResidentOfPaymentConfirmationAsync(CoreUnitQuota quota);
         Task NotifyResidentsOfNewQuotasAsync(List<CoreUnitQuota> newQuotas, string condominiumName);
         Task NotifyResidentsOfNewDocumentAsync(CoreDocument document);
+        Task NotifyManagerOfTaskCompletionAsync(CoreIntervention intervention);
         Task<IEnumerable<NotificationDto>> GetNotificationsForUserAsync(int userId);
         Task MarkAllNotificationsAsReadAsync(int userId);
         Task<IEnumerable<NotificationDto>> GetAllNotificationsForUserAsync(int userId);
         Task NotifyResidentOfPaymentRejectionAsync(CoreUnitQuota quota, string reason);
+        Task<bool> MarkNotificationAsReadAsync(int userId, int notificationId);
     }
 }

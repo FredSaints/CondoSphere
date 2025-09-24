@@ -1,5 +1,7 @@
 using CondoSphere.Application.Authorization;
 using CondoSphere.Application.Interfaces;
+using CondoSphere.Application.Mappings;
+using CondoSphere.Application.Services.Assembly;
 using CondoSphere.Application.Services.Company;
 using CondoSphere.Application.Services.Condominium;
 using CondoSphere.Application.Services.Document;
@@ -28,12 +30,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using System;
 using System.Text;
-using CondoSphere.Application.Interfaces;
-using CondoSphere.Application.Services.Assembly;        
-using CondoSphere.Infrastructure.Repositories;           
-using CondoSphere.Application.Mappings;
 
 
 namespace CondoSphere.API
@@ -48,7 +45,8 @@ namespace CondoSphere.API
             {
                 options.AddPolicy("WebAppPolicy", policy =>
                 {
-                    policy.WithOrigins("https://localhost:7183")
+                    var webAppUrl = builder.Configuration["ClientSettings:WebAppBaseUrl"];
+                    policy.WithOrigins("https://localhost:7183", webAppUrl)
                           .AllowAnyHeader()
                           .AllowAnyMethod()
                           .AllowCredentials();
@@ -86,6 +84,20 @@ namespace CondoSphere.API
             })
             .AddJwtBearer(options =>
             {
+                options.Events = new JwtBearerEvents
+                {
+                    OnMessageReceived = context =>
+                    {
+                        var accessToken = context.Request.Query["access_token"];
+                        var path = context.HttpContext.Request.Path;
+                        if (!string.IsNullOrEmpty(accessToken) &&
+                            (path.StartsWithSegments("/notificationHub") || path.StartsWithSegments("/assemblyChatHub")))
+                        {
+                            context.Token = accessToken;
+                        }
+                        return Task.CompletedTask;
+                    }
+                };
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuer = true,
@@ -207,6 +219,12 @@ namespace CondoSphere.API
                     }
                 });
             });
+
+            var ironPdfLicenseKey = builder.Configuration["IronPdf:LicenseKey"];
+            if (!string.IsNullOrEmpty(ironPdfLicenseKey))
+            {
+                IronPdf.License.LicenseKey = ironPdfLicenseKey;
+            }
 
             var app = builder.Build();
 

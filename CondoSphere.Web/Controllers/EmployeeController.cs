@@ -44,6 +44,13 @@ namespace CondoSphere.Web.Controllers
             return View(viewModel);
         }
 
+        [HttpGet("notifications")]
+        public async Task<IActionResult> AllNotifications()
+        {
+            var notifications = await _apiClient.GetAllMyNotificationsAsync();
+            return View(notifications);
+        }
+
         [HttpPost("{interventionId}")] // This route now correctly handles the POST from the form
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UpdateStatus(int interventionId, [Bind(Prefix = "StatusUpdate")] UpdateInterventionStatusDto dto)

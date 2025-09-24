@@ -18,7 +18,7 @@
         {
             @foreach (var notification in Model.Notifications)
             {
-                <li>
+                <li data-notification-id="@notification.Id">
                     <a class="dropdown-item text-wrap @(notification.IsRead ? "" : "fw-bold")" href="@notification.LinkUrl">
                         <div class="small text-muted">@notification.SentDate.ToLocalTime().ToString("g")</div>
                         @notification.Title

@@ -1,5 +1,7 @@
 ﻿@using CondoSphere.Core
 @using Microsoft.AspNetCore.Identity
+@using System.Security.Claims
+@inject IConfiguration Configuration
 
 <!DOCTYPE html>
 <html lang="en">
@@ -239,6 +241,14 @@
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     <script src="~/lib/microsoft/signalr/dist/browser/signalr.min.js"></script>
+    @if (User.Identity?.IsAuthenticated == true)
+    {
+        <script>
+            // Define global variables that the notifications script can reliably access.
+            window.jwtToken = "@User.FindFirstValue("access_token")";
+            window.apiBaseUrl = "@Configuration["ApiSettings:BaseUrl"]";
+        </script>
+    }
     <script src="~/js/notifications.js" asp-append-version="true"></script>
 
     <script>
@@ -267,10 +277,10 @@
             }
         });
 
-        async function loadUnreadMessageCount() {
+                async function loadUnreadMessageCount() {
             try {
-                const response = await fetch('/api/messages/unread-count', {
-                    headers: { 'Authorization': `Bearer ${jwtToken}` }
+                const response = await fetch(`${window.apiBaseUrl}/api/messages/unread-count`, {
+                    headers: { 'Authorization': `Bearer ${window.jwtToken}` }
                 });
                 if (response.ok) {
                     const data = await response.json();

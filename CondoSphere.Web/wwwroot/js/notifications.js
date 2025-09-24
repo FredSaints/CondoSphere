@@ -1,12 +1,13 @@
 ﻿"use strict";
 
-// This check ensures the script only runs if the user is logged in (jwtToken is defined on the page)
-if (typeof jwtToken !== 'undefined' && jwtToken && typeof apiBaseUrl !== 'undefined' && apiBaseUrl) {
+if (typeof window.jwtToken !== 'undefined' && window.jwtToken && typeof window.apiBaseUrl !== 'undefined' && window.apiBaseUrl) {
+
+    const apiBaseUrl = window.apiBaseUrl;
+    const jwtToken = window.jwtToken;
 
     // 1. Establish the connection to the SignalR hub
     const connection = new signalR.HubConnectionBuilder()
         .withUrl(`${apiBaseUrl}/notificationHub`, {
-            // Pass the JWT token for authentication
             accessTokenFactory: () => jwtToken
         })
         .configureLogging(signalR.LogLevel.Information)
@@ -14,97 +15,126 @@ if (typeof jwtToken !== 'undefined' && jwtToken && typeof apiBaseUrl !== 'undefi
 
     // 2. Define the client-side method that the server will call ("ReceiveNotification")
     connection.on("ReceiveNotification", function (notification) {
-        console.log("Notification received: ", notification);
-
-        // Find the notification UI elements
-        const badge = document.getElementById('notification-badge');
+        console.log("Real-time notification received: ", notification);
         const notificationList = document.getElementById('notification-list');
         const bellIconLink = document.getElementById('notificationDropdown');
+        const badge = document.getElementById('notification-badge');
 
-        // Update the unread count badge
         if (badge) {
             let currentCount = parseInt(badge.innerText) || 0;
             badge.innerText = currentCount + 1;
-            badge.style.display = 'inline-block'; // Make sure it's visible
+            badge.style.display = 'inline-block';
         } else {
-            // If the badge doesn't exist, create it (for the first unread notification)
             if (bellIconLink) {
-                // Using innerHTML is simpler here to add the complex span structure
                 bellIconLink.innerHTML += `
-                    <span class="position-absolute top-1 start-80 translate-middle badge rounded-pill bg-danger" id="notification-badge">
+                    <span class="position-absolute badge rounded-pill bg-danger" id="notification-badge">
                         1<span class="visually-hidden">unread notifications</span>
                     </span>`;
             }
         }
 
-        // Create the new notification HTML list item
         if (notificationList) {
             const newNotificationLi = document.createElement('li');
+            newNotificationLi.setAttribute('data-notification-id', notification.id);
             newNotificationLi.innerHTML = `
                 <a class="dropdown-item text-wrap fw-bold" href="${notification.linkUrl}">
                     <div class="small text-muted">${new Date(notification.sentDate).toLocaleString()}</div>
                     ${notification.title}
                 </a>`;
-
-            // Add the new notification to the top of the list
             notificationList.prepend(newNotificationLi);
 
-            // Remove the "No new notifications" message if it exists
-            const noNotificationsItem = notificationList.querySelector('.no-notifications-item');
-            if (noNotificationsItem) {
-                noNotificationsItem.remove();
-            }
+            checkNotificationListState();
         }
-
-        // You can add a more sophisticated toast notification here if you wish
-        // For example, using a library like Toastr.js or Bootstrap's built-in Toasts.
-        // alert(`New Notification: ${notification.title}`);
     });
 
-    // 3. Logic for "Mark as Read" functionality
-    const notificationDropdown = document.getElementById('notificationDropdown');
-    if (notificationDropdown) {
-        // Listen for the Bootstrap event that fires just before the dropdown is shown
-        notificationDropdown.addEventListener('show.bs.dropdown', function () {
-            const badge = document.getElementById('notification-badge');
-            const notificationList = document.getElementById('notification-list');
-            const unreadCount = badge ? parseInt(badge.innerText) || 0 : 0;
+    // 3. Logic to remove a notification from the list AND MARK AS READ when it's clicked
+    const notificationList = document.getElementById('notification-list');
+    if (notificationList) {
+        notificationList.addEventListener('click', async function (event) {
+            const link = event.target.closest('a.dropdown-item');
+            if (link && !link.classList.contains('small')) {
 
-            // Only proceed if there are unread notifications
-            if (unreadCount > 0) {
-                // a. Immediately update the UI for a fast, responsive feel
-                if (badge) {
-                    // Hide the badge instead of removing it, so it can be shown again later
-                    badge.style.display = 'none';
-                    badge.innerText = '0'; // Reset the count
+                event.preventDefault();
+                console.log("Notification clicked. Preventing default navigation.");
+
+                const listItem = link.closest('li[data-notification-id]');
+                const notificationId = listItem ? listItem.getAttribute('data-notification-id') : null;
+                const destinationUrl = link.href;
+
+                if (listItem) {
+                    listItem.remove();
                 }
+                checkNotificationListState();
 
-                if (notificationList) {
-                    const unreadItems = notificationList.querySelectorAll('.fw-bold');
-                    unreadItems.forEach(item => {
-                        item.classList.remove('fw-bold');
-                    });
-                }
+                if (notificationId) {
+                    // --- THIS IS THE CORRECTED URL ---
+                    const fetchUrl = `${apiBaseUrl}/api/notifications/mark-one-as-read/${notificationId}`;
 
-                // b. Send a request to the API in the background to update the database
-                fetch(`${apiBaseUrl}/api/notifications/mark-all-as-read`, {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${jwtToken}`
+                    console.log(`Sending API request to: ${fetchUrl}`);
+
+                    try {
+                        const response = await fetch(fetchUrl, {
+                            method: 'POST',
+                            headers: {
+                                'Authorization': `Bearer ${jwtToken}`
+                            }
+                        });
+
+                        console.log(`API response received with status: ${response.status}`);
+
+                        if (!response.ok) {
+                            const errorBody = await response.text();
+                            console.error(`API Error: ${response.status} ${response.statusText}`, errorBody);
+                        } else {
+                            console.log("Successfully marked notification as read on the server.");
+                        }
+
+                    } catch (error) {
+                        console.error("A network or script error occurred during fetch:", error);
+                    } finally {
+                        console.log(`Navigating to: ${destinationUrl}`);
+                        window.location.href = destinationUrl;
                     }
-                }).catch(err => console.error("Failed to mark notifications as read:", err));
+                } else {
+                    console.warn("No notification-id found on the list item. Navigating directly.");
+                    window.location.href = destinationUrl;
+                }
             }
         });
     }
 
-    // 4. Start the connection and handle automatic reconnection
+    // 4. HELPER FUNCTION to manage the "No notifications" message
+    function checkNotificationListState() {
+        if (!notificationList) return;
+        const notificationItems = notificationList.querySelectorAll('li[data-notification-id]');
+        const noNotificationsItem = notificationList.querySelector('.no-notifications-item');
+        const divider = notificationList.querySelector('.dropdown-divider');
+
+        if (notificationItems.length === 0) {
+            if (!noNotificationsItem) {
+                const emptyLi = document.createElement('li');
+                emptyLi.className = 'no-notifications-item';
+                emptyLi.innerHTML = '<span class="dropdown-item text-muted text-center">No new notifications.</span>';
+                notificationList.prepend(emptyLi);
+            }
+            if (divider) divider.style.display = 'none';
+        } else {
+            if (noNotificationsItem) {
+                noNotificationsItem.remove();
+            }
+            if (divider) divider.style.display = 'block';
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', checkNotificationListState);
+
+    // 6. Start the connection and handle automatic reconnection
     async function start() {
         try {
             await connection.start();
             console.log("SignalR Connected.");
         } catch (err) {
             console.error("SignalR Connection Error: ", err);
-            // Retry connection after a 5-second delay
             setTimeout(start, 5000);
         }
     };
@@ -114,6 +144,5 @@ if (typeof jwtToken !== 'undefined' && jwtToken && typeof apiBaseUrl !== 'undefi
         await start();
     });
 
-    // Initial start of the connection
     start();
 }

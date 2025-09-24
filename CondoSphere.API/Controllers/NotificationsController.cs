@@ -49,6 +49,24 @@ namespace CondoSphere.API.Controllers
             return Ok(notifications);
         }
 
+        // --- NEW METHOD START ---
+        [HttpPost("mark-one-as-read/{notificationId}")]
+        public async Task<IActionResult> MarkOneAsRead(int notificationId)
+        {
+            var userId = _currentUserService.UserId;
+            if (userId == null) return Unauthorized();
+
+            var success = await _notificationService.MarkNotificationAsReadAsync(userId.Value, notificationId);
+
+            if (success)
+            {
+                return NoContent(); // Success, no content to return
+            }
+
+            return NotFound(); // Notification not found or user doesn't have permission
+        }
+        // --- NEW METHOD END ---
+
         [HttpPost("mark-all-as-read")]
         public async Task<IActionResult> MarkAllAsRead()
         {

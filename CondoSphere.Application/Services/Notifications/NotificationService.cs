@@ -298,7 +298,7 @@ namespace CondoSphere.Application.Services.Notifications
 
         public async Task<IEnumerable<NotificationDto>> GetNotificationsForUserAsync(int userId)
         {
-            var notifications = await _unitOfWork.Notifications.GetByUserIdAsync(userId);
+            var notifications = await _unitOfWork.Notifications.GetUnreadByUserIdAsync(userId);
 
             var dtos = new List<NotificationDto>();
             foreach (var notification in notifications)
@@ -331,6 +331,10 @@ namespace CondoSphere.Application.Services.Notifications
 
                 case "New Task":
                     return $"/employee/{notification.RelatedEntityId}";
+
+                case "Task Completed":
+                    var parentOccurrence = await _unitOfWork.Occurrences.GetByIdAsync(notification.RelatedEntityId ?? 0);
+                    return $"/condo-management/{parentOccurrence?.CondominiumId}/occurrences/{notification.RelatedEntityId}";
 
                 case "Status Change":
                     return $"/portal/occurrences/{notification.RelatedEntityId}";
@@ -412,6 +416,41 @@ namespace CondoSphere.Application.Services.Notifications
             await _unitOfWork.Notifications.AddAsync(notification);
             await _unitOfWork.CompleteAsync();
             await PushNotificationToClient(notification);
+        }
+
+        public async Task NotifyManagerOfTaskCompletionAsync(CoreIntervention intervention)
+        {
+            var condo = await _unitOfWork.Condominiums.GetByIdAsync(intervention.CondominiumId, intervention.CompanyId);
+            if (condo?.ManagerId == null) return;
+
+            var manager = await _unitOfWork.Users.GetUserByIdAsync(condo.ManagerId.Value);
+            if (manager?.Email == null) return;
+
+            var employee = await _unitOfWork.Users.GetUserByIdAsync(intervention.AssignedToUserId ?? 0);
+            var occurrence = await _unitOfWork.Occurrences.GetByIdAsync(intervention.OccurrenceId);
+
+            var title = $"Task Completed in {condo.Name}";
+            var message = $"The task '{intervention.Description}' for occurrence '{occurrence.Title}' was marked as complete by {employee?.FirstName} {employee?.LastName}.";
+
+            await _mailService.SendEmailAsync(manager.Email, title, message);
+
+            var notification = new Notification
+            {
+                UserId = manager.Id,
+                CompanyId = intervention.CompanyId,
+                Type = "Task Completed",
+                Title = title,
+                Message = message,
+                RelatedEntityId = occurrence.Id
+            };
+            await _unitOfWork.Notifications.AddAsync(notification);
+            await _unitOfWork.CompleteAsync();
+            await PushNotificationToClient(notification);
+        }
+
+        public async Task<bool> MarkNotificationAsReadAsync(int userId, int notificationId)
+        {
+            return await _unitOfWork.Notifications.MarkAsReadAsync(userId, notificationId);
         }
     }
 }
