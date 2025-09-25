@@ -50,7 +50,8 @@
                                 Title="Choose your unit..."
                                 FontSize="16"
                                 BackgroundColor="Transparent"
-                                Margin="16,0" />
+                                Margin="16,0"
+                                TextColor="{StaticResource TextPrimary}"/>
                     </Frame>
                 </VerticalStackLayout>
 
@@ -65,7 +66,8 @@
                                FontSize="16"
                                BackgroundColor="Transparent"
                                Margin="16,0"
-                               MaxLength="100" />
+                               MaxLength="100"
+                               TextColor="{StaticResource TextPrimary}" />
                     </Frame>
 
                     <Label Text="Keep it concise and specific" 
@@ -85,7 +87,8 @@
                                 Text="{Binding Description}"
                                 FontSize="16"
                                 BackgroundColor="Transparent"
-                                AutoSize="Disabled" />
+                                AutoSize="Disabled"
+                                TextColor="{StaticResource TextPrimary}" />
                     </Frame>
 
                     <Label Text="The more details you provide, the faster we can resolve the issue" 
