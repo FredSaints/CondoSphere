@@ -3,6 +3,9 @@ using System.ComponentModel.DataAnnotations;
 
 namespace CondoSphere.Core.DTOs.Financials
 {
+    /// <summary>
+    /// Create Expense DTO.
+    /// </summary>
     public class CreateExpenseDto
     {
         [Required]

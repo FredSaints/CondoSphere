@@ -1,5 +1,8 @@
 ﻿namespace CondoSphere.Core.DTOs.Reports
 {
+    /// <summary>
+    /// Condo Hotspot DTO.
+    /// </summary>
     public class CondoHotspotDto
     {
         public string CondominiumName { get; set; } = string.Empty;

@@ -1,5 +1,8 @@
 ﻿namespace CondoSphere.Core.DTOs.Assemblies
 {
+    /// <summary>
+    /// Send Assembly Invites DTO.
+    /// </summary>
     public class SendAssemblyInvitesDto
     {
         public bool InviteAllResidents { get; set; }

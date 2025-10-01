@@ -3,6 +3,9 @@ using CondoSphere.Core.Entities.Condominiums;
 
 namespace CondoSphere.Application.Interfaces
 {
+    /// <summary>
+    /// I Occurrence Repository.
+    /// </summary>
     public interface IOccurrenceRepository
     {
         Task<IEnumerable<Occurrence>> GetAllForCondominiumAsync(int condominiumId);

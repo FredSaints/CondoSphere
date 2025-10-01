@@ -4,6 +4,9 @@ using System.Threading.Tasks;
 
 namespace CondoSphere.Application.Interfaces
 {
+    /// <summary>
+    /// I Document Repository.
+    /// </summary>
     public interface IDocumentRepository
     {
         Task AddAsync(Document document);

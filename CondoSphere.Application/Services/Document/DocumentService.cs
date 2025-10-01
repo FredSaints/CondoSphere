@@ -7,6 +7,9 @@ using Microsoft.Extensions.Configuration;
 
 namespace CondoSphere.Application.Services.Document
 {
+    /// <summary>
+    /// Document Service.
+    /// </summary>
     public class DocumentService : IDocumentService
     {
         private readonly IUnitOfWork _unitOfWork;

@@ -6,6 +6,9 @@ using CoreIntervention = CondoSphere.Core.Entities.Condominiums.Intervention;
 
 namespace CondoSphere.Infrastructure.Authorization
 {
+    /// <summary>
+    /// Can Manage Intervention Handler.
+    /// </summary>
     public class CanManageInterventionHandler : AuthorizationHandler<CanManageInterventionRequirement, CoreIntervention>
     {
         private readonly ICurrentUserService _currentUserService;

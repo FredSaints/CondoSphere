@@ -7,16 +7,14 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace CondoSphere.Web.Controllers
 {
-    [Authorize]
-    public class AssembliesController : Controller
+    [Authorize]    public class AssembliesController : Controller
     {
         private readonly ApiClient _apiClient;
         public AssembliesController(ApiClient apiClient) => _apiClient = apiClient;
 
 
         [HttpGet("/assemblies")]
-        [Authorize]
-        public async Task<IActionResult> Unified(int? condominiumId)
+        [Authorize]        public async Task<IActionResult> Unified(int? condominiumId)
         {
             IEnumerable<AssemblyDto> list = Enumerable.Empty<AssemblyDto>();
 
@@ -82,8 +80,7 @@ namespace CondoSphere.Web.Controllers
 
         // ===== MANAGER: criar =====
         [HttpGet("condo-management/{condominiumId:int}/assemblies/create")]
-        [Authorize(Roles = RoleConstants.CondoManager)]
-        public IActionResult Create(int condominiumId)
+        [Authorize(Roles = RoleConstants.CondoManager)]        public IActionResult Create(int condominiumId)
         {
             // default: amanhã, sem segundos
             var d = DateTime.Now.AddDays(1);
@@ -95,11 +92,12 @@ namespace CondoSphere.Web.Controllers
                 Date = d
             });
         }
-
-        [HttpPost("condo-management/{condominiumId:int}/assemblies/create")]
-        [Authorize(Roles = RoleConstants.CondoManager)]
+        [HttpPost("condo-management/{condominiumId:int}/assemblies/create")] [Authorize(Roles = RoleConstants.CondoManager)]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(int condominiumId, CreateAssemblyDto dto)
+/// <summary>
+/// Handles the Create action.
+/// </summary>
+public async Task<IActionResult> Create(int condominiumId, CreateAssemblyDto dto)
         {
             dto.CondominiumId = condominiumId;
 
@@ -126,7 +124,10 @@ namespace CondoSphere.Web.Controllers
 
         [HttpGet("/condo-management/{condominiumId:int}/assemblies/{assemblyId:int}/invite")]
         [Authorize(Roles = RoleConstants.CondoManager)]
-        public async Task<IActionResult> Invite(int condominiumId, int assemblyId)
+/// <summary>
+/// Handles the Invite action.
+/// </summary>
+public async Task<IActionResult> Invite(int condominiumId, int assemblyId)
         {
             var residents = await _apiClient.GetCondominiumResidentsAsync(condominiumId);
 
@@ -142,15 +143,16 @@ namespace CondoSphere.Web.Controllers
                            $"{(string.IsNullOrWhiteSpace(r.Email) ? "" : $" — {r.Email}")}" +
                            $"{(string.IsNullOrWhiteSpace(r.Phone) ? "" : $" / {r.Phone}")}"
                 })
-                .ToList();
-
-            return View(new SendAssemblyInvitesDto());
+                .ToList();            return View(new SendAssemblyInvitesDto());
         }
 
         [HttpPost("/condo-management/{condominiumId:int}/assemblies/{assemblyId:int}/invite")]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = RoleConstants.CondoManager)]
-        public async Task<IActionResult> Invite(int condominiumId, int assemblyId, SendAssemblyInvitesDto dto)
+/// <summary>
+/// Handles the Invite action.
+/// </summary>
+public async Task<IActionResult> Invite(int condominiumId, int assemblyId, SendAssemblyInvitesDto dto)
         {
             if (!dto.InviteAllResidents && (dto.SelectedResidentIds == null || dto.SelectedResidentIds.Count == 0))
             {
@@ -182,7 +184,10 @@ namespace CondoSphere.Web.Controllers
         // GET /assemblies/{assemblyId}/room -> Redirect para o Jitsi
         [HttpGet("/assemblies/{assemblyId:int}/room")]
         [Authorize] // mantém os teus roles conforme precisares
-        public async Task<IActionResult> Room(int assemblyId)
+/// <summary>
+/// Handles the Room action.
+/// </summary>
+public async Task<IActionResult> Room(int assemblyId)
         {
             // regra de segurança: não permitir após a data (se já tens IsExpired na API, a API também travará)
             var info = await _apiClient.GetAssemblyRoomInfoAsync(assemblyId);

@@ -1,5 +1,8 @@
 ﻿namespace CondoSphere.Core.DTOs.Reports
 {
+    /// <summary>
+    /// Admin Dashboard DTO.
+    /// </summary>
     public class AdminDashboardDto
     {
         public int TotalCondominiums { get; set; }

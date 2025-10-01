@@ -11,8 +11,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 namespace CondoSphere.Web.Controllers
 {
     [Authorize(Roles = RoleConstants.CompanyAdmin)]
-    [Route("administration")]
-    public class AdministrationController : Controller
+    [Route("administration")]    public class AdministrationController : Controller
     {
         private readonly ApiClient _apiClient;
 
@@ -21,8 +20,7 @@ namespace CondoSphere.Web.Controllers
             _apiClient = apiClient;
         }
 
-        [HttpGet("")]
-        public async Task<IActionResult> Index()
+        [HttpGet("")]        public async Task<IActionResult> Index()
         {
             var usersTask = _apiClient.GetUsersAsync();
             var condominiumsTask = _apiClient.GetCondominiumsAsync();
@@ -37,20 +35,20 @@ namespace CondoSphere.Web.Controllers
 
             var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
             int.TryParse(userIdClaim, out var currentUserId);
-            ViewData["CurrentUserId"] = currentUserId;
-
-            return View(viewModel);
+            ViewData["CurrentUserId"] = currentUserId;          return View(viewModel);
         }
 
-        [HttpGet("register-manager")]
-        public IActionResult RegisterManager()
+        [HttpGet("register-manager")]        public IActionResult RegisterManager()
         {
             return View();
         }
 
         [HttpPost("register-manager")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> RegisterManager(RegisterManagerDto model)
+/// <summary>
+/// Handles the Register Manager action.
+/// </summary>
+public async Task<IActionResult> RegisterManager(RegisterManagerDto model)
         {
             if (!ModelState.IsValid)
             {
@@ -63,21 +61,25 @@ namespace CondoSphere.Web.Controllers
             {
                 TempData["SuccessMessage"] = "Manager registration initiated. They will receive an email to set their password.";
                 return RedirectToAction(nameof(Index));
-            }
-
-            ModelState.AddModelError(string.Empty, "Failed to register manager. The email may already be in use.");
+            }       ModelState.AddModelError(string.Empty, "Failed to register manager. The email may already be in use.");
             return View(model);
         }
 
         [HttpGet("create-condominium")]
-        public IActionResult CreateCondominium()
+/// <summary>
+/// Handles the Create Condominium action.
+/// </summary>
+public IActionResult CreateCondominium()
         {
             return View();
         }
 
         [HttpPost("create-condominium")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateCondominium(CreateUpdateCondominiumDto model)
+/// <summary>
+/// Handles the Create Condominium action.
+/// </summary>
+public async Task<IActionResult> CreateCondominium(CreateUpdateCondominiumDto model)
         {
             if (!ModelState.IsValid)
             {
@@ -97,18 +99,19 @@ namespace CondoSphere.Web.Controllers
         }
 
         [HttpGet("condominiums/{condominiumId}/assign-manager")]
-        public async Task<IActionResult> AssignManager(int condominiumId)
+/// <summary>
+/// Handles the Assign Manager action.
+/// </summary>
+public async Task<IActionResult> AssignManager(int condominiumId)
         {
             var condo = await _apiClient.GetCondominiumDetailsAsync(condominiumId);
             if (condo == null)
-            {
-                return NotFound();
+            {              return NotFound();
             }
 
             var managers = await _apiClient.GetAvailableManagersAsync();
 
-            ViewData["Condominium"] = condo;
-            ViewData["AvailableManagers"] = managers.Select(m => new SelectListItem
+            ViewData["Condominium"] = condo;ViewData["AvailableManagers"] = managers.Select(m => new SelectListItem
             {
                 Text = $"{m.FirstName} {m.LastName} ({m.Email})",
                 Value = m.Id.ToString()
@@ -119,7 +122,10 @@ namespace CondoSphere.Web.Controllers
 
         [HttpPost("condominiums/{condominiumId}/assign-manager")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> AssignManager(int condominiumId, AssignManagerViewModel model)
+/// <summary>
+/// Handles the Assign Manager action.
+/// </summary>
+public async Task<IActionResult> AssignManager(int condominiumId, AssignManagerViewModel model)
         {
             if (!ModelState.IsValid)
             {
@@ -138,8 +144,7 @@ namespace CondoSphere.Web.Controllers
 
             ModelState.AddModelError(string.Empty, "An error occurred while assigning the manager. Please verify the manager is valid and try again.");
 
-            await RepopulateAssignManagerViewDataAsync(condominiumId);
-            return View(model);
+            await RepopulateAssignManagerViewDataAsync(condominiumId);       return View(model);
         }
 
         private async Task RepopulateAssignManagerViewDataAsync(int condominiumId)
@@ -156,14 +161,16 @@ namespace CondoSphere.Web.Controllers
 
         [HttpPost("users/{userId}/deactivate")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeactivateUser(int userId)
+/// <summary>
+/// Handles the Deactivate User action.
+/// </summary>
+public async Task<IActionResult> DeactivateUser(int userId)
         {
             var success = await _apiClient.DeactivateUserAsync(userId);
             if (success)
             {
                 TempData["SuccessMessage"] = "User successfully deactivated.";
-            }
-            else
+            }           else
             {
                 TempData["ErrorMessage"] = "Failed to deactivate user.";
             }
@@ -172,7 +179,10 @@ namespace CondoSphere.Web.Controllers
 
         [HttpPost("users/{userId}/activate")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> ActivateUser(int userId)
+/// <summary>
+/// Handles the Activate User action.
+/// </summary>
+public async Task<IActionResult> ActivateUser(int userId)
         {
             var success = await _apiClient.ActivateUserAsync(userId);
             if (success)
@@ -187,18 +197,22 @@ namespace CondoSphere.Web.Controllers
         }
 
         [HttpGet("register-employee")]
-        public IActionResult RegisterEmployee()
-        {
-            return View();
+/// <summary>
+/// Handles the Register Employee action.
+/// </summary>
+public IActionResult RegisterEmployee()
+        {    return View();
         }
 
         [HttpPost("register-employee")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> RegisterEmployee(RegisterManagerDto model)
+/// <summary>
+/// Handles the Register Employee action.
+/// </summary>
+public async Task<IActionResult> RegisterEmployee(RegisterManagerDto model)
         {
             if (!ModelState.IsValid)
-            {
-                return View(model);
+            {return View(model);
             }
 
             var success = await _apiClient.RegisterEmployeeAsync(model);
@@ -214,7 +228,10 @@ namespace CondoSphere.Web.Controllers
         }
 
         [HttpGet("company-profile")]
-        public async Task<IActionResult> CompanyProfile()
+/// <summary>
+/// Handles the Company Profile action.
+/// </summary>
+public async Task<IActionResult> CompanyProfile()
         {
             var model = await _apiClient.GetCompanyProfileAsync();
             if (model == null) return NotFound();
@@ -223,7 +240,10 @@ namespace CondoSphere.Web.Controllers
 
         [HttpPost("company-profile")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CompanyProfile(CompanyProfileDto model)
+/// <summary>
+/// Handles the Company Profile action.
+/// </summary>
+public async Task<IActionResult> CompanyProfile(CompanyProfileDto model)
         {
             if (!ModelState.IsValid)
             {
@@ -242,7 +262,10 @@ namespace CondoSphere.Web.Controllers
         }
 
         [HttpGet("dashboard")]
-        public async Task<IActionResult> Dashboard()
+/// <summary>
+/// Handles the Dashboard action.
+/// </summary>
+public async Task<IActionResult> Dashboard()
         {
             // 1. Start all API calls in parallel
             var statsTask = _apiClient.GetAdminDashboardAsync();
@@ -258,8 +281,7 @@ namespace CondoSphere.Web.Controllers
             if (stats == null)
             {
                 // If the main stats fail, we probably can't show a useful dashboard.
-                // You could show an error or a limited view. For now, we'll show an empty one.
-                return View(new AdminBiDashboardViewModel
+                // You could show an error or a limited view. For now, we'll show an empty one.  return View(new AdminBiDashboardViewModel
                 {
                     MainStats = new Core.DTOs.Reports.AdminDashboardDto(),
                     FinancialTrend = new List<Core.DTOs.Reports.MonthlyFinancialsDto>(),
@@ -282,9 +304,11 @@ namespace CondoSphere.Web.Controllers
 
         // GET: /administration/condominiums/{id}/edit
         [HttpGet("condominiums/{id}/edit")]
-        public async Task<IActionResult> EditCondominium(int id)
-        {
-            var condo = await _apiClient.GetCondominiumDetailsAsync(id);
+/// <summary>
+/// Handles the Edit Condominium action.
+/// </summary>
+public async Task<IActionResult> EditCondominium(int id)
+        {  var condo = await _apiClient.GetCondominiumDetailsAsync(id);
             if (condo == null)
             {
                 return NotFound();
@@ -303,7 +327,7 @@ namespace CondoSphere.Web.Controllers
 
         [HttpPost("condominiums/{id}/delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteCondominium(int id)
+        publicasync Task<IActionResult> DeleteCondominium(int id)
         {
             var (success, message) = await _apiClient.DeleteCondominiumAsync(id);
 
@@ -311,8 +335,7 @@ namespace CondoSphere.Web.Controllers
             {
                 TempData["SuccessMessage"] = message;
             }
-            else
-            {
+            else      {
                 TempData["ErrorMessage"] = message;
             }
 
@@ -322,7 +345,10 @@ namespace CondoSphere.Web.Controllers
         // POST: /administration/condominiums/{id}/edit
         [HttpPost("condominiums/{id}/edit")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditCondominium(int id, CreateUpdateCondominiumDto dto)
+/// <summary>
+/// Handles the Edit Condominium action.
+/// </summary>
+public async Task<IActionResult> EditCondominium(int id, CreateUpdateCondominiumDto dto)
         {
             if (!ModelState.IsValid)
             {
@@ -347,7 +373,10 @@ namespace CondoSphere.Web.Controllers
 
         [HttpPost("condominiums/{condominiumId}/unassign-manager")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> UnassignManager(int condominiumId)
+/// <summary>
+/// Handles the Unassign Manager action.
+/// </summary>
+public async Task<IActionResult> UnassignManager(int condominiumId)
         {
             var success = await _apiClient.UnassignManagerAsync(condominiumId);
             if (success)

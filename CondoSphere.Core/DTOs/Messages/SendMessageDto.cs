@@ -2,6 +2,9 @@
 
 namespace CondoSphere.Core.DTOs.Messages
 {
+    /// <summary>
+    /// Send Message DTO.
+    /// </summary>
     public class SendMessageDto
     {
         [Required]

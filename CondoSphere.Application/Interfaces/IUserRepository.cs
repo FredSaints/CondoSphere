@@ -2,6 +2,9 @@
 
 namespace CondoSphere.Application.Interfaces
 {
+    /// <summary>
+    /// I User Repository.
+    /// </summary>
     public interface IUserRepository
     {
         /// <summary>

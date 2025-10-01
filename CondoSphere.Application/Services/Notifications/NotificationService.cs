@@ -12,6 +12,9 @@ using CoreUnitQuota = CondoSphere.Core.Entities.Financials.UnitQuota;
 
 namespace CondoSphere.Application.Services.Notifications
 {
+    /// <summary>
+    /// Notification Service.
+    /// </summary>
     public class NotificationService : INotificationService
     {
         private readonly IUnitOfWork _unitOfWork;

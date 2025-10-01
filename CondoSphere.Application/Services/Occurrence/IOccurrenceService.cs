@@ -4,6 +4,9 @@ using Microsoft.AspNetCore.Http;
 
 namespace CondoSphere.Application.Services.Occurrence
 {
+    /// <summary>
+    /// I Occurrence Service.
+    /// </summary>
     public interface IOccurrenceService
     {
         Task<IEnumerable<OccurrenceDto>> GetOccurrencesForCondominiumAsync(int condominiumId);

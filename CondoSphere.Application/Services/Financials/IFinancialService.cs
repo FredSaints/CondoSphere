@@ -3,6 +3,9 @@ using Microsoft.AspNetCore.Http;
 
 namespace CondoSphere.Application.Services.Financials
 {
+    /// <summary>
+    /// I Financial Service.
+    /// </summary>
     public interface IFinancialService
     {
         Task<IEnumerable<UnitQuotaDto>> GetQuotasForUserAsync(int userId);

@@ -4,6 +4,9 @@ using Microsoft.AspNetCore.Http;
 
 namespace CondoSphere.Application.Services.Financials
 {
+    /// <summary>
+    /// I Expense Service.
+    /// </summary>
     public interface IExpenseService
     {
         Task<ExpenseDto?> CreateExpenseAsync(CreateExpenseDto dto, int companyId, List<IFormFile> attachmentFiles);

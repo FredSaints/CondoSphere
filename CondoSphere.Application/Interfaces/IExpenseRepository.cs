@@ -3,6 +3,9 @@ using CondoSphere.Core.Entities.Financials;
 
 namespace CondoSphere.Application.Interfaces
 {
+    /// <summary>
+    /// I Expense Repository.
+    /// </summary>
     public interface IExpenseRepository
     {
         Task AddAsync(Expense expense);

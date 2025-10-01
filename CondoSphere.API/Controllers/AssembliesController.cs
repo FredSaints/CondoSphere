@@ -10,8 +10,7 @@ namespace CondoSphere.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize] // roles específicos em cada ação
-    public class AssembliesController : ControllerBase
+    [Authorize] // roles específicos em cada ação    public class AssembliesController : ControllerBase
     {
         private readonly IAssemblyService _svc;
         private readonly ICurrentUserService _current;
@@ -26,8 +25,7 @@ namespace CondoSphere.API.Controllers
             _hub = hub;
         }
         [HttpPost]
-        [Authorize(Roles = $"{RoleConstants.CompanyAdmin},{RoleConstants.CondoManager}")]
-        public async Task<ActionResult<AssemblyDto>> Create([FromBody] CreateAssemblyDto dto)
+        [Authorize(Roles = $"{RoleConstants.CompanyAdmin},{RoleConstants.CondoManager}")]        public async Task<ActionResult<AssemblyDto>> Create([FromBody] CreateAssemblyDto dto)
         {
             var created = await _svc.CreateAsync(dto);
             if (created == null) return Forbid();
@@ -42,7 +40,10 @@ namespace CondoSphere.API.Controllers
         }
         
         [HttpGet("{id:int}")]
-        public async Task<ActionResult<AssemblyDto>> GetById(int id)
+/// <summary>
+/// Handles the Get By Id action.
+/// </summary>
+public async Task<ActionResult<AssemblyDto>> GetById(int id)
         {
             var dto = await _svc.GetByIdAsync(id);
             if (dto == null) return NotFound();
@@ -79,7 +80,10 @@ namespace CondoSphere.API.Controllers
         }
 
         [HttpGet("{assemblyId:int}/room-info")]
-        public async Task<ActionResult<AssemblyRoomInfoDto>> GetRoomInfo(int assemblyId)
+/// <summary>
+/// Handles the Get Room Info action.
+/// </summary>
+public async Task<ActionResult<AssemblyRoomInfoDto>> GetRoomInfo(int assemblyId)
         {
             if (await IsExpiredAsync(assemblyId)) return Forbid();
             var info = await _svc.GetRoomInfoAsync(assemblyId);

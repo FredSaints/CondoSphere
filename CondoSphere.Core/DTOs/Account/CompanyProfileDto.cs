@@ -2,6 +2,9 @@
 
 namespace CondoSphere.Core.DTOs.Account
 {
+    /// <summary>
+    /// Company Profile DTO.
+    /// </summary>
     public class CompanyProfileDto
     {
         [Required]

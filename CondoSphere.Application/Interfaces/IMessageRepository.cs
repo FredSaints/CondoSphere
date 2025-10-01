@@ -2,6 +2,9 @@
 
 namespace CondoSphere.Application.Interfaces
 {
+    /// <summary>
+    /// I Message Repository.
+    /// </summary>
     public interface IMessageRepository
     {
         Task AddAsync(Message message);

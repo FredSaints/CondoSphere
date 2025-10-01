@@ -9,8 +9,7 @@ namespace CondoSphere.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize(Roles = RoleConstants.CompanyAdmin)]
-    public class CompanyController : ControllerBase
+    [Authorize(Roles = RoleConstants.CompanyAdmin)]    public class CompanyController : ControllerBase
     {
         private readonly ICompanyService _companyService;
         private readonly ICurrentUserService _currentUserService;
@@ -21,8 +20,7 @@ namespace CondoSphere.API.Controllers
             _currentUserService = currentUserService;
         }
 
-        [HttpGet("my-profile")]
-        public async Task<ActionResult<CompanyProfileDto>> GetMyCompanyProfile()
+        [HttpGet("my-profile")]        public async Task<ActionResult<CompanyProfileDto>> GetMyCompanyProfile()
         {
             var companyId = _currentUserService.CompanyId;
             if (companyId == null) return Unauthorized();
@@ -33,8 +31,7 @@ namespace CondoSphere.API.Controllers
             return Ok(profile);
         }
 
-        [HttpPut("my-profile")]
-        public async Task<IActionResult> UpdateMyCompanyProfile([FromBody] CompanyProfileDto dto)
+        [HttpPut("my-profile")]        public async Task<IActionResult> UpdateMyCompanyProfile([FromBody] CompanyProfileDto dto)
         {
             var companyId = _currentUserService.CompanyId;
             if (companyId == null) return Unauthorized();

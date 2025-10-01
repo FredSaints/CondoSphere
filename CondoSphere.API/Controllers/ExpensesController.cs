@@ -9,8 +9,7 @@ namespace CondoSphere.API.Controllers
 {
     [ApiController]
     [Route("api/expenses")]
-    [Authorize(Roles = RoleConstants.CondoManager + "," + RoleConstants.CompanyAdmin)]
-    public class ExpensesController : ControllerBase
+    [Authorize(Roles = RoleConstants.CondoManager + "," + RoleConstants.CompanyAdmin)]    public class ExpensesController : ControllerBase
     {
         private readonly IExpenseService _expenseService;
         private readonly ICurrentUserService _currentUserService;
@@ -21,8 +20,7 @@ namespace CondoSphere.API.Controllers
             _currentUserService = currentUserService;
         }
 
-        [HttpPost]
-        public async Task<IActionResult> CreateExpense([FromForm] CreateExpenseDto dto, [FromForm] List<IFormFile> attachmentFiles)
+        [HttpPost]        public async Task<IActionResult> CreateExpense([FromForm] CreateExpenseDto dto, [FromForm] List<IFormFile> attachmentFiles)
         {
             Console.WriteLine($"[API] CreateExpense ContentType='{Request.ContentType}', HasFormContentType={Request.HasFormContentType}");
             Console.WriteLine($"[API] DTO => Title='{dto.Title}', Amount={dto.Amount}, Date={dto.ExpenseDate:o}, CondoId={dto.CondominiumId}, OccurrenceId={dto.OccurrenceId}");
@@ -48,15 +46,13 @@ namespace CondoSphere.API.Controllers
         }
 
         [HttpGet("~/api/occurrences/{occurrenceId}/expenses")]
-        [Authorize(Roles = RoleConstants.CondoManager + "," + RoleConstants.CompanyAdmin)]
-        public async Task<IActionResult> GetExpensesForOccurrence(int occurrenceId)
+        [Authorize(Roles = RoleConstants.CondoManager + "," + RoleConstants.CompanyAdmin)]        public async Task<IActionResult> GetExpensesForOccurrence(int occurrenceId)
         {
             var expenses = await _expenseService.GetExpensesForOccurrenceAsync(occurrenceId);
             return Ok(expenses);
         }
 
-        [HttpGet("{expenseId}")]
-        public async Task<IActionResult> GetExpenseById(int expenseId)
+        [HttpGet("{expenseId}")]        public async Task<IActionResult> GetExpenseById(int expenseId)
         {
             var companyId = _currentUserService.CompanyId;
             if (companyId == null)
@@ -69,25 +65,23 @@ namespace CondoSphere.API.Controllers
             if (expense == null)
             {
                 return NotFound();
-            }
-
-            return Ok(expense);
+            }return Ok(expense);
         }
 
-        [HttpGet("~/api/condominiums/{condominiumId}/fixed-expenses")]
-        public async Task<IActionResult> GetFixedExpenses(int condominiumId)
+        [HttpGet("~/api/condominiums/{condominiumId}/fixed-expenses")]public async Task<IActionResult> GetFixedExpenses(int condominiumId)
         {
             var expenses = await _expenseService.GetFixedExpensesForCondominiumAsync(condominiumId);
             return Ok(expenses);
         }
 
         [HttpPost("~/api/condominiums/{condominiumId}/fixed-expenses")]
-        public async Task<IActionResult> CreateFixedExpense(int condominiumId, [FromBody] CreateUpdateFixedExpenseDto dto)
+/// <summary>
+/// Handles the Create Fixed Expense action.
+/// </summary>
+public async Task<IActionResult> CreateFixedExpense(int condominiumId, [FromBody] CreateUpdateFixedExpenseDto dto)
         {
-            if (!ModelState.IsValid || condominiumId != dto.CondominiumId) return BadRequest();
-
-            var companyId = _currentUserService.CompanyId;
-            if (companyId == null) return Unauthorized();
+            if (!ModelState.IsValid || condominiumId != dto.CondominiumId) return BadRequest();   var companyId = _currentUserService.CompanyId;
+            if (companyId == null) returnUnauthorized();
 
             var newExpense = await _expenseService.CreateFixedExpenseAsync(dto, companyId.Value);
             return CreatedAtAction(nameof(GetExpenseById), new { expenseId = newExpense.Id }, newExpense);
@@ -96,7 +90,10 @@ namespace CondoSphere.API.Controllers
 
         // PUT: /api/condominiums/{condominiumId}/fixed-expenses/{expenseId}
         [HttpPut("~/api/condominiums/{condominiumId}/fixed-expenses/{expenseId}")]
-        public async Task<IActionResult> UpdateFixedExpense(int condominiumId, int expenseId, [FromBody] CreateUpdateFixedExpenseDto dto)
+/// <summary>
+/// Handles the Update Fixed Expense action.
+/// </summary>
+public async Task<IActionResult> UpdateFixedExpense(int condominiumId, int expenseId, [FromBody] CreateUpdateFixedExpenseDto dto)
         {
             if (!ModelState.IsValid || condominiumId != dto.CondominiumId) return BadRequest();
 
@@ -112,7 +109,10 @@ namespace CondoSphere.API.Controllers
 
         // PATCH: /api/condominiums/{condominiumId}/fixed-expenses/{expenseId}/toggle-status
         [HttpPatch("~/api/condominiums/{condominiumId}/fixed-expenses/{expenseId}/toggle-status")]
-        public async Task<IActionResult> ToggleFixedExpenseStatus(int condominiumId, int expenseId)
+/// <summary>
+/// Handles the Toggle Fixed Expense Status action.
+/// </summary>
+public async Task<IActionResult> ToggleFixedExpenseStatus(int condominiumId, int expenseId)
         {
             var companyId = _currentUserService.CompanyId;
             if (companyId == null) return Unauthorized();
@@ -129,7 +129,10 @@ namespace CondoSphere.API.Controllers
 
         // DELETE: /api/condominiums/{condominiumId}/fixed-expenses/{expenseId}
         [HttpDelete("~/api/condominiums/{condominiumId}/fixed-expenses/{expenseId}")]
-        public async Task<IActionResult> DeleteFixedExpense(int condominiumId, int expenseId)
+/// <summary>
+/// Handles the Delete Fixed Expense action.
+/// </summary>
+public async Task<IActionResult> DeleteFixedExpense(int condominiumId, int expenseId)
         {
             var companyId = _currentUserService.CompanyId;
             if (companyId == null) return Unauthorized();

@@ -3,6 +3,9 @@ using CondoSphere.Core.DTOs.Messages;
 
 namespace CondoSphere.Application.Services.Messages
 {
+    /// <summary>
+    /// I Message Service.
+    /// </summary>
     public interface IMessageService
     {
         Task<MessageDto> SendMessageAsync(SendMessageDto dto, int senderId, int companyId);

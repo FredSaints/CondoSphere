@@ -4,6 +4,9 @@ using CondoSphere.Core.Enums;
 
 namespace CondoSphere.Application.Services.Intervention
 {
+    /// <summary>
+    /// I Intervention Service.
+    /// </summary>
     public interface IInterventionService
     {
         Task<InterventionDto?> CreateInterventionAsync(CreateInterventionDto dto, int managerCompanyId);

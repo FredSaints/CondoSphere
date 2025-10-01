@@ -1,5 +1,8 @@
 ﻿namespace CondoSphere.Core.DTOs.Reports
 {
+    /// <summary>
+    /// Income Item DTO.
+    /// </summary>
     public class IncomeItemDto
     {
         public DateTime PaymentDate { get; set; }

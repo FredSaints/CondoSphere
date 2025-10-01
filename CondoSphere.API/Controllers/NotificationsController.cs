@@ -9,8 +9,7 @@ namespace CondoSphere.API.Controllers
 {
     [ApiController]
     [Route("api/notifications")]
-    [Authorize]
-    public class NotificationsController : ControllerBase
+    [Authorize]    public class NotificationsController : ControllerBase
     {
         private readonly INotificationService _notificationService;
         private readonly ICurrentUserService _currentUserService;
@@ -22,8 +21,7 @@ namespace CondoSphere.API.Controllers
         }
 
         [HttpPost("~/api/condominiums/{condominiumId}/announcements")]
-        [Authorize(Roles = RoleConstants.CondoManager + "," + RoleConstants.CompanyAdmin)]
-        public async Task<IActionResult> SendAnnouncement(int condominiumId, [FromBody] AnnouncementDto dto)
+        [Authorize(Roles = RoleConstants.CondoManager + "," + RoleConstants.CompanyAdmin)]        public async Task<IActionResult> SendAnnouncement(int condominiumId, [FromBody] AnnouncementDto dto)
         {
             var companyId = _currentUserService.CompanyId;
             var userName = User.Identity?.Name ?? "Management";
@@ -46,12 +44,10 @@ namespace CondoSphere.API.Controllers
             if (userId == null) return Unauthorized();
 
             var notifications = await _notificationService.GetNotificationsForUserAsync(userId.Value);
-            return Ok(notifications);
-        }
+            return Ok(notifications);}
 
         // --- NEW METHOD START ---
-        [HttpPost("mark-one-as-read/{notificationId}")]
-        public async Task<IActionResult> MarkOneAsRead(int notificationId)
+        [HttpPost("mark-one-as-read/{notificationId}")]        public async Task<IActionResult> MarkOneAsRead(int notificationId)
         {
             var userId = _currentUserService.UserId;
             if (userId == null) return Unauthorized();
@@ -67,8 +63,7 @@ namespace CondoSphere.API.Controllers
         }
         // --- NEW METHOD END ---
 
-        [HttpPost("mark-all-as-read")]
-        public async Task<IActionResult> MarkAllAsRead()
+        [HttpPost("mark-all-as-read")]        public async Task<IActionResult> MarkAllAsRead()
         {
             var userId = _currentUserService.UserId;
             if (userId == null) return Unauthorized();

@@ -10,6 +10,9 @@ using CoreUser = CondoSphere.Core.Entities.Users.User;
 
 namespace CondoSphere.Application.Services.Condominium
 {
+    /// <summary>
+    /// Condominium Service.
+    /// </summary>
     public class CondominiumService : ICondominiumService
     {
         private readonly IUnitOfWork _unitOfWork;

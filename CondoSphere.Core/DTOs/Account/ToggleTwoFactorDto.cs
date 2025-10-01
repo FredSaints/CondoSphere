@@ -8,6 +8,9 @@ using System.Threading.Tasks;
 
 namespace CondoSphere.Core.DTOs.Account
 {
+    /// <summary>
+    /// Toggle Two Factor DTO.
+    /// </summary>
     public class ToggleTwoFactorDto
     {
         [Required, EmailAddress] public string Email { get; set; } = string.Empty;

@@ -5,6 +5,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CondoSphere.Infrastructure.Repositories
 {
+    /// <summary>
+    /// Message Repository.
+    /// </summary>
     public class MessageRepository : IMessageRepository
     {
         private readonly UserManagementDbContext _context;

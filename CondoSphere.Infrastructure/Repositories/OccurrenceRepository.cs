@@ -7,6 +7,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CondoSphere.Infrastructure.Repositories
 {
+    /// <summary>
+    /// Occurrence Repository.
+    /// </summary>
     public class OccurrenceRepository : IOccurrenceRepository
     {
         private readonly CondominiumDbContext _context;

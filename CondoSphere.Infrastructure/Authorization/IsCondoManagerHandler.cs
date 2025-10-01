@@ -10,6 +10,9 @@ using System.Threading.Tasks;
 
 namespace CondoSphere.Infrastructure.Authorization
 {
+    /// <summary>
+    /// Is Condo Manager Handler.
+    /// </summary>
     public class IsCondoManagerHandler : AuthorizationHandler<IsCondoManagerRequirement>
     {
         private readonly CondominiumDbContext _condoContext;

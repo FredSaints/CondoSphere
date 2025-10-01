@@ -2,6 +2,9 @@
 
 namespace CondoSphere.Application.Interfaces
 {
+    /// <summary>
+    /// I Notification Repository.
+    /// </summary>
     public interface INotificationRepository
     {
         Task AddAsync(Notification notification);

@@ -5,6 +5,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CondoSphere.Infrastructure.Repositories
 {
+    /// <summary>
+    /// Unit Quota Repository.
+    /// </summary>
     public class UnitQuotaRepository : IUnitQuotaRepository
     {
         private readonly FinancialsDbContext _context;

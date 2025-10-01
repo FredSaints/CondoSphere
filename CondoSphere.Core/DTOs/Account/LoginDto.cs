@@ -2,6 +2,9 @@
 
 namespace CondoSphere.Core.DTOs.Account
 {
+    /// <summary>
+    /// Login DTO.
+    /// </summary>
     public class LoginDto
     {
         [Required]

@@ -4,6 +4,9 @@ using System.Threading.Tasks;
 
 namespace CondoSphere.Infrastructure.Repositories
 {
+    /// <summary>
+    /// Unit Of Work.
+    /// </summary>
     public class UnitOfWork : IUnitOfWork
     {
         private readonly UserManagementDbContext _userContext;

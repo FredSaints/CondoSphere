@@ -2,6 +2,9 @@
 
 namespace CondoSphere.Core.DTOs.Financials
 {
+    /// <summary>
+    /// Expense DTO.
+    /// </summary>
     public class ExpenseDto
     {
         public int Id { get; set; }

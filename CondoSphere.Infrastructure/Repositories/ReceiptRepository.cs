@@ -5,6 +5,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CondoSphere.Infrastructure.Repositories
 {
+    /// <summary>
+    /// Receipt Repository.
+    /// </summary>
     public class ReceiptRepository : IReceiptRepository
     {
         private readonly FinancialsDbContext _context;

@@ -5,6 +5,9 @@ using CondoSphere.Core.DTOs.Reports;
 
 namespace CondoSphere.Application.Services.Reports
 {
+    /// <summary>
+    /// Report Service.
+    /// </summary>
     public class ReportService : IReportService
     {
         private readonly IUnitOfWork _unitOfWork;

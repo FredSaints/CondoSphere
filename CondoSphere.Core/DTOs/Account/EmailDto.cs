@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace CondoSphere.Core.DTOs.Account
 {
+    /// <summary>
+    /// Email DTO.
+    /// </summary>
     public class EmailDto
     {
         [Required]

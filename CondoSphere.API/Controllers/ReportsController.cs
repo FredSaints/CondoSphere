@@ -9,8 +9,7 @@ namespace CondoSphere.API.Controllers
 {
     [ApiController]
     [Route("api/reports")]
-    [Authorize]
-    public class ReportsController : ControllerBase
+    [Authorize]    public class ReportsController : ControllerBase
     {
         private readonly IReportService _reportService;
         private readonly ICurrentUserService _currentUserService;
@@ -22,8 +21,7 @@ namespace CondoSphere.API.Controllers
         }
 
         [HttpGet("condominiums/{condominiumId}/financial-statement")]
-        [Authorize(Roles = RoleConstants.CondoManager + "," + RoleConstants.CompanyAdmin)]
-        public async Task<IActionResult> GetFinancialStatement(int condominiumId, [FromQuery] int year, [FromQuery] int month)
+        [Authorize(Roles = RoleConstants.CondoManager + "," + RoleConstants.CompanyAdmin)]        public async Task<IActionResult> GetFinancialStatement(int condominiumId, [FromQuery] int year, [FromQuery] int month)
         {
             var companyId = _currentUserService.CompanyId;
             if (companyId == null) return Unauthorized();
@@ -35,8 +33,7 @@ namespace CondoSphere.API.Controllers
         }
 
         [HttpGet("admin-dashboard")]
-        [Authorize(Roles = RoleConstants.CompanyAdmin)]
-        public async Task<ActionResult<AdminDashboardDto>> GetAdminDashboard()
+        [Authorize(Roles = RoleConstants.CompanyAdmin)]        public async Task<ActionResult<AdminDashboardDto>> GetAdminDashboard()
         {
             var companyId = _currentUserService.CompanyId;
             if (companyId == null) return Unauthorized();

@@ -8,6 +8,9 @@ using CoreUser = CondoSphere.Core.Entities.Users.User;
 
 namespace CondoSphere.Infrastructure.Authorization
 {
+    /// <summary>
+    /// Can Access Occurrence Handler.
+    /// </summary>
     public class CanAccessOccurrenceHandler
         : AuthorizationHandler<CanAccessOccurrenceRequirement, CoreOccurrence>
     {

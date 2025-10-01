@@ -2,6 +2,9 @@
 
 namespace CondoSphere.Application.Interfaces
 {
+    /// <summary>
+    /// I Assembly Service.
+    /// </summary>
     public interface IAssemblyService
     {
         // CRUD básico

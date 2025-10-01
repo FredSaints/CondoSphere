@@ -2,6 +2,9 @@
 
 namespace CondoSphere.Core.DTOs.Notifications
 {
+    /// <summary>
+    /// Announcement DTO.
+    /// </summary>
     public class AnnouncementDto
     {
         [Required]

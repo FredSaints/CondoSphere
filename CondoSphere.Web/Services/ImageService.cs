@@ -3,6 +3,9 @@ using Microsoft.Extensions.Configuration;
 
 namespace CondoSphere.Web.Services
 {
+    /// <summary>
+    /// Image Service.
+    /// </summary>
     public class ImageService : IImageService
     {
         private readonly IWebHostEnvironment _env;

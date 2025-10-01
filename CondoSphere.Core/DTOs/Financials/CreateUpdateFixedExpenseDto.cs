@@ -8,6 +8,9 @@ using System.Threading.Tasks;
 
 namespace CondoSphere.Core.DTOs.Financials
 {
+    /// <summary>
+    /// Create Update Fixed Expense DTO.
+    /// </summary>
     public class CreateUpdateFixedExpenseDto
     {
         [Required]

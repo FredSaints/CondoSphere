@@ -5,6 +5,9 @@ using Twilio.Rest.Api.V2010.Account;
 
 namespace CondoSphere.Infrastructure.Notifications
 {
+    /// <summary>
+    /// Twilio Sms Service.
+    /// </summary>
     public class TwilioSmsService : ISmsService
     {
         private readonly string _sid;

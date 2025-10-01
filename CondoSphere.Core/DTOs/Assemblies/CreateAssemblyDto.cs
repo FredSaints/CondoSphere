@@ -4,6 +4,9 @@ using System.ComponentModel.DataAnnotations;
 
 namespace CondoSphere.Core.DTOs.Assemblies
 {
+    /// <summary>
+    /// Create Assembly DTO.
+    /// </summary>
     public class CreateAssemblyDto
     {
         [Required]

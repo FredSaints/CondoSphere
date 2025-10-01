@@ -1,4 +1,5 @@
-﻿using CondoSphere.Application.Interfaces;
+using System.Collections.Generic;
+using CondoSphere.Application.Interfaces;
 using CondoSphere.Application.Services.Token;
 using CondoSphere.Core;
 using CondoSphere.Core.DTOs.Account;
@@ -14,6 +15,9 @@ using CompanyEntity = CondoSphere.Core.Entities.Users.Company;
 
 namespace CondoSphere.Application.Services.User
 {
+    /// <summary>
+    /// User Service.
+    /// </summary>
     public class UserService : IUserService
     {
         private readonly UserManager<CoreUser> _userManager;
@@ -60,11 +64,37 @@ namespace CondoSphere.Application.Services.User
                 return null;
             }
 
+            if (user.TwoFactorEnabled)
+            {
+                var methods = new List<string>();
+
+                if (!string.IsNullOrWhiteSpace(user.Email))
+                {
+                    methods.Add(TwoFactorMethod.Email.ToString());
+                }
+
+                if (!string.IsNullOrWhiteSpace(user.PhoneNumber))
+                {
+                    methods.Add(TwoFactorMethod.Sms.ToString());
+                }
+
+                return new UserDto
+                {
+                    FirstName = user.FirstName ?? string.Empty,
+                    Email = user.Email ?? string.Empty,
+                    RequiresTwoFactor = true,
+                    Token = string.Empty,
+                    TwoFactorMethods = methods
+                };
+            }
+
             return new UserDto
             {
                 FirstName = user.FirstName ?? string.Empty,
-                Email = user.Email,
-                Token = await _tokenService.CreateToken(user)
+                Email = user.Email ?? string.Empty,
+                Token = await _tokenService.CreateToken(user),
+                RequiresTwoFactor = false,
+                TwoFactorMethods = Array.Empty<string>()
             };
         }
 

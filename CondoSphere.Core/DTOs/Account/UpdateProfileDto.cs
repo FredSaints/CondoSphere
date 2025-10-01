@@ -2,6 +2,9 @@
 
 namespace CondoSphere.Core.DTOs.Account
 {
+    /// <summary>
+    /// Update Profile DTO.
+    /// </summary>
     public class UpdateProfileDto
     {
         [Required]

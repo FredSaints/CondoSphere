@@ -9,6 +9,9 @@ using CoreUser = CondoSphere.Core.Entities.Users.User;
 
 namespace CondoSphere.Application.Services.Messages
 {
+    /// <summary>
+    /// Message Service.
+    /// </summary>
     public class MessageService : IMessageService
     {
         private readonly IUnitOfWork _unitOfWork;

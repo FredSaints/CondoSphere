@@ -2,6 +2,9 @@
 
 namespace CondoSphere.Core.DTOs.Occurrences
 {
+    /// <summary>
+    /// Occurrence DTO.
+    /// </summary>
     public class OccurrenceDto
     {
         public int Id { get; set; }

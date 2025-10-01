@@ -2,6 +2,9 @@
 
 namespace CondoSphere.Application.Services.Reports
 {
+    /// <summary>
+    /// I Report Service.
+    /// </summary>
     public interface IReportService
     {
         Task<FinancialStatementDto?> GenerateFinancialStatementAsync(int condominiumId, int year, int month, int companyId);

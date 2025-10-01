@@ -1,5 +1,8 @@
 ﻿namespace CondoSphere.Core.DTOs.Financials
 {
+    /// <summary>
+    /// Receipt DTO.
+    /// </summary>
     public class ReceiptDto
     {
         public int Id { get; set; }

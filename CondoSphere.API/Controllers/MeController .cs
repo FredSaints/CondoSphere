@@ -4,8 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 
 [ApiController]
 [Route("api/me")]
-[Authorize]
-public class MeController : ControllerBase
+[Authorize]public class MeController : ControllerBase
 {
     private readonly ICurrentUserService _current;  
     private readonly IUnitOfWork _uow;
@@ -17,8 +16,7 @@ public class MeController : ControllerBase
     }
 
     // devolve o condomínio “principal”/associado do utilizador atual
-    [HttpGet("condominium-id")]
-    public async Task<ActionResult<IdDto>> GetMyCondominiumId()
+    [HttpGet("condominium-id")]    public async Task<ActionResult<IdDto>> GetMyCondominiumId()
     {
         if (_current.UserId == null) return Unauthorized();
 

@@ -2,6 +2,9 @@
 
 namespace CondoSphere.Application.Interfaces
 {
+    /// <summary>
+    /// I Assembly Invite Repository.
+    /// </summary>
     public interface IAssemblyInviteRepository
     {
         Task AddRangeAsync(IEnumerable<AssemblyInvite> invites);

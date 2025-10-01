@@ -10,6 +10,9 @@ using AssemblyEntity = CondoSphere.Core.Entities.Assembly.Assembly;
 
 namespace CondoSphere.Application.Services.Assembly
 {
+    /// <summary>
+    /// Assembly Service.
+    /// </summary>
     public class AssemblyService : IAssemblyService
     {
         private readonly IUnitOfWork _uow;

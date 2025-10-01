@@ -7,6 +7,12 @@ using CoreUser = CondoSphere.Core.Entities.Users.User;
 namespace CondoSphere.Infrastructure.Repositories
 {
 
+    /// <summary>
+
+    /// Resident Repository.
+
+    /// </summary>
+
     public class ResidentRepository : IResidentRepository
     {
         private readonly CondominiumDbContext _condoCtx;

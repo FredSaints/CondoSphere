@@ -5,8 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace CondoSphere.Web.Controllers
 {
-    [Authorize]
-    public class MessagesController : Controller
+    [Authorize]    public class MessagesController : Controller
     {
         private readonly ApiClient _apiClient;
 
@@ -14,20 +13,22 @@ namespace CondoSphere.Web.Controllers
         {
             _apiClient = apiClient;
         }
-
-        public async Task<IActionResult> Index()
+/// <summary>
+/// Handles the Index action.
+/// </summary>
+public async Task<IActionResult> Index()
         {
             var inbox = await _apiClient.GetInboxAsync();
             return View(inbox);
-        }
-
-        public async Task<IActionResult> Sent()
+        }public async Task<IActionResult> Sent()
         {
             var sentMessages = await _apiClient.GetSentMessagesAsync();
             return View(sentMessages);
         }
-
-        public async Task<IActionResult> Compose(int? receiverId = null)
+/// <summary>
+/// Handles the Compose action.
+/// </summary>
+public async Task<IActionResult> Compose(int? receiverId = null)
         {
             var contacts = await _apiClient.GetContactsAsync();
             ViewBag.Contacts = contacts;
@@ -37,7 +38,10 @@ namespace CondoSphere.Web.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Compose(SendMessageDto dto)
+/// <summary>
+/// Handles the Compose action.
+/// </summary>
+public async Task<IActionResult> Compose(SendMessageDto dto)
         {
             if (!ModelState.IsValid)
             {
@@ -54,14 +58,15 @@ namespace CondoSphere.Web.Controllers
             }
 
             TempData["Error"] = "Failed to send message. Please try again.";
-            var contactsForError = await _apiClient.GetContactsAsync();
-            ViewBag.Contacts = contactsForError;
+            var contactsForError = await _apiClient.GetContactsAsync();   ViewBag.Contacts = contactsForError;
             return View(dto);
         }
-
-        public async Task<IActionResult> View(int id)
+/// <summary>
+/// Handles the View action.
+/// </summary>
+public async Task<IActionResult> View(int id)
         {
-            var message = await _apiClient.GetMessageAsync(id);
+            var message =await _apiClient.GetMessageAsync(id);
             if (message == null)
             {
                 TempData["Error"] = "Message not found.";
@@ -70,8 +75,10 @@ namespace CondoSphere.Web.Controllers
 
             return View(message);
         }
-
-        public async Task<IActionResult> Reply(int id)
+/// <summary>
+/// Handles the Reply action.
+/// </summary>
+public async Task<IActionResult> Reply(int id)
         {
             var originalMessage = await _apiClient.GetMessageAsync(id);
             if (originalMessage == null)
@@ -95,7 +102,10 @@ namespace CondoSphere.Web.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> MarkAsRead(int id)
+/// <summary>
+/// Handles the Mark As Read action.
+/// </summary>
+public async Task<IActionResult> MarkAsRead(int id)
         {
             await _apiClient.MarkMessageAsReadAsync(id);
             return Json(new { success = true });

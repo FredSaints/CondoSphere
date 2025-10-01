@@ -2,6 +2,9 @@
 
 namespace CondoSphere.Core.DTOs.Condominiums
 {
+    /// <summary>
+    /// Create Document DTO.
+    /// </summary>
     public class CreateDocumentDto
     {
         [Required]

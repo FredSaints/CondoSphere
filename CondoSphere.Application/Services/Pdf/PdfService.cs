@@ -2,6 +2,9 @@
 
 namespace CondoSphere.Application.Services.Pdf
 {
+    /// <summary>
+    /// Pdf Service.
+    /// </summary>
     public class PdfService : IPdfService
     {
         public async Task<byte[]> GenerateReceiptPdfAsync(ReceiptDto receiptDto)

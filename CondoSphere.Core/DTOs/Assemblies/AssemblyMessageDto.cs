@@ -2,6 +2,9 @@
 
 namespace CondoSphere.Core.DTOs.Assemblies
 {
+    /// <summary>
+    /// Assembly Message DTO.
+    /// </summary>
     public class AssemblyMessageDto
     {
         public int Id { get; set; }

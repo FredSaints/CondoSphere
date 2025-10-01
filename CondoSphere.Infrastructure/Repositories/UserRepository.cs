@@ -8,6 +8,9 @@ using System.Threading.Tasks;
 
 namespace CondoSphere.Infrastructure.Repositories
 {
+    /// <summary>
+    /// User Repository.
+    /// </summary>
     public class UserRepository : IUserRepository
     {
         private readonly UserManagementDbContext _context;

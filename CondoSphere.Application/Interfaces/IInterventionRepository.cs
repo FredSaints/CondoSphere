@@ -2,6 +2,9 @@
 
 namespace CondoSphere.Application.Interfaces
 {
+    /// <summary>
+    /// I Intervention Repository.
+    /// </summary>
     public interface IInterventionRepository
     {
         Task AddAsync(Intervention intervention);

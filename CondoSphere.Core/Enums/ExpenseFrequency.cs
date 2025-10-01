@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace CondoSphere.Core.Enums
 {
+    /// <summary>
+    /// Expense Frequency.
+    /// </summary>
     public enum ExpenseFrequency
     {
         OneTime = 0,

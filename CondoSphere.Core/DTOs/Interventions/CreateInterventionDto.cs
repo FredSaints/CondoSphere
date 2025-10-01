@@ -3,6 +3,9 @@ using System.ComponentModel.DataAnnotations;
 
 namespace CondoSphere.Core.DTOs.Interventions
 {
+    /// <summary>
+    /// Create Intervention DTO.
+    /// </summary>
     public class CreateInterventionDto
     {
         [Required]

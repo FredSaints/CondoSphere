@@ -8,8 +8,7 @@ namespace CondoSphere.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize] // Ensures only logged-in users can upload
-    public class UploadController : ControllerBase
+    [Authorize] // Ensures only logged-in users can upload    public class UploadController : ControllerBase
     {
         private readonly IConfiguration _configuration;
         private readonly IWebHostEnvironment _env;
@@ -20,8 +19,7 @@ namespace CondoSphere.API.Controllers
             _env = env;
         }
 
-        [HttpPost("profile-picture")]
-        public async Task<IActionResult> UploadProfilePicture(IFormFile file)
+        [HttpPost("profile-picture")]        public async Task<IActionResult> UploadProfilePicture(IFormFile file)
         {
             if (file == null || file.Length == 0)
             {

@@ -2,6 +2,9 @@
 
 namespace CondoSphere.Core.DTOs.Interventions
 {
+    /// <summary>
+    /// Intervention DTO.
+    /// </summary>
     public class InterventionDto
     {
         public int Id { get; set; }

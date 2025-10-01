@@ -2,6 +2,9 @@
 
 namespace CondoSphere.Application.Interfaces
 {
+    /// <summary>
+    /// I Condominium Repository.
+    /// </summary>
     public interface ICondominiumRepository
     {
         // CRUD

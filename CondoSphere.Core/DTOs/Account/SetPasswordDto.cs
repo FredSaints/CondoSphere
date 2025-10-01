@@ -2,6 +2,9 @@
 
 namespace CondoSphere.Core.DTOs.Account
 {
+    /// <summary>
+    /// Set Password DTO.
+    /// </summary>
     public class SetPasswordDto
     {
         [Required]

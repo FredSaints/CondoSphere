@@ -5,6 +5,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CondoSphere.Infrastructure.Repositories
 {
+    /// <summary>
+    /// Condominium Repository.
+    /// </summary>
     public class CondominiumRepository : ICondominiumRepository
     {
         private readonly CondominiumDbContext _context;

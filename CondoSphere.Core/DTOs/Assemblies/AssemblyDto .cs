@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace CondoSphere.Core.DTOs.Assemblies
 {
+    /// <summary>
+    /// Assembly DTO.
+    /// </summary>
     public class AssemblyDto
     {
         public int Id { get; set; }

@@ -8,8 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace CondoSphere.Web.Controllers
 {
     [Authorize(Roles = RoleConstants.Employee)]
-    [Route("employee")]
-    public class EmployeeController : Controller
+    [Route("employee")]    public class EmployeeController : Controller
     {
         private readonly ApiClient _apiClient;
 
@@ -18,15 +17,12 @@ namespace CondoSphere.Web.Controllers
             _apiClient = apiClient;
         }
 
-        [HttpGet("")]
-        public async Task<IActionResult> Index()
+        [HttpGet("")]        public async Task<IActionResult> Index()
         {
-            var interventions = await _apiClient.GetMyInterventionsAsync();
-            return View(interventions);
+            var interventions = await _apiClient.GetMyInterventionsAsync();      return View(interventions);
         }
 
-        [HttpGet("{interventionId}")]
-        public async Task<IActionResult> Details(int interventionId)
+        [HttpGet("{interventionId}")]        public async Task<IActionResult> Details(int interventionId)
         {
             var intervention = await _apiClient.GetInterventionDetailsAsync(interventionId);
             if (intervention == null) return NotFound();
@@ -45,15 +41,19 @@ namespace CondoSphere.Web.Controllers
         }
 
         [HttpGet("notifications")]
-        public async Task<IActionResult> AllNotifications()
-        {
-            var notifications = await _apiClient.GetAllMyNotificationsAsync();
-            return View(notifications);
+/// <summary>
+/// Handles the All Notifications action.
+/// </summary>
+public async Task<IActionResult> AllNotifications()
+        {            var notifications = await _apiClient.GetAllMyNotificationsAsync();        return View(notifications);
         }
 
         [HttpPost("{interventionId}")] // This route now correctly handles the POST from the form
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> UpdateStatus(int interventionId, [Bind(Prefix = "StatusUpdate")] UpdateInterventionStatusDto dto)
+/// <summary>
+/// Handles the Update Status action.
+/// </summary>
+public async Task<IActionResult> UpdateStatus(int interventionId, [Bind(Prefix = "StatusUpdate")] UpdateInterventionStatusDto dto)
         {
             if (!ModelState.IsValid)
             {

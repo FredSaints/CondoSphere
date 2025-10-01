@@ -12,6 +12,9 @@ using CoreUser = CondoSphere.Core.Entities.Users.User;
 
 namespace CondoSphere.Application.Services.Occurrence
 {
+    /// <summary>
+    /// Occurrence Service.
+    /// </summary>
     public class OccurrenceService : IOccurrenceService
     {
         private readonly IUnitOfWork _unitOfWork;

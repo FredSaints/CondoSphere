@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace CondoSphere.Infrastructure.Repositories
 {
+    /// <summary>
+    /// Document Repository.
+    /// </summary>
     public class DocumentRepository : IDocumentRepository
     {
         private readonly CondominiumDbContext _context;

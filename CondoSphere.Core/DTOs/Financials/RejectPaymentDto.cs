@@ -2,6 +2,9 @@
 
 namespace CondoSphere.Core.DTOs.Financials
 {
+    /// <summary>
+    /// Reject Payment DTO.
+    /// </summary>
     public class RejectPaymentDto
     {
         [Required]

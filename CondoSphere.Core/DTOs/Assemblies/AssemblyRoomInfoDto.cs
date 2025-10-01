@@ -1,5 +1,8 @@
 ﻿namespace CondoSphere.Core.DTOs.Assemblies
 {
+    /// <summary>
+    /// Assembly Room Info DTO.
+    /// </summary>
     public class AssemblyRoomInfoDto
     {
         public int AssemblyId { get; set; }

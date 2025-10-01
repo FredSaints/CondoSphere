@@ -8,6 +8,9 @@ using CoreUser = CondoSphere.Core.Entities.Users.User;
 
 namespace CondoSphere.Application.Services.Token
 {
+    /// <summary>
+    /// Token Service.
+    /// </summary>
     public class TokenService : ITokenService
     {
         private readonly IConfiguration _config;
@@ -24,17 +27,15 @@ namespace CondoSphere.Application.Services.Token
         public async Task<string> CreateToken(CoreUser user)
         {
             var claims = new List<Claim>
-            {
-                new Claim(JwtRegisteredClaimNames.NameId, user.Id.ToString()),
-                new Claim(JwtRegisteredClaimNames.Email, user.Email),
-                
-                new Claim(ClaimTypes.Name, user.UserName),
-                new Claim(ClaimTypes.GivenName, user.FirstName ?? string.Empty),
-                new Claim(ClaimTypes.Surname, user.LastName ?? string.Empty),
-
-                new Claim("companyId", user.CompanyId.ToString() ?? string.Empty),
-                new Claim("profile_picture", user.ProfilePictureUrl ?? string.Empty)
-            };
+{
+    new Claim(JwtRegisteredClaimNames.NameId, user.Id.ToString()),
+    new Claim(JwtRegisteredClaimNames.Email, user.Email ?? string.Empty),
+    new Claim(ClaimTypes.Name, user.UserName ?? string.Empty),
+    new Claim("firstName", user.FirstName ?? string.Empty),      
+    new Claim("lastName", user.LastName ?? string.Empty),          
+    new Claim("companyId", user.CompanyId?.ToString() ?? string.Empty),
+    new Claim("profile_picture", user.ProfilePictureUrl ?? string.Empty)
+};
 
             if (!string.IsNullOrWhiteSpace(user.PhoneNumber))
                 claims.Add(new Claim(ClaimTypes.MobilePhone, user.PhoneNumber));

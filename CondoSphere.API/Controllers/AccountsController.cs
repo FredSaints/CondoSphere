@@ -11,8 +11,7 @@ using CoreUser = CondoSphere.Core.Entities.Users.User;
 namespace CondoSphere.API.Controllers
 {
     [Route("api/[controller]")]
-    [ApiController]
-    public class AccountsController : ControllerBase
+    [ApiController]    public class AccountsController : ControllerBase
     {
 
         //todo este user manager e para sair daqui e encapsolar no user service
@@ -26,7 +25,7 @@ namespace CondoSphere.API.Controllers
         }
 
         [HttpGet("company-users")]
-        [Authorize(Roles = $"{RoleConstants.CompanyAdmin},{RoleConstants.CondoManager}")]
+        [Authorize(Roles = $"{RoleConstants.CompanyAdmin},{RoleConstants.CondoManager}")]        
         public async Task<IActionResult> GetCompanyUsers()
         {
             var companyId = _currentUserService.CompanyId;
@@ -40,7 +39,7 @@ namespace CondoSphere.API.Controllers
             return Ok(users);
         }
 
-        [HttpPost("register-admin")]
+        [HttpPost("register-admin")]        
         public async Task<IActionResult> RegisterCompanyAdmin([FromBody] RegisterDto registerDto)
         {
             if (!ModelState.IsValid)
@@ -63,7 +62,7 @@ namespace CondoSphere.API.Controllers
             return BadRequest(ModelState);
         }
 
-        [HttpPost("login")]
+        [HttpPost("login")]        
         public async Task<ActionResult<UserDto>> Login([FromBody] LoginDto loginDto)
         {
             if (!ModelState.IsValid)
@@ -85,15 +84,12 @@ namespace CondoSphere.API.Controllers
             var userDto = await _userService.LoginAsync(loginDto);
 
             if (userDto == null)
-            {
-                return Unauthorized(new { Message = "Invalid email or password." });
-            }
-
-            return Ok(userDto);
+            {    return Unauthorized(new { Message = "Invalid email or password." });
+            }     return Ok(userDto);
         }
 
         [HttpPost("IsEmailConfirmed")]
-        [AllowAnonymous]
+        [AllowAnonymous]
         public async Task<IActionResult> IsEmailConfirmed([FromBody] EmailDto dto)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
@@ -102,13 +98,13 @@ namespace CondoSphere.API.Controllers
             if (user == null)
                 return Ok(new { confirmed = false }); // não revelar se existe ou não
 
-            var confirmed = await _userService.IsEmailConfirmedAsync(user);
+            var confirmed =await _userService.IsEmailConfirmedAsync(user);
             return Ok(new { confirmed });
         }
 
         [HttpPost("register-manager")]
-        [Authorize(Roles = RoleConstants.CompanyAdmin)]
-        public async Task<IActionResult> RegisterManager([FromBody] RegisterManagerDto registerDto)
+        [Authorize(Roles = RoleConstants.CompanyAdmin)]
+public async Task<IActionResult> RegisterManager([FromBody] RegisterManagerDto registerDto)
         {
             if (!ModelState.IsValid)
             {
@@ -129,8 +125,7 @@ namespace CondoSphere.API.Controllers
             }
 
             foreach (var error in result.Errors)
-            {
-                var errorKey = !string.IsNullOrEmpty(error.Code) ? error.Code : "RegistrationError";
+            {   var errorKey = !string.IsNullOrEmpty(error.Code) ? error.Code : "RegistrationError";
                 ModelState.AddModelError(errorKey, error.Description);
             }
             return BadRequest(ModelState);
@@ -138,7 +133,7 @@ namespace CondoSphere.API.Controllers
 
         [HttpGet("confirm-email")]
         [AllowAnonymous]
-        public async Task<IActionResult> ConfirmEmail(int userId, string token)
+public async Task<IActionResult> ConfirmEmail(int userId, string token)
         {
             var result = await _userService.ConfirmEmailAsync(userId, token);
             if (result.Succeeded)
@@ -147,33 +142,30 @@ namespace CondoSphere.API.Controllers
             }
             if (result.Errors.Any(e => e.Code == "NotFound"))
             {
-                return NotFound("User not found.");
-            }
+                return NotFound("User not found.");    }
             return BadRequest("Email could not be confirmed. The link may have expired.");
         }
 
         [HttpPost("set-password")]
-        [AllowAnonymous]
-        public async Task<IActionResult> SetPassword([FromBody] SetPasswordDto setPasswordDto)
+        [AllowAnonymous]        public async Task<IActionResult> SetPassword([FromBody] SetPasswordDto setPasswordDto)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
             var result = await _userService.SetPasswordAsync(setPasswordDto);
             if (result.Succeeded)
             {
-                return Ok(new { message = "Your password has been set successfully. You can now log in." });
-            }
+                return Ok(new { message = "Your password has been set successfully. You can now log in." });      }
             return BadRequest(result.Errors);
         }
 
         [HttpGet("managers")]
         [Authorize(Roles = RoleConstants.CompanyAdmin)]
-        public async Task<IActionResult> GetAvailableManagers()
+
+public async Task<IActionResult> GetAvailableManagers()
         {
             var companyId = _currentUserService.CompanyId;
             if (companyId == null)
-            {
-                return Unauthorized("Company information is missing from the token.");
+            {               return Unauthorized("Company information is missing from the token.");
             }
 
             var managers = await _userService.GetAvailableManagersAsync(companyId.Value);
@@ -182,7 +174,8 @@ namespace CondoSphere.API.Controllers
 
         [HttpGet("available-residents")]
         [Authorize(Roles = RoleConstants.CondoManager)]
-        public async Task<IActionResult> GetAvailableResidents()
+
+public async Task<IActionResult> GetAvailableResidents()
         {
             var companyId = _currentUserService.CompanyId;
             if (companyId == null) return Unauthorized();
@@ -193,20 +186,20 @@ namespace CondoSphere.API.Controllers
 
         [HttpPost("users/{userId}/deactivate")]
         [Authorize(Roles = RoleConstants.CompanyAdmin)]
-        public async Task<IActionResult> DeactivateUser(int userId)
+
+public async Task<IActionResult> DeactivateUser(int userId)
         {
             var adminCompanyId = _currentUserService.CompanyId;
             if (adminCompanyId == null) return Unauthorized();
 
             var success = await _userService.DeactivateUserAsync(userId, adminCompanyId.Value);
-            if (success) return NoContent();
-
-            return BadRequest("Failed to deactivate user.");
+            if (success) return NoContent();  return BadRequest("Failed to deactivate user.");
         }
 
         [HttpPost("users/{userId}/activate")]
         [Authorize(Roles = RoleConstants.CompanyAdmin)]
-        public async Task<IActionResult> ActivateUser(int userId)
+
+public async Task<IActionResult> ActivateUser(int userId)
         {
             var adminCompanyId = _currentUserService.CompanyId;
             if (adminCompanyId == null) return Unauthorized();
@@ -219,7 +212,8 @@ namespace CondoSphere.API.Controllers
 
         [HttpPost("forgot-password")]
         [AllowAnonymous]
-        public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordDto dto)
+
+public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordDto dto)
         {
             if (!ModelState.IsValid)
             {
@@ -233,9 +227,9 @@ namespace CondoSphere.API.Controllers
 
         [HttpGet("employees")]
         [Authorize(Roles = RoleConstants.CompanyAdmin + "," + RoleConstants.CondoManager)]
-        public async Task<IActionResult> GetAvailableEmployees()
-        {
-            var companyId = _currentUserService.CompanyId;
+
+public async Task<IActionResult> GetAvailableEmployees()
+        {        var companyId = _currentUserService.CompanyId;
             if (companyId == null)
             {
                 return Unauthorized("Company information is missing from the token.");
@@ -245,9 +239,10 @@ namespace CondoSphere.API.Controllers
             return Ok(employees);
         }
 
-        [HttpPost("register-employee")]
+        [HttpPost("register-employee")]  
         [Authorize(Roles = RoleConstants.CompanyAdmin)]
-        public async Task<IActionResult> RegisterEmployee([FromBody] RegisterManagerDto registerDto)
+
+public async Task<IActionResult> RegisterEmployee([FromBody] RegisterManagerDto registerDto)
         {
             if (!ModelState.IsValid)
             {
@@ -258,9 +253,7 @@ namespace CondoSphere.API.Controllers
             if (companyId == null)
             {
                 return Unauthorized("Company information is missing from the token.");
-            }
-
-            var result = await _userService.RegisterEmployeeAsync(registerDto, companyId.Value);
+            }      var result = await _userService.RegisterEmployeeAsync(registerDto, companyId.Value);
 
             if (result.Succeeded)
             {
@@ -272,9 +265,9 @@ namespace CondoSphere.API.Controllers
 
         [HttpPost("ResendConfirmationEmail")]
         [AllowAnonymous]
-        public async Task<IActionResult> ResendConfirmationEmail([FromBody] EmailDto dto)
-        {
-            if (!ModelState.IsValid) return BadRequest(ModelState);
+
+public async Task<IActionResult> ResendConfirmationEmail([FromBody] EmailDto dto)
+        {if (!ModelState.IsValid) return BadRequest(ModelState);
 
             var result = await _userService.ResendConfirmationEmailAsync(dto);
             if (result.Succeeded)
@@ -285,22 +278,24 @@ namespace CondoSphere.API.Controllers
 
         [HttpPost("2fa/verify")]
         [AllowAnonymous]
-        public async Task<IActionResult> VerifyTwoFactorCode([FromBody] VerifyTwoFactorCodeDto dto)
+
+public async Task<IActionResult> VerifyTwoFactorCode([FromBody] VerifyTwoFactorCodeDto dto)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            var result = await _userService.VerifyCode2SVAsync(dto.Email, dto.Method, dto.Code);
+            var result = await _userService.VerifyCode2SVAsync(dto.Email, dto.Method, dto.Code);          
             if (!result.Succeeded)
             {
                 return BadRequest(new { message = result.Error ?? "Invalid two-factor code." });
             }
 
-            return Ok();
+            return Ok(new { message ="Two-factor code verified.", token = result.Token });
         }
 
         [HttpPost("2fa/switch")]
         [Authorize]
-        public async Task<IActionResult> SwitchTwoFactor([FromBody] ToggleTwoFactorDto Dto)
+
+public async Task<IActionResult> SwitchTwoFactor([FromBody] ToggleTwoFactorDto Dto)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
@@ -315,7 +310,8 @@ namespace CondoSphere.API.Controllers
 
         [HttpPost("2fa/send-code")]
         [AllowAnonymous]
-        public async Task<IActionResult> SendTwoFactorCode([FromBody] SendTwoFactorCodeDto dto)
+
+public async Task<IActionResult> SendTwoFactorCode([FromBody] SendTwoFactorCodeDto dto)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
@@ -330,7 +326,7 @@ namespace CondoSphere.API.Controllers
 
         [HttpPost("2fa/IsEnable")]
         [AllowAnonymous]
-        public async Task<IActionResult> IsTwoFactorEnabled([FromBody] EmailDto dto)
+public async Task<IActionResult> IsTwoFactorEnabled([FromBody] EmailDto dto)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 

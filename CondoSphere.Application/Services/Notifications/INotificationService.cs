@@ -6,6 +6,9 @@ using CoreUnitQuota = CondoSphere.Core.Entities.Financials.UnitQuota;
 
 namespace CondoSphere.Application.Services.Notifications
 {
+    /// <summary>
+    /// I Notification Service.
+    /// </summary>
     public interface INotificationService
     {
         Task<bool> SendAnnouncementToCondominiumAsync(int condominiumId, int companyId, string subject, string message, string sentByUserName);

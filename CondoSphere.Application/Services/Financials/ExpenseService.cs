@@ -9,6 +9,9 @@ using CoreExpense = CondoSphere.Core.Entities.Financials.Expense;
 
 namespace CondoSphere.Application.Services.Financials
 {
+    /// <summary>
+    /// Expense Service.
+    /// </summary>
     public class ExpenseService : IExpenseService
     {
         private readonly IUnitOfWork _unitOfWork;

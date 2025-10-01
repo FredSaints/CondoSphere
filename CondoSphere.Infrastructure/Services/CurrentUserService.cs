@@ -6,6 +6,9 @@ using System.Security.Claims;
 
 namespace CondoSphere.Infrastructure.Services
 {
+    /// <summary>
+    /// Current User Service.
+    /// </summary>
     public class CurrentUserService : ICurrentUserService
     {
         private readonly IHttpContextAccessor _httpContextAccessor;

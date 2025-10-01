@@ -4,8 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 
 namespace CondoSphere.Web.Controllers
-{
-    public class HomeController : Controller
+{    public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
 
@@ -13,8 +12,10 @@ namespace CondoSphere.Web.Controllers
         {
             _logger = logger;
         }
-
-        public IActionResult Index()
+/// <summary>
+/// Handles the Index action.
+/// </summary>
+public IActionResult Index()
         {
             var viewModel = new HomeViewModel
             {
@@ -39,17 +40,17 @@ namespace CondoSphere.Web.Controllers
                 Personas = new List<PersonaViewModel>
                 {
                     new() {
-                        ImageUrl = "/images/home/manager.png",
+                        ImageUrl = "/images/Home/manager.png",
                         RoleTitle = "For Property Managers",
                         Benefits = new List<string> { "Centralize Operations", "Reduce Admin Work", "Increase Resident Satisfaction" }
                     },
                     new() {
-                        ImageUrl = "/images/home/resident.png",
+                        ImageUrl = "/images/Home/resident.png",
                         RoleTitle = "For Residents",
                         Benefits = new List<string> { "Pay Fees Online", "Report Issues Instantly", "Stay Connected" }
                     },
                     new() {
-                        ImageUrl = "/images/home/board-member.png",
+                        ImageUrl = "/images/Home/board-member.png",
                         RoleTitle = "For Board Members",
                         Benefits = new List<string> { "Access Real-Time Reports", "Improve Transparency", "Track Maintenance" }
                     }
@@ -62,28 +63,24 @@ namespace CondoSphere.Web.Controllers
                         AuthorTitle = "Property Manager, Urban Living Inc."
                     },
                     new() {
-                        Quote = "As a resident, I love being able to pay my fees online and report maintenance issues from my phone. It’s incredibly convenient and transparent.",
+                        Quote = "As a resident, I love being able to pay my fees online and report maintenance issues from my phone. Its incredibly convenient and transparent.",
                         AuthorName = "John Smith",
                         AuthorTitle = "Resident, Sunset Gardens"
                     },
                     new() {
                         Quote = "The financial reporting tools are a game-changer for our board meetings. We have a clear, real-time overview of our property's financial health at all times.",
                         AuthorName = "Mary Johnson",
-                        AuthorTitle = "Board Member, The Summit Condominiums"
-                    }
+                        AuthorTitle = "Board Member, The Summit Condominiums"    }
                 }
             };
 
             return View(viewModel);
-        }
-
-        public IActionResult Privacy()
+        }  public IActionResult Privacy()
         {
             return View();
         }
 
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
+        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]        public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }

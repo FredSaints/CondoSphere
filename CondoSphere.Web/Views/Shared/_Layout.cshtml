@@ -152,12 +152,12 @@
                                     </a>
                                 </li>
                             }
-                            <li class="nav-item">
+@*                             <li class="nav-item">
                                 <a class="btn btn-primary nav-btn"
                                    href="https://drive.google.com/uc?export=download&id=FILE_ID">
                                     <i class="bi bi-download me-1"></i> Download our mobile app
                                 </a>
-                            </li>
+                            </li> *@
                         }
                     </ul>
 
@@ -243,9 +243,10 @@
     <script src="~/lib/microsoft/signalr/dist/browser/signalr.min.js"></script>
     @if (User.Identity?.IsAuthenticated == true)
     {
+        var accessToken = Context?.Session?.GetString("AccessToken") ?? User.FindFirstValue("access_token") ?? string.Empty;
         <script>
             // Define global variables that the notifications script can reliably access.
-            window.jwtToken = "@User.FindFirstValue("access_token")";
+            window.jwtToken = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(accessToken));
             window.apiBaseUrl = "@Configuration["ApiSettings:BaseUrl"]";
         </script>
     }

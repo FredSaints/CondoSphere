@@ -11,8 +11,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 namespace CondoSphere.Web.Controllers
 {
     [Authorize(Roles = RoleConstants.CondoResident)]
-    [Route("portal")]
-    public class PortalController : Controller
+    [Route("portal")]    public class PortalController : Controller
     {
         private readonly ApiClient _apiClient;
         private readonly IConfiguration _configuration;
@@ -23,8 +22,7 @@ namespace CondoSphere.Web.Controllers
             _configuration = configuration;
         }
 
-        [HttpGet("")]
-        public async Task<IActionResult> Index()
+        [HttpGet("")]        public async Task<IActionResult> Index()
         {
             var occurrencesTask = _apiClient.GetMyOccurrencesAsync();
             var unitsTask = _apiClient.GetMyUnitsAsync();
@@ -39,13 +37,10 @@ namespace CondoSphere.Web.Controllers
                 MyUnits = await unitsTask ?? new List<UnitDto>(),
                 MyQuotas = await quotasTask ?? new List<UnitQuotaDto>(),
                 MyDocuments = await documentsTask ?? new List<DocumentDto>()
-            };
-
-            return View(viewModel);
+            };         return View(viewModel);
         }
 
-        [HttpGet("create-occurrence")]
-        public async Task<IActionResult> CreateOccurrence()
+        [HttpGet("create-occurrence")]        public async Task<IActionResult> CreateOccurrence()
         {
             var myUnits = await _apiClient.GetMyUnitsAsync();
             if (!myUnits.Any())
@@ -59,8 +54,7 @@ namespace CondoSphere.Web.Controllers
             {
                 AvailableUnits = myUnits.Select(u => new SelectListItem
                 {
-                    Value = u.Id.ToString(),
-                    Text = u.Identifier
+                    Value = u.Id.ToString(), Text = u.Identifier
                 })
             };
 
@@ -69,7 +63,10 @@ namespace CondoSphere.Web.Controllers
 
         [HttpPost("create-occurrence")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateOccurrence(CreateOccurrenceViewModel model, IFormFile? imageFile)
+/// <summary>
+/// Handles the Create Occurrence action.
+/// </summary>
+public async Task<IActionResult> CreateOccurrence(CreateOccurrenceViewModel model, IFormFile? imageFile)
         {
             if (!ModelState.IsValid)
             {
@@ -108,18 +105,18 @@ namespace CondoSphere.Web.Controllers
         }
 
         [HttpGet("occurrences/{id}")]
-        public async Task<IActionResult> Details(int id)
+/// <summary>
+/// Handles the Details action.
+/// </summary>
+public async Task<IActionResult> Details(int id)
         {
-            var occurrence = await _apiClient.GetOccurrenceDetailsAsync(id);
-            if (occurrence == null)
+            var occurrence = await _apiClient.GetOccurrenceDetailsAsync(id);         if (occurrence == null)
             {
                 return NotFound();
-            }
-            return View(occurrence);
+            }     return View(occurrence);
         }
 
-        [HttpGet("quotas/{id}/details")]
-        public async Task<IActionResult> QuotaDetails(int id)
+        [HttpGet("quotas/{id}/details")]       public async Task<IActionResult> QuotaDetails(int id)
         {
             var breakdown = await _apiClient.GetQuotaBreakdownAsync(id);
             if (breakdown == null)
@@ -131,7 +128,10 @@ namespace CondoSphere.Web.Controllers
 
         [HttpPost("quotas/{id}/details")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> SubmitProof(int id, IFormFile proofFile)
+/// <summary>
+/// Handles the Submit Proof action.
+/// </summary>
+public async Task<IActionResult> SubmitProof(int id, IFormFile proofFile)
         {
             if (proofFile == null || proofFile.Length == 0)
             {
@@ -145,8 +145,7 @@ namespace CondoSphere.Web.Controllers
             {
                 TempData["SuccessMessage"] = "Proof of payment submitted successfully. Awaiting manager confirmation.";
             }
-            else
-            {
+            else          {
                 TempData["ErrorMessage"] = "There was an error submitting your proof of payment.";
             }
 
@@ -155,7 +154,10 @@ namespace CondoSphere.Web.Controllers
 
         [HttpPost("quotas/{id}/create-session")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateStripeSession(int id)
+/// <summary>
+/// Handles the Create Stripe Session action.
+/// </summary>
+public async Task<IActionResult> CreateStripeSession(int id)
         {
             var sessionId = await _apiClient.CreateStripeCheckoutSessionAsync(id);
             if (sessionId == null)
@@ -166,7 +168,10 @@ namespace CondoSphere.Web.Controllers
         }
 
         [HttpGet("quotas/{id}/pay")]
-        public async Task<IActionResult> PayQuota(int id)
+/// <summary>
+/// Handles the Pay Quota action.
+/// </summary>
+public async Task<IActionResult> PayQuota(int id)
         {
             var breakdown = await _apiClient.GetQuotaBreakdownAsync(id);
             if (breakdown == null)
@@ -179,16 +184,20 @@ namespace CondoSphere.Web.Controllers
         }
 
         [HttpGet("payment-success")]
-        public async Task<IActionResult> PaymentSuccess(int quotaId)
+/// <summary>
+/// Handles the Payment Success action.
+/// </summary>
+public async Task<IActionResult> PaymentSuccess(int quotaId)
         {
-            if (quotaId <= 0)
-            {
+            if (quotaId <= 0)       {
                 TempData["ErrorMessage"] = "An invalid payment session was detected.";
-                return RedirectToAction("Index");
-            }
+                return RedirectToAction("Index");          }
             var success = await _apiClient.MarkQuotaAsPaidAsync(quotaId);
 
-            if (success)
+            if (suc        /// <summary>
+        /// Handles the View Document action.
+        /// </summary>
+cess)
             {
                 TempData["SuccessMessage"] = "Your payment was successful and your account has been updated!";
             }
@@ -201,17 +210,22 @@ namespace CondoSphere.Web.Controllers
         }
 
         [HttpGet("payment-cancel")]
-        public IActionResult PaymentCancel()
+/// <summary>
+/// Handles the Payment Cancel action.
+/// </summary>
+public IActionResult PaymentCancel()
         {
             TempData["ErrorMessage"] = "Your payment was cancelled.";
             return RedirectToAction("Index");
         }
 
         [HttpGet("receipts/{id}")]
-        public async Task<IActionResult> Receipt(int id)
+/// <summary>
+/// Handles the Receipt action.
+/// </summary>
+public async Task<IActionResult> Receipt(int id)
         {
-            var receipt = await _apiClient.GetReceiptDetailsForResidentAsync(id);
-            if (receipt == null)
+            var receipt = await _apiClient.GetReceiptDetailsForResidentAsync(id);         if (receipt == null)
             {
                 return NotFound();
             }
@@ -219,14 +233,15 @@ namespace CondoSphere.Web.Controllers
         }
 
         [HttpGet("documents/{documentId}/view")]
-        public async Task<IActionResult> ViewDocument(int documentId)
-        {
-            var response = await _apiClient.DownloadDocumentAsync(documentId);
+/// <summary>
+/// Handles the View Document action.
+/// </summary>
+public async Task<IActionResult> ViewDocument(int documentId)
+        {  var response = await _apiClient.DownloadDocumentAsync(documentId);
             if (response.IsSuccessStatusCode)
             {
                 var stream = await response.Content.ReadAsStreamAsync();
-                var contentType = response.Content.Headers.ContentType?.ToString() ?? "application/octet-stream";
-                var fileName = response.Content.Headers.ContentDisposition?.FileName?.Trim('"') ?? "document";
+                var contentType = response.Content.Headers.ContentType?.ToString() ?? "application/octet-stream";                var fileName = response.Content.Headers.ContentDisposition?.FileName?.Trim('"') ?? "document";
 
                 Response.Headers["Content-Disposition"] = new System.Net.Mime.ContentDisposition
                 {
@@ -240,7 +255,10 @@ namespace CondoSphere.Web.Controllers
         }
 
         [HttpGet("documents/{documentId}/download")]
-        public async Task<IActionResult> DownloadDocument(int documentId)
+/// <summary>
+/// Handles the Download Document action.
+/// </summary>
+public async Task<IActionResult> DownloadDocument(int documentId)
         {
             var response = await _apiClient.DownloadDocumentAsync(documentId);
             if (response.IsSuccessStatusCode)
@@ -254,7 +272,10 @@ namespace CondoSphere.Web.Controllers
         }
 
         [HttpGet("~/portal/notifications")]
-        public async Task<IActionResult> AllNotifications()
+/// <summary>
+/// Handles the All Notifications action.
+/// </summary>
+public async Task<IActionResult> AllNotifications()
         {
             var notifications = await _apiClient.GetAllMyNotificationsAsync();
             return View(notifications);

@@ -2,6 +2,9 @@
 
 namespace CondoSphere.Core.DTOs.Account
 {
+    /// <summary>
+    /// Register Resident DTO.
+    /// </summary>
     public class RegisterResidentDto
     {
         [Required]

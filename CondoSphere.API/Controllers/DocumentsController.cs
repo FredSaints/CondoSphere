@@ -9,8 +9,7 @@ namespace CondoSphere.API.Controllers
 {
     [ApiController]
     [Route("api/documents")]
-    [Authorize]
-    public class DocumentsController : ControllerBase
+    [Authorize]    public class DocumentsController : ControllerBase
     {
         private readonly IDocumentService _documentService;
         private readonly ICurrentUserService _currentUserService;
@@ -22,8 +21,7 @@ namespace CondoSphere.API.Controllers
         }
 
         [HttpPost("~/api/condominiums/{condominiumId}/documents")]
-        [Authorize(Roles = RoleConstants.CondoManager + "," + RoleConstants.CompanyAdmin)]
-        public async Task<ActionResult<DocumentDto>> UploadDocument(int condominiumId, [FromForm] CreateDocumentDto dto, IFormFile file)
+        [Authorize(Roles = RoleConstants.CondoManager + "," + RoleConstants.CompanyAdmin)]        public async Task<ActionResult<DocumentDto>> UploadDocument(int condominiumId, [FromForm] CreateDocumentDto dto, IFormFile file)
         {
             if (file == null || file.Length == 0)
                 return BadRequest(new { message = "No file uploaded." });
@@ -65,15 +63,11 @@ namespace CondoSphere.API.Controllers
         }
 
         // GET /api/documents/{documentId}
-        [HttpGet("{documentId}")]
-        public IActionResult GetDocument(int documentId)
+        [HttpGet("{documentId}")]        public IActionResult GetDocument(int documentId)
         {
             return Ok(new { message = $"Details for document {documentId} would be here." });
-        }
-
-        // GET /api/documents/{documentId}/download
-        [HttpGet("{documentId}/download")]
-        public async Task<IActionResult> DownloadDocument(int documentId)
+        }   // GET /api/documents/{documentId}/download
+        [HttpGet("{documentId}/download")]        public async Task<IActionResult> DownloadDocument(int documentId)
         {
             var userId = _currentUserService.UserId;
             if (userId == null) return Unauthorized();
@@ -85,13 +79,15 @@ namespace CondoSphere.API.Controllers
                 return Forbid();
             }
 
-            return File(result.Value.FileContents, result.Value.ContentType, result.Value.FileName);
-        }
+            return File(result.Value.FileContents, result.Value.ContentType, result.Value.FileName);        }
 
         // DELETE /api/documents/{documentId}
         [HttpDelete("{documentId}")]
         [Authorize(Roles = RoleConstants.CondoManager + "," + RoleConstants.CompanyAdmin)]
-        public async Task<IActionResult> DeleteDocument(int documentId)
+/// <summary>
+/// Handles the Delete Document action.
+/// </summary>
+public async Task<IActionResult> DeleteDocument(int documentId)
         {
             var companyId = _currentUserService.CompanyId;
             if (companyId == null) return Unauthorized();

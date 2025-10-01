@@ -2,6 +2,9 @@
 
 namespace CondoSphere.Application.Interfaces
 {
+    /// <summary>
+    /// I Quota Payment Repository.
+    /// </summary>
     public interface IQuotaPaymentRepository
     {
         Task AddAsync(QuotaPayment payment);

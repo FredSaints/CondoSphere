@@ -1,5 +1,8 @@
 ﻿namespace CondoSphere.Core.DTOs.Notifications
 {
+    /// <summary>
+    /// Notification DTO.
+    /// </summary>
     public class NotificationDto
     {
         public int Id { get; set; }

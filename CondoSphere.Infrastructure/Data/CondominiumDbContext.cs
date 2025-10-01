@@ -6,6 +6,9 @@ using AssemblyEntity = CondoSphere.Core.Entities.Assembly.Assembly;
 
 namespace CondoSphere.Infrastructure.Data
 {
+    /// <summary>
+    /// Condominium Db Context.
+    /// </summary>
     public class CondominiumDbContext : DbContext
     {
         public DbSet<Condominium> Condominiums { get; set; }

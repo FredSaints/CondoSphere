@@ -12,8 +12,7 @@ namespace CondoSphere.API.Controllers
 {
     [ApiController]
     [Route("api/condominiums/{condominiumId}/units")]
-    [Authorize]
-    public class UnitsController : ControllerBase
+    [Authorize]    public class UnitsController : ControllerBase
     {
         private readonly IUnitService _unitService;
         private readonly IValidator<CreateUpdateUnitDto> _validator;
@@ -36,16 +35,14 @@ namespace CondoSphere.API.Controllers
         }
 
         [HttpGet]
-        [Authorize(Policy = "IsCondoManagerPolicy")]
-        public async Task<IActionResult> GetUnitsForCondominium(int condominiumId)
+        [Authorize(Policy = "IsCondoManagerPolicy")]        public async Task<IActionResult> GetUnitsForCondominium(int condominiumId)
         {
             var units = await _unitService.GetUnitsForCondominiumAsync(condominiumId);
             return Ok(units);
         }
 
         [HttpGet("{unitId}")]
-        [Authorize(Policy = "IsCondoManagerPolicy")]
-        public async Task<IActionResult> GetUnitById(int condominiumId, int unitId)
+        [Authorize(Policy = "IsCondoManagerPolicy")]        public async Task<IActionResult> GetUnitById(int condominiumId, int unitId)
         {
             var unit = await _unitService.GetUnitByIdAsync(unitId);
             if (unit == null || unit.CondominiumId != condominiumId)
@@ -57,8 +54,7 @@ namespace CondoSphere.API.Controllers
         }
 
         [HttpGet("~/api/units/{unitId}")]
-        [Authorize(Roles = RoleConstants.CondoManager + "," + RoleConstants.CompanyAdmin)]
-        public async Task<IActionResult> GetSingleUnitById(int unitId)
+        [Authorize(Roles = RoleConstants.CondoManager + "," + RoleConstants.CompanyAdmin)]        public async Task<IActionResult> GetSingleUnitById(int unitId)
         {
             var unit = await _unitService.GetUnitByIdAsync(unitId);
             if (unit == null)
@@ -70,14 +66,15 @@ namespace CondoSphere.API.Controllers
             if (condo == null)
             {
                 return Forbid();
-            }
-
-            return Ok(unit);
+            }   return Ok(unit);
         }
 
         [HttpPost]
         [Authorize(Roles = RoleConstants.CondoManager, Policy = "IsCondoManagerPolicy")] // Must be a manager AND be assigned to this condo.
-        public async Task<IActionResult> CreateUnit(int condominiumId, [FromBody] CreateUpdateUnitDto unitDto)
+/// <summary>
+/// Handles the Create Unit action.
+/// </summary>
+public async Task<IActionResult> CreateUnit(int condominiumId, [FromBody] CreateUpdateUnitDto unitDto)
         {
             var validationResult = await _validator.ValidateAsync(unitDto);
             if (!validationResult.IsValid)
@@ -98,7 +95,10 @@ namespace CondoSphere.API.Controllers
 
         [HttpPut("{unitId}")]
         [Authorize(Roles = RoleConstants.CondoManager, Policy = "IsCondoManagerPolicy")]
-        public async Task<IActionResult> UpdateUnit(int condominiumId, int unitId, [FromBody] CreateUpdateUnitDto unitDto)
+/// <summary>
+/// Handles the Update Unit action.
+/// </summary>
+public async Task<IActionResult> UpdateUnit(int condominiumId, int unitId, [FromBody] CreateUpdateUnitDto unitDto)
         {
             var validationResult = await _validator.ValidateAsync(unitDto);
             if (!validationResult.IsValid)
@@ -109,11 +109,9 @@ namespace CondoSphere.API.Controllers
             var existingUnit = await _unitService.GetUnitByIdAsync(unitId);
             if (existingUnit == null || existingUnit.CondominiumId != condominiumId)
             {
-                return NotFound();
-            }
+                return NotFound();}
 
-            var success = await _unitService.UpdateUnitAsync(unitId, unitDto);
-            if (!success)
+            var success = await _unitService.UpdateUnitAsync(unitId, unitDto);  if (!success)
             {
                 return NotFound(); // Or another appropriate error
             }
@@ -123,9 +121,11 @@ namespace CondoSphere.API.Controllers
 
         [HttpDelete("{unitId}")]
         [Authorize(Roles = RoleConstants.CondoManager, Policy = "IsCondoManagerPolicy")]
-        public async Task<IActionResult> DeleteUnit(int condominiumId, int unitId)
-        {
-            var existingUnit = await _unitService.GetUnitByIdAsync(unitId);
+/// <summary>
+/// Handles the Delete Unit action.
+/// </summary>
+public async Task<IActionResult> DeleteUnit(int condominiumId, int unitId)
+        {      var existingUnit = await _unitService.GetUnitByIdAsync(unitId);
             if (existingUnit == null || existingUnit.CondominiumId != condominiumId)
             {
                 return NotFound();
@@ -142,7 +142,10 @@ namespace CondoSphere.API.Controllers
 
         [HttpPatch("{unitId}/unassign-resident")]
         [Authorize(Roles = RoleConstants.CondoManager, Policy = "IsCondoManagerPolicy")]
-        public async Task<IActionResult> UnassignResident(int condominiumId, int unitId)
+/// <summary>
+/// Handles the Unassign Resident action.
+/// </summary>
+public async Task<IActionResult> UnassignResident(int condominiumId, int unitId)
         {
             var unit = await _unitService.GetUnitByIdAsync(unitId);
             if (unit == null || unit.CondominiumId != condominiumId)
@@ -174,7 +177,10 @@ namespace CondoSphere.API.Controllers
 
         [HttpPatch("{unitId}/assign-resident")]
         [Authorize(Roles = RoleConstants.CondoManager, Policy = "IsCondoManagerPolicy")]
-        public async Task<IActionResult> AssignResident(int condominiumId, int unitId, [FromBody] AssignResidentDto dto)
+/// <summary>
+/// Handles the Assign Resident action.
+/// </summary>
+public async Task<IActionResult> AssignResident(int condominiumId, int unitId, [FromBody] AssignResidentDto dto)
         {
             var companyId = _currentUserService.CompanyId;
             if (companyId == null)

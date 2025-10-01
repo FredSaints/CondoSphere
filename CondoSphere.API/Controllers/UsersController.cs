@@ -8,8 +8,7 @@ namespace CondoSphere.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize]
-    public class UsersController : ControllerBase
+    [Authorize]    public class UsersController : ControllerBase
     {
         private readonly IUnitRepository _unitRepository;
         private readonly ICurrentUserService _currentUserService;
@@ -31,8 +30,7 @@ namespace CondoSphere.API.Controllers
             _documentService = documentService;
         }
 
-        [HttpGet("my-units")]
-        public async Task<IActionResult> GetMyUnits()
+        [HttpGet("my-units")]        public async Task<IActionResult> GetMyUnits()
         {
             var userId = _currentUserService.UserId;
             if (userId == null) return Unauthorized();
@@ -42,8 +40,7 @@ namespace CondoSphere.API.Controllers
             return Ok(unitDtos);
         }
 
-        [HttpGet("my-quotas")]
-        public async Task<IActionResult> GetMyQuotas()
+        [HttpGet("my-quotas")]        public async Task<IActionResult> GetMyQuotas()
         {
             var userId = _currentUserService.UserId;
             if (userId == null) return Unauthorized();
@@ -52,8 +49,7 @@ namespace CondoSphere.API.Controllers
             return Ok(quotas);
         }
 
-        [HttpGet("my-documents")]
-        public async Task<IActionResult> GetMyDocuments()
+        [HttpGet("my-documents")]        public async Task<IActionResult> GetMyDocuments()
         {
             var userId = _currentUserService.UserId;
             if (userId == null) return Unauthorized();

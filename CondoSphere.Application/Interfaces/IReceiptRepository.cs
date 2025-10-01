@@ -2,6 +2,9 @@
 
 namespace CondoSphere.Application.Interfaces
 {
+    /// <summary>
+    /// I Receipt Repository.
+    /// </summary>
     public interface IReceiptRepository
     {
         Task AddAsync(Receipt receipt);

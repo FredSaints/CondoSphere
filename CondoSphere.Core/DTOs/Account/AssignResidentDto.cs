@@ -2,6 +2,9 @@
 
 namespace CondoSphere.Core.DTOs.Condominiums
 {
+    /// <summary>
+    /// Assign Resident DTO.
+    /// </summary>
     public class AssignResidentDto
     {
         [Required]

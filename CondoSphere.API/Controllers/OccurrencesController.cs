@@ -11,8 +11,7 @@ namespace CondoSphere.API.Controllers
 {
     [ApiController]
     [Route("api/occurrences")]
-    [Authorize]
-    public class OccurrencesController : ControllerBase
+    [Authorize]    public class OccurrencesController : ControllerBase
     {
         private readonly IOccurrenceService _occurrenceService;
         private readonly ICurrentUserService _currentUserService;
@@ -32,8 +31,7 @@ namespace CondoSphere.API.Controllers
         }
 
 
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(int id)
+        [HttpGet("{id}")]        public async Task<IActionResult> GetById(int id)
         {
             var occurrence = await _occurrenceRepository.GetByIdAsync(id);
             if (occurrence == null) return NotFound();
@@ -42,12 +40,10 @@ namespace CondoSphere.API.Controllers
             if (!authorizationResult.Succeeded) return Forbid();
 
             var occurrenceDto = await _occurrenceService.GetOccurrenceByIdAsync(id);
-            return Ok(occurrenceDto);
-        }
+            return Ok(occurrenceDto);        }
 
         [HttpPost]
-        [Authorize(Roles = RoleConstants.CondoResident)]
-        public async Task<IActionResult> CreateOccurrence([FromForm] CreateOccurrenceDto dto, IFormFile? imageFile)
+        [Authorize(Roles = RoleConstants.CondoResident)]        public async Task<IActionResult> CreateOccurrence([FromForm] CreateOccurrenceDto dto, IFormFile? imageFile)
         {
             if (!ModelState.IsValid)
             {
@@ -75,29 +71,32 @@ namespace CondoSphere.API.Controllers
 
         [HttpGet("~/api/condominiums/{condominiumId}/occurrences")]
         [Authorize(Policy = "IsCondoManagerPolicy")]
-        public async Task<IActionResult> GetOccurrencesForCondominium(int condominiumId)
+/// <summary>
+/// Handles the Get Occurrences For Condominium action.
+/// </summary>
+public async Task<IActionResult> GetOccurrencesForCondominium(int condominiumId)
         {
             var occurrences = await _occurrenceService.GetOccurrencesForCondominiumAsync(condominiumId);
             return Ok(occurrences);
         }
 
         [HttpGet("my-occurrences")]
-        [Authorize(Roles = RoleConstants.CondoResident)]
-        public async Task<IActionResult> GetMyOccurrences()
+        [Authorize(Roles = RoleConstants.CondoResident)]        public async Task<IActionResult> GetMyOccurrences()
         {
             var residentUserId = _currentUserService.UserId;
             if (residentUserId == null)
             {
                 return Unauthorized("User ID could not be determined from token.");
-            }
-
-            var occurrences = await _occurrenceService.GetOccurrencesForResidentAsync(residentUserId.Value);
+            }           var occurrences = await _occurrenceService.GetOccurrencesForResidentAsync(residentUserId.Value);
 
             return Ok(occurrences);
         }
 
         [HttpPatch("{id}/status")]
-        public async Task<IActionResult> UpdateStatus(int id, [FromBody] UpdateOccurrenceStatusDto dto)
+/// <summary>
+/// Handles the Update Status action.
+/// </summary>
+public async Task<IActionResult> UpdateStatus(int id, [FromBody] UpdateOccurrenceStatusDto dto)
         {
             var occurrence = await _occurrenceRepository.GetByIdAsync(id);
             if (occurrence == null)

@@ -2,6 +2,9 @@
 
 namespace CondoSphere.Application.Interfaces
 {
+    /// <summary>
+    /// I Assembly Participant Repository.
+    /// </summary>
     public interface IAssemblyParticipantRepository
     {
         Task AddRangeAsync(IEnumerable<AssemblyParticipant> participants);

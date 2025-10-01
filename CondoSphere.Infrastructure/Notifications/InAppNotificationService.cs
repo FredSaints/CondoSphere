@@ -3,6 +3,12 @@ using CondoSphere.Core.Entities.Users;
 using CondoSphere.Shared.Hubs;
 using Microsoft.AspNetCore.SignalR;
 
+/// <summary>
+
+/// In App Notification Service.
+
+/// </summary>
+
 public class InAppNotificationService : IInAppNotificationService
 {
     private readonly INotificationRepository _repo;

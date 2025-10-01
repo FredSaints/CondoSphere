@@ -46,6 +46,7 @@ namespace CondoSphere.API
                 options.AddPolicy("WebAppPolicy", policy =>
                 {
                     var webAppUrl = builder.Configuration["ClientSettings:WebAppBaseUrl"];
+
                     policy.WithOrigins("https://localhost:7183", webAppUrl)
                           .AllowAnyHeader()
                           .AllowAnyMethod()
@@ -66,7 +67,7 @@ namespace CondoSphere.API
 
             builder.Services.AddIdentity<User, IdentityRole<int>>(options =>
             {
-                //TODO: Aumentar a segurança da password (por enquanto vamos usar 123456)
+                //TODO: Aumentar a segurana da password (por enquanto vamos usar 123456)
                 options.Password.RequireDigit = true;
                 options.Password.RequireLowercase = false;
                 options.Password.RequireUppercase = false;
@@ -243,7 +244,7 @@ namespace CondoSphere.API
             }
 
             app.UseCors("WebAppPolicy");
-            app.UseHttpsRedirection();
+            //app.UseHttpsRedirection();
             app.UseAuthentication();
             app.UseAuthorization();
 

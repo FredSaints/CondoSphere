@@ -2,6 +2,9 @@
 
 namespace CondoSphere.Application.Services.Company
 {
+    /// <summary>
+    /// I Company Service.
+    /// </summary>
     public interface ICompanyService
     {
         Task<CompanyProfileDto?> GetCompanyProfileAsync(int companyId);

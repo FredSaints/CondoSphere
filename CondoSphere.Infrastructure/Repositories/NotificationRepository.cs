@@ -5,6 +5,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CondoSphere.Infrastructure.Repositories
 {
+    /// <summary>
+    /// Notification Repository.
+    /// </summary>
     public class NotificationRepository : INotificationRepository
     {
         private readonly UserManagementDbContext _context;

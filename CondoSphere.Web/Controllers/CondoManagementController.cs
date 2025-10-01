@@ -18,8 +18,7 @@ using CondoSphere.Core.DTOs.Financials;
 namespace CondoSphere.Web.Controllers
 {
     [Authorize(Roles = RoleConstants.CondoManager)]
-    [Route("condo-management")]
-    public class CondoManagementController : Controller
+    [Route("condo-management")]    public class CondoManagementController : Controller
     {
         private readonly ApiClient _apiClient;
 
@@ -28,15 +27,13 @@ namespace CondoSphere.Web.Controllers
             _apiClient = apiClient;
         }
 
-        [HttpGet("")]
-        public async Task<IActionResult> Index()
+        [HttpGet("")]        public async Task<IActionResult> Index()
         {
             var condominiums = await _apiClient.GetMyManagedCondominiumsAsync();
             return View(condominiums);
         }
 
-        [HttpGet("{id}")]
-        public async Task<IActionResult> Details(int id)
+        [HttpGet("{id}")]        public async Task<IActionResult> Details(int id)
         {
             var condoTask = _apiClient.GetCondominiumDetailsAsync(id);
             var unitsTask = _apiClient.GetUnitsForCondominiumAsync(id);
@@ -67,7 +64,10 @@ namespace CondoSphere.Web.Controllers
         }
 
         [HttpGet("units/{unitId}/assign-resident")]
-        public async Task<IActionResult> AssignResident(int unitId, int condominiumId)
+/// <summary>
+/// Handles the Assign Resident action.
+/// </summary>
+public async Task<IActionResult> AssignResident(int unitId, int condominiumId)
         {
             var unit = await _apiClient.GetUnitByIdAsync(unitId);
             if (unit == null) return NotFound();
@@ -82,8 +82,7 @@ namespace CondoSphere.Web.Controllers
                 CondominiumId = condominiumId,
                 AvailableResidents = availableResidents.Select(r => new SelectListItem
                 {
-                    Text = r.FullName,
-                    Value = r.Id.ToString()
+                    Text = r.FullName,                  Value = r.Id.ToString()
                 })
             };
 
@@ -91,14 +90,17 @@ namespace CondoSphere.Web.Controllers
         }
 
         [HttpGet("units/{unitId}/register-resident")]
-        public async Task<IActionResult> RegisterResident(int unitId, int condominiumId)
+/// <summary>
+/// Handles the Register Resident action.
+/// </summary>
+public async Task<IActionResult> RegisterResident(int unitId, int condominiumId)
         {
             var unit = await _apiClient.GetUnitByIdAsync(unitId);
             if (unit == null) return NotFound();
 
             ViewData["UnitIdentifier"] = unit.Identifier;
 
-            var model = new RegisterResidentViewModel
+            var model= new RegisterResidentViewModel
             {
                 UnitId = unitId,
                 CondominiumId = condominiumId
@@ -108,7 +110,10 @@ namespace CondoSphere.Web.Controllers
 
         [HttpPost("units/{unitId}/register-resident")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> RegisterResident(RegisterResidentViewModel model)
+/// <summary>
+/// Handles the Register Resident action.
+/// </summary>
+public async Task<IActionResult> RegisterResident(RegisterResidentViewModel model)
         {
             if (!ModelState.IsValid)
             {
@@ -135,7 +140,10 @@ namespace CondoSphere.Web.Controllers
                 return RedirectToAction(nameof(Details), new { id = model.CondominiumId });
             }
 
-            ModelState.AddModelError(string.Empty, "Failed to register resident. The email may be in use or the unit may have become occupied.");
+            ModelState.AddModelError(string.Empty, "Failed to register resident. The email may be in use or the         /// <summary>
+        /// Handles the Create Unit action.
+        /// </summary>
+unit may have become occupied.");
             var finalUnit = await _apiClient.GetUnitByIdAsync(model.UnitId);
             if (finalUnit != null) ViewData["UnitIdentifier"] = finalUnit.Identifier;
             return View(model);
@@ -144,7 +152,10 @@ namespace CondoSphere.Web.Controllers
 
 
         [HttpGet("{condominiumId}/units/create")]
-        public IActionResult CreateUnit(int condominiumId)
+/// <summary>
+/// Handles the Create Unit action.
+/// </summary>
+public IActionResult CreateUnit(int condominiumId)
         {
             ViewData["CondominiumId"] = condominiumId;
             return View();
@@ -152,7 +163,10 @@ namespace CondoSphere.Web.Controllers
 
         [HttpPost("{condominiumId}/units/create")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateUnit(int condominiumId, CreateUpdateUnitDto dto)
+/// <summary>
+/// Handles the Create Unit action.
+/// </summary>
+public async Task<IActionResult> CreateUnit(int condominiumId, CreateUpdateUnitDto dto)
         {
             if (!ModelState.IsValid)
             {
@@ -161,8 +175,7 @@ namespace CondoSphere.Web.Controllers
             }
 
             var success = await _apiClient.CreateUnitAsync(condominiumId, dto);
-            if (success)
-            {
+            if (success)       {
                 TempData["SuccessMessage"] = $"Unit '{dto.Identifier}' was created successfully!";
                 TempData["ActiveTab"] = "units-tab";
                 return RedirectToAction(nameof(Details), new { id = condominiumId });
@@ -175,7 +188,10 @@ namespace CondoSphere.Web.Controllers
 
         [HttpPost("units/{unitId}/assign-resident")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> AssignResident(AssignResidentViewModel model)
+/// <summary>
+/// Handles the Assign Resident action.
+/// </summary>
+public async Task<IActionResult> AssignResident(AssignResidentViewModel model)
         {
             if (!ModelState.IsValid)
             {
@@ -194,8 +210,7 @@ namespace CondoSphere.Web.Controllers
             if (success)
             {
                 TempData["SuccessMessage"] = "Resident assigned successfully!";
-                TempData["ActiveTab"] = "units-tab";
-                return RedirectToAction(nameof(Details), new { id = model.CondominiumId });
+                TempData["ActiveTab"] = "units-tab";       return RedirectToAction(nameof(Details), new { id = model.CondominiumId });
             }
 
             ModelState.AddModelError(string.Empty, "Failed to assign resident. Please ensure the resident is valid and the unit is vacant.");
@@ -210,7 +225,10 @@ namespace CondoSphere.Web.Controllers
         }
 
         [HttpGet("{condominiumId}/occurrences/{occurrenceId}")]
-        public async Task<IActionResult> OccurrenceDetails(int condominiumId, int occurrenceId)
+/// <summary>
+/// Handles the Occurrence Details action.
+/// </summary>
+public async Task<IActionResult> OccurrenceDetails(int condominiumId, int occurrenceId)
         {
             var occurrenceTask = _apiClient.GetOccurrenceDetailsAsync(occurrenceId);
             var interventionsTask = _apiClient.GetInterventionsForOccurrenceAsync(occurrenceId);
@@ -238,8 +256,7 @@ namespace CondoSphere.Web.Controllers
             var viewModel = new OccurrenceDetailsViewModel
             {
                 Occurrence = occurrence,
-                Interventions = interventions,
-                LinkedExpenses = expenses,
+                Interventions = interventions, LinkedExpenses = expenses,
                 NewIntervention = new CreateInterventionDto
                 {
                     OccurrenceId = occurrenceId,
@@ -261,7 +278,10 @@ namespace CondoSphere.Web.Controllers
 
         [HttpPost("{condominiumId}/occurrences/{occurrenceId}/update-status")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> UpdateOccurrenceStatus(int condominiumId, int occurrenceId, UpdateOccurrenceStatusDto dto)
+/// <summary>
+/// Handles the Update Occurrence Status action.
+/// </summary>
+public async Task<IActionResult> UpdateOccurrenceStatus(int condominiumId, int occurrenceId, UpdateOccurrenceStatusDto dto)
         {
             if (!ModelState.IsValid)
             {
@@ -285,7 +305,10 @@ namespace CondoSphere.Web.Controllers
 
         [HttpPost("{condominiumId}/occurrences/{occurrenceId}/create-intervention")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateIntervention(int condominiumId, int occurrenceId, [Bind(Prefix = "NewIntervention")] CreateInterventionDto interventionDto)
+/// <summary>
+/// Handles the Create Intervention action.
+/// </summary>
+public async Task<IActionResult> CreateIntervention(int condominiumId, int occurrenceId, [Bind(Prefix = "NewIntervention")] CreateInterventionDto interventionDto)
         {
             if (!ModelState.IsValid)
             {
@@ -309,8 +332,7 @@ namespace CondoSphere.Web.Controllers
                 ViewData["AvailableEmployees"] = new SelectList(employees, "Id", "FullName");
 
                 var viewModel = new OccurrenceDetailsViewModel
-                {
-                    Occurrence = occurrence,
+                {                 Occurrence = occurrence,
                     Interventions = interventions,
                     LinkedExpenses = expenses,
                     NewIntervention = interventionDto,
@@ -333,7 +355,10 @@ namespace CondoSphere.Web.Controllers
 
         [HttpPost("{condominiumId}/occurrences/{occurrenceId}/update-intervention-status")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> UpdateInterventionStatus(int condominiumId, int occurrenceId, int interventionId, InterventionStatus status)
+/// <summary>
+/// Handles the Update Intervention Status action.
+/// </summary>
+public async Task<IActionResult> UpdateInterventionStatus(int condominiumId, int occurrenceId, int interventionId, InterventionStatus status)
         {
             var dto = new UpdateInterventionStatusDto { Status = status };
 
@@ -353,7 +378,10 @@ namespace CondoSphere.Web.Controllers
 
         [HttpPost("{condominiumId}/occurrences/{occurrenceId}/record-expense")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> RecordExpense(
+/// <summary>
+/// Handles the Record Expense action.
+/// </summary>
+public async Task<IActionResult> RecordExpense(
     int condominiumId,
     int occurrenceId,
     [Bind(Prefix = "NewExpense")] CreateExpenseDto expenseDto,
@@ -404,8 +432,7 @@ namespace CondoSphere.Web.Controllers
                 TempData["SuccessMessage"] = "Expense recorded successfully.";
             }
             else
-            {
-                TempData["ErrorMessage"] = string.IsNullOrWhiteSpace(apiError)
+            {TempData["ErrorMessage"] = string.IsNullOrWhiteSpace(apiError)
                     ? "Failed to record expense."
                     : $"Failed to record expense: {apiError}";
             }
@@ -416,8 +443,10 @@ namespace CondoSphere.Web.Controllers
 
         [HttpPost("unassign-resident")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> UnassignResidentFromUnit(int condominiumId, int residentId, int unitId)
-        {
+/// <summary>
+/// Handles the Unassign Resident From Unit action.
+/// </summary>
+public async Task<IActionResult> UnassignResidentFromUnit(int condominiumId, int residentId, int unitId)  {
             var success = await _apiClient.UnassignResidentFromUnitAsync(residentId, unitId);
 
             if (success)
@@ -426,15 +455,17 @@ namespace CondoSphere.Web.Controllers
                 TempData["ActiveTab"] = "units-tab";
             }
             else
-            {
-                TempData["ErrorMessage"] = "Failed to unassign resident.";
+            {TempData["ErrorMessage"] = "Failed to unassign resident.";
             }
 
             return RedirectToAction(nameof(Details), new { id = condominiumId });
         }
 
         [HttpGet("expenses/{expenseId}")]
-        public async Task<IActionResult> ExpenseDetails(int expenseId, int occurrenceId, int condominiumId)
+/// <summary>
+/// Handles the Expense Details action.
+/// </summary>
+public async Task<IActionResult> ExpenseDetails(int expenseId, int occurrenceId, int condominiumId)
         {
             var expense = await _apiClient.GetExpenseDetailsAsync(expenseId);
             if (expense == null)
@@ -450,7 +481,10 @@ namespace CondoSphere.Web.Controllers
         }
 
         [HttpGet("{condominiumId}/fixed-expenses")]
-        public async Task<IActionResult> FixedExpenses(int condominiumId)
+/// <summary>
+/// Handles the Fixed Expenses action.
+/// </summary>
+public async Task<IActionResult> FixedExpenses(int condominiumId)
         {
             var condo = await _apiClient.GetCondominiumDetailsAsync(condominiumId);
             if (condo == null) return NotFound();
@@ -463,7 +497,10 @@ namespace CondoSphere.Web.Controllers
 
         // GET: /condo-management/{condominiumId}/fixed-expenses/create
         [HttpGet("{condominiumId}/fixed-expenses/create")]
-        public async Task<IActionResult> CreateFixedExpense(int condominiumId)
+/// <summary>
+/// Handles the Create Fixed Expense action.
+/// </summary>
+public async Task<IActionResult> CreateFixedExpense(int condominiumId)
         {
             var condo = await _apiClient.GetCondominiumDetailsAsync(condominiumId);
             if (condo == null) return NotFound();
@@ -480,7 +517,10 @@ namespace CondoSphere.Web.Controllers
         // POST: /condo-management/{condominiumId}/fixed-expenses/create
         [HttpPost("{condominiumId}/fixed-expenses/create")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateFixedExpense(int condominiumId, CreateUpdateFixedExpenseDto model)
+/// <summary>
+/// Handles the Create Fixed Expense action.
+/// </summary>
+public async Task<IActionResult> CreateFixedExpense(int condominiumId, CreateUpdateFixedExpenseDto model)
         {
             if (!ModelState.IsValid)
             {
@@ -505,7 +545,10 @@ namespace CondoSphere.Web.Controllers
 
         // GET: /condo-management/{condominiumId}/fixed-expenses/edit/{expenseId}
         [HttpGet("{condominiumId}/fixed-expenses/edit/{expenseId}")]
-        public async Task<IActionResult> EditFixedExpense(int condominiumId, int expenseId)
+/// <summary>
+/// Handles the Edit Fixed Expense action.
+/// </summary>
+public async Task<IActionResult> EditFixedExpense(int condominiumId, int expenseId)
         {
             var companyId = int.Parse(User.FindFirst("companyId").Value);
             var expense = await _apiClient.GetExpenseDetailsAsync(expenseId); // Re-use the existing client method
@@ -517,8 +560,7 @@ namespace CondoSphere.Web.Controllers
             // Map the full ExpenseDto to the smaller DTO needed for the edit form
             var model = new CreateUpdateFixedExpenseDto
             {
-                Title = expense.Title,
-                Description = expense.Description,
+                Title = expense.Title,         Description = expense.Description,
                 Amount = expense.Amount,
                 Frequency = expense.Frequency,
                 DayOfBilling = expense.DayOfBilling,
@@ -533,7 +575,10 @@ namespace CondoSphere.Web.Controllers
         // POST: /condo-management/{condominiumId}/fixed-expenses/edit/{expenseId}
         [HttpPost("{condominiumId}/fixed-expenses/edit/{expenseId}")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditFixedExpense(int condominiumId, int expenseId, CreateUpdateFixedExpenseDto model)
+/// <summary>
+/// Handles the Edit Fixed Expense action.
+/// </summary>
+public async Task<IActionResult> EditFixedExpense(int condominiumId, int expenseId, CreateUpdateFixedExpenseDto model)
         {
             if (!ModelState.IsValid)
             {
@@ -561,7 +606,10 @@ namespace CondoSphere.Web.Controllers
         // POST: /condo-management/{condominiumId}/fixed-expenses/toggle/{expenseId}
         [HttpPost("{condominiumId}/fixed-expenses/toggle/{expenseId}")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> ToggleFixedExpenseStatus(int condominiumId, int expenseId)
+/// <summary>
+/// Handles the Toggle Fixed Expense Status action.
+/// </summary>
+public async Task<IActionResult> ToggleFixedExpenseStatus(int condominiumId, int expenseId)
         {
             var success = await _apiClient.ToggleFixedExpenseStatusAsync(expenseId, condominiumId);
             if (success)
@@ -569,8 +617,7 @@ namespace CondoSphere.Web.Controllers
                 TempData["SuccessMessage"] = "Expense status updated.";
             }
             else
-            {
-                TempData["ErrorMessage"] = "Failed to update expense status.";
+            {              TempData["ErrorMessage"] = "Failed to update expense status.";
             }
             TempData["ActiveTab"] = "financials-tab";
             return RedirectToAction("FixedExpenses", new { condominiumId = condominiumId });
@@ -579,12 +626,15 @@ namespace CondoSphere.Web.Controllers
         // POST: /condo-management/{condominiumId}/fixed-expenses/delete/{expenseId}
         [HttpPost("{condominiumId}/fixed-expenses/delete/{expenseId}")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteFixedExpense(int condominiumId, int expenseId)
+/// <summary>
+/// Handles the Delete Fixed Expense action.
+/// </summary>
+public async Task<IActionResult> DeleteFixedExpense(int condominiumId, int expenseId)
         {
             var success = await _apiClient.DeleteFixedExpenseAsync(expenseId, condominiumId);
             if (success)
             {
-                TempData["SuccessMessage"] = "Fixed expense has been deleted.";
+                TempData["SuccessMessage"] ="Fixed expense has been deleted.";
             }
             else
             {
@@ -594,16 +644,22 @@ namespace CondoSphere.Web.Controllers
         }
 
         [HttpGet("{id}/generate-fees")]
-        public async Task<IActionResult> GenerateFees(int id)
+/// <summary>
+/// Handles the Generate Fees action.
+/// </summary>
+public async Task<IActionResult> GenerateFees(int id)
         {
             var condo = await _apiClient.GetCondominiumDetailsAsync(id);
-            if (condo == null) return NotFound();
+            if (condo== null) return NotFound();
             return View(condo);
         }
 
         [HttpPost("{id}/generate-fees")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> GenerateFees(int id, int year, int month)
+/// <summary>
+/// Handles the Generate Fees action.
+/// </summary>
+public async Task<IActionResult> GenerateFees(int id, int year, int month)
         {
             var (success, message) = await _apiClient.GenerateMonthlyQuotasAsync(id, year, month);
             if (success)
@@ -619,7 +675,10 @@ namespace CondoSphere.Web.Controllers
         }
 
         [HttpGet("{condominiumId}/quotas")]
-        public async Task<IActionResult> QuotaManagement(int condominiumId)
+/// <summary>
+/// Handles the Quota Management action.
+/// </summary>
+public async Task<IActionResult> QuotaManagement(int condominiumId)
         {
             var condo = await _apiClient.GetCondominiumDetailsAsync(condominiumId);
             if (condo == null) return NotFound();
@@ -632,7 +691,10 @@ namespace CondoSphere.Web.Controllers
 
         [HttpPost("quotas/confirm")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> ConfirmPayment(int quotaId, int condominiumId)
+/// <summary>
+/// Handles the Confirm Payment action.
+/// </summary>
+public async Task<IActionResult> ConfirmPayment(int quotaId, int condominiumId)
         {
             var (success, message) = await _apiClient.ConfirmPaymentAsync(quotaId);
             if (success)
@@ -649,7 +711,10 @@ namespace CondoSphere.Web.Controllers
         }
 
         [HttpGet("receipts/{id}")]
-        public async Task<IActionResult> Receipt(int id)
+/// <summary>
+/// Handles the Receipt action.
+/// </summary>
+public async Task<IActionResult> Receipt(int id)
         {
             var receipt = await _apiClient.GetReceiptDetailsForManagerAsync(id);
             if (receipt == null)
@@ -661,7 +726,10 @@ namespace CondoSphere.Web.Controllers
 
 
         [HttpGet("{condominiumId}/documents")]
-        public async Task<IActionResult> Documents(int condominiumId)
+/// <summary>
+/// Handles the Documents action.
+/// </summary>
+public async Task<IActionResult> Documents(int condominiumId)
         {
             var condo = await _apiClient.GetCondominiumDetailsAsync(condominiumId);
             if (condo == null) return NotFound();
@@ -676,7 +744,10 @@ namespace CondoSphere.Web.Controllers
 
         [HttpPost("{condominiumId}/documents/upload")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> UploadDocument(int condominiumId, [Bind(Prefix = "newDocument")] CreateDocumentDto dto, IFormFile file)
+/// <summary>
+/// Handles the Upload Document action.
+/// </summary>
+public async Task<IActionResult> UploadDocument(int condominiumId, [Bind(Prefix = "newDocument")] CreateDocumentDto dto, IFormFile file)
         {
             if (!ModelState.IsValid || file == null || file.Length == 0)
             {
@@ -693,7 +764,9 @@ namespace CondoSphere.Web.Controllers
                 var occurrencesTask = _apiClient.GetOccurrencesForCondominiumAsync(condominiumId);
                 var fixedExpensesTask = _apiClient.GetFixedExpensesAsync(condominiumId);
                 var quotasTask = _apiClient.GetQuotasForCondominiumAsync(condominiumId);
-                var documentsTask = _apiClient.GetDocumentsForCondominiumAsync(condominiumId);
+                var docu        /// <summary>        /// Handles the Download Document action.
+        /// </summary>
+mentsTask = _apiClient.GetDocumentsForCondominiumAsync(condominiumId);
 
                 await Task.WhenAll(condoTask, unitsTask, occurrencesTask, fixedExpensesTask, quotasTask, documentsTask);
 
@@ -705,16 +778,14 @@ namespace CondoSphere.Web.Controllers
                     Condominium = condo,
                     Units = await unitsTask,
                     Occurrences = await occurrencesTask,
-                    FixedExpenses = await fixedExpensesTask,
-                    AllQuotas = await quotasTask,
+                    FixedExpenses = await fixedExpensesTask,AllQuotas = await quotasTask,
                     Documents = await documentsTask
                 };
                 ViewData["NewDocumentModel"] = dto;
                 return View("Details", viewModel);
             }
 
-            var result = await _apiClient.UploadDocumentAsync(condominiumId, dto, file);
-            if (result != null)
+            var result = await _apiClient.UploadDocumentAsync(condominiumId, dto, file);  if (result != null)
             {
                 TempData["SuccessMessage"] = "Document uploaded successfully.";
                 TempData["ActiveTab"] = "documents-tab";
@@ -729,7 +800,10 @@ namespace CondoSphere.Web.Controllers
 
         [HttpPost("documents/{documentId}/delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteDocument(int documentId, int condominiumId)
+/// <summary>
+/// Handles the Delete Document action.
+/// </summary>
+public async Task<IActionResult> DeleteDocument(int documentId, int condominiumId)
         {
             var success = await _apiClient.DeleteDocumentAsync(documentId);
             if (success)
@@ -745,7 +819,10 @@ namespace CondoSphere.Web.Controllers
         }
 
         [HttpGet("documents/{documentId}/view")]
-        public async Task<IActionResult> ViewDocument(int documentId)
+/// <summary>
+/// Handles the View Document action.
+/// </summary>
+public async Task<IActionResult> ViewDocument(int documentId)
         {
             var response = await _apiClient.DownloadDocumentAsync(documentId);
             if (response.IsSuccessStatusCode)
@@ -766,7 +843,10 @@ namespace CondoSphere.Web.Controllers
         }
 
         [HttpGet("documents/{documentId}/download")]
-        public async Task<IActionResult> DownloadDocument(int documentId)
+/// <summary>
+/// Handles the Download Document action.
+/// </summary>
+public async Task<IActionResult> DownloadDocument(int documentId)
         {
             var response = await _apiClient.DownloadDocumentAsync(documentId);
             if (response.IsSuccessStatusCode)
@@ -781,7 +861,10 @@ namespace CondoSphere.Web.Controllers
         }
 
         [HttpGet("{condominiumId}/announcement")]
-        public async Task<IActionResult> Announcement(int condominiumId)
+/// <summary>
+/// Handles the Announcement action.
+/// </summary>
+public async Task<IActionResult> Announcement(int condominiumId)
         {
             var condo = await _apiClient.GetCondominiumDetailsAsync(condominiumId);
             if (condo == null) return NotFound();
@@ -792,7 +875,10 @@ namespace CondoSphere.Web.Controllers
 
         [HttpPost("{condominiumId}/announcement")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Announcement(int condominiumId, AnnouncementDto dto)
+/// <summary>
+/// Handles the Announcement action.
+/// </summary>
+public async Task<IActionResult> Announcement(int condominiumId, AnnouncementDto dto)
         {
             if (!ModelState.IsValid)
             {
@@ -817,7 +903,10 @@ namespace CondoSphere.Web.Controllers
         }
 
         [HttpGet("notifications")]
-        public async Task<IActionResult> AllNotifications()
+/// <summary>
+/// Handles the All Notifications action.
+/// </summary>
+public async Task<IActionResult> AllNotifications()
         {
             var notifications = await _apiClient.GetAllMyNotificationsAsync();
             return View(notifications);
@@ -825,7 +914,10 @@ namespace CondoSphere.Web.Controllers
 
         [HttpPost("quotas/reject")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> RejectPayment(int quotaId, int condominiumId, RejectPaymentDto dto)
+/// <summary>
+/// Handles the Reject Payment action.
+/// </summary>
+public async Task<IActionResult> RejectPayment(int quotaId, int condominiumId, RejectPaymentDto dto)
         {
             if (!ModelState.IsValid)
             {
@@ -847,7 +939,10 @@ namespace CondoSphere.Web.Controllers
         }
 
         [HttpGet("{condominiumId}/financial-report")]
-        public async Task<IActionResult> FinancialReport(int condominiumId, int? year, int? month)
+/// <summary>
+/// Handles the Financial Report action.
+/// </summary>
+public async Task<IActionResult> FinancialReport(int condominiumId, int? year, int? month)
         {
             var condo = await _apiClient.GetCondominiumDetailsAsync(condominiumId);
             if (condo == null)

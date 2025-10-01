@@ -3,6 +3,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CondoSphere.Infrastructure.Data
 {
+    /// <summary>
+    /// Financials Db Context.
+    /// </summary>
     public class FinancialsDbContext : DbContext
     {
         public DbSet<Expense> Expenses { get; set; }

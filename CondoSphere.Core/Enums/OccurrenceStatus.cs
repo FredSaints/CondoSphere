@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace CondoSphere.Core.Enums
 {
+    /// <summary>
+    /// Occurrence Status.
+    /// </summary>
     public enum OccurrenceStatus
     {
         /// <summary>

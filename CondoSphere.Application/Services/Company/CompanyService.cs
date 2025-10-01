@@ -4,6 +4,9 @@ using CondoSphere.Core.DTOs.Account;
 
 namespace CondoSphere.Application.Services.Company
 {
+    /// <summary>
+    /// Company Service.
+    /// </summary>
     public class CompanyService : ICompanyService
     {
         private readonly IUnitOfWork _unitOfWork;

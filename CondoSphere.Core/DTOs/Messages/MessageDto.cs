@@ -1,5 +1,8 @@
 ﻿namespace CondoSphere.Core.DTOs.Messages
 {
+    /// <summary>
+    /// Message DTO.
+    /// </summary>
     public class MessageDto
     {
         public int Id { get; set; }

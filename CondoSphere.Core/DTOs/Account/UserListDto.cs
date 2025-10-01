@@ -2,6 +2,9 @@
 
 namespace CondoSphere.Core.DTOs.Account
 {
+    /// <summary>
+    /// User List DTO.
+    /// </summary>
     public class UserListDto
     {
         public int Id { get; set; }

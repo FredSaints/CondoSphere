@@ -11,8 +11,7 @@ namespace CondoSphere.API.Controllers
     [ApiController]
     [Authorize]
 
-    [Route("api")]
-    public class ResidentsController : ControllerBase
+    [Route("api")]    public class ResidentsController : ControllerBase
     {
         private readonly IUserService _userService;
         private readonly ICurrentUserService _currentUserService;
@@ -24,8 +23,7 @@ namespace CondoSphere.API.Controllers
         }
 
         [HttpPost("condominiums/{condominiumId}/residents")]
-        [Authorize(Roles = RoleConstants.CondoManager, Policy = "IsCondoManagerPolicy")]
-        public async Task<IActionResult> RegisterResident(int condominiumId, [FromBody] RegisterResidentDto dto)
+        [Authorize(Roles = RoleConstants.CondoManager, Policy = "IsCondoManagerPolicy")]        public async Task<IActionResult> RegisterResident(int condominiumId, [FromBody] RegisterResidentDto dto)
         {
             if (!ModelState.IsValid)
             {
@@ -49,16 +47,13 @@ namespace CondoSphere.API.Controllers
         }
 
         [HttpGet("condominiums/{condominiumId}/residents")]
-        [Authorize(Roles = RoleConstants.CondoManager, Policy = "IsCondoManagerPolicy")]
-        public async Task<IActionResult> GetResidentsForCondominium(int condominiumId)
+        [Authorize(Roles = RoleConstants.CondoManager, Policy = "IsCondoManagerPolicy")]        public async Task<IActionResult> GetResidentsForCondominium(int condominiumId)
         {
-            var residents = await _userService.GetResidentsForCondominiumAsync(condominiumId);
-            return Ok(residents);
+            var residents = await _userService.GetResidentsForCondominiumAsync(condominiumId);          return Ok(residents);
         }
 
         [HttpPost("residents/{residentId}/unassign-from/{unitId}")]
-        [Authorize(Roles = RoleConstants.CondoManager + "," + RoleConstants.CompanyAdmin)]
-        public async Task<IActionResult> UnassignResidentFromUnit(int residentId, int unitId)
+        [Authorize(Roles = RoleConstants.CondoManager + "," + RoleConstants.CompanyAdmin)]        public async Task<IActionResult> UnassignResidentFromUnit(int residentId, int unitId)
         {
             var companyId = _currentUserService.CompanyId;
             if (companyId == null) return Unauthorized();

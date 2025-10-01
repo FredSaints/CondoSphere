@@ -5,6 +5,9 @@ using System.Net.Mail;
 
 namespace CondoSphere.Infrastructure.Services
 {
+    /// <summary>
+    /// Mail Service.
+    /// </summary>
     public class MailService : IMailService
     {
         private readonly IConfiguration _configuration;

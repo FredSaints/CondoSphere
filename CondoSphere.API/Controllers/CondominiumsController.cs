@@ -11,8 +11,7 @@ namespace CondoSphere.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize]
-    public class CondominiumsController : ControllerBase
+    [Authorize]    public class CondominiumsController : ControllerBase
     {
         private readonly ICondominiumService _condominiumService;
         private readonly ICurrentUserService _currentUserService;
@@ -29,8 +28,7 @@ namespace CondoSphere.API.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = RoleConstants.CompanyAdmin)]
-        public async Task<IActionResult> GetAll([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 20)
+        [Authorize(Roles = RoleConstants.CompanyAdmin)]        public async Task<IActionResult> GetAll([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 20)
         {
             var companyId = _currentUserService.CompanyId;
             if (companyId == null)
@@ -39,12 +37,10 @@ namespace CondoSphere.API.Controllers
             }
 
             var condominiums = await _condominiumService.GetAllCondominiumsAsync(companyId.Value, pageNumber, pageSize);
-            return Ok(condominiums);
-        }
+            return Ok(condominiums);   }
 
         [HttpGet("{id}")]
-        [Authorize(Policy = "IsCondoManagerPolicy")]
-        public async Task<IActionResult> GetById(int id)
+        [Authorize(Policy = "IsCondoManagerPolicy")]        public async Task<IActionResult> GetById(int id)
         {
             var companyId = _currentUserService.CompanyId;
             if (companyId == null)
@@ -62,8 +58,7 @@ namespace CondoSphere.API.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = RoleConstants.CompanyAdmin)]
-        public async Task<IActionResult> Create([FromBody] CreateUpdateCondominiumDto condominiumDto)
+        [Authorize(Roles = RoleConstants.CompanyAdmin)]        public async Task<IActionResult> Create([FromBody] CreateUpdateCondominiumDto condominiumDto)
         {
             var validationResult = await _validator.ValidateAsync(condominiumDto);
 
@@ -85,7 +80,10 @@ namespace CondoSphere.API.Controllers
 
         [HttpPut("{id}")]
         [Authorize(Roles = RoleConstants.CompanyAdmin)]
-        public async Task<IActionResult> Update(int id, [FromBody] CreateUpdateCondominiumDto condominiumDto)
+/// <summary>
+/// Handles the Update action.
+/// </summary>
+public async Task<IActionResult> Update(int id, [FromBody] CreateUpdateCondominiumDto condominiumDto)
         {
             var validationResult = await _validator.ValidateAsync(condominiumDto);
             if (!validationResult.IsValid)
@@ -96,13 +94,11 @@ namespace CondoSphere.API.Controllers
             var companyId = _currentUserService.CompanyId;
             if (companyId == null)
             {
-                return Unauthorized("Company information is missing from the token.");
-            }
+                return Unauthorized("Company information is missing from the token.");      }
 
             var success = await _condominiumService.UpdateCondominiumAsync(id, condominiumDto, companyId.Value);
             if (!success)
-            {
-                return NotFound();
+            {      return NotFound();
             }
 
             return NoContent();
@@ -110,17 +106,18 @@ namespace CondoSphere.API.Controllers
 
         [HttpDelete("{id}")]
         [Authorize(Roles = RoleConstants.CompanyAdmin)]
-        public async Task<IActionResult> Delete(int id)
+/// <summary>
+/// Handles the Delete action.
+/// </summary>
+public async Task<IActionResult> Delete(int id)
         {
             var companyId = _currentUserService.CompanyId;
             if (companyId == null)
             {
-                return Unauthorized("Company information is missing from the token.");
+                return Unauthorized("Companyinformation is missing from the token.");
             }
 
-            var (success, message) = await _condominiumService.DeleteCondominiumAsync(id, companyId.Value);
-
-            if (success)
+            var (success, message) = await _condominiumService.DeleteCondominiumAsync(id, companyId.Value);      if (success)
             {
                 return NoContent();
             }
@@ -129,12 +126,13 @@ namespace CondoSphere.API.Controllers
 
         [HttpPatch("{condominiumId}/assign-manager")]
         [Authorize(Roles = RoleConstants.CompanyAdmin)]
-        public async Task<IActionResult> AssignManager(int condominiumId, [FromBody] AssignManagerDto dto)
+/// <summary>
+/// Handles the Assign Manager action.
+/// </summary>
+public async Task<IActionResult> AssignManager(int condominiumId, [FromBody] AssignManagerDto dto)
         {
             var companyId = _currentUserService.CompanyId;
-            if (companyId == null) return Unauthorized();
-
-            // We use the manager ID from the request body (dto.ManagerId)
+            if (companyId == null) return Unauthorized();  // We use the manager ID from the request body (dto.ManagerId)
             var success = await _condominiumService.AssignManagerAsync(condominiumId, dto.ManagerId, companyId.Value);
 
             if (!success)
@@ -147,7 +145,10 @@ namespace CondoSphere.API.Controllers
 
         [HttpGet("my-managed")]
         [Authorize(Roles = RoleConstants.CondoManager)]
-        public async Task<IActionResult> GetMyManagedCondominiums()
+/// <summary>
+/// Handles the Get My Managed Condominiums action.
+/// </summary>
+public async Task<IActionResult> GetMyManagedCondominiums()
         {
             var managerId = _currentUserService.UserId;
             if (managerId == null)
@@ -162,8 +163,7 @@ namespace CondoSphere.API.Controllers
         }
 
         [HttpPatch("{condominiumId}/unassign-manager")]
-        [Authorize(Roles = RoleConstants.CompanyAdmin)]
-        public async Task<IActionResult> UnassignManager(int condominiumId)
+        [Authorize(Roles = RoleConstants.CompanyAdmin)]    public async Task<IActionResult> UnassignManager(int condominiumId)
         {
             var companyId = _currentUserService.CompanyId;
             if (companyId == null) return Unauthorized();
@@ -181,7 +181,10 @@ namespace CondoSphere.API.Controllers
 
         [HttpGet("for-admin")]
         [Authorize(Roles = RoleConstants.CompanyAdmin)]
-        public async Task<IActionResult> GetAllForAdmin()
+/// <summary>
+/// Handles the Get All For Admin action.
+/// </summary>
+public async Task<IActionResult> GetAllForAdmin()
         {
             var companyId = _currentUserService.CompanyId;
             if (companyId == null)

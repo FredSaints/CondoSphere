@@ -1,5 +1,8 @@
 ﻿namespace CondoSphere.Core.DTOs.Condominiums
 {
+    /// <summary>
+    /// Document DTO.
+    /// </summary>
     public class DocumentDto
     {
         public int Id { get; set; }

@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace CondoSphere.Application.Services.Condominium
 {
+    /// <summary>
+    /// I Unit Service.
+    /// </summary>
     public interface IUnitService
     {
         /// <summary>

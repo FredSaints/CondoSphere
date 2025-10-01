@@ -14,6 +14,9 @@ using CoreUser = CondoSphere.Core.Entities.Users.User;
 
 namespace CondoSphere.Application.Services.Intervention
 {
+    /// <summary>
+    /// Intervention Service.
+    /// </summary>
     public class InterventionService : IInterventionService
     {
         private readonly IUnitOfWork _unitOfWork;

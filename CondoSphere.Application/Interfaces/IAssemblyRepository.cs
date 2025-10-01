@@ -2,6 +2,9 @@
 
 namespace CondoSphere.Application.Interfaces
 {
+    /// <summary>
+    /// I Assembly Repository.
+    /// </summary>
     public interface IAssemblyRepository
     {
         Task AddAsync(Assembly entity);

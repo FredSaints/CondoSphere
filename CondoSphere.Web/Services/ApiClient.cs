@@ -18,6 +18,9 @@ using System.Text.Json;
 
 namespace CondoSphere.Web.Services
 {
+    /// <summary>
+    /// Api Client.
+    /// </summary>
     public class ApiClient
     {
         private readonly HttpClient _httpClient;
@@ -135,12 +138,38 @@ namespace CondoSphere.Web.Services
             catch { return (false, raw); }
         }
 
-        public async Task<(bool Success, string Message)> VerifyTwoFactorCodeAsync(VerifyTwoFactorCodeDto dto)
+        public async Task<(bool Success, string Message, string? Token)> VerifyTwoFactorCodeAsync(VerifyTwoFactorCodeDto dto)
         {
             var resp = await _httpClient.PostAsJsonAsync("/api/accounts/2fa/verify", dto);
             var raw = await resp.Content.ReadAsStringAsync();
-            return resp.IsSuccessStatusCode ? (true, "Two-factor code verified.")
-                                            : (false, TryExtractMessage(raw));
+
+            if (resp.IsSuccessStatusCode)
+            {
+                string? message = "Two-factor code verified.";
+                string? token = null;
+
+                try
+                {
+                    using var json = JsonDocument.Parse(raw);
+                    var root = json.RootElement;
+                    if (root.TryGetProperty("message", out var msgProp))
+                    {
+                        message = msgProp.GetString() ?? message;
+                    }
+                    if (root.TryGetProperty("token", out var tokenProp))
+                    {
+                        token = tokenProp.GetString();
+                    }
+                }
+                catch
+                {
+                    // ignore malformed success payloads
+                }
+
+                return (true, message ?? "Two-factor code verified.", token);
+            }
+
+            return (false, TryExtractMessage(raw), null);
         }
 
         public async Task<bool> IsTwoFactorEnabledAsync(EmailDto dto)

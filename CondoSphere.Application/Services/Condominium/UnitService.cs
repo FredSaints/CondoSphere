@@ -10,6 +10,9 @@ using CoreUnit = CondoSphere.Core.Entities.Condominiums.Unit;
 
 namespace CondoSphere.Application.Services.Condominium
 {
+    /// <summary>
+    /// Unit Service.
+    /// </summary>
     public class UnitService : IUnitService
     {
         private readonly IUnitOfWork _unitOfWork;

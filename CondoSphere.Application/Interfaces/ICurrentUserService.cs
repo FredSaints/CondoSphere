@@ -1,5 +1,8 @@
 ﻿namespace CondoSphere.Application.Interfaces
 {
+    /// <summary>
+    /// I Current User Service.
+    /// </summary>
     public interface ICurrentUserService
     {
         int? UserId { get; }

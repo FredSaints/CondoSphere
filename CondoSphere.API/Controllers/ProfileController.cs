@@ -10,8 +10,7 @@ namespace CondoSphere.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize]
-    public class ProfileController : ControllerBase
+    [Authorize]    public class ProfileController : ControllerBase
     {
         private readonly IUserService _userService;
         private readonly ICurrentUserService _currentUserService;
@@ -24,8 +23,7 @@ namespace CondoSphere.API.Controllers
             _tokenService = tokenService;
         }
 
-        [HttpPut]
-        public async Task<IActionResult> UpdateProfile([FromBody] UpdateProfileDto dto)
+        [HttpPut]        public async Task<IActionResult> UpdateProfile([FromBody] UpdateProfileDto dto)
         {
             var userId = _currentUserService.UserId;
             if (userId == null) return Unauthorized();
@@ -41,25 +39,19 @@ namespace CondoSphere.API.Controllers
                 {
                     message = "Profile updated successfully.",
                     token = newToken
-                });
-            }
+                });  }
             return BadRequest(errors);
         }
 
-        [HttpPost("change-password")]
-        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDto dto)
+        [HttpPost("change-password")]        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDto dto)
         {
             var userId = _currentUserService.UserId;
             if (userId == null) return Unauthorized();
 
-            var (success, errors) = await _userService.ChangePasswordAsync(userId.Value, dto);
-
-            if (success) return Ok(new { message = "Password changed successfully." });
-            return BadRequest(errors);
+            var (success, errors) = await _userService.ChangePasswordAsync(userId.Value, dto);       if (success) return Ok(new { message = "Password changed successfully." });   return BadRequest(errors);
         }
 
-        [HttpGet] // Route will be GET /api/profile
-        public async Task<IActionResult> GetProfile()
+        [HttpGet] // Route will be GET /api/profile        public async Task<IActionResult> GetProfile()
         {
             var userId = _currentUserService.UserId;
             if (userId == null) return Unauthorized();

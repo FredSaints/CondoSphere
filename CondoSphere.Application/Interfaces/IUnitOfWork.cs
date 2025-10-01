@@ -1,5 +1,8 @@
 ﻿namespace CondoSphere.Application.Interfaces
 {
+    /// <summary>
+    /// I Unit Of Work.
+    /// </summary>
     public interface IUnitOfWork : IAsyncDisposable
     {
         ICompanyRepository Companies { get; }

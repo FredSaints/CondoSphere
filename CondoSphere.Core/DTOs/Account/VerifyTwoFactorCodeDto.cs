@@ -8,6 +8,9 @@ using System.Threading.Tasks;
 
 namespace CondoSphere.Core.DTOs.Account
 {
+    /// <summary>
+    /// Verify Two Factor Code DTO.
+    /// </summary>
     public class VerifyTwoFactorCodeDto
     {
         [Required, EmailAddress] public string Email { get; set; } = string.Empty;

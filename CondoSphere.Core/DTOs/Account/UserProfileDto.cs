@@ -3,6 +3,9 @@
 namespace CondoSphere.Core.DTOs.Account
 {
     // This DTO represents the full profile data we need on the frontend.
+    /// <summary>
+    /// User Profile DTO.
+    /// </summary>
     public class UserProfileDto
     {
         public int Id { get; set; }

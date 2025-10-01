@@ -8,8 +8,7 @@ namespace CondoSphere.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize]
-    public class MessagesController : ControllerBase
+    [Authorize]    public class MessagesController : ControllerBase
     {
         private readonly IMessageService _messageService;
         private readonly ICurrentUserService _currentUserService;
@@ -20,8 +19,7 @@ namespace CondoSphere.API.Controllers
             _currentUserService = currentUserService;
         }
 
-        [HttpPost]
-        public async Task<IActionResult> SendMessage([FromBody] SendMessageDto dto)
+        [HttpPost]        public async Task<IActionResult> SendMessage([FromBody] SendMessageDto dto)
         {
             var userId = _currentUserService.UserId;
             var companyId = _currentUserService.CompanyId;
@@ -35,26 +33,21 @@ namespace CondoSphere.API.Controllers
                 return Ok(message);
             }
             catch (ArgumentException ex)
-            {
-                return BadRequest(ex.Message);
+            {       return BadRequest(ex.Message);
             }
         }
 
-        [HttpGet("inbox")]
-        public async Task<IActionResult> GetInbox([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 20)
+        [HttpGet("inbox")]        public async Task<IActionResult> GetInbox([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 20)
         {
             var userId = _currentUserService.UserId;
             var companyId = _currentUserService.CompanyId;
 
             if (userId == null || companyId == null)
-                return Unauthorized();
-
-            var messages = await _messageService.GetInboxAsync(userId.Value, companyId.Value, pageNumber, pageSize);
+                return Unauthorized();  var messages = await _messageService.GetInboxAsync(userId.Value, companyId.Value, pageNumber, pageSize);
             return Ok(messages);
         }
 
-        [HttpGet("sent")]
-        public async Task<IActionResult> GetSentMessages([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 20)
+        [HttpGet("sent")]        public async Task<IActionResult> GetSentMessages([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 20)
         {
             var userId = _currentUserService.UserId;
             var companyId = _currentUserService.CompanyId;
@@ -67,11 +60,13 @@ namespace CondoSphere.API.Controllers
         }
 
         [HttpGet("{messageId}")]
-        public async Task<IActionResult> GetMessage(int messageId)
+/// <summary>
+/// Handles the Get Message action.
+/// </summary>
+public async Task<IActionResult> GetMessage(int messageId)
         {
             var userId = _currentUserService.UserId;
             var companyId = _currentUserService.CompanyId;
-
             if (userId == null || companyId == null)
                 return Unauthorized();
 
@@ -83,7 +78,10 @@ namespace CondoSphere.API.Controllers
         }
 
         [HttpPost("{messageId}/mark-read")]
-        public async Task<IActionResult> MarkAsRead(int messageId)
+/// <summary>
+/// Handles the Mark As Read action.
+/// </summary>
+public async Task<IActionResult> MarkAsRead(int messageId)
         {
             var userId = _currentUserService.UserId;
             var companyId = _currentUserService.CompanyId;
@@ -91,12 +89,14 @@ namespace CondoSphere.API.Controllers
             if (userId == null || companyId == null)
                 return Unauthorized();
 
-            var success = await _messageService.MarkAsReadAsync(messageId, userId.Value, companyId.Value);
-            return success ? Ok() : BadRequest();
+            var success = await _messageService.MarkAsReadAsync(messageId, userId.Value, companyId.Value);   return success ? Ok() : BadRequest();
         }
 
         [HttpGet("unread-count")]
-        public async Task<IActionResult> GetUnreadCount()
+/// <summary>
+/// Handles the Get Unread Count action.
+/// </summary>
+public async Task<IActionResult> GetUnreadCount()
         {
             var userId = _currentUserService.UserId;
             var companyId = _currentUserService.CompanyId;
@@ -109,7 +109,10 @@ namespace CondoSphere.API.Controllers
         }
 
         [HttpGet("contacts")]
-        public async Task<IActionResult> GetContacts()
+/// <summary>
+/// Handles the Get Contacts action.
+/// </summary>
+public async Task<IActionResult> GetContacts()
         {
             var userId = _currentUserService.UserId;
             var companyId = _currentUserService.CompanyId;

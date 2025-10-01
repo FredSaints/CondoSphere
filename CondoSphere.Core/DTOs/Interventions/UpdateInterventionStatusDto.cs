@@ -3,6 +3,9 @@ using System.ComponentModel.DataAnnotations;
 
 namespace CondoSphere.Core.DTOs.Interventions
 {
+    /// <summary>
+    /// Update Intervention Status DTO.
+    /// </summary>
     public class UpdateInterventionStatusDto
     {
         [Required]

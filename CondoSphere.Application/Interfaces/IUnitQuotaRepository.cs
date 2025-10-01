@@ -3,6 +3,9 @@
 
 namespace CondoSphere.Application.Interfaces
 {
+    /// <summary>
+    /// I Unit Quota Repository.
+    /// </summary>
     public interface IUnitQuotaRepository
     {
         Task AddAsync(UnitQuota unitQuota);

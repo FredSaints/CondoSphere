@@ -11,6 +11,9 @@ using Stripe.Checkout;
 
 namespace CondoSphere.Application.Services.Financials
 {
+    /// <summary>
+    /// Financial Service.
+    /// </summary>
     public class FinancialService : IFinancialService
     {
         private readonly IUnitOfWork _unitOfWork;

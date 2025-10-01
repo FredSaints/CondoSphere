@@ -4,6 +4,9 @@ using System.Threading.Tasks;
 
 namespace CondoSphere.Application.Interfaces
 {
+    /// <summary>
+    /// I Unit Repository.
+    /// </summary>
     public interface IUnitRepository
     {
         /// <summary>

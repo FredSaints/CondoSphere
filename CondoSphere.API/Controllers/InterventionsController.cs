@@ -9,8 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace CondoSphere.API.Controllers
 {
     [ApiController]
-    [Authorize]
-    public class InterventionsController : ControllerBase
+    [Authorize]    public class InterventionsController : ControllerBase
     {
         private readonly IInterventionService _interventionService;
         private readonly ICurrentUserService _currentUserService;
@@ -33,8 +32,7 @@ namespace CondoSphere.API.Controllers
         }
 
         [HttpPost("api/interventions")]
-        [Authorize(Roles = RoleConstants.CondoManager + "," + RoleConstants.CompanyAdmin)]
-        public async Task<IActionResult> CreateIntervention([FromBody] CreateInterventionDto dto)
+        [Authorize(Roles = RoleConstants.CondoManager + "," + RoleConstants.CompanyAdmin)]        public async Task<IActionResult> CreateIntervention([FromBody] CreateInterventionDto dto)
         {
             var companyId = _currentUserService.CompanyId;
             if (companyId == null) return Unauthorized();
@@ -48,8 +46,7 @@ namespace CondoSphere.API.Controllers
             return Ok(newIntervention);
         }
 
-        [HttpGet("api/occurrences/{occurrenceId}/interventions")]
-        public async Task<IActionResult> GetInterventionsForOccurrence(int occurrenceId)
+        [HttpGet("api/occurrences/{occurrenceId}/interventions")]        public async Task<IActionResult> GetInterventionsForOccurrence(int occurrenceId)
         {
             var parentOccurrence = await _occurrenceRepository.GetByIdAsync(occurrenceId);
             if (parentOccurrence == null) return NotFound();
@@ -57,14 +54,12 @@ namespace CondoSphere.API.Controllers
             var authorizationResult = await _authorizationService.AuthorizeAsync(User, parentOccurrence, "CanAccessOccurrence");
             if (!authorizationResult.Succeeded) return Forbid();
 
-            var interventions = await _interventionService.GetInterventionsForOccurrenceAsync(occurrenceId);
-            return Ok(interventions);
+            var interventions = await _interventionService.GetInterventionsForOccurrenceAsync(occurrenceId);         return Ok(interventions);
         }
 
         // [Authorize(Roles = RoleConstants.Employee)]
         [HttpGet("api/interventions/my-tasks")]
-        [Authorize] // Keep the generic Authorize for now
-        public async Task<IActionResult> GetMyTasks()
+        [Authorize] // Keep the generic Authorize for now        public async Task<IActionResult> GetMyTasks()
         {
             // Use System.Diagnostics.Debug for simple, universal logging
             System.Diagnostics.Debug.WriteLine("--- [API] GetMyTasks endpoint HIT ---");
@@ -102,7 +97,10 @@ namespace CondoSphere.API.Controllers
 
         [HttpPatch("api/interventions/{id}/status")]
         [Authorize]
-        public async Task<IActionResult> UpdateStatus(int id, [FromBody] UpdateInterventionStatusDto dto)
+/// <summary>
+/// Handles the Update Status action.
+/// </summary>
+public async Task<IActionResult> UpdateStatus(int id, [FromBody] UpdateInterventionStatusDto dto)
         {
             var intervention = await _unitOfWork.Interventions.GetByIdAsync(id);
             if (intervention == null)
@@ -126,7 +124,10 @@ namespace CondoSphere.API.Controllers
         }
 
         [HttpGet("api/interventions/{id}")]
-        public async Task<IActionResult> GetInterventionById(int id)
+/// <summary>
+/// Handles the Get Intervention By Id action.
+/// </summary>
+public async Task<IActionResult> GetInterventionById(int id)
         {
             var intervention = await _unitOfWork.Interventions.GetByIdAsync(id);
             if (intervention == null)

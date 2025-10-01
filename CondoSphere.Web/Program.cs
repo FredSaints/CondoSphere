@@ -1,7 +1,7 @@
 using CondoSphere.Web.Services;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.Extensions.FileProviders;
+using Microsoft.Net.Http.Headers;
 using System.Globalization;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,7 +11,7 @@ builder.Services.Configure<RequestLocalizationOptions>(options =>
     var supportedCultures = new[]
     {
         new CultureInfo("en-US"),
-        new CultureInfo("pt-PT") 
+        new CultureInfo("pt-PT")
     };
 
     options.DefaultRequestCulture = new RequestCulture("en-US");
@@ -21,6 +21,14 @@ builder.Services.Configure<RequestLocalizationOptions>(options =>
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddHttpContextAccessor();
+
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromDays(7);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
 
 builder.Services.AddTransient<JwtForwardingDelegatingHandler>();
 
@@ -40,19 +48,11 @@ builder.Services.AddHttpClient<ApiClient>(client =>
 .AddHttpMessageHandler<JwtForwardingDelegatingHandler>();
 builder.Services.AddScoped<IImageService, ImageService>();
 
+builder.Services.AddScoped<IAccessTokenStore, SessionAccessTokenStore>();
+
 var app = builder.Build();
 
-//if (!app.Environment.IsDevelopment())
-//{
-//    app.UseExceptionHandler("/Home/Error");
-//    app.UseHsts();
-//}
-
-//app.UseHttpsRedirection();
-//app.UseStaticFiles();
-
-
-
+// This is the corrected middleware pipeline for production
 if (app.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();
@@ -65,12 +65,23 @@ if (app.Environment.IsDevelopment())
 }
 else
 {
+    // For a production environment without HTTPS, we only configure the error handler.
     app.UseExceptionHandler("/Home/Error");
-    app.UseHsts();
-    app.UseHttpsRedirection();
+    // DO NOT USE HSTS or HTTPS Redirection on an HTTP-only site.
+    // app.UseHsts();
+    // app.UseHttpsRedirection();
 }
 
-app.UseStaticFiles();
+var staticFileCacheDuration = TimeSpan.FromDays(30);
+var staticFileCacheControlValue = $"public,max-age={(int)staticFileCacheDuration.TotalSeconds}";
+
+app.UseStaticFiles(new StaticFileOptions
+{
+    OnPrepareResponse = ctx =>
+    {
+        ctx.Context.Response.Headers[HeaderNames.CacheControl] = staticFileCacheControlValue;
+    }
+});
 
 var uploadPathSetting = builder.Configuration["FileUpload:Path"];
 var resolvedUploadPath = Environment.ExpandEnvironmentVariables(
@@ -86,11 +97,17 @@ Directory.CreateDirectory(resolvedUploadPath);
 app.UseStaticFiles(new StaticFileOptions
 {
     FileProvider = new PhysicalFileProvider(resolvedUploadPath),
-    RequestPath = "/uploads"
+    RequestPath = "/uploads",
+    OnPrepareResponse = ctx =>
+    {
+        ctx.Context.Response.Headers[HeaderNames.CacheControl] = staticFileCacheControlValue;
+    }
 });
 
 app.UseRequestLocalization();
 app.UseRouting();
+
+app.UseSession();
 
 app.UseAuthentication();
 app.UseAuthorization();

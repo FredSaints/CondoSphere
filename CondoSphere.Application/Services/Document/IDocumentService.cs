@@ -3,6 +3,9 @@ using Microsoft.AspNetCore.Http;
 
 namespace CondoSphere.Application.Services.Document
 {
+    /// <summary>
+    /// I Document Service.
+    /// </summary>
     public interface IDocumentService
     {
         Task<DocumentDto?> UploadDocumentAsync(int condominiumId, int companyId, int uploadedByUserId, CreateDocumentDto dto, IFormFile file);

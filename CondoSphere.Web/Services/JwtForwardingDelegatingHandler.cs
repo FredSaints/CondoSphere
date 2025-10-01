@@ -1,28 +1,52 @@
-﻿using System.Net.Http.Headers;
+﻿using System.Net;
+using System.Net.Http.Headers;
+using CondoSphere.Web.Services;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Http;
 
 namespace CondoSphere.Web.Services
 {
+    /// <summary>
+    /// Jwt Forwarding Delegating Handler.
+    /// </summary>
     public class JwtForwardingDelegatingHandler : DelegatingHandler
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IAccessTokenStore _accessTokenStore;
 
-        public JwtForwardingDelegatingHandler(IHttpContextAccessor httpContextAccessor)
+        public JwtForwardingDelegatingHandler(IHttpContextAccessor httpContextAccessor, IAccessTokenStore accessTokenStore)
         {
             _httpContextAccessor = httpContextAccessor;
+            _accessTokenStore = accessTokenStore;
         }
 
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
-            // Try to get the access_token from the authenticated user's claims
-            var token = _httpContextAccessor.HttpContext?.User.FindFirst("access_token")?.Value;
-
-            // If a token is found, add it to the outgoing request's Authorization header
-            if (!string.IsNullOrEmpty(token))
+            var httpContext = _httpContextAccessor.HttpContext;
+            if (httpContext != null)
             {
-                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                var token = _accessTokenStore.GetToken(httpContext);
+                if (!string.IsNullOrEmpty(token))
+                {
+                    request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                }
             }
 
-            return await base.SendAsync(request, cancellationToken);
+            var response = await base.SendAsync(request, cancellationToken);
+
+            if (response.StatusCode == HttpStatusCode.Unauthorized && httpContext != null)
+            {
+                _accessTokenStore.ClearToken(httpContext);
+                httpContext.Session?.Clear();
+
+                if (httpContext.User?.Identity?.IsAuthenticated == true)
+                {
+                    await httpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+                }
+            }
+
+            return response;
         }
     }
 }

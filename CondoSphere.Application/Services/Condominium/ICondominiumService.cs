@@ -2,6 +2,9 @@
 
 namespace CondoSphere.Application.Services.Condominium
 {
+    /// <summary>
+    /// I Condominium Service.
+    /// </summary>
     public interface ICondominiumService
     {
         Task<CondominiumDto?> GetCondominiumByIdAsync(int id, int companyId);

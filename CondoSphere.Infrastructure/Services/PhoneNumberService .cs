@@ -3,6 +3,9 @@ using System.Linq;
 
 namespace CondoSphere.Infrastructure.Services
 {
+    /// <summary>
+    /// Phone Number Service.
+    /// </summary>
     public class PhoneNumberService : IPhoneNumberService
     {
         public string Normalize(string? raw, string defaultCountryCode = "+351")
