@@ -171,7 +171,8 @@
         <!-- Main Content -->
         <RefreshView Grid.Row="2" 
                      Command="{Binding LoadDataCommand}" 
-                     IsRefreshing="{Binding IsBusy}">
+                     IsRefreshing="{Binding IsBusy}"
+                     MinimumHeightRequest="300">
             <CollectionView x:Name="documentsCollectionView" 
                             ItemsSource="{Binding Documents}"
                             SelectionMode="Single"
@@ -215,9 +216,9 @@
 
                 <!-- Empty State -->
                 <CollectionView.EmptyView>
-                    <Frame Style="{StaticResource CardStyle}" Padding="40" Margin="0,40">
+                    <Frame Style="{StaticResource CardStyle}" Padding="10" Margin="0,40">
                         <VerticalStackLayout Spacing="20" HorizontalOptions="Center">
-                            <Label Text="📁" FontSize="64" HorizontalOptions="Center" Opacity="0.5" />
+                            <Label Text="📁" FontSize="44" HorizontalOptions="Center" Opacity="0.5" />
                             <Label Text="No Documents Available" Style="{StaticResource SubheadingLarge}" HorizontalTextAlignment="Center" />
                             <Label Text="Documents for the selected category will appear here." Style="{StaticResource BodyMedium}" HorizontalTextAlignment="Center" TextColor="{StaticResource TextSecondary}" />
                         </VerticalStackLayout>
